@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run current Jest test",
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--inspect-brk",
+                "--nolazy",
+                "${workspaceRoot}/node_modules/.bin/jest",
+                "${fileBasenameNoExtension}.js",
+            ],
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "preLaunchTask": "tsc: watch",
+            "outFiles": [
+                "${workspaceFolder}/output/**/*.js"
+            ],
+            "sourceMaps": true,
+            "smartStep": true,
+            "trace": false
+        },
+    ]
+}

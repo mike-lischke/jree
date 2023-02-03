@@ -1,0 +1,10 @@
+{
+    "jest.autoRun": "off",
+    "jest.coverageFormatter": "GutterFormatter",
+    "jest.jestCommandLine": "npm run test-coverage --",
+    "jest.rootPath": "test",
+    "jest.testExplorer": {
+        "enabled": true
+    },
+    "jest.showCoverageOnLoad": true,
+}

@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "CommonJS",
+        "outDir": "./output",
+        "sourceMap": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "Node",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "removeComments": false,
+        "rootDirs": [
+            "src",
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+    ],
+    "exclude": [
+        "node_modules/**/*.*",
+        "output/**/*.*"
+    ],
+}
