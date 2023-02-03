@@ -1,6 +1,6 @@
 # Additional Functionality
 
-The JREE package provides some support code for your use that is not part of the JRE. This document describes what you can use. All the additional code can be found in the [src/ folder](.src), side-by-side to the `java` root folder. You can import helper classes and functions with the same import used to load the `java` root namespace.
+The JREE package provides some support code for your use that is not part of the JRE. This document describes what you can use. All the additional code can be found in the [src/ folder](../src), side-by-side to the `java` root folder. You can import helper classes and functions with the same import used to load the `java` root namespace.
 
 ```javascript
 import { java, S } from "jree";
