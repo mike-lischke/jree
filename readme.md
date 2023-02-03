@@ -24,6 +24,8 @@ builder.append(123);
 
 You can also import a class directly from full path, but I recommend to stay with fully qualified identifiers, especially in cases where Typescript classes with the same name exist (String, Number, Object).
 
+In addition to the JRE classes there's' some support code that might come in handy. See the [support readme](doc/support.md) for more details.
+
 ## Supported Java Classes
 
 The JRE emulation is still work-in-progress and contains a mix of either fully or partially converted Java classes. It's not planned to convert the entire JRE, but over time more and more classes may be added (pull requests welcome!).
