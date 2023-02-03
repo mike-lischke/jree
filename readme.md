@@ -1,4 +1,5 @@
-![Build & Test](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml/badge.svg?branch=master)[![Java 11](https://img.shields.io/badge/java-11-4c7e9f.svg)](http://java.oracle.com)
+[![Build & Test](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml) [![Java 11](https://img.shields.io/badge/java-11-4c7e9f.svg)](http://java.oracle.com)
+
 
 # Java Runtime Environment Emulation
 
