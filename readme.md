@@ -1,5 +1,4 @@
-[![Build & Test](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml) [![Java 11](https://img.shields.io/badge/java-11-4c7e9f.svg)](http://java.oracle.com)
-
+[![Build & Test](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/mike-lischke/jree/actions/workflows/nodejs.yml) [![Java 11](https://img.shields.io/badge/java-11-4c7e9f.svg)](http://java.oracle.com)[![Downloads](https://img.shields.io/npm/dw/jree?color=blue&logo=npm&style=for-the-badge)](https://www.npmjs.com/package/jree)
 
 # Java Runtime Environment Emulation
 
@@ -151,7 +150,7 @@ Exceptions must generally be considered to be only partially converted, because 
 
 ## Environments
 
-The JREE runs both, in Node.js and in a browser. The class `java.io.File` is the only part which uses Node.js code currently. For web deployment this is is obviously not usable. Your bundler should tree-shake this class out or you provide a shim for `path` and `fs` node modules.
+The JREE runs both, in Node.js and in a browser. The classes `java.io.File` and `java.lang.System` are the only parts which uses Node.js code currently. The System class imports dependencies dynamically and fills its properties either from the browser environment or Node.js. The File class, however, cannot be used in a browser. Solve this by using a bundler like `rollup.js` or `Webpack`. That should tree-shake this class out or you can provide a shim for `path` and `fs` node modules for the bundling process.
 
 ## Development and Contribution
 

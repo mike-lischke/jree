@@ -1,10 +1,16 @@
 {
     "name": "jree",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Java Runtime Environment Emulation",
+    "homepage": "https://soft-gems.net/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mike-lischke/jree"
+    },
     "keywords": [
         "Java",
         "JRE",
+        "JDK",
         "Java Runtime Environment"
     ],
     "type": "commonjs",
@@ -31,6 +37,7 @@
         "typescript": "4.9.5"
     },
     "scripts": {
+        "prepublish": "npm run build && npm run test",
         "build": "tsc",
         "test": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --max-worker=1",
         "test-ci": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --silent",
