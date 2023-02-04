@@ -30,13 +30,13 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
         super(buffer, arrayConstructor.BYTES_PER_ELEMENT);
         this.#array = new this.arrayConstructor(buffer, offset, length) as T;
         this.#byteOrder = java.nio.ByteOrder.BIG_ENDIAN;
-        this.limit = this.#array.length;
+        this.limit(this.#array.length);
         this.position(0);
 
         if (offset !== undefined && length !== undefined) {
-            this.limit = offset + length;
+            this.limit(offset + length);
         } else {
-            this.limit = this.#array.length;
+            this.limit(this.#array.length);
         }
         this.position(offset ?? 0);
     }
@@ -240,7 +240,7 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
 
     /** @returns a string summarizing the state of this buffer. */
     public toString(): java.lang.String {
-        return S`${this.constructor.name}[pos=${this.position()} lim=${this.limit} cap=${this.capacity()}]`;
+        return S`${this.constructor.name}[pos=${this.position()} lim=${this.limit()} cap=${this.capacity()}]`;
     }
 
 }

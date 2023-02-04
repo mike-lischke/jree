@@ -82,7 +82,7 @@ export const isEquatable = (candidate: unknown): candidate is IEquatable => {
 };
 
 /**
- * Type guard to check if a value supports the IEquatable interface.
+ * Type guard to check if a value has a length property.
  *
  * @param candidate The value to check.
  *

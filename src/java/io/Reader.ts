@@ -65,7 +65,7 @@ export abstract class Reader extends JavaObject implements java.io.Closeable, ja
             if (target.hasArray()) {
                 const buffer = target.array();
                 const pos = target.position();
-                const rem = Math.max(target.limit - pos, 0);
+                const rem = Math.max(target.limit() - pos, 0);
                 const off = target.arrayOffset() + pos;
                 readCount = this.read(buffer, off, rem);
                 if (readCount > 0) {

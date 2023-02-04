@@ -6,6 +6,7 @@
  */
 
 export * as java from "./java/index";
+export * from "./java/lang/Object";
 
 export * from "./Decorators";
 export * from "./DefaultJavaEqualityComparator";

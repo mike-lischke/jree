@@ -197,40 +197,40 @@ export class Character extends JavaObject {
      * Unicode high-surrogate code unit</a> in the UTF-16 encoding.
      * A high-surrogate is also known as a <i>leading-surrogate</i>.
      */
-    public static readonly MIN_HIGH_SURROGATE = "\uD800";
+    public static readonly MIN_HIGH_SURROGATE = 0xD800;
 
     /**
      * The maximum value of a <a href="http://www.unicode.org/glossary/#high_surrogate_code_unit">
      * Unicode high-surrogate code unit</a> in the UTF-16 encoding.
      * A high-surrogate is also known as a <i>leading-surrogate</i>.
      */
-    public static readonly MAX_HIGH_SURROGATE = "\uDBFF";
+    public static readonly MAX_HIGH_SURROGATE = 0xDBFF;
 
     /**
      * The minimum value of a * <a href="http://www.unicode.org/glossary/#low_surrogate_code_unit">
      * Unicode low-surrogate code unit</a> in the UTF-16 encoding.
      * A low-surrogate is also known as a <i>trailing-surrogate</i>.
      */
-    public static readonly MIN_LOW_SURROGATE = "\uDC00";
+    public static readonly MIN_LOW_SURROGATE = 0xDC00;
 
     /**
      * The maximum value of a * <a href="http://www.unicode.org/glossary/#low_surrogate_code_unit">
      * Unicode low-surrogate code unit</a> in the UTF-16 encoding.
      * A low-surrogate is also known as a <i>trailing-surrogate</i>.
      */
-    public static readonly MAX_LOW_SURROGATE = "\uDFFF";
+    public static readonly MAX_LOW_SURROGATE = 0xDFFF;
 
     /** The minimum value of a Unicode surrogate code unit in the * UTF-16 encoding. */
-    public static readonly MIN_SURROGATE = "\uD800";
+    public static readonly MIN_SURROGATE = 0xD800;
 
     /** The maximum value of a Unicode surrogate code unit in the * UTF-16 encoding. */
-    public static readonly MAX_SURROGATE = "\uDFFF";
+    public static readonly MAX_SURROGATE = 0xDFFF;
 
     /**
      * The minimum value of a * <a href="http://www.unicode.org/glossary/#supplementary_code_point">
      * Unicode supplementary code point</a>.
      */
-    public static readonly MIN_SUPPLEMENTARY_CODE_POINT = 0x010000;
+    public static readonly MIN_SUPPLEMENTARY_CODE_POINT = 0x10000;
 
     /**
      * The minimum value of a * <a href="http://www.unicode.org/glossary/#code_point">
@@ -274,16 +274,49 @@ export class Character extends JavaObject {
         super();
     }
 
-    public static isISOControl = (_c: java.lang.char): boolean => {
-        return false;
-    };
-
     public static isDigit(c: java.lang.char): boolean {
         return unicode.isDigit(c);
     }
 
+    /**
+     * Determines if the given char value is a Unicode high-surrogate code unit (also known as leading-surrogate
+     * code unit).
+     *
+     * @param ch The character to check.
+     *
+     * @returns True, if the character is a high surrogate, otherwise false.
+     */
+    public static isHighSurrogate(ch: java.lang.char): boolean {
+        return Character.MIN_HIGH_SURROGATE <= ch && ch <= Character.MAX_HIGH_SURROGATE;
+    }
+
+    /**
+     * Determines if the given char value is a Unicode low-surrogate code unit (also known as trailing-surrogate
+     * code unit).
+     *
+     * @param ch The character to check.
+     *
+     * @returns True, if the character is a low surrogate, otherwise false.
+     */
+    public static isLowSurrogate(ch: java.lang.char): boolean {
+        return Character.MIN_LOW_SURROGATE <= ch && ch <= Character.MAX_LOW_SURROGATE;
+    }
+
     public static isUpperCase(c: java.lang.char): boolean {
         return unicode.isUpperCase(c);
+    }
+
+    /**
+     * Converts the specified surrogate pair to its supplementary code point value.
+     *
+     * @param high The leading surrogate.
+     * @param low The trailing surrogate.
+     *
+     * @returns The computed Unicode codepoint.
+     */
+    public static toCodePoint(high: java.lang.char, low: java.lang.char): number {
+        return (high << 10) + low + Character.MIN_SUPPLEMENTARY_CODE_POINT - (Character.MIN_HIGH_SURROGATE << 10) -
+            Character.MIN_LOW_SURROGATE;
     }
 
     public static toString(c: java.lang.char): string {

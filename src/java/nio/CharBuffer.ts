@@ -95,7 +95,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
         }
 
         if (typeof cOrCsq === "number") {
-            if (this.position() === this.limit) {
+            if (this.position() === this.limit()) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -107,7 +107,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
                 throw new java.lang.IndexOutOfBoundsException();
             }
 
-            if (this.currentPosition + cOrCsq.length() >= this.limit) {
+            if (this.currentPosition + cOrCsq.length() >= this.limit()) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -201,7 +201,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
 
         if (typeof cOrSrcOrIndex === "number" && offsetOrCOrStart === undefined) {
             // A single code point, relative.
-            if (this.currentPosition === this.limit) {
+            if (this.currentPosition === this.limit()) {
                 throw new java.nio.BufferOverflowException();
             }
 

@@ -149,7 +149,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             return this.#buffer.getUint16(this.currentPosition++, this.littleEndian);
         }
 
-        if (index < 0 || index >= this.limit - 1) {
+        if (index < 0 || index >= this.limit() - 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -165,7 +165,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             return this.#buffer.getFloat64(this.currentPosition++, this.littleEndian);
         }
 
-        if (index < 0 || index >= this.limit - 1) {
+        if (index < 0 || index >= this.limit() - 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -181,7 +181,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             return this.#buffer.getFloat32(this.currentPosition++, this.littleEndian);
         }
 
-        if (index < 0 || index >= this.limit - 1) {
+        if (index < 0 || index >= this.limit() - 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -197,7 +197,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             return this.#buffer.getInt32(this.currentPosition++, this.littleEndian);
         }
 
-        if (index < 0 || index >= this.limit - 1) {
+        if (index < 0 || index >= this.limit() - 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -213,7 +213,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             return this.#buffer.getBigInt64(this.currentPosition++, this.littleEndian);
         }
 
-        if (index < 0 || index >= this.limit - 1) {
+        if (index < 0 || index >= this.limit() - 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -229,7 +229,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             return this.#buffer.getInt16(this.currentPosition++, this.littleEndian);
         }
 
-        if (index < 0 || index >= this.limit - 1) {
+        if (index < 0 || index >= this.limit() - 1) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -320,7 +320,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
         const dataSize = 2; // UTF-16.
         if (typeof valueOrIndex === "number") {
-            if (valueOrIndex < 0 || valueOrIndex > this.limit - dataSize) {
+            if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -358,7 +358,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
         const dataSize = 8;
         if (value !== undefined) {
-            if (valueOrIndex < 0 || valueOrIndex > this.limit - dataSize) {
+            if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -396,7 +396,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
         const dataSize = 4;
         if (value !== undefined) {
-            if (valueOrIndex < 0 || valueOrIndex > this.limit - dataSize) {
+            if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -434,7 +434,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
         const dataSize = 4;
         if (value !== undefined) {
-            if (valueOrIndex < 0 || valueOrIndex > this.limit - dataSize) {
+            if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -472,7 +472,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
         const dataSize = 8;
         if (typeof valueOrIndex === "number") {
-            if (valueOrIndex < 0 || valueOrIndex > this.limit - dataSize) {
+            if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
                 throw new java.nio.BufferOverflowException();
             }
 
@@ -510,7 +510,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
         const dataSize = 2;
         if (value !== undefined) {
-            if (valueOrIndex < 0 || valueOrIndex > this.limit - dataSize) {
+            if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
                 throw new java.nio.BufferOverflowException();
             }
 

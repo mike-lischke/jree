@@ -62,16 +62,18 @@ export abstract class Buffer<T> extends JavaObject {
     }
 
     /** Returns this buffer's limit. */
-    public get limit(): number {
-        return this.currentLimit;
-    }
-
+    public limit(): number;
     /**
      * Sets this buffer's limit.
      *
      * @param newLimit The new limit.
      */
-    public set limit(newLimit: number) {
+    public limit(newLimit: number): void;
+    public limit(newLimit?: number): number | void {
+        if (newLimit === undefined) {
+            return this.currentLimit;
+        }
+
         if (newLimit < 0 || newLimit > this.capacity()) {
             throw new java.lang.IllegalArgumentException();
         }
