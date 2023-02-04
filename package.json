@@ -37,7 +37,7 @@
         "typescript": "4.9.5"
     },
     "scripts": {
-        "prepublish": "npm run build && npm run test",
+        "prepublishOnly": "npm run build && npm run test",
         "build": "tsc",
         "test": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --max-worker=1",
         "test-ci": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --silent",
