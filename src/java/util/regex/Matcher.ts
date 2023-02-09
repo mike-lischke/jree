@@ -10,7 +10,6 @@ import { JavaObject } from "../../lang/Object";
 
 import { NotImplementedError } from "../../../NotImplementedError";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface MatchResult {
     // Returns the offset after the last character of the subsequence captured by the given group during this match.
     end(group?: number): number;

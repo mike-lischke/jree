@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-
 import { readSync } from "fs";
 import * as fs from "fs/promises";
 import { S } from "../../templates";

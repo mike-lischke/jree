@@ -7,7 +7,6 @@
 
 import { Collection } from "./Collection";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Queue<T> extends Omit<Collection<T>, "remove"> {
     /**
      * Inserts the specified element into this queue if it is possible to do so immediately without violating

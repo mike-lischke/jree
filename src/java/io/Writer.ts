@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/unified-signatures */
-
 import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
@@ -93,7 +91,6 @@ export abstract class Writer extends JavaObject implements java.io.Closeable, ja
      * @throws  IOException
      *          If an I/O error occurs
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public abstract write(str: java.lang.String): void;
 
     /**

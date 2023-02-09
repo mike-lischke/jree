@@ -9,5 +9,4 @@ import { java } from "../..";
 
 // The set interface does not add any new method to the Collection interface.
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export type Set<T> = java.util.Collection<T>;

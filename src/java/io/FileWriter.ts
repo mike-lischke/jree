@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-
 import { java } from "../..";
 import { OutputStreamWriter } from "./OutputStreamWriter";
 

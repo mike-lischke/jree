@@ -5,11 +5,12 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { java } from "../..";
+import { JavaObject } from "../lang/Object";
+
 import { isArrayLike, isEquatable } from "../../helpers";
 import { MurmurHash } from "../../MurmurHash";
 import { S } from "../../templates";
-import { java } from "../..";
-import { JavaObject } from "../lang/Object";
 import { Arrays } from "./Arrays";
 
 export class Objects extends JavaObject {

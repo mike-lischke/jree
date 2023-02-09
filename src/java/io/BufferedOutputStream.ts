@@ -27,7 +27,6 @@ export class BufferedOutputStream extends FilterOutputStream {
 
     public write(b: Uint8Array): void;
     public write(b: Uint8Array, off: number, len: number): void;
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public write(b: number): void;
     public write(b: Uint8Array | number, off?: number, len?: number): void {
         if (typeof b === "number") {

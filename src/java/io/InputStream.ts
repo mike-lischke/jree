@@ -5,11 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-/* eslint-disable jsdoc/require-returns */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/naming-convention */
-
 /* cspell: ignore readlimit */
 
 import { S } from "../../templates";
@@ -27,7 +22,7 @@ export abstract class InputStream extends JavaObject implements Closeable {
     }
 
     /**
-     * Returns an estimate of the number of bytes that can be read (or skipped over) from this input stream without
+     * @returns an estimate of the number of bytes that can be read (or skipped over) from this input stream without
      * blocking by the next invocation of a method for this input stream.
      */
     public available(): number {
@@ -48,7 +43,11 @@ export abstract class InputStream extends JavaObject implements Closeable {
         // Overridden by descendants.
     }
 
-    /** Tests if this input stream supports the mark and reset methods. */
+    /**
+     * Tests if this input stream supports the mark and reset methods.
+     *
+     * @returns true if this stream instance supports the mark and reset methods; false otherwise.
+     */
     public markSupported(): boolean {
         return false;
     }
@@ -62,6 +61,8 @@ export abstract class InputStream extends JavaObject implements Closeable {
      * Skips over and discards n bytes of data from this input stream.
      *
      * @param n The number of bytes to skip. If < 1 nothing is skipped.
+     *
+     * @returns The actual number of bytes skipped.
      */
     public skip(n: number): number {
         let remaining = n;

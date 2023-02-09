@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable jsdoc/require-returns-check, @typescript-eslint/no-unused-vars */
-
 import { java } from "../../..";
 import { JavaObject } from "../../lang/Object";
 
@@ -112,29 +110,6 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
 
     /**
      * Constructs a sorted map from canonical charset names to charset objects.
-     *
-     * <p> The map returned by this method will have one entry for each charset
-     * for which support is available in the current Java virtual machine.  If
-     * two or more supported charsets have the same canonical name then the
-     * resulting map will contain just one of them; which one it will contain
-     * is not specified. </p>
-     *
-     * <p> The invocation of this method, and the subsequent use of the
-     * resulting map, may cause time-consuming disk or network I/O operations
-     * to occur.  This method is provided for applications that need to
-     * enumerate all of the available charsets, for example to allow user
-     * charset selection.  This method is not used by the {@link #forName
-     * forName} method, which instead employs an efficient incremental lookup
-     * algorithm.
-     *
-     * <p> This method may return different results at different times if new
-     * charset providers are dynamically made available to the current Java
-     * virtual machine.  In the absence of such changes, the charsets returned
-     * by this method are exactly those that can be retrieved via the {@link
-     * #forName forName} method.  </p>
-     *
-     * @returns An immutable, case-insensitive map from canonical charset names
-     *         to charset objects
      */
     public static availableCharsets(): Map<string, Charset> {
         throw new NotImplementedError();
@@ -273,7 +248,6 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      *
      * @returns  A byte buffer containing the encoded characters
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public encode(str: string): java.nio.ByteBuffer;
     public encode(cbOrStr: java.nio.CharBuffer | string): java.nio.ByteBuffer {
         throw new NotImplementedError();
@@ -282,14 +256,7 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
     /**
      * Compares this charset to another.
      *
-     * <p> Charsets are ordered by their canonical names, without regard to
-     * case. </p>
-     *
-     * @param  that
-     *         The charset to which this charset is to be compared
-     *
-     * @returns A negative integer, zero, or a positive integer as this charset
-     *         is less than, equal to, or greater than the specified charset
+     * @param that The charset to which this charset is to be compared
      */
     public compareTo(that: Charset): number {
         throw new NotImplementedError();
@@ -297,8 +264,6 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
 
     /**
      * Computes a hash code for this charset.
-     *
-     * @returns  An integer hash code
      */
     public hashCode(): number {
         throw new NotImplementedError();
@@ -307,13 +272,7 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
     /**
      * Tells whether or not this object is equal to another.
      *
-     * <p> Two charsets are equal if, and only if, they have the same canonical
-     * names.  A charset is never equal to any other type of object.  </p>
-     *
-     * @param ob tbd
-     *
-     * @returns  True if, and only if, this charset is equal to the
-     *          given object
+     * @param ob The object to which this object is to be compared
      */
     public equals(ob: unknown): boolean {
         throw new NotImplementedError();
@@ -321,8 +280,6 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
 
     /**
      * Returns a string describing this charset.
-     *
-     * @returns  A string describing this charset
      */
     public toString(): java.lang.String {
         throw new NotImplementedError();

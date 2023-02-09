@@ -5,9 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-/* eslint-disable jsdoc/require-returns */
-
 import { java } from "../..";
 
 import { BufferImpl } from "./BufferImpl";
@@ -68,7 +65,11 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         return new ByteBuffer(array);
     }
 
-    /** Creates a view of this byte buffer as a char buffer. */
+    /**
+     * Creates a view of this byte buffer as a char buffer.
+     *
+     * @returns A new char buffer.
+     */
     public asCharBuffer(): java.nio.CharBuffer {
         return new java.nio.CharBuffer(new Uint16Array(this.backBuffer, this.#buffer.byteOffset,
             this.#buffer.byteLength));
@@ -80,7 +81,11 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     /** Creates a view of this byte buffer as a float buffer. */
     // public FloatBuffer asFloatBuffer(): FloatBuffer;
 
-    /** Creates a view of this byte buffer as an int buffer. */
+    /**
+     * Creates a view of this byte buffer as an int buffer.
+     *
+     * @returns A new int buffer.
+     */
     public asIntBuffer(): java.nio.IntBuffer {
         return new java.nio.IntBuffer(new Int32Array(this.backBuffer, this.#buffer.byteOffset,
             this.#buffer.byteLength));

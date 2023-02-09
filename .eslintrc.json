@@ -62,9 +62,7 @@
         "no-const-assign": [
             "warn"
         ],
-        "no-control-regex": [
-            "warn"
-        ],
+        "no-control-regex": "off",
         "no-delete-var": [
             "warn"
         ],
@@ -196,12 +194,7 @@
         "no-octal-escape": [
             "warn"
         ],
-        "no-redeclare": [
-            "warn",
-            {
-                "builtinGlobals": false
-            }
-        ],
+        "no-redeclare": "off",
         "no-regex-spaces": [
             "warn"
         ],
@@ -465,7 +458,7 @@
         "@typescript-eslint/no-unused-vars": [
             "warn",
             {
-                "args": "after-used",
+                "args": "none",
                 "ignoreRestSiblings": true,
                 "varsIgnorePattern": "^_",
                 "argsIgnorePattern": "^_"
@@ -546,6 +539,7 @@
             }
         ],
         "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-namespace": "off",
         "@typescript-eslint/no-parameter-properties": "off",
         "@typescript-eslint/no-use-before-define": "error",
         "@typescript-eslint/no-unsafe-assignment": "off", // TODO: enable
@@ -568,7 +562,7 @@
             "error",
             "always"
         ],
-        "@typescript-eslint/unified-signatures": "error",
+        "@typescript-eslint/unified-signatures": "off",
         "@typescript-eslint/prefer-regexp-exec": "off",
         "@typescript-eslint/naming-convention": [
             "error",
@@ -616,10 +610,18 @@
                 "selector": "interface",
                 "format": [
                     "PascalCase"
-                ],
-                "prefix": [
-                    "I"
                 ]
+            },
+            {
+                "selector": "variable",
+                "modifiers": [
+                    "const"
+                ],
+                "format": null
+            },
+            {
+                "selector": "classProperty",
+                "format": null
             }
         ],
         "@typescript-eslint/restrict-template-expressions": "off",

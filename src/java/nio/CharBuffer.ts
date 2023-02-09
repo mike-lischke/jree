@@ -7,8 +7,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-
 import { java } from "../..";
 
 import { char } from "../lang";

@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-
 import printf from "printf";
 
 import { java, charCodesToString, codePointsToString } from "../..";
@@ -16,7 +14,17 @@ import { JavaObject } from "./Object";
 
 export class String extends JavaObject
     implements java.io.Serializable, java.lang.CharSequence, java.lang.Comparable<String> {
-    private value: string;
+    // A space in Java is defined as anything equal or below the space char.
+    static #spaceRegExBegin = /^[\x00-\x20]+/;
+
+    static #spaceRegExEnd = /[\x00-\x20]+$/;
+
+    // A white space in Java is defined differently than a space char.
+    static #whitespaceRegExBegin = /^[\p{Zs}\p{Zi}\p{Zp}\x09\x0A\x0B\x0C\x0D\x1C\x1D\x1E\x1F]+/;
+
+    static #whitespaceRegExEnd = /[\p{Zs}\p{Zi}\p{Zp}\x09\x0A\x0B\x0C\x0D\x1C\x1D\x1E\x1F]+$/;
+
+    #value: string;
 
     /** Initializes a newly created String object so that it represents an empty character sequence. */
     public constructor();
@@ -78,9 +86,9 @@ export class String extends JavaObject
         }
 
         if (!input) {
-            this.value = "";
+            this.#value = "";
         } else if (typeof input === "string") {
-            this.value = input.substring(offset ?? 0, lengthOrCount);
+            this.#value = input.substring(offset ?? 0, lengthOrCount);
         } else if (input instanceof Uint8Array) {
             // Byte data. Decode it using either the given or the system default charset.
             let nameOrCharset: java.nio.charset.Charset | string | undefined;
@@ -99,14 +107,14 @@ export class String extends JavaObject
 
             charset ??= java.nio.charset.Charset.defaultCharset;
 
-            this.value = `${charset.decode(java.nio.ByteBuffer.wrap(input, offset ?? 0, lengthOrCount ?? input.length))
+            this.#value = `${charset.decode(java.nio.ByteBuffer.wrap(input, offset ?? 0, lengthOrCount ?? input.length))
                 .toString()}`;
         } else if (input instanceof Uint16Array) {
-            this.value = charCodesToString(input.subarray(offset, lengthOrCount));
+            this.#value = charCodesToString(input.subarray(offset, lengthOrCount));
         } else if (input instanceof Uint32Array) {
-            this.value = codePointsToString(input);
+            this.#value = codePointsToString(input);
         } else {
-            this.value = input.toString().value;
+            this.#value = input.toString().#value;
         }
     }
 
@@ -147,23 +155,23 @@ export class String extends JavaObject
     }
 
     public charAt(index: number): java.lang.char {
-        if (index < 0 || index >= this.value.length) {
+        if (index < 0 || index >= this.#value.length) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        return this.value.charCodeAt(index);
+        return this.#value.charCodeAt(index);
     }
 
     public codePointAt(index: number): number {
-        if (index < 0 || index >= this.value.length) {
+        if (index < 0 || index >= this.#value.length) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        return this.value.codePointAt(index) ?? NaN;
+        return this.#value.codePointAt(index) ?? NaN;
     }
 
     public hashCode(): number {
-        return MurmurHash.hashCode(this.value, 17);
+        return MurmurHash.hashCode(this.#value, 17);
     }
 
     public equals(obj: unknown): boolean {
@@ -175,15 +183,15 @@ export class String extends JavaObject
             return false;
         }
 
-        return this.value === obj.value;
+        return this.#value === obj.#value;
     }
 
     public isEmpty(): boolean {
-        return this.value.length === 0;
+        return this.#value.length === 0;
     }
 
     public length(): number {
-        return this.value.length;
+        return this.#value.length;
     }
 
     public replace(target: java.lang.CharSequence, replacement: java.lang.CharSequence): java.lang.String;
@@ -200,8 +208,8 @@ export class String extends JavaObject
             replacement = replacementOrNewChar.toString().valueOf();
         }
 
-        if (this.value.includes(searchValue)) {
-            const s = this.value.replaceAll(searchValue, replacement);
+        if (this.#value.includes(searchValue)) {
+            const s = this.#value.replaceAll(searchValue, replacement);
 
             return new java.lang.String(s);
         }
@@ -209,17 +217,80 @@ export class String extends JavaObject
         return this;
     }
 
+    /**
+     * Splits this string around matches of the given regular expression.
+     *
+     * @param regex tbd
+     * @param limit tbd
+     *
+     * @returns tbd
+     */
+    public split(regex: java.lang.String | string, limit?: number): java.lang.String[] {
+        const parts = this.#value.split(`${regex}`, limit);
+
+        return parts.map((value) => {
+            return new java.lang.String(value);
+        });
+    }
+
+    /** @returns a string whose value is this string, with all leading and trailing white space removed. */
+    public strip(): java.lang.String {
+        return this.stripLeading().stripTrailing();
+    }
+
+    /** @returns a string whose value is this string, with all leading white space removed. */
+    public stripLeading(): java.lang.String {
+        const match = this.#value.match(java.lang.String.#whitespaceRegExBegin);
+        if (!match) {
+            return this;
+        }
+
+        return new java.lang.String(this.#value.substring(match[0].length));
+    }
+
+    /** @returns a string whose value is this string, with all trailing white space removed. */
+    public stripTrailing(): java.lang.String {
+        const match = this.#value.match(java.lang.String.#whitespaceRegExEnd);
+        if (!match) {
+            return this;
+        }
+
+        return new java.lang.String(this.#value.substring(0, this.#value.length - match[0].length));
+    }
+
     public subSequence(start: number, end: number): java.lang.CharSequence {
-        return new java.lang.String(this.value.substring(start, end));
+        return this.substring(start, end);
+    }
+
+    /**Returns a string that is a substring of this string.*/
+    public substring(beginIndex: number, endIndex?: number): java.lang.String {
+        return new java.lang.String(this.#value.substring(beginIndex, endIndex));
     }
 
     public toCharArray(): Uint16Array {
-        const result = new Uint16Array(this.value.length);
-        for (let i = 0; i < this.value.length; ++i) {
-            result[i] = this.value.charCodeAt(i);
+        const result = new Uint16Array(this.#value.length);
+        for (let i = 0; i < this.#value.length; ++i) {
+            result[i] = this.#value.charCodeAt(i);
         }
 
         return result;
+    }
+
+    /**
+     * @returns a string whose value is this string, with all leading and trailing space removed, where space is defined
+     * as any character whose codepoint is less than or equal to 'U+0020'(the space character).
+     */
+    public trim(): java.lang.String {
+        const startMatch = this.#value.match(java.lang.String.#spaceRegExBegin);
+        const endMatch = this.#value.match(java.lang.String.#spaceRegExEnd);
+        if (!startMatch && !endMatch) {
+            return this;
+        }
+
+        const start = startMatch ? startMatch[0].length : 0;
+        const end = this.#value.length - (endMatch ? endMatch[0].length : 0);
+
+        return new java.lang.String(this.#value.substring(start, end));
     }
 
     /**
@@ -228,15 +299,15 @@ export class String extends JavaObject
      * @returns the primitive string value of this instance.
      */
     public valueOf(): string {
-        return this.value;
+        return this.#value;
     }
 
     public compareTo(o: String): number {
-        return this.value.localeCompare(o.value, undefined, { sensitivity: "accent" });
+        return this.#value.localeCompare(o.#value, undefined, { sensitivity: "accent" });
     }
 
     public compareToIgnoreCase(o: String): number {
-        return this.value.localeCompare(o.value, undefined, { sensitivity: "case" });
+        return this.#value.localeCompare(o.#value, undefined, { sensitivity: "case" });
     }
 
     public toString(): String {
@@ -244,7 +315,7 @@ export class String extends JavaObject
     }
 
     protected [Symbol.toPrimitive](_hint: string): string {
-        return this.value;
+        return this.#value;
     }
 
 }

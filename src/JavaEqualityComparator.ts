@@ -11,7 +11,6 @@
  *
  * @author Sam Harwell
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface JavaEqualityComparator<T> {
 
     /**

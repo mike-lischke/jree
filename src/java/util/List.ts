@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { java } from "../..";
 
 export interface List<T> extends java.util.Collection<T> {

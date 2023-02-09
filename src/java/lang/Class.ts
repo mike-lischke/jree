@@ -5,6 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { java, S } from "../..";
 import { JavaObject } from "./Object";
 
 /** A partial implementation of Java's Class type. */
@@ -26,8 +27,12 @@ export class Class<T> extends JavaObject {
         return clazz as Class<T>;
     }
 
-    public getName(): string {
-        return this.c.name;
+    public getName(): java.lang.String {
+        return S`${this.c.name}`;
+    }
+
+    public getSimpleName(): java.lang.String {
+        return S`${this.c.name}`;
     }
 
     public isInstance(o: unknown): boolean {

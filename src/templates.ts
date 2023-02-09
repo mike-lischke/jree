@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { java } from ".";
 
 // Tagged templates for emulation of automatic boxing of primitive values.

@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import unicode from "unicode-properties";
 
 import { final } from "../../Decorators";

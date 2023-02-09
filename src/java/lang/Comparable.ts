@@ -5,7 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Comparable<T> {
     compareTo(o: T): number;
 }

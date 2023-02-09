@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { java, S } from "../..";
 import { JavaObject } from "../lang/Object";
 
 import { isEquatable } from "../../helpers";
@@ -100,6 +100,7 @@ export class Arrays extends JavaObject {
             return false;
         }
 
+        // XXX: use `equals()` for each element instead of hash codes.
         const hash1 = this.deepHashCode(a);
         const hash2 = this.deepHashCode(a2);
 
@@ -143,11 +144,11 @@ export class Arrays extends JavaObject {
         }
     }
 
-    public static binarySearch<T extends ComparableValueType>(list: T[], value: T): number;
-    public static binarySearch<T extends ComparableValueType>(list: T[], start: number, end: number,
+    public static binarySearch<T extends ComparableValueType>(list: ArrayLike<T>, value: T): number;
+    public static binarySearch<T extends ComparableValueType>(list: ArrayLike<T>, start: number, end: number,
         value: T): number;
-    public static binarySearch<T extends ComparableValueType>(list: T[], startOrValue: number | T, end?: number,
-        value?: T): number {
+    public static binarySearch<T extends ComparableValueType>(list: ArrayLike<T>, startOrValue: number | T,
+        end?: number, value?: T): number {
 
         let theValue: T;
         let start = 0;
@@ -193,7 +194,9 @@ export class Arrays extends JavaObject {
         return MurmurHash.finish(hash, 1);
     }
 
-    public static toString<T>(value: T[] | null): string {
-        return JSON.stringify(value);
+    public static toString(value: TypedArray | null): java.lang.String;
+    public static toString<T>(value: T[] | null): java.lang.String;
+    public static toString<T>(value: T[] | TypedArray | null): java.lang.String {
+        return S`${JSON.stringify(value)}`;
     }
 }

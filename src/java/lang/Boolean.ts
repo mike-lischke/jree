@@ -5,13 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
-import { java } from "../..";
+import { java, S } from "../..";
 import { JavaObject } from "./Object";
 
 export class Boolean extends JavaObject implements java.io.Serializable, java.lang.Comparable<Boolean> {
-
     public static readonly TRUE: Boolean;
     public static readonly FALSE: Boolean;
     public static readonly TYPE: java.lang.Class<Boolean>;
@@ -31,25 +28,42 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
     }
 
     /**
-     * Parses the string argument as a boolean.
+     * Returns a Boolean instance representing the specified string.
+     * The argument is interpreted as representing a boolean value as if by the valueOf method.
+     * The result is a Boolean that represents the boolean value specified by the string.
+     * If the string argument is null, then the result is null.
+     * If the string argument is not "true" or "false", ignoring case, then the result is null.
+     * If the string argument is "true", ignoring case, then the result is Boolean.TRUE.
+     * If the string argument is "false", ignoring case, then the result is Boolean.FALSE.
      *
-     * @param s The string to parse.
-     *
-     * @returns The boolean value that corresponds to the given string, or `false` if no string was given.
+     * @param s The string to be parsed.
+     * @returns a Boolean instance representing the specified string.
      */
-    public static parseBoolean(s?: string): boolean {
-        return s !== undefined && s.toLowerCase() === "true";
+    public static parseBoolean(s: java.lang.String | null): Boolean | null {
+        if (s === null) {
+            return null;
+        }
+
+        if (s.compareToIgnoreCase(S`true`)) {
+            return Boolean.TRUE;
+        }
+
+        if (s.compareToIgnoreCase(S`false`)) {
+            return Boolean.FALSE;
+        }
+
+        return null;
     }
 
     /**
      * Returns a String object representing the specified boolean.
+     * If the specified boolean is true, then the string "true" is returned, otherwise the string "false" is returned.
      *
-     * @param b The value to convert.
-     *
-     * @returns a string representing this Boolean's value.
+     * @param b The boolean to be converted.
+     * @returns a string representation of the specified boolean.
      */
-    public static toString(b: boolean): string {
-        return b ? "true" : "false";
+    public static toString(b: boolean): java.lang.String {
+        return b ? S`true` : S`false`;
     }
 
     /**
@@ -59,18 +73,20 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      *
      * @returns tbd
      */
-    public static valueOf(value?: boolean | string): Boolean {
-        // eslint-disable-next-line no-new-wrappers
-        return new Boolean(value);
+    public static valueOf(value?: boolean | string): java.lang.Boolean {
+        return new java.lang.Boolean(value);
     }
 
     /**
      * Compares two boolean values.
+     * The value returned is identical to what would be returned by:
+     * ```
+     * Boolean.valueOf(x).compareTo(Boolean.valueOf(y))
+     * ```
      *
-     * @param x tbd
-     * @param y tbd
-     *
-     * @returns tbd
+     * @param x the first boolean to compare
+     * @param y the second boolean to compare
+     * @returns the value 0 if x == y; a value less than 0 if !x && y; and a value greater than 0 if x && !y
      */
     public static compare(x: boolean, y: boolean): number {
         if (x === y) {
@@ -85,14 +101,23 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
     }
 
     /**
-     * @returns true if and only if the system property named by the argument exists and is equal to the string "true".
+     * Returns the value of the system property with the specified name.
+     * The first argument is treated as the name of a system property.
+     * The string value of this property is then interpreted as a boolean value, as per the Boolean.valueOf method,
+     * and the result is returned.
+     * If there is no property with the specified name, or if the specified name is empty or null, then false is
+     * returned.
      *
-     * @param name tbd
+     * @param name the name of the system property.
+     *
+     * @returns the boolean value of the system property.
      */
     public static getBoolean(name: java.lang.String): boolean {
         const value = java.lang.System.getProperty(name);
 
-        return value?.valueOf() === "true";
+        const bool = Boolean.parseBoolean(value);
+
+        return bool !== null ? bool.value : false;
     }
 
     /** @returns the value of this Boolean object as a boolean primitive. */
@@ -102,10 +127,12 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
 
     /**
      * Compares this Boolean instance with another.
+     * The result is true if and only if the argument is not null and is a Boolean object that represents the same
+     * boolean value as this object.
      *
-     * @param b tbd
+     * @param b the object to compare with.
      *
-     * @returns tbd
+     * @returns true if the Boolean objects represent the same value; false otherwise.
      */
     public compareTo(b: Boolean): number {
         return Boolean.compare(this.value, b.value);
@@ -115,9 +142,9 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      * Returns true if and only if the argument is not null and is a Boolean object that represents the same boolean
      * value as this object.
      *
-     * @param obj tbd
+     * @param obj the object to compare with.
      *
-     * @returns tbd
+     * @returns true if the Boolean objects represent the same value; false otherwise.
      */
     public equals(obj: unknown): boolean {
         if (obj === this) {
@@ -141,6 +168,11 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
         return this.value ? new java.lang.String("true") : new java.lang.String("false");
     }
 
+    /**
+     * @param hint A string representing the type of the expected primitive value.
+     *
+     * @returns a string representing this Boolean's value.
+     */
     protected [Symbol.toPrimitive](hint: string): number | string | null {
         if (hint === "number") {
             return this.value ? 1 : 0;

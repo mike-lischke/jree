@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { endianness } from "os";
 
 import { java } from "../..";

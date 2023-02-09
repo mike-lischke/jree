@@ -11,8 +11,6 @@ import { MurmurHash } from "../../MurmurHash";
 import { java } from "../..";
 import { JavaObject } from "./Object";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export class Integer extends JavaObject implements java.io.Serializable, java.lang.Comparable<Integer>  {
     public static readonly MAX_VALUE = 2147483647;
     public static readonly MIN_VALUE = -2147483648;
@@ -395,8 +393,8 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
         return new Integer(parseInt(value, radix));
     }
 
-    public static parseInt(s: string, radix = 10): number {
-        const result = parseInt(s, radix);
+    public static parseInt(s: string | java.lang.String, radix = 10): number {
+        const result = parseInt(`${s}`, radix);
         if (isNaN(result) || result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
             throw new java.lang.NumberFormatException();
         }

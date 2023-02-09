@@ -11,8 +11,6 @@ import { ArrayList } from "./ArrayList";
 import { HashMap } from "./HashMap";
 import { HashSet } from "./HashSet";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export abstract class Collections extends JavaObject {
     public static readonly EMPTY_LIST = new ArrayList();
     public static readonly EMPTY_MAP = new HashMap();

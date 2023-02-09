@@ -11,8 +11,6 @@ import { JavaObject } from "../lang/Object";
 import { InvalidMarkException } from "./InvalidMarkException";
 import { S } from "../../templates";
 
-/* eslint-disable jsdoc/require-returns */
-
 export abstract class Buffer<T> extends JavaObject {
     // This is the raw memory storage for the buffer. Only a part might actually be used.
     protected backBuffer: ArrayBuffer;
@@ -38,7 +36,12 @@ export abstract class Buffer<T> extends JavaObject {
         return this.#capacity;
     }
 
-    /** Clears this buffer. */
+    /**
+     * Clears this buffer.
+     * The position is set to zero, the limit is set to the capacity, and the mark is discarded.
+     *
+     * @returns this buffer.
+     */
     public clear(): this {
         this.currentPosition = 0;
         this.currentLimit = this.capacity();
@@ -47,7 +50,12 @@ export abstract class Buffer<T> extends JavaObject {
         return this;
     }
 
-    /** Flips this buffer. */
+    /**
+     * Flips this buffer.
+     * The limit is set to the current position and then the position is set to zero.
+     *
+     * @returns this buffer.
+     */
     public flip(): this {
         this.currentLimit = this.currentPosition;
         this.currentPosition = 0;
@@ -56,7 +64,11 @@ export abstract class Buffer<T> extends JavaObject {
         return this;
     }
 
-    /** Tells whether there are any elements between the current position and the limit. */
+    /**
+     * Tells whether there are any elements between the current position and the limit.
+     *
+     * @returns true if, and only if, there is at least one element remaining in this buffer.
+     */
     public hasRemaining(): boolean {
         return this.currentLimit > this.currentPosition;
     }
@@ -88,7 +100,11 @@ export abstract class Buffer<T> extends JavaObject {
         }
     }
 
-    /** Sets this buffer's mark at its position. */
+    /**
+     * Sets this buffer's mark at its position.
+     *
+     * @returns this buffer.
+     */
     public mark(): this {
         this.currentMark = this.currentPosition;
 
@@ -118,14 +134,23 @@ export abstract class Buffer<T> extends JavaObject {
         this.currentPosition = newPosition;
     }
 
-    /** Returns the number of elements between the current position and the limit. */
+    /**
+     * Returns the number of elements between the current position and the limit.
+     *
+     * @returns The number of elements remaining in this buffer.
+     */
     public remaining(): number {
         const diff = this.currentLimit - this.currentPosition;
 
         return diff < 0 ? 0 : diff;
     }
 
-    /** Resets this buffer's position to the previously-marked position. */
+    /**
+     * Resets this buffer's position to the previously-marked position.
+     *
+     * @throws InvalidMarkException If the mark has not been set.
+     * @returns this buffer.
+     */
     public reset(): this {
         if (this.currentMark < 0) {
             throw new InvalidMarkException(S`No mark is set`);
@@ -135,7 +160,12 @@ export abstract class Buffer<T> extends JavaObject {
         return this;
     }
 
-    /** Rewinds this buffer. */
+    /**
+     * Rewinds this buffer.
+     * The position is set to zero and the mark is discarded.
+     *
+     * @returns this buffer.
+     */
     public rewind(): this {
         this.currentPosition = 0;
         this.currentMark = -1;

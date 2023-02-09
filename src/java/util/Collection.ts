@@ -7,8 +7,6 @@
 
 import { java } from "../..";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export interface Collection<T> extends Iterable<T> {
     [Symbol.iterator](): IterableIterator<T>;
 

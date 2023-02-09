@@ -5,9 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/unified-signatures */
-/* eslint-disable jsdoc/require-returns */
-
 import { StringDecoder } from "string_decoder";
 
 import { java } from "../..";
@@ -51,7 +48,7 @@ export class InputStreamReader extends Reader {
         this.input.close();
     }
 
-    /** Returns the name of the character encoding being used by this stream. */
+    /** @returns the name of the character encoding being used by this stream. */
     public getEncoding(): string {
         return this.encoding;
     }
@@ -76,7 +73,7 @@ export class InputStreamReader extends Reader {
                 return -1;
             }
 
-            const c = this.currentText.codePointAt(0)!;
+            const c = this.currentText.charCodeAt(0)!;
             this.currentText = this.currentText.substring(1);
 
             return c;
@@ -93,11 +90,13 @@ export class InputStreamReader extends Reader {
         let processed = 0;
         while (length > 0) {
             if (length <= this.currentText.length) {
-                for (const c of this.currentText.substring(0, length)) {
-                    if (chars instanceof Uint16Array) {
-                        chars[offset++] = c.codePointAt(0)! & 0xFFFF;
-                    } else {
-                        chars.put(offset++, c.codePointAt(0)! & 0xFFFF);
+                if (chars instanceof Uint16Array) {
+                    for (const c of this.currentText.substring(0, length)) {
+                        chars[offset++] = c.charCodeAt(0)! & 0xFFFF;
+                    }
+                } else {
+                    for (const c of this.currentText.substring(0, length)) {
+                        chars.put(offset++, c.charCodeAt(0)! & 0xFFFF);
                     }
                 }
 
@@ -105,11 +104,13 @@ export class InputStreamReader extends Reader {
                 length = 0;
             } else {
                 // Not enough data available. Write what we have and load the next chunk.
-                for (const c of this.currentText) {
-                    if (chars instanceof Uint16Array) {
-                        chars[offset++] = c.codePointAt(0)! & 0xFFFF;
-                    } else {
-                        chars.put(offset++, c.codePointAt(0)! & 0xFFFF);
+                if (chars instanceof Uint16Array) {
+                    for (const c of this.currentText) {
+                        chars[offset++] = c.charCodeAt(0) & 0xFFFF;
+                    }
+                } else {
+                    for (const c of this.currentText) {
+                        chars.put(offset++, c.charCodeAt(0) & 0xFFFF);
                     }
                 }
 
@@ -128,12 +129,16 @@ export class InputStreamReader extends Reader {
         return processed;
     }
 
-    /** Tells whether this stream is ready to be read. */
+    /**
+     * Tells whether this stream is ready to be read.
+     *
+     * @returns true if the next read() is guaranteed not to block for input, false otherwise.
+     */
     public ready(): boolean {
         return this.currentText.length > 0 || this.input.available() > 0;
     }
 
-    /** Returns as many characters as can be decoded with one buffer content. */
+    /** @returns as many characters as can be decoded with one buffer content. */
     private readNextChunk(): string {
         const count = this.input.read(this.buffer);
         if (count === -1) {

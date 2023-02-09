@@ -29,6 +29,9 @@ export * from "./Objects";
 export * from "./Comparator";
 export * from "./Queue";
 export * from "./Deque";
+export * from "./Date";
+export * from "./TimeZone";
+export * from "./Calendar";
 
 export * from "./regex/regex";
 export * from "./concurrent/concurrent";

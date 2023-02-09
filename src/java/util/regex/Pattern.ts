@@ -8,9 +8,6 @@
 import { java } from "../../..";
 import { JavaObject } from "../../lang/Object";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-/* cSpell: ignore DOTALL */
-
 export class Pattern extends JavaObject {
     // Enables canonical equivalence.
     public static readonly CANON_EQ = 1 >> 0;

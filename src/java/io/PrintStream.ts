@@ -13,7 +13,7 @@ import { S } from "../../templates";
 import { java } from "../..";
 import { FilterOutputStream } from "./FilterOutputStream";
 
-// A very simple implementation of this class, only to have print/println available, which always print to the console.
+/** A print stream is an output stream that prints representations of various data values conveniently. */
 export class PrintStream extends FilterOutputStream {
 
     // TODO: need a way to get all individual values from the BufferEncoding union type.
@@ -34,7 +34,6 @@ export class PrintStream extends FilterOutputStream {
     /** Creates a new print stream, without automatic line flushing, with the specified file and charset. */
     public constructor(file: java.io.File, csn?: java.lang.String);
     public constructor(out: java.io.OutputStream, autoFlush?: boolean, encoding?: java.lang.String);
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public constructor(fileName: java.lang.String, csn?: java.lang.String);
     public constructor(fileOrOutOrFileName: java.io.File | java.io.OutputStream | java.lang.String,
         csnOrAutoFlush?: java.lang.String | boolean, encoding?: java.lang.String) {
@@ -171,7 +170,6 @@ export class PrintStream extends FilterOutputStream {
     public write(b: Uint8Array): void;
     public write(b: Uint8Array, off: number, len: number): void;
     /** Writes the specified byte to this output stream. */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public write(b: number): void;
     public write(b: Uint8Array | number, off?: number, len?: number): void {
         if (typeof b === "number") {

@@ -7,8 +7,6 @@
 
 import { java } from "../..";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export interface ListIterator<T> extends java.util.Iterator<T> {
     /**
      * Inserts the specified element into the list (optional operation).

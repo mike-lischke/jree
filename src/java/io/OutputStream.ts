@@ -28,6 +28,5 @@ export abstract class OutputStream extends JavaObject
     public abstract write(b: Uint8Array, off: number, len: number): void;
 
     // Writes the specified byte to this output stream.
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public abstract write(b: number): void;
 }

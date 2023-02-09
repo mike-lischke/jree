@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable no-new-wrappers */
-
 import { java } from "../../../src";
 import { NotImplementedError } from "../../../src/NotImplementedError";
 
@@ -47,15 +45,15 @@ describe("HashMap Tests", () => {
         // String literals are automatically converted to the same string object, if they are equal. That's why we
         // have to use explicit String object construction, to avoid this coercion.
 
-        const s = new String("Lorem Ipsum");
+        const s = new window.String("Lorem Ipsum");
         m.put(s, 1);
-        m.put(new String("Lorem Ipsum"), 2);
+        m.put(new window.String("Lorem Ipsum"), 2);
 
         // Strings are special. The same string
         expect(m.size()).toBe(2);
 
         expect(m.containsKey("Lorem Ipsum")).toBeFalsy();
-        expect(m.containsKey(new String("Lorem Ipsum"))).toBeFalsy();
+        expect(m.containsKey(new window.String("Lorem Ipsum"))).toBeFalsy();
         expect(m.containsKey(s)).toBeTruthy();
 
         expect(m.get(s)).toBeTruthy();

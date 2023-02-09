@@ -8,7 +8,6 @@
 import { java } from "../..";
 import { Queue } from "./Queue";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Deque<T> extends Queue<T> {
     /**
      * Inserts the specified element into the queue represented by this deque(in other words, at the tail of this

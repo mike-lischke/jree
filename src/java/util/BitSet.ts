@@ -35,12 +35,10 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      * Creates a bit set whose initial size is large enough to explicitly represent bits with indices in the range `0`
      * through `bitCount - 1`. All bits are initially `false`.
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public constructor(bitCount: number);
     /**
      * Creates a bit set from a iterable list of numbers (including another BitSet);
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public constructor(numbers: Iterable<number>);
     public constructor(arg?: number | Iterable<number>) {
         super();
@@ -159,7 +157,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * @throws RangeError if the specified index is negative
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public clear(bitIndex: number): void;
     /**
      * Sets the bits from the specified `fromIndex` (inclusive) to the specified `toIndex` (exclusive) to `false`.
@@ -169,7 +166,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * @throws RangeError if `fromIndex` is negative, or `toIndex` is negative, or `fromIndex` is larger than `toIndex`
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public clear(fromIndex: number, toIndex: number): void;
     public clear(fromIndex?: number, toIndex?: number): void {
         if (fromIndex == null) {
@@ -198,7 +194,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * @throws RangeError if `fromIndex` is negative, or `toIndex` is negative, or `fromIndex` is larger than `toIndex`
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public flip(fromIndex: number, toIndex: number): void;
     public flip(fromIndex: number, toIndex?: number): void {
         if (toIndex == null) {
@@ -529,7 +524,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * @throws RangeError if the specified index is negative
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public set(bitIndex: number, value: boolean): void;
     /**
      * Sets the bits from the specified `fromIndex` (inclusive) to the specified `toIndex` (exclusive) to `true`.
@@ -539,7 +533,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * @throws RangeError if `fromIndex` is negative, or `toIndex` is negative, or `fromIndex` is larger than `toIndex`
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public set(fromIndex: number, toIndex: number): void;
     /**
      * Sets the bits from the specified `fromIndex` (inclusive) to the specified `toIndex` (exclusive) to the specified
@@ -551,7 +544,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * @throws RangeError if `fromIndex` is negative, or `toIndex` is negative, or `fromIndex` is larger than `toIndex`
      */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public set(fromIndex: number, toIndex: number, value: boolean): void;
     public set(fromIndex: number, toIndex?: boolean | number, value?: boolean): void {
         if (toIndex === undefined) {

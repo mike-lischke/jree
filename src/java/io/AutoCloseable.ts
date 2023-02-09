@@ -5,7 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface AutoCloseable {
     /** Closes this resource, relinquishing any underlying resources. */
     close(): void;

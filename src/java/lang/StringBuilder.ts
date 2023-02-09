@@ -47,7 +47,6 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
     /** Appends the string representation of the sub char array argument to this sequence. */
     public append(str: Uint16Array, offset: number, len: number): this;
     /** Appends a subsequence of the specified CharSequence to this sequence. */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public append(s: java.lang.CharSequence, start: number, end: number): this;
     public append(valueOrStrOrS: SourceDataType, offsetOrStart?: number, lenOrEnd?: number): this {
         if (valueOrStrOrS instanceof Uint16Array || Array.isArray(valueOrStrOrS)
@@ -292,7 +291,6 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
     /** Appends the string representation of the sub char array argument to this sequence. */
     public insert(index: number, str: Uint16Array, offset: number, len: number): this;
     /** Appends the string representation of the sub char array argument to this sequence. */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public insert(index: number, s: java.lang.CharSequence, start: number, end: number): this;
     public insert(index: number, valueOrStrOrS: SourceDataType | Uint16Array | java.lang.CharSequence,
         offsetOrStart?: number, lenOrEnd?: number): this {

@@ -9,13 +9,13 @@ import { java } from "../..";
 
 /** Implements the Java Object semantics. */
 export class JavaObject {
-    private static nextId = 0;
+    static #nextId = 0;
 
     // Represents the default hash code of a Java object. Using a running number here.
     readonly #id;
 
     public constructor() {
-        this.#id = JavaObject.nextId++;
+        this.#id = JavaObject.#nextId++;
     }
 
     public static get class(): java.lang.Class<JavaObject> {
@@ -54,7 +54,7 @@ export class JavaObject {
     }
 
     /** @returns a string representation of the object. */
-    public toString(): java.lang.String {
+    public toString(): java.lang.String | null {
         return new java.lang.String(`${this.constructor.name}@${this.#id.toString(16)}`);
     }
 

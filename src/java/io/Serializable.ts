@@ -5,6 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Serializable {
 }

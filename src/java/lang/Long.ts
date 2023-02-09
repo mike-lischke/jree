@@ -11,8 +11,6 @@ import { MurmurHash } from "../../MurmurHash";
 import { java } from "../..";
 import { JavaObject } from "./Object";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export class Long extends JavaObject implements java.io.Serializable, java.lang.Comparable<Long>  {
     public static readonly MAX_VALUE = 0x7FFFFFFFFFFFFFFFn;
     public static readonly MIN_VALUE = -0x8000000000000000n;

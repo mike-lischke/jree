@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export interface Iterator<T> {
     /** Returns true if the iteration has more elements. */
     hasNext(): boolean;

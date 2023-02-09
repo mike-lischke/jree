@@ -27,7 +27,6 @@ export class FileOutputStream extends OutputStream {
      */
     public constructor(fdObj: java.io.FileDescriptor);
     /** Creates a file output stream to write to the file with the specified name. */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public constructor(name: java.lang.String, append?: boolean);
     public constructor(fileOrFdObjOrName: java.io.File | java.io.FileDescriptor | java.lang.String, append?: boolean) {
         super();
@@ -74,7 +73,6 @@ export class FileOutputStream extends OutputStream {
     /** Writes len bytes from the specified byte array starting at offset off to this output stream. */
     public write(b: Uint8Array, offset: number, length: number): void;
     /** Writes the specified byte to this output stream. */
-    // eslint-disable-next-line @typescript-eslint/unified-signatures
     public write(b: number): void;
     public write(b: Uint8Array | number, offset?: number, length?: number): void {
         if (!this.fd.valid()) {

@@ -7,7 +7,6 @@
 
 import { java } from "../..";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Readable {
     /** Attempts to read characters into the specified character buffer. */
     read(cb: java.nio.CharBuffer): number;

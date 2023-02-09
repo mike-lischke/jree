@@ -8,7 +8,6 @@
 import { java } from "../..";
 import { Collection } from "./Collection";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Map<K, V> {
     /** Removes all of the mappings from this map (optional operation). */
     clear(): void;
@@ -53,7 +52,6 @@ export interface Map<K, V> {
     values(): Collection<V>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
 export namespace Map {
     export abstract class Entry<K, V> {
         /** Compares the specified object with this entry for equality. */

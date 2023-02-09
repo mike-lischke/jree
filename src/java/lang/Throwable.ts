@@ -5,9 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable jsdoc/require-returns */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { java } from "../..";
 import { JavaObject } from "./Object";
 
@@ -80,7 +77,12 @@ export class Throwable extends JavaObject {
         this.#suppressed.push(exception);
     }
 
-    /** Fills in the execution stack trace. */
+    /**
+     * This method records within this Throwable object information about the current state of the stack frames for
+     * the current thread.
+     *
+     * @returns this Throwable object.
+     */
     public fillInStackTrace(): Throwable {
         if (this.stack) {
             const lines = this.stack.split("\n").slice(1);
@@ -95,28 +97,34 @@ export class Throwable extends JavaObject {
         return this;
     }
 
-    /** Returns the cause of this throwable or null if the cause is nonexistent or unknown. */
+    /** @returns the cause of this throwable or null if the cause is nonexistent or unknown. */
     public getCause(): Throwable | undefined {
         return this.#cause;
     }
 
-    /** Creates a localized description of this throwable. */
+    /**
+     * @returns a localized description of this throwable.
+     */
     public getLocalizedMessage(): java.lang.String {
         return this.#message;
     }
 
-    /** Returns the detail message string of this throwable. */
+    /** @returns the detail message string of this throwable. */
     public getMessage(): java.lang.String {
         return this.#message;
     }
 
-    /** Provides programmatic access to the stack trace information printed by printStackTrace(). */
+    /**
+     * Provides programmatic access to the stack trace information printed by printStackTrace().
+     *
+     * @returns an array of stack trace elements representing the stack trace pertaining to this throwable.
+     */
     public getStackTrace(): StackTraceElement[] {
         return this.#elements;
     }
 
     /**
-     * Returns an array containing all of the exceptions that were suppressed, typically by the try-with-resources
+     * @returns an array containing all of the exceptions that were suppressed, typically by the try-with-resources
      * statement, in order to deliver this exception.
      */
     public getSuppressed(): Throwable[] {
@@ -126,7 +134,10 @@ export class Throwable extends JavaObject {
     /**
      * Initializes the cause of this throwable to the specified value.
      *
-     * @param cause tbd
+     * @param cause The cause (which is saved for later retrieval by the getCause() method). (A null value is permitted,
+     * and indicates that the cause is nonexistent or unknown.)
+     *
+     * @returns this Throwable object.
      */
     public initCause(cause: Throwable): this {
         this.#cause = cause;
@@ -157,7 +168,7 @@ export class Throwable extends JavaObject {
         this.#elements = stackTrace;
     }
 
-    /** Returns a short description of this throwable. */
+    /** @returns a short description of this throwable. */
     public toString(): java.lang.String {
         const message = this.getLocalizedMessage();
         if (!message) {

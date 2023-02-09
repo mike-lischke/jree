@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention, jsdoc/require-returns */
-
 import { S } from "../../templates";
 import { java } from "../..";
 import { Reader } from "./Reader";
@@ -42,7 +40,11 @@ export class BufferedReader extends Reader {
         this.nextChar = this.nChars = 0;
     }
 
-    /** Closes the stream and releases any system resources associated with it. */
+    /**
+     * Closes the stream and releases any system resources associated with it.
+     *
+     * @returns true if the stream was closed, false if it was already closed.
+     */
     public close(): boolean {
         if (!this.input) {
             return false;
@@ -74,7 +76,11 @@ export class BufferedReader extends Reader {
         this.markedSkipLF = this.skipLF;
     }
 
-    /** Tells whether this stream supports the mark() operation, which it does. */
+    /**
+     * Tells whether this stream supports the mark() operation, which it does.
+     *
+     * @returns true
+     */
     public markSupported(): boolean {
         return true;
     }
@@ -139,9 +145,15 @@ export class BufferedReader extends Reader {
 
     /**
      * Reads a line of text.
+     * A line is considered to be terminated by any one of a line feed ('\n'), a carriage return ('\r'), or a carriage
+     * return followed immediately by a linefeed.
      *
-     * @param ignoreLF tbd
-     * @param term tbd
+     * @param ignoreLF if true, the next '\n' will be skipped
+     * @param term if not undefined, the first element will be set to true if the line was terminated by a line feed or
+     * a carriage return
+     *
+     * @returns the contents of the line, not including any line-termination characters, or an empty string if the end
+     * of the stream has been reached
      */
     public readLine(ignoreLF = false, term?: boolean[]): java.lang.String {
         const s = new java.lang.StringBuilder();
@@ -216,7 +228,11 @@ export class BufferedReader extends Reader {
         }
     }
 
-    /** Tells whether this stream is ready to be read. */
+    /**
+     * Tells whether this stream is ready to be read.
+     *
+     * @returns true if the next read() is guaranteed not to block for input, false otherwise.
+     */
     public ready(): boolean {
         this.ensureOpen();
 
@@ -260,7 +276,9 @@ export class BufferedReader extends Reader {
     /**
      * Skips characters.
      *
-     * @param n tbd
+     * @param n the number of characters to skip
+     *
+     * @returns the number of characters actually skipped
      */
     public skip(n: number): number {
         if (n < 0) {

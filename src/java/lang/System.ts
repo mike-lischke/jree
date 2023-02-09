@@ -29,7 +29,6 @@ interface IEntropyHintValues extends IStandardHintValues {
     readonly fullVersionList?: Array<{ brand: string; version: string; }>;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface NavigatorUAData extends IStandardHintValues {
     readonly getHighEntropyValues: (hints: EntropyHintType[]) => Promise<IEntropyHintValues>;
     readonly toJSON: () => string;
@@ -57,6 +56,14 @@ export class System extends JavaObject {
         }
 
         return this.consoleInstance;
+    }
+
+    public static currentTimeMillis(): bigint {
+        return BigInt(Date.now());
+    }
+
+    public static currentTimeNanos(): bigint {
+        return BigInt(performance.now());
     }
 
     public static get err(): java.io.PrintStream {

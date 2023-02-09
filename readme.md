@@ -94,7 +94,7 @@ In alphabetical order:
     - 𝑰 🅵 Readable
     - 𝑪 Ⓟ RuntimeException
     - 𝑪 🅵 StackTraceElement
-    - 𝑪 🅵 String
+    - 𝑪 Ⓟ String
     - 𝑪 🅵 StringBuffer
     - 𝑪 🅵 StringBuilder
     - 𝑪 Ⓟ System

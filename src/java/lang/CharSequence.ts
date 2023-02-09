@@ -7,7 +7,6 @@
 
 import { java } from "../..";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface CharSequence {
     /** Returns the 16 bit char value at the specified index. */
     charAt(index: number): java.lang.char | undefined;
