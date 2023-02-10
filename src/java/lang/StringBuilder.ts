@@ -9,9 +9,8 @@ import { S } from "../../templates";
 import { java } from "../..";
 import { JavaObject } from "./Object";
 
-type SourceDataType =
-    boolean | number | string | bigint | StringBuilder | Uint16Array | java.lang.CharSequence | java.lang.Object |
-    java.lang.StringBuffer;
+export type SourceDataType =
+    null | undefined | boolean | number | string | bigint | Uint16Array | java.lang.CharSequence | java.lang.Object;
 
 type SourceData = SourceDataType[];
 
@@ -500,7 +499,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
                     list.push(array);
                 }
             } else {
-                const text = `${entry.toString()}`;
+                const text = entry ? `${entry.toString()}` : "null";
                 if (text.length > 0) {
                     const chars: java.lang.char[] = [];
 

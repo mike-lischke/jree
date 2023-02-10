@@ -7,6 +7,7 @@
 
 import { java, NotImplementedError } from "../..";
 import { JavaObject } from "../lang/Object";
+import { AttributedCharacterIterator } from "./AttributedCharacterIterator";
 
 export abstract class Format extends JavaObject implements java.io.Serializable, java.lang.Cloneable<Format> {
     /**
@@ -14,7 +15,7 @@ export abstract class Format extends JavaObject implements java.io.Serializable,
      * AttributedCharacterIterator returned from Format.formatToCharacterIterator and as
      * field identifiers in FieldPosition.
      */
-    public static Field = class Field extends java.text.AttributedCharacterIterator.Attribute {
+    public static Field = class Field extends AttributedCharacterIterator.Attribute {
         public constructor(name: java.lang.String, dummy = 0) {
             super(name);
         }

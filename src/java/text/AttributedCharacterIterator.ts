@@ -57,9 +57,9 @@ export interface AttributedCharacterIterator extends java.text.CharacterIterator
 
 export namespace AttributedCharacterIterator {
     export class Attribute extends JavaObject implements java.io.Serializable {
-        public static INPUT_METHOD_SEGMENT = new Attribute(S`input_method_segment`);
-        public static LANGUAGE = new Attribute(S`language`);
-        public static READING = new Attribute(S`reading`);
+        public static INPUT_METHOD_SEGMENT: Attribute;
+        public static LANGUAGE: Attribute;
+        public static READING: Attribute;
 
         #name: java.lang.String;
 
@@ -109,6 +109,14 @@ export namespace AttributedCharacterIterator {
 
         public [Symbol.toPrimitive](_hint: string): string {
             return `${this.toString()}`;
+        }
+
+        static {
+            setTimeout(() => {
+                this.INPUT_METHOD_SEGMENT = new Attribute(S`input_method_segment`);
+                this.LANGUAGE = new Attribute(S`language`);
+                this.READING = new Attribute(S`reading`);
+            }, 0);
         }
     }
 }

@@ -52,51 +52,73 @@ export abstract class DateFormat extends Format {
     /** Useful constant for TIMEZONE field alignment. */
     public static readonly TIMEZONE_FIELD = 17;
 
-    public static Field = class Field extends java.text.Format.Field {
+    public static Field = class Field extends Format.Field {
         /**Constant identifying the AM_PM field. */
-        public static AM_PM = new Field(S`am pm`, java.util.Calendar.AM_PM);
+        public static AM_PM: Field;
         /**Constant identifying the DATE field. */
-        public static DATE = new java.text.DateFormat.Field(S`date`, java.util.Calendar.DATE);
+        public static DATE: Field;
         /**Constant identifying the DAY_OF_WEEK field. */
-        public static DAY_OF_WEEK = new java.text.DateFormat.Field(S`day of week`, java.util.Calendar.DAY_OF_WEEK);
+        public static DAY_OF_WEEK: Field;
         /**Constant identifying the DAY_OF_WEEK_IN_MONTH field. */
-        public static DAY_OF_WEEK_IN_MONTH =
-            new java.text.DateFormat.Field(S`day of week in month`, java.util.Calendar.DAY_OF_WEEK_IN_MONTH);
+        public static DAY_OF_WEEK_IN_MONTH: Field;
         /**Constant identifying the DAY_OF_YEAR field. */
-        public static DAY_OF_YEAR = new java.text.DateFormat.Field(S`day of year`, java.util.Calendar.DAY_OF_YEAR);
+        public static DAY_OF_YEAR: Field;
         /**Constant identifying the ERA field. */
-        public static ERA = new java.text.DateFormat.Field(S`era`, java.util.Calendar.ERA);
+        public static ERA: Field;
         /**Constant identifying the HOUR0 field. */
-        public static HOUR0 = new java.text.DateFormat.Field(S`hour0`, java.util.Calendar.HOUR);
+        public static HOUR0: Field;
         /**Constant identifying the HOUR1 field. */
-        public static HOUR1 = new java.text.DateFormat.Field(S`hour1`, -1);
+        public static HOUR1: Field;
         /**Constant identifying the HOUR_OF_DAY0 field. */
-        public static HOUR_OF_DAY0 = new java.text.DateFormat.Field(S`hour of day`, java.util.Calendar.HOUR_OF_DAY);
+        public static HOUR_OF_DAY0: Field;
         /**Constant identifying the HOUR_OF_DAY1 field. */
-        public static HOUR_OF_DAY1 = new java.text.DateFormat.Field(S`hour of day 1`, -1);
+        public static HOUR_OF_DAY1: Field;
         /**Constant identifying the MILLISECOND field. */
-        public static MILLISECOND = new java.text.DateFormat.Field(S`millisecond`, java.util.Calendar.MILLISECOND);
+        public static MILLISECOND: Field;
         /**Constant identifying the MINUTE field. */
-        public static MINUTE = new java.text.DateFormat.Field(S`minute`, java.util.Calendar.MINUTE);
+        public static MINUTE: Field;
         /**Constant identifying the MONTH field. */
-        public static MONTH = new java.text.DateFormat.Field(S`month`, java.util.Calendar.MONTH);
+        public static MONTH: Field;
         /**Constant identifying the SECOND field. */
-        public static SECOND = new java.text.DateFormat.Field(S`second`, java.util.Calendar.SECOND);
+        public static SECOND: Field;
         /**Constant identifying the TIME_ZONE field. */
-        public static TIME_ZONE = new java.text.DateFormat.Field(S`time zone`, -1);
+        public static TIME_ZONE: Field;
         /**Constant identifying the WEEK_OF_MONTH field. */
-        public static WEEK_OF_MONTH =
-            new java.text.DateFormat.Field(S`week of month`, java.util.Calendar.WEEK_OF_MONTH);
+        public static WEEK_OF_MONTH: Field;
         /**Constant identifying the WEEK_OF_YEAR field. */
-        public static WEEK_OF_YEAR = new java.text.DateFormat.Field(S`week of year`, java.util.Calendar.WEEK_OF_YEAR);
+        public static WEEK_OF_YEAR: Field;
         /**Constant identifying the YEAR field. */
-        public static YEAR = new java.text.DateFormat.Field(S`year`, java.util.Calendar.YEAR);
+        public static YEAR: Field;
 
         #calendarField: number;
 
         public constructor(name: java.lang.String, calendarField: number) {
             super(name);
             this.#calendarField = calendarField;
+        }
+
+        static {
+            setTimeout(() => {
+                this.AM_PM = new Field(S`am pm`, java.util.Calendar.AM_PM);
+                this.DATE = new java.text.DateFormat.Field(S`date`, java.util.Calendar.DATE);
+                this.DAY_OF_WEEK = new java.text.DateFormat.Field(S`day of week`, java.util.Calendar.DAY_OF_WEEK);
+                this.DAY_OF_WEEK_IN_MONTH =
+                    new java.text.DateFormat.Field(S`day of week in month`, java.util.Calendar.DAY_OF_WEEK_IN_MONTH);
+                this.DAY_OF_YEAR = new java.text.DateFormat.Field(S`day of year`, java.util.Calendar.DAY_OF_YEAR);
+                this.ERA = new java.text.DateFormat.Field(S`era`, java.util.Calendar.ERA);
+                this.HOUR0 = new java.text.DateFormat.Field(S`hour0`, java.util.Calendar.HOUR);
+                this.HOUR1 = new java.text.DateFormat.Field(S`hour1`, -1);
+                this.HOUR_OF_DAY0 = new java.text.DateFormat.Field(S`hour of day`, java.util.Calendar.HOUR_OF_DAY);
+                this.HOUR_OF_DAY1 = new java.text.DateFormat.Field(S`hour of day 1`, -1);
+                this.MILLISECOND = new java.text.DateFormat.Field(S`millisecond`, java.util.Calendar.MILLISECOND);
+                this.MINUTE = new java.text.DateFormat.Field(S`minute`, java.util.Calendar.MINUTE);
+                this.MONTH = new java.text.DateFormat.Field(S`month`, java.util.Calendar.MONTH);
+                this.SECOND = new java.text.DateFormat.Field(S`second`, java.util.Calendar.SECOND);
+                this.TIME_ZONE = new java.text.DateFormat.Field(S`time zone`, -1);
+                this.WEEK_OF_MONTH = new java.text.DateFormat.Field(S`week of month`, java.util.Calendar.WEEK_OF_MONTH);
+                this.WEEK_OF_YEAR = new java.text.DateFormat.Field(S`week of year`, java.util.Calendar.WEEK_OF_YEAR);
+                this.YEAR = new java.text.DateFormat.Field(S`year`, java.util.Calendar.YEAR);
+            }, 0);
         }
     };
 }

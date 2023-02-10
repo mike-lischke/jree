@@ -9,26 +9,63 @@ import { java, NotImplementedError } from "../..";
 import { DateFormat } from "./DateFormat";
 
 export class SimpleDateFormat extends DateFormat {
-    public constructor(pattern: string);
-    public constructor(pattern: string, locale: java.util.Locale);
-    public constructor(pattern: string, locale?: java.util.Locale) {
+    #pattern: java.lang.String;
+    #locale?: java.util.Locale;
+
+    public constructor(pattern: java.lang.String);
+    public constructor(pattern: java.lang.String, locale: java.util.Locale);
+    public constructor(pattern: java.lang.String, locale?: java.util.Locale) {
         super();
+        this.#pattern = pattern;
+        this.#locale = locale;
     }
 
-    public applyLocalizedPattern(pattern: string): void {
-        throw new NotImplementedError();
+    /**
+     * Applies the given localized pattern to this date format.
+     *
+     * @param pattern The localized pattern to apply.
+     */
+    public applyLocalizedPattern(pattern: java.lang.String | null): void {
+        if (pattern === null) {
+            throw new java.lang.NullPointerException();
+        }
+        this.#pattern = pattern;
     }
 
-    public applyPattern(pattern: string): void {
-        throw new NotImplementedError();
+    /**
+     * Applies the given pattern to this date format.
+     *
+     * @param pattern The pattern to apply.
+     */
+    public applyPattern(pattern: java.lang.String | null): void {
+        if (pattern === null) {
+            throw new java.lang.NullPointerException();
+        }
+        this.#pattern = pattern;
     }
 
+    /** @returns A copy of this object. */
     public clone(): SimpleDateFormat {
-        throw new NotImplementedError();
+        if (!this.#locale) {
+            return new SimpleDateFormat(this.#pattern);
+        }
+
+        return new SimpleDateFormat(this.#pattern, this.#locale);
     }
 
+    /**
+     * Compares the given object with this one for equality.
+     *
+     * @param obj The object to compare with.
+     *
+     * @returns true if the objects are equal; false otherwise.
+     */
     public equals(obj: java.lang.Object): boolean {
-        throw new NotImplementedError();
+        if (obj instanceof SimpleDateFormat) {
+            return this.#pattern === obj.#pattern;
+        }
+
+        return false;
     }
 
     public format(obj: java.util.Date): java.lang.String;

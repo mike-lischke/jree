@@ -19,3 +19,5 @@ export * from "./utilities";
 export * from "./helpers";
 export * from "./templates";
 export * from "./types";
+
+export { type SourceDataType } from "./java/lang/StringBuilder";

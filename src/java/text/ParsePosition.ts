@@ -3,7 +3,8 @@
 * See the LICENSE file for more information.
 */
 
-import { java, JavaObject, S } from "../..";
+import { java, S } from "../..";
+import { JavaObject } from "../lang/Object";
 
 /**
  * ParsePosition is a simple class used by Format and its subclasses to keep track of the current position during
