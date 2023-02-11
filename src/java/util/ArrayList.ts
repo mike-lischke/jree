@@ -13,6 +13,7 @@ import { JavaObject } from "../lang/Object";
 import { JavaIterator } from "../../JavaIterator";
 import { IListIteratorBackend, ListIteratorImpl } from "./ListIteratorImpl";
 
+/** Implements the Java ArrayList class. */
 export class ArrayList<T> extends JavaObject implements java.util.List<T> {
 
     private start: number;
@@ -98,16 +99,24 @@ export class ArrayList<T> extends JavaObject implements java.util.List<T> {
         return true;
     }
 
+    /**
+     * Compares the specified object with this list for equality. Returns true if and only if the
+     * specified object is also a list, both lists have the same size, and all corresponding pairs
+     * of elements in the two lists are equal. (Two elements e1 and e2 are equal if (e1==null ? e2==null
+     * : e1.equals(e2)).) In other words, two lists are defined to be equal if they contain the same
+     * elements in the same order. This definition ensures that the equals method works properly
+     * across different implementations of the List interface.
+     *
+     * @param other The object to be compared for equality with this list.
+     *
+     * @returns true if the specified object is equal to this list.
+     */
     public equals(other: unknown): boolean {
         if (this === other) {
             return true;
         }
 
         if (!(other instanceof ArrayList)) {
-            return false;
-        }
-
-        if (this.start !== other.start || this.end !== other.end) {
             return false;
         }
 

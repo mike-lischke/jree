@@ -33,6 +33,11 @@ export * from "./Deque";
 export * from "./Date";
 export * from "./TimeZone";
 export * from "./Calendar";
+export * from "./Enumeration";
+export * from "./Spliterator";
+export * from "./Vector";
+
+export * from "./NoSuchElementException";
 
 export * from "./regex/regex";
 export * from "./concurrent/concurrent";

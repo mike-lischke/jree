@@ -60,7 +60,7 @@ describe("HashSet Tests", () => {
         set1.add({ a: 2, b: "2" });
 
         // All 3 objects are added as they are considered different, even though 2 have the same members,
-        // as they do not conform to the ValueObject interface.
+        // as they do not conform to the IEquatable interface.
         expect(set1.size()).toBe(3);
 
         const set2 = new java.util.HashSet<Test>();
@@ -68,7 +68,7 @@ describe("HashSet Tests", () => {
         set2.add(new Test(1, "1"));
         set2.add(new Test(2, "2"));
 
-        // The Test class implements ValueObject so only 2 values are added.
+        // The Test class implements IEquatable so only 2 values are added.
         expect(set2.size()).toBe(2);
 
         // Object equality in action.

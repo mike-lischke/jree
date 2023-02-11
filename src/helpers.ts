@@ -78,7 +78,7 @@ export const throwResourceError = (error?: java.lang.Throwable): void => {
  * @returns The guard result.
  */
 export const isEquatable = (candidate: unknown): candidate is IEquatable => {
-    return (candidate as IEquatable).equals !== undefined;
+    return (candidate as IEquatable).equals !== undefined && (candidate as IEquatable).hashCode !== undefined;
 };
 
 /**

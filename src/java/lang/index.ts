@@ -6,6 +6,7 @@
  */
 
 /** The equivalent of Java's char type. Treat it as 16 bit integer! */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type char = number;
 
 export { JavaObject as Object } from "./Object";
@@ -43,6 +44,7 @@ export * from "./VirtualMachineError";
 export * from "./OutOfMemoryError";
 export * from "./NegativeArraySizeException";
 export * from "./CloneNotSupportedException";
+export * from "./ArrayIndexOutOfBoundsException";
 
 export * from "./System";
 export * from "./StackTraceElement";

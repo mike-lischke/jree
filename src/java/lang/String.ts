@@ -170,10 +170,6 @@ export class String extends JavaObject
         return this.#value.codePointAt(index) ?? NaN;
     }
 
-    public hashCode(): number {
-        return MurmurHash.hashCode(this.#value, 17);
-    }
-
     public equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
@@ -186,8 +182,64 @@ export class String extends JavaObject
         return this.#value === obj.#value;
     }
 
+    public hashCode(): number {
+        return MurmurHash.hashCode(this.#value, 17);
+    }
+
+    /** Returns the index within this string of the first occurrence of the specified character. */
+    public indexOf(ch: java.lang.char): number;
+    /**
+     * Returns the index within this string of the first occurrence of the specified character, starting the search
+     * at the specified index.
+     */
+    public indexOf(ch: java.lang.char, fromIndex: number): number;
+    /** Returns the index within this string of the first occurrence of the specified substring. */
+    public indexOf(searchString: java.lang.String): number;
+    /**
+     * Returns the index within this string of the first occurrence of the specified substring, starting at the
+     * specified index.
+     */
+    public indexOf(searchString: java.lang.String, fromIndex: number): number;
+    public indexOf(chOrSearchString: java.lang.char | java.lang.String, fromIndex?: number): number {
+        if (typeof chOrSearchString === "number") {
+            return this.#value.indexOf(window.String.fromCharCode(chOrSearchString), fromIndex);
+        }
+
+        return this.#value.indexOf(chOrSearchString.#value, fromIndex);
+    }
+
     public isEmpty(): boolean {
         return this.#value.length === 0;
+    }
+
+    /** Returns the index within this string of the last occurrence of the specified character. */
+    public lastIndexOf(ch: java.lang.char): number;
+    /**
+     * Returns the index within this string of the last occurrence of the specified character, searching backward
+     * starting at the specified index.
+     */
+    public lastIndexOf(ch: java.lang.char, fromIndex: number): number;
+    /** Returns the index within this string of the last occurrence of the specified substring. */
+    public lastIndexOf(searchString: java.lang.String): number;
+    /**
+     * Returns the index within this string of the last occurrence of the specified substring, searching backward
+     * starting at the specified index.
+     */
+    public lastIndexOf(searchString: java.lang.String, fromIndex: number): number;
+    public lastIndexOf(chOrSearchString: java.lang.char | java.lang.String, fromIndex?: number): number {
+        if (typeof chOrSearchString === "number") {
+            if (fromIndex === undefined) {
+                return this.#value.lastIndexOf(window.String.fromCharCode(chOrSearchString));
+            }
+
+            return this.#value.lastIndexOf(window.String.fromCharCode(chOrSearchString), fromIndex);
+        }
+
+        if (fromIndex === undefined) {
+            return this.#value.lastIndexOf(chOrSearchString.#value);
+        }
+
+        return this.#value.lastIndexOf(chOrSearchString.#value, fromIndex);
     }
 
     public length(): number {

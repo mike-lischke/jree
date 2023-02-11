@@ -116,7 +116,7 @@ In alphabetical order:
       - 𝑪 Ⓟ IllegalCharsetNameException
       - 𝑪 🅵 StandardCharsets
   - *util*
-    - 𝑪 🅵 ArrayList
+    - 𝑪 Ⓟ ArrayList
     - 𝑪 Ⓟ Arrays
     - 𝑪 🅵 BitSet
     - 𝑰 🅵 Collection

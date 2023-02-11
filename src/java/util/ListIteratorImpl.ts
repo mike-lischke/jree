@@ -15,6 +15,13 @@ import { JavaObject } from "../lang/Object";
  */
 export interface IListIteratorBackend<T> {
     list: List<T>;
+    start: number;
+
+    /**
+     * The end index (non-inclusive) of the list.
+     * If undefined, the list's count is used.
+     */
+    end?: number;
 }
 
 /** An implementation of the ListIterator interface. */
@@ -26,21 +33,21 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     // The current index in the iteration.
     private index: number;
 
+    private end: number;
+
     #backend: IListIteratorBackend<T>;
 
-    public constructor(
-        backend: IListIteratorBackend<T>,
-        private start = 0,
-        private end = backend.list.count()) {
+    public constructor(backend: IListIteratorBackend<T>, index?: number) {
         super();
 
         this.#backend = backend;
 
-        if (start < 0 || end < 0 || start > end || end > backend.list.count()) {
+        this.end = backend.end ?? backend.list.count();
+        if (backend.start < 0 || this.end < 0 || backend.start > this.end || this.end > backend.list.count()) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        this.index = start;
+        this.index = backend.start + (index ?? 0);
     }
 
     public add(element: T): void {
@@ -53,7 +60,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     }
 
     public hasPrevious(): boolean {
-        return this.index > this.start;
+        return this.index > this.#backend.start;
     }
 
     public next(): T {
@@ -71,7 +78,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     }
 
     public previous(): T {
-        if (this.index === this.start) {
+        if (this.index === this.#backend.start) {
             throw new java.lang.NoSuchElementException();
         }
 
@@ -81,7 +88,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     }
 
     public previousIndex(): number {
-        return this.index - this.start - 1;
+        return this.index - this.#backend.start - 1;
     }
 
     public remove(): void {
