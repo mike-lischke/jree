@@ -15,11 +15,54 @@ import { Arrays } from "./Arrays";
 
 export class Objects extends JavaObject {
     /**
-     * @returns 0 if the arguments are identical and c.compare(a, b) otherwise.
+     * Checks if the sub-range from fromIndex (inclusive) to fromIndex + size (exclusive) is within the bounds of
+     * range from 0 (inclusive) to length (exclusive).
      *
-     * @param a tbd
-     * @param b tbd
-     * @param c tbd
+     * @param fromIndex the lower bound of the sub-range.
+     * @param toIndex the upper bound of the sub-range.
+     * @param length the length of the range.
+     */
+    public static checkFromToIndex(fromIndex: number, toIndex: number, length: number): void {
+        if (fromIndex < 0 || fromIndex > toIndex || toIndex > length || length < 0) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
+    }
+
+    /**
+     * Checks if the sub-range from fromIndex (inclusive) to toIndex (exclusive) is within the bounds of range
+     * from 0 (inclusive) to length (exclusive).
+     *
+     * @param fromIndex the lower bound of the sub-range.
+     * @param size the size of the sub-range.
+     * @param length the length of the range.
+     */
+    public static checkFromIndex(fromIndex: number, size: number, length: number): void {
+        if (fromIndex < 0 || fromIndex > length || length < 0 || length - fromIndex < size) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
+    }
+
+    /**
+     * Checks if the index is within the bounds of the range from 0 (inclusive) to length (exclusive).
+     *
+     * @param index the index to check.
+     * @param length the length of the range.
+     */
+    public static checkIndex(index: number, length: number): void {
+        if (index < 0 || index >= length) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
+    }
+
+    /**
+     * Returns 0 if the arguments are identical and c.compare(a, b) otherwise.
+     * Consequently, if both arguments are null 0 is returned.
+     *
+     * @param a an object.
+     * @param b an object to be compared with a for order.
+     * @param c the comparator to compare the first two arguments.
+     *
+     * @returns 0 if the arguments are identical and c.compare(a, b) otherwise.
      */
     public static compare<T>(a: T, b: T, c: java.util.Comparator<T>): number {
         if (a === b) {
@@ -30,18 +73,19 @@ export class Objects extends JavaObject {
     }
 
     /**
-     * @returns true if the arguments are deeply equal to each other and false otherwise.
+     * Returns true if the arguments are deeply equal to each other and false otherwise.
      *
-     * @param a tbd
-     * @param b tbd
+     * @param a an object.
+     * @param b an object to be compared with a for equality.
+     *
+     * @returns true if the arguments are deeply equal to each other and false otherwise.
      */
-    public static deepEquals(a: java.lang.Object | ArrayLike<unknown> | null,
-        b: java.lang.Object | ArrayLike<unknown> | null): boolean {
+    public static deepEquals(a: unknown, b: unknown): boolean {
         if (a === b) {
             return true;
         }
 
-        if (!a || !b) {
+        if (a === undefined || b === undefined) {
             return false;
         }
 
@@ -61,33 +105,41 @@ export class Objects extends JavaObject {
             return a.equals(b);
         }
 
-        return a === b;
+        return false;
     }
 
     /**
-     * @returns true if the arguments are equal to each other and false otherwise.
+     * Returns true if the arguments are equal to each other and false otherwise.
+     * Consequently, if both arguments are null true is returned and if exactly one argument is null false is
+     * returned. Otherwise, equality is determined by using the equals method of the first argument.
      *
-     * @param a tbd
-     * @param b tbd
+     * @param a an object.
+     * @param b an object to be compared with a for equality.
+     *
+     * @returns true if the arguments are equal to each other and false otherwise.
      */
-    public static equals(a: java.lang.Object | null, b: java.lang.Object | null): boolean {
+    public static equals(a: unknown, b: unknown): boolean {
         if (a === b) {
             true;
         }
 
-        if (!a || !b) {
+        if (a === undefined || b === undefined) {
             return false;
         }
 
-        return a.equals(b);
+        if (isEquatable(a)) {
+            return a.equals(b);
+        }
+
+        return false;
     }
 
     /**
      * Generates a hash code for a sequence of input values.
      *
-     * @param values tbd
+     * @param values the values to be hashed.
      *
-     * @returns tbd
+     * @returns a hash value of the sequence of input values.
      */
     public static hash(...values: unknown[]): number {
         return MurmurHash.hashCode(values, 37);
@@ -98,42 +150,132 @@ export class Objects extends JavaObject {
      *
      * @param o tbd
      */
-    public static hashCode(o: java.lang.Object | null): number {
-        if (o === null) {
-            return 0;
-        }
+    public static hashCode(o: unknown): number {
+        return MurmurHash.hashCode(o, 37);
+    }
 
-        return o.hashCode();
+    /**
+     * Returns true if the provided reference is null otherwise returns false.
+     *
+     * @param obj the reference to check against null.
+     *
+     * @returns true if the provided reference is null otherwise returns false.
+     */
+    public static isNull(obj: unknown): boolean {
+        return obj === null;
+    }
+
+    /**
+     * Returns true if the provided reference is non-null otherwise returns false.
+     *
+     * @param obj the reference to check against null.
+     *
+     * @returns true if the provided reference is non-null otherwise returns false.
+     */
+    public static nonNull(obj: unknown): boolean {
+        return obj !== null;
     }
 
     /**
      * Checks that the specified object reference is not null.
+     * This method is designed primarily for doing parameter validation in methods and constructors with
+     * multiple parameters, as demonstrated below:
+     * <pre>
+     * public Foo(Bar bar, Baz baz) {
+     *    this.bar = Objects.requireNonNull(bar, "bar must not be null");
+     *   this.baz = Objects.requireNonNull(baz, "baz must not be null");
+     * }
+     * </pre>
      *
-     * @param obj tbd
-     * @param message tbd
+     * @param obj the object reference to check for nullity.
      *
-     * @returns tbd
+     * @throws java.lang.NullPointerException if {@code obj} is {@code null}.
+     *
+     * @returns the non-null reference that was validated.
      */
-    public static requireNonNull<T>(obj: T, message?: java.lang.String): T {
-        if (obj === null) {
-            throw new java.lang.NullPointerException(message);
-        }
+    public static requireNonNull<T>(obj: T | null): T;
+    /**
+     * Checks that the specified object reference is not null and throws a customized NullPointerException if it is.
+     * This method is designed primarily for doing parameter validation in methods and constructors with
+     * multiple parameters, as demonstrated below:
+     * <pre>
+     * public Foo(Bar bar, Baz baz) {
+     *   this.bar = Objects.requireNonNull(bar, "bar must not be null");
+     *  this.baz = Objects.requireNonNull(baz, "baz must not be null");
+     * }
+     * </pre>
+     *
+     * @param obj the object reference to check for nullity.
+     * @param message the detail message to be used in the event that a {@code NullPointerException} is thrown.
+     *
+     * @throws java.lang.NullPointerException if {@code obj} is {@code null}.
+     *
+     * @returns the non-null reference that was validated.
+     */
+    public static requireNonNull<T>(obj: T | null, message: java.lang.String): T;
+    /**
+     * Checks that the specified object reference is not null and throws a customized NullPointerException if it is.
+     * Unlike the method requireNonNull(Object, String), this method accepts a Supplier<String> instead of a String.
+     * This allows the message to be lazily evaluated, which can be useful in situations where the message is
+     * expensive to compute.
+     */
+    public static requireNonNull<T>(obj: T | null, messageSupplier: java.util.function.Supplier<java.lang.String>): T;
+    public static requireNonNull<T>(...args: unknown[]): T {
+        switch (args.length) {
+            case 1: {
+                if (args[0] === null) {
+                    throw new java.lang.NullPointerException();
+                }
 
-        return obj;
+                return args[0] as T;
+            }
+
+            case 2: {
+                if (args[0] === null) {
+                    if (args[1] instanceof java.lang.String) {
+                        throw new java.lang.NullPointerException(args[1]);
+                    }
+
+                    const supplier = args[1] as java.util.function.Supplier<java.lang.String>;
+                    throw new java.lang.NullPointerException(supplier.get());
+                }
+
+                return args[0] as T;
+            }
+
+            default: {
+                throw new java.lang.IllegalArgumentException();
+            }
+        }
     }
 
     /**
-     * @returns the result of calling toString on the first argument if the first argument is not null and returns
-     * the second argument otherwise.;
+     * Returns the result of calling toString for a non- null argument and "null" for a null argument.
      *
-     * @param o tbd
-     * @param nullDefault tbd
+     * @param o the object to be converted to a string.
+     *
+     * @returns the result of calling toString() on the first argument if it is not null; "null" otherwise.
      */
+    public static toString(o: unknown): java.lang.String;
+    /**
+     * Returns the result of calling toString() on the first argument if the first argument is not null and returns
+     * the second argument otherwise.
+     * If the first argument is null and the second argument is null, then "null" is returned.
+     * If the first argument is null and the second argument is not null, then the second argument is returned.
+     * If the first argument is not null and the second argument is null, then the result of calling toString() on
+     * the first argument is returned.
+     *
+     * @param o the object to be converted to a string.
+     * @param nullDefault the default value to be returned if the first argument is null.
+     *
+     * @returns the result of calling toString() on the first argument if it is not null; the second argument otherwise.
+     */
+    public static toString(o: unknown, nullDefault: java.lang.String): java.lang.String;
     public static toString(o: unknown, nullDefault?: java.lang.String): java.lang.String {
-        if (o == null) { // Catch undefined here too.
+        if (o == null) {
             return nullDefault ?? S`null`;
         }
 
-        return S`${o.toString()}`;
+        return java.lang.String.valueOf(o);
     }
 }

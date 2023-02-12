@@ -7,12 +7,14 @@
 
 import { List } from "immutable";
 
-import { isEquatable, java, NotImplementedError } from "../..";
+import { isEquatable, java, JavaIterator, NotImplementedError, S } from "../..";
 import { JavaObject } from "../lang/Object";
 import { IListIteratorBackend, ListIteratorImpl } from "./ListIteratorImpl";
 
 /** The Vector class implements a growable array of objects. */
-export class Vector<T> extends JavaObject {
+export class Vector<T> extends JavaObject implements java.util.List<T>, java.util.RandomAccess,
+    java.lang.Cloneable<Vector<T>>, java.io.Serializable {
+
     #sharedBackend: IListIteratorBackend<T> = {
         list: List<T>(),
         start: 0,
@@ -29,6 +31,10 @@ export class Vector<T> extends JavaObject {
         super();
     }
 
+    public [Symbol.iterator](): IterableIterator<T> {
+        return this.#sharedBackend.list.values();
+    }
+
     /**
      * Inserts the specified element at the specified position in this Vector.
      *
@@ -38,8 +44,8 @@ export class Vector<T> extends JavaObject {
      */
     public add(index: number, element: T): void;
     /** Appends the specified element to the end of this Vector. */
-    public add(element: T): void;
-    public add(indexOrElement: number | T, element?: T): void {
+    public add(element: T): boolean;
+    public add(indexOrElement: number | T, element?: T): void | boolean {
         if (element === undefined) {
             this.#sharedBackend.list = this.#sharedBackend.list.push(indexOrElement as T);
         } else {
@@ -50,6 +56,10 @@ export class Vector<T> extends JavaObject {
             }
             this.#sharedBackend.list = this.#sharedBackend.list.splice(indexOrElement as number, 0, element);
         }
+
+        this.#sharedBackend.end && ++this.#sharedBackend.end;
+
+        return true;
     }
 
     /**
@@ -71,19 +81,37 @@ export class Vector<T> extends JavaObject {
      * @returns true if this Vector changed as a result of the call
      */
     public addAll(elements: java.util.Collection<T>): boolean;
-    public addAll(indexOrElements: number | java.util.Collection<T>, elements?: java.util.Collection<T>): boolean {
-        if (elements === undefined) {
-            this.#sharedBackend.list.push(...(indexOrElements as java.util.Collection<T>).toArray());
-        } else {
-            const index = indexOrElements as number;
-            const end = this.#sharedBackend.end ?? this.#sharedBackend.list.size;
-            if (index < 0 || index >= end) {
-                throw new java.lang.ArrayIndexOutOfBoundsException();
+    public addAll(...args: unknown[]): boolean {
+        let count = 0;
+        switch (args.length) {
+            case 1: {
+                const elements = args[0] as java.util.Collection<T>;
+                count = elements.size();
+                this.#sharedBackend.list = this.#sharedBackend.list.push(...elements.toArray());
+
+                break;
             }
 
-            this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.start + index, 0,
-                ...elements.toArray());
+            case 2: {
+                const index = args[0] as number;
+                const elements = args[1] as java.util.Collection<T>;
+                count = elements.size();
+                const size = (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
+                if (index < 0 || index >= size) {
+                    throw new java.lang.ArrayIndexOutOfBoundsException();
+                }
+
+                this.#sharedBackend.list = this.#sharedBackend.list.splice(index, 0, ...elements.toArray());
+
+                break;
+            }
+
+            default: {
+                throw new java.lang.IllegalArgumentException();
+            }
         }
+
+        this.#sharedBackend.end && (this.#sharedBackend.end += count);
 
         return true;
     }
@@ -111,7 +139,13 @@ export class Vector<T> extends JavaObject {
      * Removes all of the elements from this Vector. The Vector will be empty after this call returns.
      */
     public clear(): void {
-        this.#sharedBackend.list = List();
+        if (this.#sharedBackend.start === 0 && this.#sharedBackend.end === undefined) {
+            // Fast path.
+            this.#sharedBackend.list = List();
+            this.#sharedBackend.end = undefined;
+        } else {
+            this.removeRange(0, this.size());
+        }
     }
 
     /**
@@ -334,6 +368,10 @@ export class Vector<T> extends JavaObject {
         return this.#sharedBackend.list.size === 0;
     }
 
+    public iterator(): java.util.Iterator<T> {
+        return new JavaIterator(this.#sharedBackend.list.values());
+    }
+
     /**
      * Returns the last component of the vector.
      * Throws a NoSuchElementException if this vector has no components.
@@ -413,28 +451,40 @@ export class Vector<T> extends JavaObject {
      * @returns true if this Vector contained the specified element
      */
     public remove(element: T): boolean;
-    public remove(indexOrElement: number | T): T | boolean {
-        if (typeof indexOrElement === "number") {
-            const end = this.#sharedBackend.end ?? this.#sharedBackend.list.size;
-            if (indexOrElement < 0 || indexOrElement >= end) {
-                throw new java.lang.ArrayIndexOutOfBoundsException();
+    public remove(...args: unknown[]): T | boolean {
+        switch (args.length) {
+            case 1: {
+                if (typeof args[0] === "number") {
+                    // T could also be a number, but this would create an ambiguity here.
+                    // We solve this by assuming that a number is always an index.
+                    const size = (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
+                    if (args[0] < 0 || args[0] >= size) {
+                        throw new java.lang.ArrayIndexOutOfBoundsException();
+                    }
+
+                    const index = this.#sharedBackend.start + args[0];
+                    const element = this.#sharedBackend.list.get(index)!;
+                    this.#sharedBackend.list = this.#sharedBackend.list.remove(index);
+                    this.#sharedBackend.end && --this.#sharedBackend.end;
+
+                    return element;
+                }
+
+                const index = this.#sharedBackend.list.indexOf(args[0] as T);
+                if (index !== -1) {
+                    this.#sharedBackend.list = this.#sharedBackend.list.remove(index);
+                    this.#sharedBackend.end && --this.#sharedBackend.end;
+
+                    return true;
+                }
+
+                return false;
             }
 
-            const index = this.#sharedBackend.start + indexOrElement;
-            const element = this.#sharedBackend.list.get(index)!;
-            this.#sharedBackend.list = this.#sharedBackend.list.remove(index);
-
-            return element;
+            default: {
+                throw new java.lang.IllegalArgumentException();
+            }
         }
-
-        const index = this.#sharedBackend.list.indexOf(indexOrElement);
-        if (index !== -1) {
-            this.#sharedBackend.list = this.#sharedBackend.list.remove(index);
-
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -445,17 +495,20 @@ export class Vector<T> extends JavaObject {
      * @returns true if this Vector changed as a result of the call
      */
     public removeAll(elements: java.util.Collection<T>): boolean {
+        let count = 0;
         const list = this.#sharedBackend.list.withMutations((list) => {
             for (const element of elements) {
                 const index = list.indexOf(element);
                 if (index !== -1) {
                     list.remove(index);
+                    ++count;
                 }
             }
         });
 
         if (list !== this.#sharedBackend.list) {
             this.#sharedBackend.list = list;
+            this.#sharedBackend.end && (this.#sharedBackend.end -= count);
 
             return true;
         }
@@ -492,8 +545,8 @@ export class Vector<T> extends JavaObject {
      * @param index the index of the element to be removed
      */
     public removeElementAt(index: number): void {
-        const end = this.#sharedBackend.end ?? this.#sharedBackend.list.size;
-        if (index < this.#sharedBackend.start || index >= end) {
+        const size = (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
+        if (index < this.#sharedBackend.start || index >= size) {
             throw new java.lang.ArrayIndexOutOfBoundsException();
         }
 
@@ -532,8 +585,8 @@ export class Vector<T> extends JavaObject {
      *      (fromIndex < 0 || toIndex > size() || fromIndex > toIndex)
      */
     public removeRange(fromIndex: number, toIndex: number): void {
-        const end = this.#sharedBackend.end ?? this.#sharedBackend.list.size;
-        if (fromIndex < this.#sharedBackend.start || toIndex > end || fromIndex > toIndex) {
+        const size = (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
+        if (fromIndex < 0 || toIndex > size || fromIndex > toIndex) {
             throw new java.lang.ArrayIndexOutOfBoundsException();
         }
 
@@ -558,11 +611,17 @@ export class Vector<T> extends JavaObject {
      * @returns true if this Vector changed as a result of the call
      */
     public retainAll(elements: java.util.Collection<T>): boolean {
-        const list = this.#sharedBackend.list.filter((value) => {
+        const end = this.#sharedBackend.end ?? this.#sharedBackend.list.size;
+        const list = this.#sharedBackend.list.filter((value, index) => {
+            if (index < this.#sharedBackend.start || index >= end) {
+                return true;
+            }
+
             return elements.contains(value);
         });
 
         if (list !== this.#sharedBackend.list) {
+            this.#sharedBackend.end && (this.#sharedBackend.end -= this.#sharedBackend.list.size + list.size);
             this.#sharedBackend.list = list;
 
             return true;
@@ -581,8 +640,8 @@ export class Vector<T> extends JavaObject {
      * @returns the element previously at the specified position
      */
     public set(index: number, element: T): T {
-        const end = this.#sharedBackend.end ?? this.#sharedBackend.list.size;
-        if (index < this.#sharedBackend.start || index >= end) {
+        const size = (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
+        if (index < this.#sharedBackend.start || index >= size) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -621,7 +680,7 @@ export class Vector<T> extends JavaObject {
             throw new java.lang.ArrayIndexOutOfBoundsException();
         }
 
-        this.#sharedBackend.list.setSize(newSize);
+        this.#sharedBackend.list = this.#sharedBackend.list.setSize(newSize);
     }
 
     /**
@@ -633,7 +692,7 @@ export class Vector<T> extends JavaObject {
      * @returns the number of components in this Vector
      */
     public size(): number {
-        return this.#sharedBackend.list.size;
+        return (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
     }
 
     /**
@@ -650,17 +709,26 @@ export class Vector<T> extends JavaObject {
      *
      * @returns a view of the specified range within this Vector
      */
-    public subList(fromIndex: number, toIndex: number): Vector<T> {
-        if (fromIndex < 0 || toIndex > this.#sharedBackend.list.size || fromIndex > toIndex) {
+    public subList(fromIndex: number, toIndex: number): java.util.List<T> {
+        const size = (this.#sharedBackend.end ?? this.#sharedBackend.list.size) - this.#sharedBackend.start;
+        if (fromIndex < 0 || toIndex > size || fromIndex > toIndex) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
         const subList = new Vector<T>();
-        subList.#sharedBackend = this.#sharedBackend;
+        subList.#sharedBackend = { ...this.#sharedBackend };
         subList.#sharedBackend.start += fromIndex;
-        subList.#sharedBackend.end = subList.#sharedBackend.start + toIndex;
+        subList.#sharedBackend.end = this.#sharedBackend.start + toIndex;
 
         return subList;
+    }
+
+    /**
+     * Creates a late-binding and fail-fast Spliterator over the elements in this list.
+     */
+    public spliterator(): java.util.Spliterator<T> {
+        //return new JavaSpliterator(this.#sharedBackend.list.spliterator());
+        throw new NotImplementedError();
     }
 
     /**
@@ -668,6 +736,25 @@ export class Vector<T> extends JavaObject {
      */
     public toArray(): T[] {
         return this.#sharedBackend.list.toArray();
+    }
+
+    /**
+     * Returns a string representation of this Vector, containing the String representation of each element.
+     *
+     * @returns a string representation of this Vector
+     */
+    public toString(): java.lang.String {
+        const buffer = new java.lang.StringBuffer();
+        buffer.append(S`[`);
+        for (let i = 0; i < this.size(); i++) {
+            buffer.append(java.lang.String.valueOf(this.get(i)));
+            if (i < this.size() - 1) {
+                buffer.append(S`, `);
+            }
+        }
+        buffer.append(S`]`);
+
+        return buffer.toString();
     }
 
     public trimToSize(): void {

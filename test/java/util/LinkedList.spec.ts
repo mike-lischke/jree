@@ -31,13 +31,17 @@ describe("LinkedList Tests", () => {
         expect(list.pollLast()).toBeNull();
 
         expect(() => { list.remove(); }).toThrowError(java.lang.NoSuchElementException);
-        expect(() => { list.remove(-10); }).toThrowError(java.lang.NoSuchElementException);
-        expect(() => { list.remove(0); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.remove(-10); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.remove(0); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
         expect(() => { list.removeFirst(); }).toThrowError(java.lang.NoSuchElementException);
+        list.add(100);
         expect(list.removeFirstOccurrence(123456)).toBe(false);
+        expect(() => { list.removeLast(); }).not.toThrowError(java.lang.NoSuchElementException);
         expect(() => { list.removeLast(); }).toThrowError(java.lang.NoSuchElementException);
+        list.add(100);
         expect(list.removeLastOccurrence(0x33)).toBe(false);
+        expect(list.removeLastOccurrence(100)).toBe(true);
 
         expect(() => { list.set(10, 0b11); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
@@ -49,7 +53,13 @@ describe("LinkedList Tests", () => {
         const values = new java.util.ArrayList([1, 2, 3]);
         expect(list.removeAll(values)).toEqual(false);
         expect(list.retainAll(values)).toEqual(false);
-        expect(list.subList(10, 100).size()).toEqual(0);
+
+        expect(() => { list.subList(10, 100); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        list.addAll(values);
+        list.addAll(values);
+        list.addAll(values);
+        expect(() => { list.subList(9, 4); }).toThrowError(java.lang.IllegalArgumentException);
+        expect(list.subList(4, 9).size()).toEqual(5);
     });
 
     it("List Modification Tests", () => {
@@ -151,7 +161,8 @@ describe("LinkedList Tests", () => {
     });
 
     it("List Misc Tests", () => {
-        const list = new java.util.LinkedList<number>([1, 3, 5, 7, 9, 11]);
+        const collection = new java.util.ArrayList<number>([1, 3, 5, 7, 9, 11]);
+        const list = new java.util.LinkedList<number>(collection);
         const hash1 = list.hashCode();
         list.add(-1);
         expect(hash1).not.toEqual(list.hashCode());

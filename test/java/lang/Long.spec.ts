@@ -245,7 +245,7 @@ describe("java.lang.Long Tests", () => {
 
         const c = i1.getClass();
         expect(c.isInstance(i2)).toBe(true);
-        expect(c.getName()).toBe("Long");
+        expect(c.getName().equals(S`Long`)).toBe(true);
 
         // Unboxing/explicit coercion.
         // @ts-ignore

@@ -103,7 +103,7 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
 
             return new Long(parseInt(sign + n.substring(start), radix));
         } catch (reason) {
-            throw new java.lang.NumberFormatException(undefined, java.lang.Throwable.fromError(reason));
+            throw new java.lang.NumberFormatException(java.lang.Throwable.fromError(reason));
         }
     }
 

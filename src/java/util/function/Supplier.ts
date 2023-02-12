@@ -1,0 +1,17 @@
+/*
+ * This file is released under the MIT license.
+ * Copyright (c) 2023, Mike Lischke
+ *
+ * See LICENSE-MIT.txt file for more info.
+ */
+
+/**
+ * Represents a supplier of results.
+ * There is no requirement that a new or distinct result be returned each time the supplier is invoked.
+ * This is a functional interface whose functional method is get().
+ *
+ * @param T the type of results supplied by this supplier
+ */
+export interface Supplier<T> {
+    get(): T;
+}

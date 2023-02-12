@@ -114,7 +114,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
 
             return new java.lang.Integer(parseInt(sign + n.substring(start), radix));
         } catch (reason) {
-            throw new java.lang.NumberFormatException(undefined, java.lang.Throwable.fromError(reason));
+            throw new java.lang.NumberFormatException(java.lang.Throwable.fromError(reason));
         }
     }
 

@@ -6,12 +6,13 @@
  */
 
 import { java } from "../..";
+import { RuntimeException } from "../lang/RuntimeException";
 
 /**
  * Thrown by various accessor methods to indicate that the element being requested
  * does not exist.
  */
-export class NoSuchElementException extends java.lang.RuntimeException {
+export class NoSuchElementException extends RuntimeException {
     public constructor();
     public constructor(cause: java.lang.Throwable);
     public constructor(s: java.lang.String);

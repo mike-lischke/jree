@@ -8,6 +8,7 @@
         "closeables",
         "Declarators",
         "Deque",
+        "deques",
         "Deserialisation",
         "Hashable",
         "initialisation",

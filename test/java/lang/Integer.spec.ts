@@ -265,7 +265,7 @@ describe("java.lang.Integer Tests", () => {
 
         const c = i1.getClass();
         expect(c.isInstance(i2)).toBe(true);
-        expect(c.getName()).toBe("Integer");
+        expect(c.getName().equals(S`Integer`)).toBe(true);
 
         // Unboxing/explicit coercion.
         expect(3 - +i1).toBe(-120);

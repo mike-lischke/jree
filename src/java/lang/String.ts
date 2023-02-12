@@ -131,6 +131,10 @@ export class String extends JavaObject
             return new java.lang.String("undefined");
         }
 
+        if (v instanceof JavaObject) {
+            return v.toString()!;
+        }
+
         return new java.lang.String(`${v}`);
     }
 

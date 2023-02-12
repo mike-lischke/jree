@@ -36,8 +36,12 @@ export * from "./Calendar";
 export * from "./Enumeration";
 export * from "./Spliterator";
 export * from "./Vector";
+export * from "./Stack";
+export * from "./RandomAccess";
+export * from "./ArrayDeque";
 
 export * from "./NoSuchElementException";
 
 export * from "./regex/regex";
 export * from "./concurrent/concurrent";
+export * from "./function/function";
