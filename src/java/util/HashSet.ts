@@ -5,10 +5,10 @@
  */
 
 import { java } from "../..";
-import { JavaObject } from "../lang/Object";
 
 import { Set } from "immutable";
 import { JavaIterator } from "../../JavaIterator";
+import { Collection } from "./Collection";
 
 /**
  * This interface provides shared access to the backend of a HashSet instance for all currently active value
@@ -18,8 +18,8 @@ export interface IHashSetViewBackend<V> {
     backend: Set<V>;
 }
 
-export class HashSet<T> extends JavaObject implements java.lang.Cloneable<HashSet<T>>, java.io.Serializable,
-    java.util.Collection<T>, java.util.Set<T> {
+export class HashSet<T> extends Collection<T>
+    implements java.lang.Cloneable<HashSet<T>>, java.io.Serializable, java.util.Set<T> {
 
     #sharedBackend: IHashSetViewBackend<T> = {
         backend: Set<T>(),

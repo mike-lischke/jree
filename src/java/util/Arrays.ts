@@ -21,7 +21,34 @@ export type TypedArrayConstructor =
     Int32ArrayConstructor | Uint32ArrayConstructor | Uint8ClampedArrayConstructor | Float32ArrayConstructor
     | Float64ArrayConstructor;
 
+/**
+ * This class contains static methods that operate on or return arrays.
+ * It contains methods to search, sort and manipulate arrays (such as
+ * insertion and deletion). This class also contains a static factory
+ * that allows arrays to be viewed as lists.
+ *
+ * In addition to the methods that mirror the Java implementation there are some helpers to convert between
+ * Java arrays and Typescript arrays.
+ */
 export class Arrays extends JavaObject {
+    private constructor() {
+        super();
+    }
+
+    /**
+     * Returns a list backed by the specified array. (Changes to the returned list "write through" to the array.)
+     * The returned list is serializable and implements java.util.RandomAccess.
+     * This method acts as bridge between array-based and collection-based APIs, in combination with
+     * java.util.Collection.toArray().
+     *
+     * @param list The array to be wrapped as a list.
+     *
+     * @returns A list view of the specified array.
+     */
+    public static asList<T>(list: T[]): java.util.List<T> {
+        return new java.util.ArrayList<T>(list);
+    }
+
     public static sort<T>(list: T[]): void {
         list.sort((a, b) => {
             if (a < b) {
@@ -34,10 +61,6 @@ export class Arrays extends JavaObject {
 
             return 0;
         });
-    }
-
-    public static asList<T>(list: T[]): java.util.List<T> {
-        return new java.util.ArrayList<T>(list);
     }
 
     /**

@@ -8,11 +8,11 @@
 import { JavaIterator } from "../../JavaIterator";
 
 import { java } from "../..";
-import { JavaObject } from "../lang/Object";
 import { IHashMapViewBackend } from "./HashMap";
+import { Collection } from "./Collection";
 
 /** This support class provides a view on a map's values. It allows to modify the map for which it was created. */
-export class MapValueView<K, V> extends JavaObject implements java.util.Set<V> {
+export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V> {
     public constructor(private sharedBackend: IHashMapViewBackend<K, V>) {
         super();
     }

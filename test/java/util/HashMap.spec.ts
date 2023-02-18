@@ -5,11 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
+import { java, JavaObject } from "../../../src";
 import { HashMapEntry } from "../../../src/java/util/HashMapEntry";
 
 // A test class which is not a HashMap but implements the Map interface.
-class Test<K, V> extends java.lang.Object implements java.util.Map<K, V> {
+class Test<K, V> extends JavaObject implements java.util.Map<K, V> {
     public constructor() {
         super();
     }
@@ -18,7 +18,7 @@ class Test<K, V> extends java.lang.Object implements java.util.Map<K, V> {
     public containsKey(_key: K): boolean { return true; }
     public containsValue(_value: V): boolean { return true; }
     public entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
-        const set = new java.util.HashSet<HashMapEntry<K, V>>();
+        const set = new java.util.HashSet<java.util.Map.Entry<K, V>>();
 
         return set;
     }

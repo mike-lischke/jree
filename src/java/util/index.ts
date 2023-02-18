@@ -39,9 +39,10 @@ export * from "./Vector";
 export * from "./Stack";
 export * from "./RandomAccess";
 export * from "./ArrayDeque";
+export * from "./AbstractList";
 
 export * from "./NoSuchElementException";
 
 export * from "./regex/regex";
 export * from "./concurrent/concurrent";
-export * from "./function/function";
+export * from "./function/$function";

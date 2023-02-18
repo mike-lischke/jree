@@ -6,3 +6,7 @@
  */
 
 export * from "./Supplier";
+export * from "./Consumer";
+export * from "./Predicate";
+export * from "./Function";
+export * from "./UnaryOperator";

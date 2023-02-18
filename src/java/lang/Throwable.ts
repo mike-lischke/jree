@@ -73,10 +73,7 @@ export class Throwable extends JavaObject {
             default:
         }
 
-        // Create a temporary error object to get the stack trace.
-        const temp = new Error();
-        this.stack = temp.stack;
-
+        Error.captureStackTrace(this, this.constructor);
         this.fillInStackTrace();
     }
 

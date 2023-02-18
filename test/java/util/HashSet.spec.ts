@@ -93,7 +93,7 @@ describe("HashSet Tests", () => {
         expect(set2.size()).toBe(1);
         expect(set2.contains(new Test(2, "2"))).toBe(true);
 
-        const set4 = new java.util.HashSet<Test | null>();
+        const set4 = new java.util.HashSet<Test>();
         set4.add(new Test(1, "1"));
         set4.add(new Test(2, "2"));
         set4.add(new Test(3, "3"));

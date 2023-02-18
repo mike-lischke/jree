@@ -101,7 +101,7 @@ describe("HashMap Tests", () => {
         expect(m1.hashCode()).not.toBe(m2.hashCode());
 
         // Store entries from another map, but not IdentityHashMap in the test maps.
-        const m3 = new java.util.HashMap<number, number>();
+        const m3 = new java.util.HashMap<number | null, number | null>();
         m3.put(5, 5);
         m1.putAll(m3);
 

@@ -10,6 +10,7 @@
 export type char = number;
 
 export { JavaObject as Object } from "./Object";
+
 export * from "./Enum";
 export * from "./StringBuilder";
 export * from "./StringBuffer";
@@ -25,13 +26,13 @@ export * from "./Cloneable";
 export * from "./Appendable";
 export * from "./Comparable";
 export * from "./Readable";
+export * from "./Iterable";
 
 export * from "./Throwable";
 export * from "./Error";
 export * from "./Exception";
 export * from "./RuntimeException";
 export * from "./IndexOutOfBoundsException";
-export * from "./NoSuchElementException";
 export * from "./IllegalArgumentException";
 export * from "./NumberFormatException";
 export * from "./IllegalStateException";

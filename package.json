@@ -18,7 +18,7 @@
     "author": "Mike Lischke",
     "license": "MIT",
     "dependencies": {
-        "immutable": "4.2.3",
+        "immutable": "4.2.4",
         "printf": "0.6.1",
         "unicode-properties": "1.4.1"
     },
@@ -38,7 +38,7 @@
     },
     "scripts": {
         "prepublishOnly": "npm run build && npm run test",
-        "build": "tsc --watch",
+        "build": "tsc",
         "test": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --max-worker=1",
         "test-ci": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --silent",
         "test-coverage": "jest  --testMatch [ \"**/test/**/*.spec.ts\" ] --coverage --silent",

@@ -5,11 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { java, NotImplementedError } from "../..";
+import { JavaObject } from "../lang/Object";
 
-export interface Collection<T> extends Iterable<T> {
-    [Symbol.iterator](): IterableIterator<T>;
-
+export interface Collection<T> extends java.lang.Iterable<T> {
     /**
      * Ensures that this collection contains the specified element.
      */
@@ -53,6 +52,8 @@ export interface Collection<T> extends Iterable<T> {
     /** Returns an iterator over the elements in this collection. */
     iterator(): java.util.Iterator<T>;
 
+    // parallelStream(): java.util.stream.Stream<T>;
+
     /**
      * Removes a single instance of the specified element from this collection, if it is present.
      */
@@ -73,6 +74,17 @@ export interface Collection<T> extends Iterable<T> {
      */
     size(): number;
 
+    // stream(): java.util.stream.Stream<T>;
+
+    /**
+     * Returns a string representation of this collection.
+     * The string representation consists of a list of the collection's elements in the order they are returned by
+     * its iterator, enclosed in square brackets ("[]"). Adjacent elements are separated by the characters ", " (comma
+     * and space). Elements are converted to strings as by String.valueOf(Object).
+     * Returns "[]" if this collection contains no elements.
+     *
+     * @returns a string representation of this collection
+     */
     toString(): java.lang.String | null;
 
     /**
@@ -85,4 +97,45 @@ export interface Collection<T> extends Iterable<T> {
      * is that of the specified array.
      */
     toArray<T2>(a: T2[]): T2[];
+}
+
+export class Collection<T> extends JavaObject {
+    /**
+     * Removes all of the elements of this collection that satisfy the given predicate.
+     *
+     * @param filter a predicate which returns true for elements to be removed
+     *
+     * @returns true if any elements were removed
+     */
+    public removeIf(filter: java.util.function.Predicate<T>): boolean {
+        let removed = false;
+        const it = this.iterator();
+        while (it.hasNext()) {
+            if (filter.test(it.next())) {
+                it.remove();
+                removed = true;
+            }
+        }
+
+        return removed;
+    }
+
+    /**
+     * Creates a {@link Spliterator} over the elements in this collection.
+     */
+    public spliterator(): java.util.Spliterator<T> {
+        throw new NotImplementedError();
+    }
+
+    /**
+     * Returns an array containing all of the elements in this collection, using the provided generator function to
+     * allocate the returned array.
+     *
+     * @param generator a function which produces a new array of the desired type and the provided length
+     */
+    /* Enabling this causes a compiler error in the interface declaration.
+        public toArray<T>(generator: java.util.function.IntFunction<T[]>): T[] {
+        throw new NotImplementedError();
+    }*/
+
 }

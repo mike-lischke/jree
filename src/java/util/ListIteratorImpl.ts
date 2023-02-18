@@ -12,16 +12,22 @@ import { JavaObject } from "../lang/Object";
 
 /**
  * This interface provides shared access to the backend of a list class.
+ * It is usually not shared itself, but holds the shared list.
  */
-export interface IListIteratorBackend<T> {
+export interface IListBackend<T> {
+    /**
+     * The list shared between the owning list and all its sub (sub-sub) views.
+     */
     list: List<T>;
+
+    /** The start index of the list (inclusive). Default is 0, set in the origin. */
     start: number;
 
-    /**
-     * The end index (non-inclusive) of the list.
-     * If undefined, the list's count is used.
-     */
-    end?: number;
+    /** The end index the list (exclusive). Default ist the list size, set in the origin. */
+    end: number;
+
+    /** A callback to the owner to notify it about changes in the list size, as elements are added or removed. */
+    updateEnd(delta: number): void;
 }
 
 /** An implementation of the ListIterator interface. */
@@ -33,17 +39,18 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     // The current index in the iteration.
     private index: number;
 
-    private end: number;
+    #backend: IListBackend<T>;
 
-    #backend: IListIteratorBackend<T>;
-
-    public constructor(backend: IListIteratorBackend<T>, index?: number) {
+    public constructor(backend: IListBackend<T>, index?: number) {
         super();
 
         this.#backend = backend;
 
-        this.end = backend.end ?? backend.list.count();
-        if (backend.start < 0 || this.end < 0 || backend.start > this.end || this.end > backend.list.count()) {
+        if (backend.start < 0
+            || backend.end < 0
+            || backend.start > backend.list.size
+            || backend.end > backend.list.size
+            || backend.start > backend.end) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
@@ -56,7 +63,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     }
 
     public hasNext(): boolean {
-        return this.index < this.end;
+        return this.index < this.#backend.end;
     }
 
     public hasPrevious(): boolean {
@@ -64,8 +71,8 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     }
 
     public next(): T {
-        if (this.index === this.end) {
-            throw new java.lang.NoSuchElementException();
+        if (this.index >= this.#backend.end) {
+            throw new java.util.NoSuchElementException();
         }
 
         this.movedForward = true;
@@ -78,8 +85,8 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
     }
 
     public previous(): T {
-        if (this.index === this.#backend.start) {
-            throw new java.lang.NoSuchElementException();
+        if (this.index <= this.#backend.start) {
+            throw new java.util.NoSuchElementException();
         }
 
         this.movedForward = false;

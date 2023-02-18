@@ -6,13 +6,14 @@
  */
 
 import { java } from "../..";
-import { JavaObject } from "../lang/Object";
 import { HashMapEntry } from "./HashMapEntry";
 import { JavaMapEntryIterator } from "../../JavaMapEntryIterator";
 import { IHashMapViewBackend } from "./HashMap";
+import { Collection } from "./Collection";
 
 /** This support class provides a view on a map's keys. It allows to modify the map for which it was created. */
-export class MapEntryView<K, V> extends JavaObject implements java.util.Set<java.util.Map.Entry<K, V>> {
+export class MapEntryView<K, V> extends Collection<java.util.Map.Entry<K, V>>
+    implements java.util.Set<java.util.Map.Entry<K, V>> {
     public constructor(private sharedBackend: IHashMapViewBackend<K, V>) {
         super();
     }

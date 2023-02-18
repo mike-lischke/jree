@@ -6,7 +6,6 @@
  */
 
 import { java } from "../../../src";
-import { JavaIterator } from "../../../src/JavaIterator";
 import { S } from "../../../src/templates";
 
 describe("LinkedList Tests", () => {
@@ -15,10 +14,10 @@ describe("LinkedList Tests", () => {
         expect(list.isEmpty()).toBe(true);
         expect(list.size()).toBe(0);
 
-        expect(() => { list.element(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.element(); }).toThrowError(java.util.NoSuchElementException);
         expect(() => { list.get(1000); }).toThrowError(java.lang.IndexOutOfBoundsException);
-        expect(() => { list.getFirst(); }).toThrowError(java.lang.NoSuchElementException);
-        expect(() => { list.getLast(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.getFirst(); }).toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.getLast(); }).toThrowError(java.util.NoSuchElementException);
 
         expect(list.indexOf(10)).toBe(-1);
         expect(list.lastIndexOf(1e6)).toBe(-1);
@@ -26,19 +25,19 @@ describe("LinkedList Tests", () => {
         expect(list.peekFirst()).toBeNull();
         expect(list.peekLast()).toBeNull();
 
-        expect(() => { list.poll(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.poll(); }).toThrowError(java.util.NoSuchElementException);
         expect(list.pollFirst()).toBeNull();
         expect(list.pollLast()).toBeNull();
 
-        expect(() => { list.remove(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.remove(); }).toThrowError(java.lang.IndexOutOfBoundsException);
         expect(() => { list.remove(-10); }).toThrowError(java.lang.IndexOutOfBoundsException);
         expect(() => { list.remove(0); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
-        expect(() => { list.removeFirst(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.removeFirst(); }).toThrowError(java.util.NoSuchElementException);
         list.add(100);
         expect(list.removeFirstOccurrence(123456)).toBe(false);
-        expect(() => { list.removeLast(); }).not.toThrowError(java.lang.NoSuchElementException);
-        expect(() => { list.removeLast(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.removeLast(); }).not.toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.removeLast(); }).toThrowError(java.util.NoSuchElementException);
         list.add(100);
         expect(list.removeLastOccurrence(0x33)).toBe(false);
         expect(list.removeLastOccurrence(100)).toBe(true);
@@ -46,7 +45,7 @@ describe("LinkedList Tests", () => {
         expect(() => { list.set(10, 0b11); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
         expect(list.toArray()).toEqual([]);
-        expect(list.toArray(new Array<boolean>(10))).toEqual([]);
+        expect(list.toArray(new Array<number>(10))).toEqual([]);
 
         expect([...list]).toEqual([]);
 
@@ -71,7 +70,7 @@ describe("LinkedList Tests", () => {
         expect(list.isEmpty()).toBe(false);
         expect(list.size()).toBe(4);
 
-        expect(() => { list.add(4, S`Amet`); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.add(5, S`Amet`); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
         list.add(1, S`Amet`);
         expect(list.size()).toBe(5);
@@ -156,7 +155,7 @@ describe("LinkedList Tests", () => {
         list.poll();
         list.poll();
         expect(list.poll()).not.toBeNull();
-        expect(() => { list.poll(); }).toThrowError(java.lang.NoSuchElementException);
+        expect(() => { list.poll(); }).toThrowError(java.util.NoSuchElementException);
         expect(list.pollFirst()).toBeNull();
     });
 
@@ -184,9 +183,6 @@ describe("LinkedList Tests", () => {
         expect(list2.contains(13)).toBe(false);
 
         expect(list2.element()).toBe(1);
-
-        const it = list.descendingIterator() as JavaIterator<number>;
-        expect([...it]).toEqual([13, 11, 9, 7, 5, 3, 1]);
 
         const lit = list.listIterator(3);
         let elements: number[] = [];

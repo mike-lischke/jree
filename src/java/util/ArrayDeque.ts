@@ -6,19 +6,17 @@
  */
 
 import { java, NotImplementedError } from "../..";
-import { JavaObject } from "../lang/Object";
+
+import { AbstractCollection } from "./AbstractCollection";
 
 /**
  * A resizable-array implementation of the Deque interface. Array deques have no capacity restrictions; they grow as
  * necessary to support usage.
- *
- * Note: This class is backed by java.util.LinkedList, but is not a subclass of it. This is to avoid confusion with
- * the available APIs.
  */
-export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, java.io.Serializable,
+export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.Deque<T>, java.io.Serializable,
     java.lang.Cloneable<ArrayDeque<T>> {
 
-    #backend: java.util.Vector<T>;
+    #backend: java.util.ArrayList<T>;
 
     /** Constructs an empty array deque with an initial capacity sufficient to hold 16 elements. */
     public constructor();
@@ -116,6 +114,10 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
         return this.#backend.contains(o);
     }
 
+    public containsAll(c: java.util.Collection<T>): boolean {
+        return this.#backend.containsAll(c);
+    }
+
     public descendingIterator(): java.util.Iterator<T> {
         throw new NotImplementedError();
     }
@@ -130,7 +132,11 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
             return null;
         }
 
-        return this.#backend.firstElement();
+        return this.#backend.get(0);
+    }
+
+    public equals(o: java.lang.Object): boolean {
+        return this.#backend.equals(o);
     }
 
     /**
@@ -140,9 +146,9 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
      *
      * @param action The action to be performed for each element
      */
-    public forEach(action: (value: T) => void): void {
+    public forEach(action: java.util.function.Consumer<T>): void {
         for (let i = 0; i < this.#backend.size(); ++i) {
-            action(this.#backend.get(i)!);
+            action.accept(this.#backend.get(i)!);
         }
     }
 
@@ -165,7 +171,14 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
      * @throws NoSuchElementException if this deque is empty
      */
     public getLast(): T {
-        return this.#backend.lastElement();
+        return this.#backend.get(this.#backend.size() - 1);
+    }
+
+    /**
+     * @returns the hash code value for this deque
+     */
+    public hashCode(): number {
+        return this.#backend.hashCode();
     }
 
     /**
@@ -184,7 +197,7 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
      * @returns an iterator over the elements in this deque in proper sequence
      */
     public iterator(): java.util.Iterator<T> {
-        return this.#backend.listIterator();
+        return this.#backend.iterator();
     }
 
     /**
@@ -235,15 +248,15 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
      * @returns the first element of this deque, or null if this deque is empty
      */
     public peek(): T | null {
+        return this.peekFirst();
+    }
+
+    public peekFirst(): T | null {
         if (this.#backend.isEmpty()) {
             return null;
         }
 
-        return this.#backend.firstElement();
-    }
-
-    public peekFirst(): T | null {
-        return this.peek();
+        return this.#backend.get(0);
     }
 
     public peekLast(): T | null {
@@ -251,7 +264,7 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
             return null;
         }
 
-        return this.#backend.lastElement();
+        return this.#backend.get(this.#backend.size() - 1);
     }
 
     /**
@@ -269,7 +282,11 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
     }
 
     public pollFirst(): T | null {
-        return this.poll();
+        if (this.#backend.isEmpty()) {
+            return null;
+        }
+
+        return this.pop();
     }
 
     public pollLast(): T | null {
@@ -277,7 +294,7 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
             return null;
         }
 
-        return this.removeLast();
+        return this.#backend.remove(this.#backend.size() - 1);
     }
 
     /**
@@ -285,10 +302,15 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
      * element of this deque.
      *
      * @returns the element at the front of this deque (which is the top of the stack represented by this deque)
+     *
      * @throws NoSuchElementException if this deque is empty
      */
     public pop(): T {
-        const result = this.#backend.firstElement();
+        if (this.#backend.isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
+
+        const result = this.#backend.get(0);
         this.#backend.remove(0);
 
         return result;
@@ -363,7 +385,7 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
      *
      * @returns true if any elements were removed
      */
-    public removeIf(filter: (value: T) => boolean): boolean {
+    public removeIf(filter: java.util.function.Predicate<T>): boolean {
         return this.#backend.removeIf(filter);
     }
 
@@ -454,10 +476,6 @@ export class ArrayDeque<T> extends JavaObject implements java.util.Deque<T>, jav
     public toArray(a: T[]): T[];
     public toArray(_a?: T[]): T[] {
         return this.#backend.toArray();
-    }
-
-    public containsAll(c: java.util.Collection<T>): boolean {
-        return this.#backend.containsAll(c);
     }
 
     public toString(): java.lang.String | null {
