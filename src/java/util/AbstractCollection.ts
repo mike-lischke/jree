@@ -35,7 +35,7 @@ export abstract class AbstractCollection<T> extends JavaObject implements java.u
     public abstract retainAll(c: java.util.Collection<T>): boolean;
     public abstract size(): number;
     public abstract spliterator(): java.util.Spliterator<T>;
-    public abstract toString(): java.lang.String | null;
+    public abstract toString(): java.lang.String;
     public abstract toArray(): T[];
     public abstract toArray<U>(a: U[]): U[];
 }

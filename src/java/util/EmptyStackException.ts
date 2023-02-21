@@ -7,6 +7,8 @@
 
 import { RuntimeException } from "../lang";
 
-// Implement the Java EmptyStackException class.
+/**
+ * Thrown by methods in the Stack class to indicate that the stack is empty.
+ */
 export class EmptyStackException extends RuntimeException {
 }

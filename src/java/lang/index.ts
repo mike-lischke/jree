@@ -27,6 +27,7 @@ export * from "./Appendable";
 export * from "./Comparable";
 export * from "./Readable";
 export * from "./Iterable";
+export * from "./AutoCloseable";
 
 export * from "./Throwable";
 export * from "./Error";

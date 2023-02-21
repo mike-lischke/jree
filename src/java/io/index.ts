@@ -7,7 +7,6 @@
 
 export * from "./Serializable";
 export * from "./Closeable";
-export * from "./AutoCloseable";
 export * from "./Flushable";
 
 export * from "./FileDescriptor";
@@ -31,6 +30,7 @@ export * from "./OutputStreamWriter";
 export * from "./BufferedReader";
 export * from "./BufferedWriter";
 
+export * from "./StringReader";
 export * from "./FileReader";
 export * from "./FileWriter";
 export * from "./FileInputStream";

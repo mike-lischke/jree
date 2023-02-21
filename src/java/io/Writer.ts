@@ -9,7 +9,7 @@ import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 export abstract class Writer extends JavaObject implements java.io.Closeable, java.io.Flushable, java.lang.Appendable,
-    java.io.AutoCloseable {
+    java.lang.AutoCloseable {
     /**
      * The object used to synchronize operations on this stream.  For
      * efficiency, a character-stream object may use an object other than

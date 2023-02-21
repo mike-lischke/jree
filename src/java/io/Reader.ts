@@ -10,7 +10,7 @@ import { S } from "../../templates";
 import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
-export abstract class Reader extends JavaObject implements java.io.Closeable, java.io.AutoCloseable,
+export abstract class Reader extends JavaObject implements java.io.Closeable, java.lang.AutoCloseable,
     java.lang.Readable {
     // Maximum skip-buffer size.
     private static readonly maxSkipBufferSize = 8192;
@@ -119,6 +119,11 @@ export abstract class Reader extends JavaObject implements java.io.Closeable, ja
 
     }
 
-    // Closes the stream and releases any system resources associated with it.
+    /**
+     * Closes the stream and releases any system resources associated with it.
+     * Once the stream has been closed, further read(), ready(), mark(), or reset() invocations will throw an
+     * IOException.
+     * Closing a previously closed stream has no effect.
+     */
     public abstract close(): void;
 }

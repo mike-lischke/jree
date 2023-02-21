@@ -9,7 +9,7 @@ import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 export abstract class OutputStream extends JavaObject
-    implements java.io.Closeable, java.io.Flushable, java.io.AutoCloseable {
+    implements java.io.Closeable, java.io.Flushable, java.lang.AutoCloseable {
 
     public constructor() {
         super();

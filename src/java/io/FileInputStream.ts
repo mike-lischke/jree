@@ -13,7 +13,7 @@ import { java } from "../..";
 
 import { InputStream } from "./InputStream";
 
-export class FileInputStream extends InputStream implements java.io.AutoCloseable {
+export class FileInputStream extends InputStream implements java.lang.AutoCloseable {
     private fd: java.io.FileDescriptor;
     private path: string;
 

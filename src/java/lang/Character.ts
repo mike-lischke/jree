@@ -265,11 +265,28 @@ export class Character extends JavaObject {
         public static of = (_c: java.lang.char): number => {
             return 0;
         };
-
     };
 
-    public constructor(private value: java.lang.char) {
+    private static readonly CategoryMapper = new Map<string, number>();
+
+    public constructor() {
         super();
+    }
+
+    /**
+     * Returns a value indicating a character's general category.
+     *
+     * @param c The character to check.
+     *
+     * @returns The character's general category.
+     *
+     * Note: In typescript we cannot differentiate between char and number (java.lang.char is a type alias for number).
+     *       That means there's only one method for the two Java getType methods.
+     */
+    public static getType(c: java.lang.char | number): number {
+        const category = unicode.getCategory(c);
+
+        return Character.CategoryMapper.get(category) ?? Character.UNASSIGNED;
     }
 
     public static isDigit(c: java.lang.char): boolean {
@@ -289,17 +306,69 @@ export class Character extends JavaObject {
     }
 
     /**
+     * Determines if the specified character (Unicode code point) is an lowercase character.
+     *
+     * @param c The character to check.
+     *
+     * @returns True, if the character is an lowercase character, otherwise false.
+     */
+    public static isLowerCase(c: java.lang.char): boolean {
+        return unicode.isLowerCase(c);
+    }
+
+    /**
      * Determines if the given char value is a Unicode low-surrogate code unit (also known as trailing-surrogate
      * code unit).
      *
-     * @param ch The character to check.
+     * @param c The character to check.
      *
      * @returns True, if the character is a low surrogate, otherwise false.
      */
-    public static isLowSurrogate(ch: java.lang.char): boolean {
-        return Character.MIN_LOW_SURROGATE <= ch && ch <= Character.MAX_LOW_SURROGATE;
+    public static isLowSurrogate(c: java.lang.char): boolean {
+        return Character.MIN_LOW_SURROGATE <= c && c <= Character.MAX_LOW_SURROGATE;
     }
 
+    /**
+     * Determines if the specified character (Unicode code point) may be part of a Unicode identifier as other than
+     * the first character.
+     *
+     * @param c The character to check.
+     *
+     * @returns True, if the character may be part of a Unicode identifier, otherwise false.
+     */
+    public static isUnicodeIdentifierPart(c: java.lang.char): boolean {
+        return this.isUnicodeIdentifierStart(c);
+    }
+
+    /**
+     * Determines if the specified character is permissible as the first character in a Unicode identifier.
+     * A character may start a Unicode identifier if and only if one of the following is true:
+     *
+     * @param c The character to check.
+     *
+     * @returns True, if the character is permissible as the first character in a Unicode identifier, otherwise false.
+     */
+    public static isUnicodeIdentifierStart(c: java.lang.char): boolean {
+        const type = this.getType(c);
+
+        // In UnicodeSet notation:
+        // [\p{L}\p{Nl}\p{Other_ID_Start}-\p{Pattern_Syntax}-\p{Pattern_White_Space}]
+        return type === Character.UPPERCASE_LETTER || type === Character.LOWERCASE_LETTER ||
+            type === Character.TITLECASE_LETTER || type === Character.MODIFIER_LETTER ||
+            type === Character.OTHER_LETTER || // p{L}
+
+            type === Character.LETTER_NUMBER; // p{Nl}
+
+        // TODO: add support for the other sets.
+    }
+
+    /**
+     * Determines if the specified character (Unicode code point) is an uppercase character.
+     *
+     * @param c The character to check.
+     *
+     * @returns True, if the character is an uppercase character, otherwise false.
+     */
     public static isUpperCase(c: java.lang.char): boolean {
         return unicode.isUpperCase(c);
     }
@@ -327,5 +396,43 @@ export class Character extends JavaObject {
 
     public static toLowerCase(s: string): string {
         return s.toLowerCase();
+    }
+
+    static {
+        setTimeout(() => {
+            // @ts-ignore
+            this.CategoryMapper = new Map<string, number>([
+                ["Cc", Character.CONTROL],
+                ["Cf", Character.FORMAT],
+                ["Cn", Character.UNASSIGNED],
+                ["Co", Character.PRIVATE_USE],
+                ["Cs", Character.SURROGATE],
+                ["Ll", Character.LOWERCASE_LETTER],
+                ["Lm", Character.MODIFIER_LETTER],
+                ["Lo", Character.OTHER_LETTER],
+                ["Lt", Character.TITLECASE_LETTER],
+                ["Lu", Character.UPPERCASE_LETTER],
+                ["Mc", Character.COMBINING_SPACING_MARK],
+                ["Me", Character.ENCLOSING_MARK],
+                ["Mn", Character.NON_SPACING_MARK],
+                ["Nd", Character.DECIMAL_DIGIT_NUMBER],
+                ["Nl", Character.LETTER_NUMBER],
+                ["No", Character.OTHER_NUMBER],
+                ["Pc", Character.CONNECTOR_PUNCTUATION],
+                ["Pd", Character.DASH_PUNCTUATION],
+                ["Pe", Character.END_PUNCTUATION],
+                ["Pf", Character.FINAL_QUOTE_PUNCTUATION],
+                ["Pi", Character.INITIAL_QUOTE_PUNCTUATION],
+                ["Po", Character.OTHER_PUNCTUATION],
+                ["Ps", Character.START_PUNCTUATION],
+                ["Sc", Character.CURRENCY_SYMBOL],
+                ["Sk", Character.MODIFIER_SYMBOL],
+                ["Sm", Character.MATH_SYMBOL],
+                ["So", Character.OTHER_SYMBOL],
+                ["Zl", Character.LINE_SEPARATOR],
+                ["Zp", Character.PARAGRAPH_SEPARATOR],
+                ["Zs", Character.SPACE_SEPARATOR],
+            ]);
+        }, 0);
     }
 }

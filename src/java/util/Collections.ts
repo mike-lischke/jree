@@ -123,4 +123,24 @@ export abstract class Collections extends JavaObject {
         }
     }
 
+    /**
+     * @returns an immutable set containing only the specified object.
+     *
+     * @param o the sole object to be stored in the returned set.
+     */
+    public static singleton<T>(o: T): java.util.Set<T> {
+        const set = new java.util.HashSet<T>();
+        set.add(o);
+
+        return set;
+    }
+
+    /**
+     * @returns an immutable list containing only the specified object. The returned list is serializable.
+     *
+     * @param o the sole object to be stored in the returned list.
+     */
+    public static singletonList<T>(o: T): java.util.List<T> {
+        return new java.util.ArrayList<T>([o]);
+    }
 }

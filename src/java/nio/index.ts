@@ -17,3 +17,5 @@ export * from "./BufferOverflowException";
 export * from "./BufferUnderflowException";
 
 export * from "./charset/$charset";
+
+export * from "./file/$file";

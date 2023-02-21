@@ -478,7 +478,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
         return this.#backend.toArray();
     }
 
-    public toString(): java.lang.String | null {
+    public toString(): java.lang.String {
         return this.#backend.toString();
     }
 }

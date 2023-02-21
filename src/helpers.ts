@@ -20,7 +20,7 @@ import { IEquatable } from "./types";
  *
  * @returns A Throwable if an error occurred while closing the objects.
  */
-export const closeResources = (list: java.io.AutoCloseable[]): java.lang.Throwable | undefined => {
+export const closeResources = (list: java.lang.AutoCloseable[]): java.lang.Throwable | undefined => {
     let error: java.lang.Throwable | undefined;
 
     // Close in reverse order.

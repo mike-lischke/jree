@@ -42,6 +42,7 @@ export * from "./ArrayDeque";
 export * from "./AbstractList";
 
 export * from "./NoSuchElementException";
+export * from "./EmptyStackException";
 
 export * from "./regex/regex";
 export * from "./concurrent/concurrent";

@@ -6,7 +6,13 @@
  */
 
 import { java } from "../..";
+import { Collection } from "./Collection";
 
 // The set interface does not add any new method to the Collection interface.
 
-export type Set<T> = java.util.Collection<T>;
+export interface Set<T> extends java.util.Collection<T> {
+    add(e: T): boolean;
+}
+
+export class Set<T> extends Collection<T> {
+}
