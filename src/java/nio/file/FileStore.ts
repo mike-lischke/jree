@@ -5,8 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
-import { JavaObject } from "../../lang/Object";
+import { Class, JavaObject } from "../../lang/Object";
+import { JavaString } from "../../lang/String";
+import { FileAttributeView } from "./attribute/FileAttributeView";
+import { FileStoreAttributeView } from "./attribute/FileStoreAttributeView";
 
 /**
  * Storage for files. A FileStore represents a storage pool, device, partition, volume, concrete file system or other
@@ -28,7 +30,7 @@ export abstract class FileStore extends JavaObject {
      *
      * @returns The attribute value; {@code null} may be a valid for some attributes.
      */
-    public abstract getAttribute(attribute: string): java.lang.Object | null;
+    public abstract getAttribute(attribute: JavaString): JavaObject | null;
 
     /**
      * Returns the number of bytes per block in this file store.
@@ -45,8 +47,8 @@ export abstract class FileStore extends JavaObject {
      * @returns A file store attribute view of the specified type or {@code null} if the attribute view is not
      *          available.
      */
-    public abstract getFileStoreAttributeView<T extends java.nio.file.attribute.FileStoreAttributeView>(
-        type: java.lang.Class<T>): T;
+    public abstract getFileStoreAttributeView<T extends FileStoreAttributeView>(
+        type: Class<T>): T;
 
     /**
      * @returns The size of the file store, in bytes.
@@ -75,7 +77,7 @@ export abstract class FileStore extends JavaObject {
     /**
      * @returns The name of this file store.
      */
-    public abstract name(): string;
+    public abstract name(): JavaString;
 
     /**
      * Tells wether or not this file store supports the file attribute view identified by the given file attribute view.
@@ -85,10 +87,10 @@ export abstract class FileStore extends JavaObject {
      * @returns `true` if, and only if, this file store supports the file attribute view.
      */
     public abstract supportsFileAttributeView(
-        type: java.lang.Class<java.nio.file.attribute.FileAttributeView>): boolean;
+        type: Class<FileAttributeView>): boolean;
 
     /**
      * @returns the type of this file store.
      */
-    public abstract type(): string;
+    public abstract type(): JavaString;
 }

@@ -5,11 +5,12 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, S } from "../..";
+import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
-import { isEquatable } from "../../helpers";
+import { isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
+import { S } from "../../templates";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =

@@ -10,8 +10,7 @@ import { S } from "../../templates";
 import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
-export abstract class Reader extends JavaObject implements java.io.Closeable, java.lang.AutoCloseable,
-    java.lang.Readable {
+export abstract class Reader extends JavaObject implements java.io.Closeable, java.lang.Readable {
     // Maximum skip-buffer size.
     private static readonly maxSkipBufferSize = 8192;
 

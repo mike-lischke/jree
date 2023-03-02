@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export * from "./Buffer";
+export * as Buffer from "./Buffer";
 export * from "./CharBuffer";
 export * from "./IntBuffer";
 export * from "./ByteBuffer";
@@ -17,5 +17,5 @@ export * from "./BufferOverflowException";
 export * from "./BufferUnderflowException";
 
 export * from "./charset/$charset";
-
 export * from "./file/$file";
+export * from "./channels/$channels";

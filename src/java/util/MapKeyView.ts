@@ -5,11 +5,12 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { JavaIterator } from "../../JavaIterator";
+import { IteratorWrapper } from "../../IteratorWrapper";
 
 import { java } from "../..";
 import { IHashMapViewBackend } from "./HashMap";
 import { Collection } from "./Collection";
+import { JavaIterator } from "./Iterator";
 
 /** This support class provides a view on a map's keys. It allows to modify the map for which it was created. */
 export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> {
@@ -67,8 +68,8 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return this.sharedBackend.backend.isEmpty();
     }
 
-    public iterator(): java.util.Iterator<K> {
-        return new JavaIterator(this.sharedBackend.backend.keys());
+    public iterator(): JavaIterator<K> {
+        return new IteratorWrapper(this.sharedBackend.backend.keys());
     }
 
     public remove(o: K): boolean {

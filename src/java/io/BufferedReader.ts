@@ -6,7 +6,13 @@
  */
 
 import { S } from "../../templates";
-import { java } from "../..";
+import { char } from "../lang";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { JavaString } from "../lang/String";
+import { StringBuilder } from "../lang/StringBuilder";
+import { CharBuffer } from "../nio/CharBuffer";
+import { IOException } from "./IOException";
 import { Reader } from "./Reader";
 
 export class BufferedReader extends Reader {
@@ -17,8 +23,8 @@ export class BufferedReader extends Reader {
     private static readonly defaultExpectedLineLength = 80;
 
     private cb: Uint16Array;
-    private nChars: java.lang.char;
-    private nextChar: java.lang.char;
+    private nChars: char;
+    private nextChar: char;
 
     private markedChar = BufferedReader.UNMARKED;
     private readAheadLimit = 0; /* Valid only when markedChar > 0 */
@@ -33,7 +39,7 @@ export class BufferedReader extends Reader {
         super();
 
         if (size <= 0) {
-            throw new java.lang.IllegalArgumentException(S`Buffer size <= 0`);
+            throw new IllegalArgumentException(S`Buffer size <= 0`);
         }
 
         this.cb = new Uint16Array(size);
@@ -67,7 +73,7 @@ export class BufferedReader extends Reader {
      */
     public mark(readAheadLimit: number): void {
         if (readAheadLimit < 0) {
-            throw new java.lang.IllegalArgumentException(S`Read-ahead limit < 0`);
+            throw new IllegalArgumentException(S`Read-ahead limit < 0`);
         }
 
         this.ensureOpen();
@@ -85,7 +91,7 @@ export class BufferedReader extends Reader {
         return true;
     }
 
-    public read(target?: Uint16Array | java.nio.CharBuffer): java.lang.char;
+    public read(target?: Uint16Array | CharBuffer): char;
     public read(target: Uint16Array, offset: number, length: number): number;
     public read(target: Uint16Array, offset?: number, length?: number): number {
         this.ensureOpen();
@@ -110,7 +116,7 @@ export class BufferedReader extends Reader {
                 return this.cb[this.nextChar++];
             }
         } else {
-            if (target instanceof java.nio.CharBuffer) {
+            if (target instanceof CharBuffer) {
                 return this.read(target);
             }
 
@@ -118,7 +124,7 @@ export class BufferedReader extends Reader {
             length ??= target.length;
 
             if (offset < 0 || length < 0 || target.length > length - offset) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             if (length === 0) {
@@ -155,8 +161,8 @@ export class BufferedReader extends Reader {
      * @returns the contents of the line, not including any line-termination characters, or an empty string if the end
      * of the stream has been reached
      */
-    public readLine(ignoreLF = false, term?: boolean[]): java.lang.String {
-        const s = new java.lang.StringBuilder();
+    public readLine(ignoreLF = false, term?: boolean[]): JavaString {
+        const s = new StringBuilder();
         let startChar: number;
 
         this.ensureOpen();
@@ -173,9 +179,9 @@ export class BufferedReader extends Reader {
 
             if (this.nextChar >= this.nChars) { /* EOF */
                 if (s != null && s.length() > 0) {
-                    return s.toString();
+                    return s.substring(0);
                 } else {
-                    return new java.lang.String();
+                    return new JavaString();
                 }
             }
 
@@ -221,7 +227,7 @@ export class BufferedReader extends Reader {
                     this.skipLF = true;
                 }
 
-                return new java.lang.String(str);
+                return new JavaString(str);
             }
 
             s.append(this.cb, startChar, i - startChar);
@@ -264,7 +270,7 @@ export class BufferedReader extends Reader {
     public reset(): void {
         this.ensureOpen();
         if (this.markedChar < 0) {
-            throw new java.io.IOException((this.markedChar === BufferedReader.INVALIDATED)
+            throw new IOException((this.markedChar === BufferedReader.INVALIDATED)
                 ? S`Mark invalid`
                 : S`Stream not marked`);
         }
@@ -282,7 +288,7 @@ export class BufferedReader extends Reader {
      */
     public skip(n: number): number {
         if (n < 0) {
-            throw new java.lang.IllegalArgumentException(S`skip value is negative`);
+            throw new IllegalArgumentException(S`skip value is negative`);
         }
 
         this.ensureOpen();
@@ -321,7 +327,7 @@ export class BufferedReader extends Reader {
     /** Checks to make sure that the stream has not been closed */
     private ensureOpen(): void {
         if (!this.input) {
-            throw new java.io.IOException(S`Stream closed`);
+            throw new IOException(S`Stream closed`);
         }
     }
 

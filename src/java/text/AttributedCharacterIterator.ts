@@ -5,18 +5,22 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, NotImplementedError, S } from "../..";
+import { NotImplementedError } from "../../NotImplementedError";
+import { Serializable } from "../io/Serializable";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
+import { JavaMap } from "../util/Map";
+import { CharacterIterator } from "./CharacterIterator";
 
-export interface AttributedCharacterIterator extends java.text.CharacterIterator {
+export interface AttributedCharacterIterator extends CharacterIterator {
     /** Returns the keys of all attributes defined on the iterator's text range.*/
-    getAllAttributeKeys(): java.util.Set<AttributedCharacterIterator.Attribute>;
+    getAllAttributeKeys(): Set<AttributedCharacterIterator.Attribute>;
 
     /** Returns the value of the named attribute for the character at the iterator's current index.*/
     getAttribute(attribute: AttributedCharacterIterator.Attribute): unknown;
 
     /** Returns a map with the attributes defined on the current character. */
-    getAttributes(): java.util.Map<AttributedCharacterIterator.Attribute, unknown>;
+    getAttributes(): JavaMap<AttributedCharacterIterator.Attribute, unknown>;
 
     /**
      * Returns the index of the first character following the run with respect to all attributes containing the
@@ -34,7 +38,7 @@ export interface AttributedCharacterIterator extends java.text.CharacterIterator
      * Returns the index of the first character following the run with respect to the given attributes containing the
      * current character.
      */
-    getRunLimit<T extends AttributedCharacterIterator.Attribute>(attributes: java.util.Set<T>): number;
+    getRunLimit<T extends AttributedCharacterIterator.Attribute>(attributes: Set<T>): number;
 
     /**
      * Returns the index of the first character of the run with respect to all attributes containing the current
@@ -52,18 +56,18 @@ export interface AttributedCharacterIterator extends java.text.CharacterIterator
      * Returns the index of the first character of the run with respect to the given attributes containing the
      * current character.
      */
-    getRunStart<T extends AttributedCharacterIterator.Attribute>(attributes: java.util.Set<T>): number;
+    getRunStart<T extends AttributedCharacterIterator.Attribute>(attributes: Set<T>): number;
 }
 
 export namespace AttributedCharacterIterator {
-    export class Attribute extends JavaObject implements java.io.Serializable {
+    export class Attribute extends JavaObject implements Serializable {
         public static INPUT_METHOD_SEGMENT: Attribute;
         public static LANGUAGE: Attribute;
         public static READING: Attribute;
 
-        #name: java.lang.String;
+        #name: JavaString;
 
-        protected constructor(name: java.lang.String) {
+        protected constructor(name: JavaString) {
             super();
             this.#name = name;
         }
@@ -89,17 +93,17 @@ export namespace AttributedCharacterIterator {
         }
 
         /** @returns a string representation of the object.*/
-        public toString(): java.lang.String {
-            return S`${this.constructor.name}(${this.#name})`;
+        public toString(): string {
+            return `${this.constructor.name}(${this.#name})`;
         }
 
         /** @returns the name of the attribute.*/
-        public getName(): java.lang.String {
+        public getName(): JavaString {
             return this.#name;
         }
 
         /** Resolves instances being deserialized to the predefined constants.*/
-        public readResolve(): java.lang.Object {
+        public readResolve(): JavaObject {
             throw new NotImplementedError();
         }
 
@@ -113,9 +117,9 @@ export namespace AttributedCharacterIterator {
 
         static {
             setTimeout(() => {
-                this.INPUT_METHOD_SEGMENT = new Attribute(S`input_method_segment`);
-                this.LANGUAGE = new Attribute(S`language`);
-                this.READING = new Attribute(S`reading`);
+                this.INPUT_METHOD_SEGMENT = new Attribute(new JavaString("input_method_segment"));
+                this.LANGUAGE = new Attribute(new JavaString("language"));
+                this.READING = new Attribute(new JavaString("reading"));
             }, 0);
         }
     }

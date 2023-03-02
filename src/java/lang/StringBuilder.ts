@@ -5,16 +5,21 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
-import { java } from "../..";
+import { JavaString } from "./String";
 import { JavaObject } from "./Object";
+import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
+import { CharSequence } from "./CharSequence";
+import { NegativeArraySizeException } from "./NegativeArraySizeException";
+import { Appendable } from "./Appendable";
+import { CharBuffer } from "../nio/CharBuffer";
+import { char } from ".";
 
 export type SourceDataType =
-    null | undefined | boolean | number | string | bigint | Uint16Array | java.lang.CharSequence | java.lang.Object;
+    null | undefined | boolean | number | string | bigint | Uint16Array | CharSequence | JavaObject;
 
 type SourceData = SourceDataType[];
 
-export class StringBuilder extends JavaObject implements java.lang.CharSequence, java.lang.Appendable {
+export class StringBuilder extends JavaObject implements CharSequence, Appendable {
     private static readonly surrogateOffset = 0x10000 - (0xD800 << 10) - 0xDC00;
 
     private data: Uint16Array;
@@ -23,13 +28,13 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
     private currentLength = 0;
 
     public constructor(capacity?: number);
-    public constructor(content: string | java.lang.CharSequence);
-    public constructor(capacityOrContent?: number | string | java.lang.CharSequence) {
+    public constructor(content: string | CharSequence);
+    public constructor(capacityOrContent?: number | string | CharSequence) {
         super();
 
         if (typeof capacityOrContent === "number") {
             if (capacityOrContent < 0) {
-                throw new java.lang.NegativeArraySizeException();
+                throw new NegativeArraySizeException();
             }
 
             this.data = new Uint16Array(capacityOrContent);
@@ -46,7 +51,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
     /** Appends the string representation of the sub char array argument to this sequence. */
     public append(str: Uint16Array, offset: number, len: number): this;
     /** Appends a subsequence of the specified CharSequence to this sequence. */
-    public append(s: java.lang.CharSequence, start: number, end: number): this;
+    public append(s: CharSequence, start: number, end: number): this;
     public append(valueOrStrOrS: SourceDataType, offsetOrStart?: number, lenOrEnd?: number): this {
         if (valueOrStrOrS instanceof Uint16Array || Array.isArray(valueOrStrOrS)
             || this.isCharSequence(valueOrStrOrS)) {
@@ -81,9 +86,9 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      *
      * @param index The index of the value to be returned.
      */
-    public charAt(index: number): java.lang.char {
+    public charAt(index: number): char {
         if (index < 0 || index >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.data.at(index)!;
@@ -109,7 +114,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      */
     public codePointAt(index: number): number {
         if (index < 0 || index >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         const code = this.data.at(index)!;
@@ -139,7 +144,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      */
     public codePointBefore(index: number): number {
         if (index < 1 || index >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         const code = this.data.at(index - 1)!;
@@ -164,15 +169,15 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      */
     public codePointCount(beginIndex: number, endIndex: number): number {
         if (beginIndex < 0 || beginIndex >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (endIndex < 0 || endIndex >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (beginIndex > endIndex) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         let count = 0;
@@ -203,15 +208,15 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      */
     public delete(start: number, end: number): this {
         if (start < 0 || start >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (end < 0 || end > this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (start > end) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         this.data.copyWithin(start, end);
@@ -258,15 +263,15 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      */
     public getChars(srcBegin: number, srcEnd: number, dst: Uint16Array, dstBegin: number): void {
         if (srcBegin < 0 || dstBegin < 0) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (srcBegin > srcEnd || srcEnd > this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (dstBegin + srcEnd - srcBegin > dst.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         dst.set(this.data.subarray(srcBegin, srcEnd), dstBegin);
@@ -274,15 +279,15 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
 
     /**
      * @returns the index within this string of the first occurrence of the specified substring,
-     * starting at the specified index.
+     *          starting at the specified index.
      *
-     * @param str tbd
-     * @param fromIndex tbd
+     * @param str The substring to search for.
+     * @param fromIndex The index from which to start the search.
      */
-    public indexOf(str: string, fromIndex?: number): number {
+    public indexOf(str: JavaString, fromIndex?: number): number {
         const text = this.toString();
 
-        return `${text}`.indexOf(str, fromIndex);
+        return text.valueOf().indexOf(str.valueOf(), fromIndex);
     }
 
     /** Inserts the string representation of the given value to the sequence. */
@@ -290,8 +295,8 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
     /** Appends the string representation of the sub char array argument to this sequence. */
     public insert(index: number, str: Uint16Array, offset: number, len: number): this;
     /** Appends the string representation of the sub char array argument to this sequence. */
-    public insert(index: number, s: java.lang.CharSequence, start: number, end: number): this;
-    public insert(index: number, valueOrStrOrS: SourceDataType | Uint16Array | java.lang.CharSequence,
+    public insert(index: number, s: CharSequence, start: number, end: number): this;
+    public insert(index: number, valueOrStrOrS: SourceDataType | Uint16Array | CharSequence,
         offsetOrStart?: number, lenOrEnd?: number): this {
         if (valueOrStrOrS instanceof Uint16Array || Array.isArray(valueOrStrOrS)
             || this.isCharSequence(valueOrStrOrS)) {
@@ -328,7 +333,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      */
     public offsetByCodePoints(index: number, codePointOffset: number): number {
         if (index < 0 || index >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (codePointOffset >= 0) {
@@ -341,7 +346,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
             }
 
             if (offset < codePointOffset) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
         } else {
             let offset: number;
@@ -352,7 +357,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
                 }
             }
             if (offset < 0) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
         }
 
@@ -392,9 +397,9 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      * @param index tbd
      * @param ch tbd
      */
-    public setCharAt(index: number, ch: java.lang.char): void {
+    public setCharAt(index: number, ch: char): void {
         if (index < 0 || index >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         this.data.set([ch & 0xFFFF], index);
@@ -432,8 +437,8 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      * @param start tbd
      * @param end tbd
      */
-    public subSequence(start: number, end: number): java.lang.CharSequence {
-        const buffer = java.nio.CharBuffer.wrap(S``);
+    public subSequence(start: number, end: number): CharSequence {
+        const buffer = CharBuffer.wrap(new JavaString());
         buffer.put(this.data, start, end);
 
         return buffer;
@@ -445,18 +450,22 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      * @param start tbd
      * @param end tbd
      */
-    public substring(start: number, end?: number): String {
+    public substring(start: number, end?: number): JavaString {
         end ??= this.currentLength;
         if (start < 0 || end >= this.currentLength) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
-        return String.fromCharCode(...this.data.subarray(start, end));
+        if (start === 0 && (end === undefined || end === this.currentLength)) {
+            return new JavaString(this.data);
+        }
+
+        return new JavaString(String.fromCharCode(...this.data.subarray(start, end)));
     }
 
     /** @returns a string representing of the data in this sequence. */
-    public toString(): java.lang.String {
-        return new java.lang.String(String.fromCharCode(...this.data.subarray(0, this.currentLength)));
+    public toString(): string {
+        return String.fromCharCode(...this.data.subarray(0, this.currentLength));
     }
 
     public array(): Uint16Array {
@@ -488,7 +497,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
                 }
             } else if (typeof entry === "string") {
                 if (entry.length > 0) {
-                    const chars: java.lang.char[] = [];
+                    const chars: char[] = [];
 
                     for (let i = 0; i < entry.length; ++i) {
                         chars.push(entry.charCodeAt(i));
@@ -501,7 +510,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
             } else {
                 const text = entry ? `${entry.toString()}` : "null";
                 if (text.length > 0) {
-                    const chars: java.lang.char[] = [];
+                    const chars: char[] = [];
 
                     for (let i = 0; i < text.length; ++i) {
                         chars.push(text.charCodeAt(i));
@@ -560,7 +569,7 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
      * @param start Optional start position in the source list.
      * @param end Optional end position in the source list.
      */
-    private insertListData(position: number, data: number[] | Uint16Array | java.lang.CharSequence, start?: number,
+    private insertListData(position: number, data: number[] | Uint16Array | CharSequence, start?: number,
         end?: number): void {
         let array: Uint16Array;
         let additionalSize: number;
@@ -615,13 +624,13 @@ export class StringBuilder extends JavaObject implements java.lang.CharSequence,
         }
     }
 
-    private isCharSequence(candidate: unknown): candidate is java.lang.CharSequence {
+    private isCharSequence(candidate: unknown): candidate is CharSequence {
         if (candidate instanceof StringBuilder) {
             // A StringBuilder is also a char sequence, but we use an optimized path for it.
             return false;
         }
 
-        return (candidate as java.lang.CharSequence).subSequence !== undefined;
+        return (candidate as CharSequence).subSequence !== undefined;
     }
 
     private isHighSurrogate(code?: number): boolean {

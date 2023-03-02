@@ -3,17 +3,16 @@
  * Licensed under the BSD-3-Clause license. See LICENSE file in the project root for license information.
  */
 
-import util from "util";
-
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 import { MurmurHash } from "../../MurmurHash";
 import { BitSetIterator } from "./BitSetIterator";
+import { Serializable } from "../io/Serializable";
+import { Cloneable } from "../lang/Cloneable";
 
 // The code in this file was taken from the antlr4ts package.
 
-export class BitSet extends JavaObject implements java.io.Serializable, java.lang.Cloneable<BitSet> {
+export class BitSet extends JavaObject implements Serializable, Cloneable<BitSet> {
     /**
      * Private empty array used to construct empty BitSets.
      */
@@ -695,7 +694,7 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
      *
      * Now `drPepper.toString()` returns `"{2, 4, 10}"`.
      */
-    public toString(): java.lang.String {
+    public toString(): string {
         let result = "{";
 
         let first = true;
@@ -711,7 +710,7 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
 
         result += "}";
 
-        return new java.lang.String(result);
+        return result;
     }
 
     // static valueOf(bytes: Int8Array): BitSet;
@@ -773,15 +772,6 @@ export class BitSet extends JavaObject implements java.io.Serializable, java.lan
 
     public [Symbol.iterator](): IterableIterator<number> {
         return new BitSetIterator(this.data);
-    }
-
-    /**
-     * Overrides formatting for nodejs assert etc.
-     *
-     * @returns A text description of this set.
-     */
-    public [util.inspect.custom](): string {
-        return "BitSet " + this.toString();
     }
 
     private doSetBits(word: number, value: boolean, mask: number) {

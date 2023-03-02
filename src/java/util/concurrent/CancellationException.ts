@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { IllegalStateException } from "../../lang";
+import { IllegalStateException } from "../../lang/IllegalStateException";
 
 export class CancellationException extends IllegalStateException {
 

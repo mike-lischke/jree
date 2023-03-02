@@ -7,13 +7,25 @@
 
 import printf from "printf";
 
-import { java, charCodesToString, codePointsToString } from "../..";
+import { char } from ".";
+
 import { MurmurHash } from "../../MurmurHash";
+import { charCodesToString, codePointsToString } from "../../utilities";
+import { Serializable } from "../io/Serializable";
+import { UnsupportedEncodingException } from "../io/UnsupportedEncodingException";
+import { ByteBuffer } from "../nio/ByteBuffer";
+import { Charset } from "../nio/charset/Charset";
+import { Locale } from "../util/Locale";
+import { CharSequence } from "./CharSequence";
+import { Comparable } from "./Comparable";
+import { IllegalArgumentException } from "./IllegalArgumentException";
+import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
 
 import { JavaObject } from "./Object";
+import { StringBuffer } from "./StringBuffer";
+import { StringBuilder } from "./StringBuilder";
 
-export class String extends JavaObject
-    implements java.io.Serializable, java.lang.CharSequence, java.lang.Comparable<String> {
+export class JavaString extends JavaObject implements Serializable, CharSequence, Comparable<JavaString> {
     // A space in Java is defined as anything equal or below the space char.
     static #spaceRegExBegin = /^[\x00-\x20]+/;
 
@@ -31,7 +43,7 @@ export class String extends JavaObject
     /** Constructs a new String by decoding the specified array of bytes using the platform's default charset. */
     public constructor(bytes: Uint8Array);
     /** Constructs a new String by decoding the specified array of bytes using the specified charset. */
-    public constructor(bytes: Uint8Array, charset: java.nio.charset.Charset);
+    public constructor(bytes: Uint8Array, charset: Charset);
     /**
      * This method does not properly convert bytes into characters. As of JDK 1.1, the preferred way to do this is via
      * the String constructors that take a Charset, charset name, or that use the platform's default charset.
@@ -39,15 +51,15 @@ export class String extends JavaObject
      */
     public constructor(bytes: Uint8Array, offset: number, length: number);
     /** Constructs a new String by decoding the specified subarray of bytes using the specified charset. */
-    public constructor(bytes: Uint8Array, offset: number, length: number, charset: java.nio.charset.Charset);
+    public constructor(bytes: Uint8Array, offset: number, length: number, charset: Charset);
     /**
      * This method does not properly convert bytes into characters. As of JDK 1.1, the preferred way to do this is
      * via the String constructors that take a Charset, charset name, or that use the platform's default charset.
      * Constructs a new String by decoding the specified subarray of bytes using the specified charset.
      */
-    public constructor(bytes: Uint8Array, offset: number, length: number, charsetName: string);
+    public constructor(bytes: Uint8Array, offset: number, length: number, charsetName: JavaString);
     /** Constructs a new String by decoding the specified array of bytes using the specified charset. */
-    public constructor(bytes: Uint8Array, charsetName: string);
+    public constructor(bytes: Uint8Array, charsetName: JavaString);
     /**
      * Allocates a new String so that it represents the sequence of characters currently contained in the character
      * array argument.
@@ -60,151 +72,249 @@ export class String extends JavaObject
     /**
      * Initializes a newly created String object so that it represents the same sequence of characters as the argument;
      * in other words, the newly created string is a copy of the argument string.
+     *
+     * Note: this has been extended to also accept a TS string as input, for convenience.
      */
-    public constructor(original: string);
+    public constructor(original: JavaString | string);
     /**
      * Allocates a new string that contains the sequence of characters currently contained in the string buffer
      * argument.
      */
-    public constructor(buffer: java.lang.StringBuffer);
+    public constructor(buffer: StringBuffer);
     /**
      * Allocates a new string that contains the sequence of characters currently contained in the string builder
      * argument.
      */
-    public constructor(builder: java.lang.StringBuilder);
-    public constructor(
-        input?: Uint8Array | Uint16Array | Uint32Array | string | java.lang.StringBuilder,
-        charsetOrCharsetNameOrOffset?: java.nio.charset.Charset | string | number,
-        lengthOrCount?: number,
-        charSetOrCharsetName?: java.nio.charset.Charset | string,
-    ) {
+    public constructor(builder: StringBuilder);
+    public constructor(...args: unknown[]) {
         super();
 
-        let offset: number | undefined;
-        if (typeof charsetOrCharsetNameOrOffset === "number") {
-            offset = charsetOrCharsetNameOrOffset;
-        }
+        switch (args.length) {
+            case 0: {
+                this.#value = "";
 
-        if (!input) {
-            this.#value = "";
-        } else if (typeof input === "string") {
-            this.#value = input.substring(offset ?? 0, lengthOrCount);
-        } else if (input instanceof Uint8Array) {
-            // Byte data. Decode it using either the given or the system default charset.
-            let nameOrCharset: java.nio.charset.Charset | string | undefined;
-            if (charSetOrCharsetName) {
-                nameOrCharset = charSetOrCharsetName;
-            } else if (typeof charsetOrCharsetNameOrOffset !== "number") {
-                nameOrCharset = charsetOrCharsetNameOrOffset;
+                break;
             }
 
-            let charset: java.nio.charset.Charset | undefined;
-            if (nameOrCharset) {
-                charset = nameOrCharset instanceof java.nio.charset.Charset
-                    ? nameOrCharset
-                    : java.nio.charset.Charset.forName(nameOrCharset);
+            case 1: {
+                const input = args[0];
+                if (input instanceof Uint8Array) {
+                    const charset = Charset.defaultCharset();
+                    this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;
+                } else if (input instanceof Uint16Array) {
+                    this.#value = charCodesToString(input);
+                } else if (input instanceof Uint32Array) {
+                    this.#value = codePointsToString(input);
+                } else {
+                    this.#value = `${input}`;
+                }
+
+                break;
             }
 
-            charset ??= java.nio.charset.Charset.defaultCharset;
+            case 2: {
+                if (args[1] instanceof Charset) {
+                    const [input, charset] = args as [Uint8Array, Charset];
+                    this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;
+                } else {
+                    const [input, charsetName] = args as [Uint8Array, JavaString];
+                    const charset = Charset.forName(charsetName);
+                    if (charset === null) {
+                        throw new UnsupportedEncodingException(charsetName);
+                    }
 
-            this.#value = `${charset.decode(java.nio.ByteBuffer.wrap(input, offset ?? 0, lengthOrCount ?? input.length))
-                .toString()}`;
-        } else if (input instanceof Uint16Array) {
-            this.#value = charCodesToString(input.subarray(offset, lengthOrCount));
-        } else if (input instanceof Uint32Array) {
-            this.#value = codePointsToString(input);
-        } else {
-            this.#value = input.toString().#value;
+                    this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;
+                }
+
+                break;
+            }
+
+            case 3: {
+                const [input, offset, length] = args[0] as [Uint8Array | Uint16Array | Uint32Array, number, number];
+                if (offset < 0 || length < 0 || offset + length > input.length) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                if (input instanceof Uint8Array) {
+                    this.#value = `${Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length))}`;
+                } else if (input instanceof Uint16Array) {
+                    this.#value = charCodesToString(input.slice(offset, length));
+                } else {
+                    this.#value = codePointsToString(input.slice(offset, length));
+                }
+
+                break;
+            }
+
+            case 4: {
+                const [input, offset, length, cs] = args as [Uint8Array, number, number, Charset | JavaString];
+                if (offset < 0 || length < 0 || offset + length > input.length) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                if (cs instanceof Charset) {
+                    this.#value = `${cs.decode(ByteBuffer.wrap(input, offset, length))}`;
+                } else {
+                    const charset = Charset.forName(cs);
+                    if (charset === null) {
+                        throw new UnsupportedEncodingException(cs);
+                    }
+
+                    this.#value = `${Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length))}`;
+                }
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(new JavaString(`Invalid number of arguments: ${args.length}`));
+            }
         }
     }
 
-    public static valueOf(v: unknown): String {
+    /**
+     * Not part of the Java API. Creates a Java string from a code point.
+     *
+     * @param codePoint the code point to convert to a string.
+     *
+     * @returns A Java string with a single letter (represented by the code point).
+     */
+    public static fromCodePoint(codePoint: number): JavaString {
+        if (codePoint < 0 || codePoint > 0x10ffff) {
+            throw new IllegalArgumentException(new JavaString(`Invalid code point: ${codePoint}`));
+        }
+
+        return new JavaString(String.fromCodePoint(codePoint));
+    }
+
+    /**
+     * @param v the value to convert to a string.
+     *
+     * @returns the string representation of the argument.
+     *
+     */
+    public static valueOf(v: unknown): JavaString {
         if (v instanceof Uint16Array) {
-            return new java.lang.String(v);
+            return new JavaString(v);
         }
 
         if (v === null) {
-            return new java.lang.String("null");
+            return new JavaString("null");
         }
 
         if (v === undefined) {
-            return new java.lang.String("undefined");
+            return new JavaString("undefined");
         }
 
-        if (v instanceof JavaObject) {
-            return v.toString()!;
-        }
-
-        return new java.lang.String(`${v}`);
+        return new JavaString(`${v}`);
     }
 
-    public static format(format: String, ...args: unknown[]): String;
-    /**
-     * @param l not used currently
-     * @param format The format string.
-     * @param args Values to print.
-     *
-     * @returns a formatted string using the specified locale, format string, and arguments.
-     */
-    public static format(l: java.util.Locale, format: String, ...args: unknown[]): String;
-    public static format(...args: unknown[]): String {
+    /** @returns a formatted string using the specified format string and arguments. */
+    public static format(format: JavaString, ...args: unknown[]): JavaString;
+    /** @returns a formatted string using the specified locale, format string, and arguments. */
+    public static format(l: Locale, format: JavaString, ...args: unknown[]): JavaString;
+    public static format(...args: unknown[]): JavaString {
         let index = 0;
-        if (args[0] instanceof java.util.Locale) {
+        if (args[0] instanceof Locale) {
             ++index; // Ignore the local for now.
         }
 
         const text = printf(`${args[index]}`, args.slice(index + 1));
 
-        return new java.lang.String(text);
+        return new JavaString(text);
     }
 
-    public charAt(index: number): java.lang.char {
+    public [Symbol.toPrimitive](hint: string): string {
+        return this.#value;
+    }
+
+    /**
+     * @param index the index of the char value.
+     *
+     * @returns the char value at the specified index
+     */
+    public charAt(index: number): char {
         if (index < 0 || index >= this.#value.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#value.charCodeAt(index);
     }
 
+    /**
+     * @param index the index of the char value.
+     *
+     * @returns the character (Unicode code point) at the specified index.
+     */
     public codePointAt(index: number): number {
         if (index < 0 || index >= this.#value.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
-        return this.#value.codePointAt(index) ?? NaN;
+        return this.#value.codePointAt(index)!;
     }
 
+    /**
+     * Compares two strings lexicographically.
+     *
+     * @param anotherString the string to be compared.
+     *
+     * @returns the value `0` if the argument string is equal to this string; a value less than `0` if this string
+     */
+    public compareTo(anotherString: JavaString): number {
+        return this.#value.localeCompare(anotherString.#value, undefined, { sensitivity: "accent" });
+    }
+
+    /**
+     * Compares two strings lexicographically, ignoring case differences.
+     *
+     * @param anotherString the string to be compared.
+     *
+     * @returns the value `0` if the argument string is equal to this string; a value less than `0` if this string
+     */
+    public compareToIgnoreCase(anotherString: JavaString): number {
+        return this.#value.localeCompare(anotherString.#value, undefined, { sensitivity: "case" });
+    }
+
+    /**
+     * Compares this string to the specified object.
+     *
+     * @param obj the object to compare this `String` against.
+     *
+     * @returns `true` if the given object represents a `String` equivalent to this string, `false` otherwise.
+     */
     public equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
         }
 
-        if (!(obj instanceof String)) {
+        if (!(obj instanceof JavaString)) {
             return false;
         }
 
         return this.#value === obj.#value;
     }
 
+    /** @returns a hash code for this string. */
     public hashCode(): number {
         return MurmurHash.hashCode(this.#value, 17);
     }
 
     /** Returns the index within this string of the first occurrence of the specified character. */
-    public indexOf(ch: java.lang.char): number;
+    public indexOf(ch: char): number;
     /**
      * Returns the index within this string of the first occurrence of the specified character, starting the search
      * at the specified index.
      */
-    public indexOf(ch: java.lang.char, fromIndex: number): number;
+    public indexOf(ch: char, fromIndex: number): number;
     /** Returns the index within this string of the first occurrence of the specified substring. */
-    public indexOf(searchString: java.lang.String): number;
+    public indexOf(searchString: JavaString): number;
     /**
      * Returns the index within this string of the first occurrence of the specified substring, starting at the
      * specified index.
      */
-    public indexOf(searchString: java.lang.String, fromIndex: number): number;
-    public indexOf(chOrSearchString: java.lang.char | java.lang.String, fromIndex?: number): number {
+    public indexOf(searchString: JavaString, fromIndex: number): number;
+    public indexOf(chOrSearchString: char | JavaString, fromIndex?: number): number {
         if (typeof chOrSearchString === "number") {
             return this.#value.indexOf(window.String.fromCharCode(chOrSearchString), fromIndex);
         }
@@ -212,25 +322,26 @@ export class String extends JavaObject
         return this.#value.indexOf(chOrSearchString.#value, fromIndex);
     }
 
+    /** @returns `true` if, and only if, length() is `0`. */
     public isEmpty(): boolean {
         return this.#value.length === 0;
     }
 
     /** Returns the index within this string of the last occurrence of the specified character. */
-    public lastIndexOf(ch: java.lang.char): number;
+    public lastIndexOf(ch: char): number;
     /**
      * Returns the index within this string of the last occurrence of the specified character, searching backward
      * starting at the specified index.
      */
-    public lastIndexOf(ch: java.lang.char, fromIndex: number): number;
+    public lastIndexOf(ch: char, fromIndex: number): number;
     /** Returns the index within this string of the last occurrence of the specified substring. */
-    public lastIndexOf(searchString: java.lang.String): number;
+    public lastIndexOf(searchString: JavaString): number;
     /**
      * Returns the index within this string of the last occurrence of the specified substring, searching backward
      * starting at the specified index.
      */
-    public lastIndexOf(searchString: java.lang.String, fromIndex: number): number;
-    public lastIndexOf(chOrSearchString: java.lang.char | java.lang.String, fromIndex?: number): number {
+    public lastIndexOf(searchString: JavaString, fromIndex: number): number;
+    public lastIndexOf(chOrSearchString: char | JavaString, fromIndex?: number): number {
         if (typeof chOrSearchString === "number") {
             if (fromIndex === undefined) {
                 return this.#value.lastIndexOf(window.String.fromCharCode(chOrSearchString));
@@ -246,14 +357,30 @@ export class String extends JavaObject
         return this.#value.lastIndexOf(chOrSearchString.#value, fromIndex);
     }
 
+    /** @returns the the length of this string. */
     public length(): number {
         return this.#value.length;
     }
 
-    public replace(target: java.lang.CharSequence, replacement: java.lang.CharSequence): java.lang.String;
-    public replace(oldChar: java.lang.char, newChar: java.lang.char): java.lang.String;
-    public replace(targetOrOldChar: java.lang.CharSequence | java.lang.char,
-        replacementOrNewChar: java.lang.CharSequence | java.lang.char): java.lang.String {
+    /**
+     * @param oldChar the old char.
+     * @param newChar the new char.
+     *
+     * @returns a string resulting from replacing all occurrences of `oldChar` in this string with `newChar`.
+     */
+    public replace(oldChar: char, newChar: char): JavaString;
+    /**
+     * Replaces each substring of this string that matches the literal target sequence with the specified literal
+     * replacement sequence.
+     *
+     * @param target the sequence of char values to be replaced.
+     * @param replacement the replacement sequence of char values.
+     *
+     * @returns a string resulting from replacing all occurrences of `oldChar` in this string with `newChar`.
+     */
+    public replace(target: CharSequence, replacement: CharSequence): JavaString;
+    public replace(targetOrOldChar: CharSequence | char,
+        replacementOrNewChar: CharSequence | char): JavaString {
         let searchValue;
         let replacement;
         if (typeof targetOrOldChar === "number") {
@@ -267,7 +394,7 @@ export class String extends JavaObject
         if (this.#value.includes(searchValue)) {
             const s = this.#value.replaceAll(searchValue, replacement);
 
-            return new java.lang.String(s);
+            return new JavaString(s);
         }
 
         return this;
@@ -276,53 +403,64 @@ export class String extends JavaObject
     /**
      * Splits this string around matches of the given regular expression.
      *
-     * @param regex tbd
-     * @param limit tbd
+     * @param regex the delimiting regular expression.
+     * @param limit the result threshold, as described above.
      *
-     * @returns tbd
+     * @returns the array of strings computed by splitting this string around matches of the given regular expression.
      */
-    public split(regex: java.lang.String | string, limit?: number): java.lang.String[] {
+    public split(regex: JavaString | string, limit?: number): JavaString[] {
         const parts = this.#value.split(`${regex}`, limit);
 
         return parts.map((value) => {
-            return new java.lang.String(value);
+            return new JavaString(value);
         });
     }
 
     /** @returns a string whose value is this string, with all leading and trailing white space removed. */
-    public strip(): java.lang.String {
+    public strip(): JavaString {
         return this.stripLeading().stripTrailing();
     }
 
     /** @returns a string whose value is this string, with all leading white space removed. */
-    public stripLeading(): java.lang.String {
-        const match = this.#value.match(java.lang.String.#whitespaceRegExBegin);
+    public stripLeading(): JavaString {
+        const match = this.#value.match(JavaString.#whitespaceRegExBegin);
         if (!match) {
             return this;
         }
 
-        return new java.lang.String(this.#value.substring(match[0].length));
+        return new JavaString(this.#value.substring(match[0].length));
     }
 
     /** @returns a string whose value is this string, with all trailing white space removed. */
-    public stripTrailing(): java.lang.String {
-        const match = this.#value.match(java.lang.String.#whitespaceRegExEnd);
+    public stripTrailing(): JavaString {
+        const match = this.#value.match(JavaString.#whitespaceRegExEnd);
         if (!match) {
             return this;
         }
 
-        return new java.lang.String(this.#value.substring(0, this.#value.length - match[0].length));
+        return new JavaString(this.#value.substring(0, this.#value.length - match[0].length));
     }
 
-    public subSequence(start: number, end: number): java.lang.CharSequence {
+    /**
+     * @param start the beginning index, inclusive.
+     * @param end the ending index, exclusive.
+     *
+     * @returns a character sequence that is a subsequence of this sequence.
+     */
+    public subSequence(start: number, end: number): CharSequence {
         return this.substring(start, end);
     }
 
     /**Returns a string that is a substring of this string.*/
-    public substring(beginIndex: number, endIndex?: number): java.lang.String {
-        return new java.lang.String(this.#value.substring(beginIndex, endIndex));
+    public substring(beginIndex: number, endIndex?: number): JavaString {
+        return new JavaString(this.#value.substring(beginIndex, endIndex));
     }
 
+    /**
+     * Converts this string to a new character array.
+     *
+     * @returns a newly allocated character array whose length is the length of this string and whose contents are
+     */
     public toCharArray(): Uint16Array {
         const result = new Uint16Array(this.#value.length);
         for (let i = 0; i < this.#value.length; ++i) {
@@ -334,11 +472,11 @@ export class String extends JavaObject
 
     /**
      * @returns a string whose value is this string, with all leading and trailing space removed, where space is defined
-     * as any character whose codepoint is less than or equal to 'U+0020'(the space character).
+     *          as any character whose codepoint is less than or equal to 'U+0020'(the space character).
      */
-    public trim(): java.lang.String {
-        const startMatch = this.#value.match(java.lang.String.#spaceRegExBegin);
-        const endMatch = this.#value.match(java.lang.String.#spaceRegExEnd);
+    public trim(): JavaString {
+        const startMatch = this.#value.match(JavaString.#spaceRegExBegin);
+        const endMatch = this.#value.match(JavaString.#spaceRegExEnd);
         if (!startMatch && !endMatch) {
             return this;
         }
@@ -346,7 +484,7 @@ export class String extends JavaObject
         const start = startMatch ? startMatch[0].length : 0;
         const end = this.#value.length - (endMatch ? endMatch[0].length : 0);
 
-        return new java.lang.String(this.#value.substring(start, end));
+        return new JavaString(this.#value.substring(start, end));
     }
 
     /**
@@ -358,20 +496,7 @@ export class String extends JavaObject
         return this.#value;
     }
 
-    public compareTo(o: String): number {
-        return this.#value.localeCompare(o.#value, undefined, { sensitivity: "accent" });
+    public toString(): string {
+        return this.valueOf();
     }
-
-    public compareToIgnoreCase(o: String): number {
-        return this.#value.localeCompare(o.#value, undefined, { sensitivity: "case" });
-    }
-
-    public toString(): String {
-        return this;
-    }
-
-    protected [Symbol.toPrimitive](_hint: string): string {
-        return this.#value;
-    }
-
 }

@@ -5,12 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from ".";
 import { JavaObject } from "./java/lang/Object";
+import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException";
 import { HashMapEntry } from "./java/util/HashMapEntry";
+import { JavaIterator } from "./java/util/Iterator";
+import { JavaMap } from "./java/util/Map";
 
 /** A specialized JRE iterator for Map entries, which wraps a Typescript iterator. */
-export class JavaMapEntryIterator<K, V> extends JavaObject implements java.util.Iterator<java.util.Map.Entry<K, V>> {
+export class JavaMapEntryIterator<K, V> extends JavaObject implements JavaIterator<JavaMap.Entry<K, V>> {
 
     private nextValue: IteratorResult<[K, V], [K, V]>;
 
@@ -23,7 +25,7 @@ export class JavaMapEntryIterator<K, V> extends JavaObject implements java.util.
         return !this.nextValue.done;
     }
 
-    public next(): java.util.Map.Entry<K, V> {
+    public next(): JavaMap.Entry<K, V> {
         const result = this.nextValue;
         this.nextValue = this.iterator.next();
 
@@ -31,7 +33,7 @@ export class JavaMapEntryIterator<K, V> extends JavaObject implements java.util.
     }
 
     public remove(): void {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
 }

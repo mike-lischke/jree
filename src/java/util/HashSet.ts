@@ -7,8 +7,9 @@
 import { java } from "../..";
 
 import { Set } from "immutable";
-import { JavaIterator } from "../../JavaIterator";
+import { IteratorWrapper } from "../../IteratorWrapper";
 import { Collection } from "./Collection";
+import { JavaIterator } from "./Iterator";
 
 /**
  * This interface provides shared access to the backend of a HashSet instance for all currently active value
@@ -81,8 +82,8 @@ export class HashSet<T> extends Collection<T>
     }
 
     /** @returns an iterator over the elements in this set. */
-    public iterator(): java.util.Iterator<T> {
-        return new JavaIterator(this.#sharedBackend.backend[Symbol.iterator]());
+    public iterator(): JavaIterator<T> {
+        return new IteratorWrapper(this.#sharedBackend.backend[Symbol.iterator]());
     }
 
     /**
@@ -232,9 +233,9 @@ export class HashSet<T> extends Collection<T>
         return result;
     }
 
-    public toString(): java.lang.String {
+    public toString(): string {
         if (this.size() === 0) {
-            return new java.lang.String("{}");
+            return "{}";
         }
 
         const buf = new java.lang.StringBuilder();

@@ -8,7 +8,7 @@
 import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
-import { isArrayLike, isEquatable } from "../../helpers";
+import { isArrayLike, isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
 import { S } from "../../templates";
 import { Arrays } from "./Arrays";

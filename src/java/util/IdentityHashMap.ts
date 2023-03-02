@@ -5,21 +5,25 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 import { MurmurHash } from "../../MurmurHash";
 import { NotImplementedError } from "../../NotImplementedError";
+import { Cloneable } from "../lang/Cloneable";
+import { Serializable } from "../io/Serializable";
+import { JavaMap } from "./Map";
+import { JavaSet } from "./Set";
+import { Collection } from "./Collection";
 
-export class IdentityHashMap<K, V> extends JavaObject implements java.lang.Cloneable<IdentityHashMap<K, V>>,
-    java.io.Serializable, java.util.Map<K, V> {
+export class IdentityHashMap<K, V> extends JavaObject implements Cloneable<IdentityHashMap<K, V>>,
+    Serializable, JavaMap<K, V> {
 
     // Since we are using reference equality in this map, we can just let TS map do the heavy lifting.
     private backingStore = new Map<K, V>();
 
     public constructor(expectedMaxSize?: number);
-    public constructor(map: java.util.Map<K, V>);
-    public constructor(expectedMaxSizeOrMap?: number | java.util.Map<K, V>) {
+    public constructor(map: JavaMap<K, V>);
+    public constructor(expectedMaxSizeOrMap?: number | JavaMap<K, V>) {
         super();
 
         if (expectedMaxSizeOrMap && typeof expectedMaxSizeOrMap !== "number") {
@@ -53,7 +57,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements java.lang.Clone
         return false;
     }
 
-    public entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
+    public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
         throw new NotImplementedError();
     }
 
@@ -65,7 +69,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements java.lang.Clone
         return this.backingStore.size === 0;
     }
 
-    public keySet(): java.util.Set<K> {
+    public keySet(): JavaSet<K> {
         throw new NotImplementedError();
     }
 
@@ -76,7 +80,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements java.lang.Clone
         return result ?? null;
     }
 
-    public putAll(map: java.util.Map<K, V>): void {
+    public putAll(map: JavaMap<K, V>): void {
         if (map instanceof IdentityHashMap<K, V>) {
             (map.backingStore as Map<K, V>).forEach((value, key) => {
                 this.backingStore.set(key, value);
@@ -129,7 +133,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements java.lang.Clone
         return true;
     }
 
-    public values(): java.util.Collection<V> {
+    public values(): Collection<V> {
         throw new NotImplementedError();
     }
 }

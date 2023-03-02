@@ -7,7 +7,8 @@
 
 import { List } from "immutable";
 
-import { java, NotImplementedError, S } from "../..";
+import { java, NotImplementedError } from "../..";
+import { S } from "../../templates";
 import { AbstractList } from "./AbstractList";
 import { IListBackend } from "./ListIteratorImpl";
 

@@ -5,9 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { Collection } from "./Collection";
+import { JavaIterator } from "./Iterator";
+import { ListIterator } from "./ListIterator";
 
-export interface List<T> extends java.util.Collection<T> {
+export interface List<T> extends Collection<T> {
 
     /**
      * Appends the specified element to the end of this list.
@@ -23,12 +25,12 @@ export interface List<T> extends java.util.Collection<T> {
      * Appends all of the elements in the specified collection to the end of this list, in the order that they are
      * returned by the specified collection's iterator.
      */
-    addAll(c: java.util.Collection<T>): boolean;
+    addAll(c: Collection<T>): boolean;
 
     /**
      * Inserts all of the elements in the specified collection into this list at the specified position.
      */
-    addAll(index: number, c: java.util.Collection<T>): boolean;
+    addAll(index: number, c: Collection<T>): boolean;
 
     /**
      * Removes all of the elements from this list.
@@ -43,7 +45,7 @@ export interface List<T> extends java.util.Collection<T> {
     /**
      * Returns true if this list contains all of the elements of the specified collection.
      */
-    containsAll(c: java.util.Collection<T>): boolean;
+    containsAll(c: Collection<T>): boolean;
 
     /**
      * Compares the specified object with this list for equality.
@@ -74,7 +76,7 @@ export interface List<T> extends java.util.Collection<T> {
     /**
      * Returns an iterator over the elements in this list in proper sequence.
      */
-    iterator(): java.util.Iterator<T>;
+    iterator(): JavaIterator<T>;
 
     /**
      * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not
@@ -86,7 +88,7 @@ export interface List<T> extends java.util.Collection<T> {
      * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified
      * position in the list (or 0 if no index is given).
      */
-    listIterator(index?: number): java.util.ListIterator<T>;
+    listIterator(index?: number): ListIterator<T>;
 
     /**
      * Removes the element at the specified position in this list.
@@ -97,12 +99,12 @@ export interface List<T> extends java.util.Collection<T> {
     /**
      * Removes from this list all of its elements that are contained in the specified collection.
      */
-    removeAll(c: java.util.Collection<T>): boolean;
+    removeAll(c: Collection<T>): boolean;
 
     /**
      * Retains only the elements in this list that are contained in the specified collection.
      */
-    retainAll(c: java.util.Collection<T>): boolean;
+    retainAll(c: Collection<T>): boolean;
 
     /**
      * Replaces the element at the specified position in this list with the specified element.

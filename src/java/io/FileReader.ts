@@ -5,8 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
-
+import { JavaString } from "../..";
+import { Charset } from "../nio/charset/Charset";
+import { JavaFile } from "./File";
+import { FileDescriptor } from "./FileDescriptor";
+import { FileInputStream } from "./FileInputStream";
 import { InputStreamReader } from "./InputStreamReader";
 
 export class FileReader extends InputStreamReader {
@@ -21,7 +24,7 @@ export class FileReader extends InputStreamReader {
      *             reading.
      * @see        Charset#defaultCharset()
      */
-    public constructor(fileName: java.lang.String);
+    public constructor(fileName: JavaString);
     /**
      * Creates a new {@code FileReader}, given the {@code File} to read,
      * using the {@link Charset#defaultCharset() default charset}.
@@ -33,7 +36,7 @@ export class FileReader extends InputStreamReader {
      *             reading.
      * @see        Charset#defaultCharset()
      */
-    public constructor(file: java.io.File);
+    public constructor(file: JavaFile);
     /**
      * Creates a new {@link FileReader}, given the {@link FileDescriptor} to read,
      * using the {@link Charset#defaultCharset() default charset}.
@@ -41,22 +44,22 @@ export class FileReader extends InputStreamReader {
      * @param fd the {@link FileDescriptor} to read
      * @see Charset#defaultCharset()
      */
-    public constructor(fd: java.io.FileDescriptor);
+    public constructor(fd: FileDescriptor);
     /**
      * Creates a new {@code FileReader}, given the name of the file to read
      * and the {@link Charset charset}.
      *
      * @param      fileName the name of the file to read
-     * @param      charset the {@link java.nio.charset.Charset}
+     * @param      charset the {@link Charset}
      * @throws     IOException  if the named file does not exist,
      *             is a directory rather than a regular file,
      *             or for some other reason cannot be opened for
      *             reading.
      */
-    public constructor(fileName: java.lang.String, charset: java.nio.charset.Charset);
+    public constructor(fileName: JavaString, charset: Charset);
     /**
-     * Creates a new {@code FileReader}, given the {@link java.io.File} to read and
-     * the {@link java.nio.charset.Charset}.
+     * Creates a new {@code FileReader}, given the {@link JavaFile} to read and
+     * the {@link Charset}.
      *
      * @param      file the {@code File} to read
      * @param      charset the {@link Charset charset}
@@ -65,15 +68,15 @@ export class FileReader extends InputStreamReader {
      *             or for some other reason cannot be opened for
      *             reading.
      */
-    public constructor(file: java.io.File, charset: java.nio.charset.Charset);
-    public constructor(fileNameOrFileOrFd: java.lang.String | java.io.File | java.io.FileDescriptor,
-        charset?: java.nio.charset.Charset) {
-        if (fileNameOrFileOrFd instanceof java.lang.String) {
-            super(new java.io.FileInputStream(fileNameOrFileOrFd), charset);
-        } else if (fileNameOrFileOrFd instanceof java.io.File) {
-            super(new java.io.FileInputStream(fileNameOrFileOrFd), charset);
+    public constructor(file: JavaFile, charset: Charset);
+    public constructor(fileNameOrFileOrFd: JavaString | JavaFile | FileDescriptor,
+        charset?: Charset) {
+        if (fileNameOrFileOrFd instanceof JavaString) {
+            super(new FileInputStream(fileNameOrFileOrFd), charset);
+        } else if (fileNameOrFileOrFd instanceof JavaFile) {
+            super(new FileInputStream(fileNameOrFileOrFd), charset);
         } else {
-            super(new java.io.FileInputStream(fileNameOrFileOrFd), charset);
+            super(new FileInputStream(fileNameOrFileOrFd), charset);
         }
     }
 

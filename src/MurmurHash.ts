@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { isEquatable } from "./helpers";
+import { isEquatable } from "./type-guards";
 
 /**
  * @author Sam Harwell

@@ -5,9 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { JavaIterator } from "./Iterator";
 
-export interface ListIterator<T> extends java.util.Iterator<T> {
+export interface ListIterator<T> extends JavaIterator<T> {
     /**
      * Inserts the specified element into the list (optional operation).
      */

@@ -8,42 +8,46 @@
 import * as fs from "fs/promises";
 import { writeSync } from "fs";
 
-import { java } from "../..";
-
 import { OutputStream } from "./OutputStream";
 import { S } from "../../templates";
+import { FileDescriptor } from "./FileDescriptor";
+import { JavaFile } from "./File";
+import { JavaString } from "../lang/String";
+import { FileNotFoundException } from "./FileNotFoundException";
+import { Throwable } from "../lang/Throwable";
+import { IOException } from "./IOException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
 export class FileOutputStream extends OutputStream {
 
-    private fd: java.io.FileDescriptor;
+    private fd: FileDescriptor;
     private path?: string;
     private closed = true;
 
     /** Creates a file output stream to write to the file represented by the specified File object. */
-    public constructor(file: java.io.File, append?: boolean);
+    public constructor(file: JavaFile, append?: boolean);
     /**
      * Creates a file output stream to write to the specified file descriptor, which represents an existing connection
      * to an actual file in the file system.
      */
-    public constructor(fdObj: java.io.FileDescriptor);
+    public constructor(fdObj: FileDescriptor);
     /** Creates a file output stream to write to the file with the specified name. */
-    public constructor(name: java.lang.String, append?: boolean);
-    public constructor(fileOrFdObjOrName: java.io.File | java.io.FileDescriptor | java.lang.String, append?: boolean) {
+    public constructor(name: JavaString, append?: boolean);
+    public constructor(fileOrFdObjOrName: JavaFile | FileDescriptor | JavaString, append?: boolean) {
         super();
 
         try {
-            if (fileOrFdObjOrName instanceof java.io.FileDescriptor) {
+            if (fileOrFdObjOrName instanceof FileDescriptor) {
                 this.fd = fileOrFdObjOrName;
             } else {
-                this.path = fileOrFdObjOrName instanceof java.io.File
-                    ? fileOrFdObjOrName.getAbsolutePath()
+                this.path = fileOrFdObjOrName instanceof JavaFile
+                    ? fileOrFdObjOrName.getAbsolutePath().valueOf()
                     : fileOrFdObjOrName.valueOf();
-                this.fd = new java.io.FileDescriptor();
+                this.fd = new FileDescriptor();
                 this.open(append ?? false);
             }
         } catch (error) {
-            throw new java.io.FileNotFoundException(S`Create open or create file`,
-                java.lang.Throwable.fromError(error));
+            throw new FileNotFoundException(S`Create open or create file`, Throwable.fromError(error));
         }
     }
 
@@ -55,7 +59,7 @@ export class FileOutputStream extends OutputStream {
 
         this.closed = true;
         this.fd.closeAll(new class {
-            public constructor(private fd: java.io.FileDescriptor) { }
+            public constructor(private fd: FileDescriptor) { }
 
             public close(): void {
                 this.fd.close();
@@ -76,7 +80,7 @@ export class FileOutputStream extends OutputStream {
     public write(b: number): void;
     public write(b: Uint8Array | number, offset?: number, length?: number): void {
         if (!this.fd.valid()) {
-            throw new java.io.IOException(S`Cannot write data because the file handle is invalid.`);
+            throw new IOException(S`Cannot write data because the file handle is invalid.`);
         }
 
         try {
@@ -88,17 +92,17 @@ export class FileOutputStream extends OutputStream {
                 offset ??= 0;
                 length ??= b.length;
                 if (offset < 0 || length < 0 || offset + length > b.length) {
-                    throw new java.lang.IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException();
                 }
 
                 writeSync(this.fd.handle!.fd, b, offset, length);
             }
         } catch (error) {
-            throw new java.io.IOException(S`Cannot write data to file`, java.lang.Throwable.fromError(error));
+            throw new IOException(S`Cannot write data to file`, Throwable.fromError(error));
         }
     }
 
-    public getFD(): java.io.FileDescriptor {
+    public getFD(): FileDescriptor {
         return this.fd;
     }
 
@@ -108,7 +112,7 @@ export class FileOutputStream extends OutputStream {
                 this.fd.handle = handle;
                 this.closed = false;
             }).catch((reason) => {
-                throw new java.io.IOException(S`Cannot open file`, java.lang.Throwable.fromError(reason));
+                throw new IOException(S`Cannot open file`, Throwable.fromError(reason));
             });
         }
     }

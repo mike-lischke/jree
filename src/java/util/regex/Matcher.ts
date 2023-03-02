@@ -5,17 +5,21 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
 import { JavaObject } from "../../lang/Object";
 
 import { NotImplementedError } from "../../../NotImplementedError";
+import { JavaString } from "../../lang/String";
+import { Pattern } from "./Pattern";
+import { StringBuffer } from "../../lang/StringBuffer";
+import { IllegalStateException } from "../../lang/IllegalStateException";
+import { IndexOutOfBoundsException } from "../../lang/IndexOutOfBoundsException";
 
 export interface MatchResult {
     // Returns the offset after the last character of the subsequence captured by the given group during this match.
     end(group?: number): number;
 
     // Returns the input subsequence captured by the given group during the previous match operation.
-    group(group?: number): string;
+    group(group?: number): JavaString;
 
     // Returns the number of capturing groups in this match result's pattern.
     groupCount(): number;
@@ -29,10 +33,10 @@ export class Matcher extends JavaObject implements MatchResult {
     private regexResults: RegExpExecArray | null;
     private appendPosition = 0;
 
-    public constructor(private owner: java.util.regex.Pattern, private regex: RegExp, private input: string) {
+    public constructor(private owner: Pattern, private regex: RegExp, private input: JavaString) {
         super();
 
-        this.regexResults = regex.exec(input);
+        this.regexResults = regex.exec(input.valueOf());
     }
 
     /**
@@ -40,7 +44,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @param _s tbd
      */
-    public static quoteReplacement = (_s: string): string => {
+    public static quoteReplacement = (_s: JavaString): JavaString => {
         throw new NotImplementedError();
     };
 
@@ -52,7 +56,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @returns tbd
      */
-    public appendReplacement = (sb: java.lang.StringBuffer, replacement: string): Matcher => {
+    public appendReplacement = (sb: StringBuffer, replacement: JavaString): Matcher => {
 
         // Note: in Java the replacement value may contain references to groups in the last match.
         //       However, here we ignore those currently.
@@ -70,7 +74,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @returns tbd
      */
-    public appendTail = (sb: java.lang.StringBuffer): java.lang.StringBuffer => {
+    public appendTail = (sb: StringBuffer): StringBuffer => {
         sb.append(this.input.substring(this.appendPosition));
 
         return sb;
@@ -89,11 +93,11 @@ export class Matcher extends JavaObject implements MatchResult {
         }
 
         if (this.regexResults === null) {
-            throw new java.lang.IllegalStateException();
+            throw new IllegalStateException();
         }
 
         if (group < 0 || group >= this.regexResults.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         throw new NotImplementedError();
@@ -110,12 +114,12 @@ export class Matcher extends JavaObject implements MatchResult {
     };
 
     /** Returns the input subsequence captured by the given group during the previous match operation. */
-    public group(group?: number): string;
+    public group(group?: number): JavaString;
     /**
      * Returns the input subsequence captured by the given named-capturing group during the previous match operation.
      */
-    public group(name: string): string;
-    public group(_groupOrName?: number | string): string {
+    public group(name: JavaString): JavaString;
+    public group(_groupOrName?: number | JavaString): JavaString {
         throw new NotImplementedError();
     }
 
@@ -124,7 +128,7 @@ export class Matcher extends JavaObject implements MatchResult {
      */
     public groupCount = (): number => {
         if (this.regexResults === null) {
-            throw new java.lang.IllegalStateException();
+            throw new IllegalStateException();
         }
 
         return this.regexResults.length - 1;
@@ -146,10 +150,10 @@ export class Matcher extends JavaObject implements MatchResult {
      */
     public hitEnd = (): boolean => {
         if (this.regexResults === null) {
-            throw new java.lang.IllegalStateException();
+            throw new IllegalStateException();
         }
 
-        return this.regex.lastIndex >= this.input.length - 1;
+        return this.regex.lastIndex >= this.input.length() - 1;
     };
 
     /** Attempts to match the input sequence, starting at the beginning of the region, against the pattern. */
@@ -165,7 +169,7 @@ export class Matcher extends JavaObject implements MatchResult {
     /**
      * @returns the pattern that is interpreted by this matcher.
      */
-    public pattern = (): java.util.regex.Pattern => {
+    public pattern = (): Pattern => {
         return this.owner;
     };
 
@@ -194,7 +198,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @param _replacement tbd
      */
-    public replaceAll = (_replacement: string): string => {
+    public replaceAll = (_replacement: JavaString): JavaString => {
         throw new NotImplementedError();
     };
 
@@ -203,7 +207,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @param _replacement tbd
      */
-    public replaceFirst = (_replacement: string): string => {
+    public replaceFirst = (_replacement: JavaString): JavaString => {
         throw new NotImplementedError();
     };
 
@@ -217,7 +221,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @param _input tbd
      */
-    public reset = (_input?: string): Matcher => {
+    public reset = (_input?: JavaString): Matcher => {
         throw new NotImplementedError();
     };
 
@@ -249,7 +253,7 @@ export class Matcher extends JavaObject implements MatchResult {
      *
      * @param _newPattern tbd
      */
-    public usePattern = (_newPattern: java.util.regex.Pattern): Matcher => {
+    public usePattern = (_newPattern: Pattern): Matcher => {
         throw new NotImplementedError();
     };
 

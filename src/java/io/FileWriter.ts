@@ -5,21 +5,25 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { JavaString } from "../..";
+import { Charset } from "../nio/charset/Charset";
+import { JavaFile } from "./File";
+import { FileDescriptor } from "./FileDescriptor";
+import { FileOutputStream } from "./FileOutputStream";
 import { OutputStreamWriter } from "./OutputStreamWriter";
 
 export class FileWriter extends OutputStreamWriter {
-    public constructor(fileName: java.lang.String);
-    public constructor(fileName: java.lang.String, append: boolean);
-    public constructor(file: java.io.File);
-    public constructor(file: java.io.File, append: boolean);
-    public constructor(fd: java.io.FileDescriptor);
-    public constructor(fileName: java.lang.String, charset: java.nio.charset.Charset);
-    public constructor(fileName: java.lang.String, charset: java.nio.charset.Charset, append: boolean);
-    public constructor(file: java.io.File, charset: java.nio.charset.Charset);
-    public constructor(file: java.io.File, charset: java.nio.charset.Charset, append: boolean);
-    public constructor(fileNameOrFileOrFd: java.lang.String | java.io.File | java.io.FileDescriptor,
-        appendOrCharset?: boolean | java.nio.charset.Charset, append?: boolean) {
+    public constructor(fileName: JavaString);
+    public constructor(fileName: JavaString, append: boolean);
+    public constructor(file: JavaFile);
+    public constructor(file: JavaFile, append: boolean);
+    public constructor(fd: FileDescriptor);
+    public constructor(fileName: JavaString, charset: Charset);
+    public constructor(fileName: JavaString, charset: Charset, append: boolean);
+    public constructor(file: JavaFile, charset: Charset);
+    public constructor(file: JavaFile, charset: Charset, append: boolean);
+    public constructor(fileNameOrFileOrFd: JavaString | JavaFile | FileDescriptor,
+        appendOrCharset?: boolean | Charset, append?: boolean) {
         let doAppend = false;
         let charset;
         if (typeof appendOrCharset === "boolean") {
@@ -29,13 +33,13 @@ export class FileWriter extends OutputStreamWriter {
             charset = appendOrCharset;
         }
 
-        let stream: java.io.FileOutputStream;
-        if (fileNameOrFileOrFd instanceof java.lang.String) {
-            stream = new java.io.FileOutputStream(fileNameOrFileOrFd, doAppend);
-        } else if (fileNameOrFileOrFd instanceof java.io.File) {
-            stream = new java.io.FileOutputStream(fileNameOrFileOrFd, doAppend);
+        let stream: FileOutputStream;
+        if (fileNameOrFileOrFd instanceof JavaString) {
+            stream = new FileOutputStream(fileNameOrFileOrFd, doAppend);
+        } else if (fileNameOrFileOrFd instanceof JavaFile) {
+            stream = new FileOutputStream(fileNameOrFileOrFd, doAppend);
         } else {
-            stream = new java.io.FileOutputStream(fileNameOrFileOrFd);
+            stream = new FileOutputStream(fileNameOrFileOrFd);
         }
 
         super(stream, charset);

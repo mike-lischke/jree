@@ -16,6 +16,7 @@
         "Initialisers",
         "initialises",
         "instanceof",
+        "Interruptible",
         "JREE",
         "misformatted",
         "NONSPACING",
@@ -24,9 +25,11 @@
         "subfolders",
         "synchronisation",
         "TITLECASE",
+        "typesafe",
         "whitespaces"
     ],
     "ignoreWords": [
+        "DSYNC",
         "FEFFFFFFFFFFFFF",
         "Harwell",
         "Hashtable",
@@ -45,6 +48,7 @@
         "clazz",
         "dotall",
         "javax",
+        "mkdirs",
         "nanos",
         "spliterator",
         "strictfp",

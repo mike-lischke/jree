@@ -6,8 +6,8 @@
  */
 
 import { MurmurHash } from "../../MurmurHash";
-import { java } from "../..";
 import { JavaObject } from "./Object";
+import { JavaString } from "./String";
 
 export class StackTraceElement extends JavaObject {
     private declaringClass = "";
@@ -62,7 +62,7 @@ export class StackTraceElement extends JavaObject {
      * @returns true if the specified object is another StackTraceElement instance representing the same
      * execution point as this instance.
      */
-    public equals(obj: java.lang.Object): boolean {
+    public equals(obj: JavaObject): boolean {
         if (obj instanceof StackTraceElement) {
             return this.declaringClass === obj.declaringClass &&
                 this.methodName === obj.methodName &&
@@ -90,13 +90,13 @@ export class StackTraceElement extends JavaObject {
      * @returns the fully qualified name of the class containing the execution point represented by this
      * stack trace element.
      */
-    public getClassName(): java.lang.String {
-        return new java.lang.String(this.declaringClass);
+    public getClassName(): JavaString {
+        return new JavaString(this.declaringClass);
     }
 
     /** @returns the name of the source file containing the execution point represented by this stack trace element. */
-    public getFileName(): java.lang.String {
-        return new java.lang.String(this.fileName);
+    public getFileName(): JavaString {
+        return new JavaString(this.fileName);
     }
 
     /**
@@ -108,8 +108,8 @@ export class StackTraceElement extends JavaObject {
     }
 
     /** @returns the name of the method containing the execution point represented by this stack trace element. */
-    public getMethodName(): java.lang.String {
-        return new java.lang.String(this.methodName);
+    public getMethodName(): JavaString {
+        return new JavaString(this.methodName);
     }
 
     /**
@@ -121,7 +121,7 @@ export class StackTraceElement extends JavaObject {
     }
 
     /** @returns a string representation of this stack trace element. */
-    public toString(): java.lang.String {
-        return new java.lang.String(this.line);
+    public toString(): string {
+        return this.line;
     }
 }

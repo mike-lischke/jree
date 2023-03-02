@@ -5,11 +5,17 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { List } from "immutable";
+import { List as ImmList } from "immutable";
 
-import { java, NotImplementedError } from "../..";
-
+import { NotImplementedError } from "../../NotImplementedError";
+import { Serializable } from "../io/Serializable";
+import { Cloneable } from "../lang/Cloneable";
 import { AbstractList } from "./AbstractList";
+import { Collection } from "./Collection";
+import { Deque } from "./Deque";
+import { JavaIterator } from "./Iterator";
+import { List } from "./List";
+import { NoSuchElementException } from "./NoSuchElementException";
 
 /**
  * Implementation of the List and Deque interfaces. Implements all optional list operations, and
@@ -17,8 +23,8 @@ import { AbstractList } from "./AbstractList";
  *
  * In Java this is a doubly-linked list, but this class uses immutable.js for the actual implementation.
  */
-export class LinkedList<T> extends AbstractList<T> implements java.io.Serializable, java.lang.Cloneable<LinkedList<T>>,
-    java.util.Deque<T>, java.util.List<T> {
+export class LinkedList<T> extends AbstractList<T> implements Serializable, Cloneable<LinkedList<T>>, Deque<T>,
+    List<T> {
 
     /** Constructs an empty list. */
     public constructor();
@@ -28,10 +34,10 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
      *
      * @param c The collection whose elements are to be placed into this list.
      */
-    public constructor(c: java.util.Collection<T>);
-    public constructor(c?: java.util.Collection<T>) {
+    public constructor(c: Collection<T>);
+    public constructor(c?: Collection<T>) {
         super({
-            list: List(c),
+            list: ImmList(c),
             start: 0,
             end: c?.size() ?? 0,
             updateEnd: (delta: number) => {
@@ -63,7 +69,7 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
         return this.createClone(LinkedList) as LinkedList<T>;
     }
 
-    public descendingIterator(): java.util.Iterator<T> {
+    public descendingIterator(): JavaIterator<T> {
         throw new NotImplementedError();
     }
 
@@ -74,7 +80,7 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
     /** @returns the first element in this list. */
     public getFirst(): T {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.get(0);
@@ -83,7 +89,7 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
     /** @returns the last element in this list. */
     public getLast(): T {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.get(this.size() - 1);
@@ -144,11 +150,11 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
      *
      * @returns The first element, extracted from the list.
      *
-     * @throws java.util.NoSuchElementException if the list is empty.
+     * @throws NoSuchElementException if the list is empty.
      */
     public poll(): T {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.remove(0);
@@ -238,11 +244,11 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
      *
      * @returns true if the element was in the list.
      *
-     * @throws java.util.NoSuchElementException if the list is empty.
+     * @throws NoSuchElementException if the list is empty.
      */
     public removeFirstOccurrence(o: T): boolean {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         const index = this.indexOf(o);
@@ -260,11 +266,11 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
      *
      * @returns the previously last element.
      *
-     * @throws java.util.NoSuchElementException if the list is empty.
+     * @throws NoSuchElementException if the list is empty.
      */
     public removeLast(): T {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.remove(this.size() - 1);
@@ -280,7 +286,7 @@ export class LinkedList<T> extends AbstractList<T> implements java.io.Serializab
      */
     public removeLastOccurrence(o: T): boolean {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         const index = this.lastIndexOf(o);

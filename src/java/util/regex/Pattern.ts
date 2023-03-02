@@ -5,8 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
 import { JavaObject } from "../../lang/Object";
+import { JavaString } from "../../lang/String";
+import { Matcher } from "./Matcher";
 
 export class Pattern extends JavaObject {
     // Enables canonical equivalence.
@@ -36,42 +37,45 @@ export class Pattern extends JavaObject {
     // Enables Unix lines mode.
     public static readonly UNIX_LINES = 1 >> 8;
 
-    private regex: RegExp;
+    #regex: RegExp;
 
-    private constructor(private source: java.lang.String, private sourceFlags: number) {
+    private constructor(private source: JavaString, private sourceFlags: number) {
         super();
 
         let flags = "dy"; // Sticky indexes are used, not a global search, to better match Java's regex behavior.
         if (sourceFlags & Pattern.DOTALL) {
             flags += "s";
         }
+
         if (sourceFlags & Pattern.CASE_INSENSITIVE) {
             flags += "i";
         }
+
         if (sourceFlags & Pattern.MULTILINE) {
             flags += "m";
         }
+
         if (sourceFlags & Pattern.UNICODE_CASE) {
             flags += "u";
         }
 
-        this.regex = new RegExp(source.valueOf(), flags);
+        this.#regex = new RegExp(source.valueOf(), flags);
     }
 
     // Returns a literal pattern string for the specified string.
-    public static quote = (s: string): string => {
-        const escaped = s.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
+    public static quote = (s: JavaString): JavaString => {
+        const escaped = s.valueOf().replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
 
-        return `^${escaped}$`;
+        return new JavaString(`^${escaped}$`);
     };
 
     // Compiles the given regular expression and attempts to match the given input against it.
-    public static matches = (regex: string, input: string): boolean => {
-        return new RegExp(regex).test(input);
+    public static matches = (regex: JavaString, input: JavaString): boolean => {
+        return new RegExp(regex.valueOf()).test(input.valueOf());
     };
 
     // Compiles the given regular expression into a pattern.
-    public static compile = (regex: java.lang.String, flags?: number): Pattern => {
+    public static compile = (regex: JavaString, flags?: number): Pattern => {
         return new Pattern(regex, flags ?? 0);
     };
 
@@ -81,23 +85,23 @@ export class Pattern extends JavaObject {
     };
 
     // Creates a matcher that will match the given input against this pattern.
-    public matcher = (input: string): java.util.regex.Matcher => {
-        return new java.util.regex.Matcher(this, this.regex, input);
+    public matcher = (input: JavaString): Matcher => {
+        return new Matcher(this, this.#regex, input);
     };
 
     // Returns the regular expression from which this pattern was compiled.
-    public pattern(): java.lang.String {
+    public pattern(): JavaString {
         return this.source;
     }
 
     // Splits the given input sequence around matches of this pattern.
-    public split = (input: string, limit?: number): string[] => {
-        return input.split(this.regex, limit);
+    public split = (input: JavaString, limit?: number): JavaString[] => {
+        return input.split(this.#regex.toString(), limit);
     };
 
     // Returns the string representation of this pattern.
-    public toString(): java.lang.String {
-        return this.source;
+    public toString(): string {
+        return `${this.source}`;
     }
 
 }

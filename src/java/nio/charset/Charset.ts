@@ -5,18 +5,29 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
 import { JavaObject } from "../../lang/Object";
-
 import { NotImplementedError } from "../../../NotImplementedError";
-import { S } from "../../../templates";
+import { Comparable } from "../../lang/Comparable";
+import { Locale } from "../../util/Locale";
+import { ByteBuffer } from "../ByteBuffer";
+import { CharBuffer } from "../CharBuffer";
+import { IllegalCharsetNameException } from "./IllegalCharsetNameException";
+import { CharsetDecoder } from "./CharsetDecoder";
+import { CodingErrorAction } from "./CodingErrorAction";
+import { CharsetEncoder } from "./CharsetEncoder";
+import { JavaString } from "../../lang/String";
 
 /**
- * A simplified charset implementation without provider support. Instead there's a fixed set of supported encodings
- * provided by the Node.js Buffer API, which supports all Java standard charsets, except UTF-16LE.
+ * A named mapping between sequences of sixteen-bit Unicode code units and sequences of bytes. This class defines
+ * methods for creating decoders and encoders and for retrieving the various names associated with a charset.
+ * Instances of this class are immutable.
+ *
+ * Note: this implementation comes without provider support. Instead there's a fixed set of supported encodings
+ *       provided by the Node.js Buffer API, which supports all Java standard charsets, except UTF-16LE.
+ *       It is not an abstract class as in Java, but implements the encoder/decoder methods directly.
  */
-export class Charset extends JavaObject implements java.lang.Comparable<Charset> {
-    public static readonly defaultCharset: Charset;
+export class Charset extends JavaObject implements Comparable<Charset> {
+    private static readonly default: Charset;
 
     // Supported encoding names + their aliases.
     private static readonly supportedEncodings = new Map<string, Set<string>>([
@@ -31,17 +42,67 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
         ["hex", new Set()],
     ]);
 
-    private alternatives: Set<string>;
+    #alternatives: Set<string>;
+    #canonicalName: string;
 
-    protected constructor(private canonicalName: BufferEncoding) {
+    protected constructor(canonicalName: BufferEncoding) {
         super();
 
+        this.#canonicalName = canonicalName;
         const alts = Charset.supportedEncodings.get(canonicalName);
         if (!alts) {
-            throw new java.nio.charset.IllegalCharsetNameException();
+            throw new IllegalCharsetNameException();
         }
 
-        this.alternatives = alts;
+        this.#alternatives = alts;
+    }
+
+    /**
+     * Constructs a sorted map from canonical charset names to charset objects.
+     */
+    public static availableCharsets(): Map<string, Charset> {
+        throw new NotImplementedError();
+    }
+
+    /** @returns The default charset. */
+    public static defaultCharset(): Charset {
+        return Charset.default;
+    }
+
+    /**
+     * Returns a charset object for the named charset. If the charset object
+     * for the named charset is not available or {@code charsetName} is not a
+     * legal charset name, then {@code fallback} is returned.
+     *
+     * @param  charsetName
+     *         The name of the requested charset; may be either
+     *         a canonical name or an alias
+     *
+     * @returns  A charset object for the named charset, or {@code fallback}
+     *          in case the charset object for the named charset is not
+     *          available or {@code charsetName} is not a legal charset name
+     */
+    public static forName(charsetName: JavaString): Charset | null {
+        const native = `${charsetName}`;
+        let name = Charset.supportedEncodings.has(native) ? native : undefined;
+
+        if (!name) {
+            // Name not directly found. Check the aliases.
+            for (const [key, value] of Charset.supportedEncodings) {
+                if (value.has(native)) {
+                    name = key;
+                    break;
+                }
+            }
+        } else {
+            name = native;
+        }
+
+        if (!name) {
+            return null;
+        }
+
+        return new Charset(name as BufferEncoding);
     }
 
     /**
@@ -54,13 +115,13 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      * @returns True if, and only if, support for the named charset
      *          is available in the current Java virtual machine
      */
-    public static isSupported(charsetName: string): boolean {
-        if (Charset.supportedEncodings.has(charsetName)) {
+    public static isSupported(charsetName: JavaString): boolean {
+        if (Charset.supportedEncodings.has(charsetName.valueOf())) {
             return true;
         }
 
         for (const [_, aliases] of Charset.supportedEncodings) {
-            if (aliases.has(charsetName)) {
+            if (aliases.has(charsetName.valueOf())) {
                 return true;
             }
         }
@@ -69,59 +130,12 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
     }
 
     /**
-     * Returns a charset object for the named charset. If the charset object
-     * for the named charset is not available or {@code charsetName} is not a
-     * legal charset name, then {@code fallback} is returned.
-     *
-     * @param  charsetName
-     *         The name of the requested charset; may be either
-     *         a canonical name or an alias
-     *
-     * @param  fallback
-     *         fallback charset in case the charset object for the named
-     *         charset is not available or {@code charsetName} is not a legal
-     *         charset name. May be {@code null}
-     *
-     * @returns  A charset object for the named charset, or {@code fallback}
-     *          in case the charset object for the named charset is not
-     *          available or {@code charsetName} is not a legal charset name
-     */
-    public static forName(charsetName: string, fallback?: Charset): Charset | undefined {
-        let name = Charset.supportedEncodings.has(charsetName) ? charsetName : undefined;
-
-        if (!name) {
-            // Name not directly found. Check the aliases.
-            for (const [key, value] of Charset.supportedEncodings) {
-                if (value.has(charsetName)) {
-                    name = key;
-                    break;
-                }
-            }
-        } else {
-            name = charsetName;
-        }
-
-        if (!name) {
-            return fallback;
-        }
-
-        return new Charset(name as BufferEncoding);
-    }
-
-    /**
-     * Constructs a sorted map from canonical charset names to charset objects.
-     */
-    public static availableCharsets(): Map<string, Charset> {
-        throw new NotImplementedError();
-    }
-
-    /**
      * Returns this charset's canonical name.
      *
      * @returns  The canonical name of this charset
      */
-    public name(): string {
-        return this.canonicalName;
+    public name(): JavaString {
+        return new JavaString(this.#canonicalName);
     }
 
     /**
@@ -130,7 +144,7 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      * @returns  An immutable set of this charset's aliases
      */
     public aliases(): Set<string> {
-        return this.alternatives;
+        return this.#alternatives;
     }
 
     /**
@@ -144,8 +158,8 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      *
      * @returns  The display name of this charset in the default locale
      */
-    public displayName(locale?: java.util.Locale): string {
-        return this.canonicalName;
+    public displayName(locale?: Locale): JavaString {
+        return new JavaString(this.#canonicalName);
     }
 
     /**
@@ -196,17 +210,17 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      * <p> This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement byte array.  In order
      * to detect such sequences, use the {@link
-     * CharsetDecoder#decode(java.nio.ByteBuffer)} method directly.  </p>
+     * CharsetDecoder#decode(ByteBuffer)} method directly.  </p>
      *
      * @param  bb  The byte buffer to be decoded
      *
      * @returns  A char buffer containing the decoded characters
      */
-    public decode(bb: java.nio.ByteBuffer): java.nio.CharBuffer {
-        const buffer = Buffer.from(bb.array());
-        const text = buffer.toString(this.canonicalName);
-
-        return java.nio.CharBuffer.wrap(S`${text}`);
+    public decode(bb: ByteBuffer): CharBuffer {
+        return this.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPLACE)
+            .onUnmappableCharacter(CodingErrorAction.REPLACE)
+            .decode(bb);
     }
 
     /**
@@ -228,13 +242,13 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      * <p> This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement string.  In order to
      * detect such sequences, use the {@link
-     * CharsetEncoder#encode(java.nio.CharBuffer)} method directly.  </p>
+     * CharsetEncoder#encode(CharBuffer)} method directly.  </p>
      *
      * @param  cb  The char buffer to be encoded
      *
      * @returns  A byte buffer containing the encoded characters
      */
-    public encode(cb: java.nio.CharBuffer): java.nio.ByteBuffer;
+    public encode(cb: CharBuffer): ByteBuffer;
     /**
      * Convenience method that encodes a string into bytes in this charset.
      *
@@ -248,9 +262,12 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      *
      * @returns  A byte buffer containing the encoded characters
      */
-    public encode(str: string): java.nio.ByteBuffer;
-    public encode(cbOrStr: java.nio.CharBuffer | string): java.nio.ByteBuffer {
-        throw new NotImplementedError();
+    public encode(str: JavaString): ByteBuffer;
+    public encode(bb: CharBuffer | JavaString): ByteBuffer {
+        return this.newEncoder()
+            .onMalformedInput(CodingErrorAction.REPLACE)
+            .onUnmappableCharacter(CodingErrorAction.REPLACE)
+            .encode(CharBuffer.wrap(bb));
     }
 
     /**
@@ -281,7 +298,7 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
     /**
      * Returns a string describing this charset.
      */
-    public toString(): java.lang.String {
+    public toString(): string {
         throw new NotImplementedError();
     }
 
@@ -321,7 +338,9 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      *
      * @returns  A new decoder for this charset
      */
-    //public abstract newDecoder(): CharsetDecoder;
+    public newDecoder(): CharsetDecoder {
+        return CharsetDecoder.create(this);
+    }
 
     /**
      * Constructs a new encoder for this charset.
@@ -331,7 +350,9 @@ export class Charset extends JavaObject implements java.lang.Comparable<Charset>
      * @throws  UnsupportedOperationException
      *          If this charset does not support encoding
      */
-    //public abstract newEncoder(): CharsetEncoder;
+    public newEncoder(): CharsetEncoder {
+        return CharsetEncoder.create(this);
+    }
 
     static {
         // @ts-expect-error

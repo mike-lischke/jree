@@ -5,18 +5,27 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, NotImplementedError } from "../..";
-
+import { NotImplementedError } from "../../NotImplementedError";
+import { Serializable } from "../io/Serializable";
+import { Cloneable } from "../lang/Cloneable";
 import { AbstractCollection } from "./AbstractCollection";
+import { ArrayList } from "./ArrayList";
+import { Collection } from "./Collection";
+import { Deque } from "./Deque";
+import { Consumer } from "./function/Consumer";
+import { Predicate } from "./function/Predicate";
+import { JavaIterator } from "./Iterator";
+import { NoSuchElementException } from "./NoSuchElementException";
+import { Spliterator } from "./Spliterator";
+import { Vector } from "./Vector";
 
 /**
  * A resizable-array implementation of the Deque interface. Array deques have no capacity restrictions; they grow as
  * necessary to support usage.
  */
-export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.Deque<T>, java.io.Serializable,
-    java.lang.Cloneable<ArrayDeque<T>> {
+export class ArrayDeque<T> extends AbstractCollection<T> implements Deque<T>, Serializable, Cloneable<ArrayDeque<T>> {
 
-    #backend: java.util.ArrayList<T>;
+    #backend: ArrayList<T>;
 
     /** Constructs an empty array deque with an initial capacity sufficient to hold 16 elements. */
     public constructor();
@@ -26,13 +35,13 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      * Constructs an array deque containing the elements of the specified collection, in the order they are returned
      * by the collection's iterator.
      */
-    public constructor(c: java.util.Collection<T>);
-    public constructor(numElementsOrC?: number | java.util.Collection<T>) {
+    public constructor(c: Collection<T>);
+    public constructor(numElementsOrC?: number | Collection<T>) {
         super();
 
-        this.#backend = new java.util.Vector<T>();
+        this.#backend = new Vector<T>();
         if (numElementsOrC !== undefined || !(typeof numElementsOrC === "number")) {
-            this.#backend.addAll(numElementsOrC as java.util.Collection<T>);
+            this.#backend.addAll(numElementsOrC as Collection<T>);
         }
     }
 
@@ -61,7 +70,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @returns true if this deque changed as a result of the call
      */
-    public addAll(c: java.util.Collection<T>): boolean {
+    public addAll(c: Collection<T>): boolean {
         return this.#backend.addAll(c);
     }
 
@@ -114,11 +123,11 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
         return this.#backend.contains(o);
     }
 
-    public containsAll(c: java.util.Collection<T>): boolean {
+    public containsAll(c: Collection<T>): boolean {
         return this.#backend.containsAll(c);
     }
 
-    public descendingIterator(): java.util.Iterator<T> {
+    public descendingIterator(): JavaIterator<T> {
         throw new NotImplementedError();
     }
 
@@ -135,7 +144,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
         return this.#backend.get(0);
     }
 
-    public equals(o: java.lang.Object): boolean {
+    public equals(o: Object): boolean {
         return this.#backend.equals(o);
     }
 
@@ -146,7 +155,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @param action The action to be performed for each element
      */
-    public forEach(action: java.util.function.Consumer<T>): void {
+    public forEach(action: Consumer<T>): void {
         for (let i = 0; i < this.#backend.size(); ++i) {
             action.accept(this.#backend.get(i)!);
         }
@@ -196,7 +205,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @returns an iterator over the elements in this deque in proper sequence
      */
-    public iterator(): java.util.Iterator<T> {
+    public iterator(): JavaIterator<T> {
         return this.#backend.iterator();
     }
 
@@ -307,7 +316,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      */
     public pop(): T {
         if (this.#backend.isEmpty()) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         const result = this.#backend.get(0);
@@ -350,7 +359,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @returns true if this deque changed as a result of the call
      */
-    public removeAll(c: java.util.Collection<T>): boolean {
+    public removeAll(c: Collection<T>): boolean {
         return this.#backend.removeAll(c);
     }
 
@@ -385,7 +394,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @returns true if any elements were removed
      */
-    public removeIf(filter: java.util.function.Predicate<T>): boolean {
+    public removeIf(filter: Predicate<T>): boolean {
         return this.#backend.removeIf(filter);
     }
 
@@ -397,7 +406,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      */
     public removeLast(): T {
         if (this.#backend.isEmpty()) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.#backend.remove(this.#backend.size() - 1);
@@ -433,7 +442,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @returns true if this deque changed as a result of the call
      */
-    public retainAll(c: java.util.Collection<T>): boolean {
+    public retainAll(c: Collection<T>): boolean {
         return this.#backend.retainAll(c);
     }
 
@@ -454,7 +463,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
      *
      * @returns a Spliterator over the elements in this deque
      */
-    public spliterator(): java.util.Spliterator<T> {
+    public spliterator(): Spliterator<T> {
         return this.#backend.spliterator();
     }
 
@@ -478,7 +487,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements java.util.De
         return this.#backend.toArray();
     }
 
-    public toString(): java.lang.String {
+    public toString(): string {
         return this.#backend.toString();
     }
 }

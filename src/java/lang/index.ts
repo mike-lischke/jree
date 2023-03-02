@@ -9,7 +9,10 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export type char = number;
 
-export { JavaObject as Object } from "./Object";
+export { JavaObject as Object, Class } from "./Object";
+export { JavaString as String } from "./String";
+export { JavaBoolean as Boolean } from "./Boolean";
+export { JavaNumber as Number } from "./Number";
 
 export * from "./Enum";
 export * from "./StringBuilder";
@@ -21,7 +24,6 @@ export * from "./Number";
 export * from "./Integer";
 export * from "./Long";
 export * from "./Boolean";
-export * from "./Class";
 export * from "./Cloneable";
 export * from "./Appendable";
 export * from "./Comparable";

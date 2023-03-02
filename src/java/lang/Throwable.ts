@@ -5,13 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "./Object";
 
 import { StackTraceElement } from "./StackTraceElement";
 
-import { S } from "../../templates";
-import { System } from "./System";
+// import { System } from "./System"; creates a circular dependency
+import { JavaString } from "./String";
+import { PrintStream } from "../io/PrintStream";
 
 /**
  * The Throwable class is the superclass of all errors and exceptions in the Java language.
@@ -22,7 +22,7 @@ import { System } from "./System";
 export class Throwable extends JavaObject {
     private stack?: string;
 
-    #message: java.lang.String | null = null;
+    #message: JavaString | null = null;
     #cause: Throwable | null = null;
     #elements: StackTraceElement[] = [];
     #suppressed: Throwable[] = [];
@@ -30,15 +30,15 @@ export class Throwable extends JavaObject {
     /** Constructs a new throwable with null as its detail message. */
     public constructor();
     /** Constructs a new throwable with the specified detail message. */
-    public constructor(message: java.lang.String);
+    public constructor(message: JavaString);
     /** Constructs a new throwable with the specified detail message and cause. */
-    public constructor(message: java.lang.String, cause: Throwable | null);
+    public constructor(message: JavaString, cause: Throwable | null);
     /**
      * Constructs a new throwable with the specified detail message, cause, suppression enabled or disabled, and
      * writable stack trace enabled or disabled.
      */
     // This constructor is protected in Java, but in TS we cannot mix different modifiers in overloading.
-    public constructor(message: java.lang.String, cause: Throwable | null, enableSuppression: boolean,
+    public constructor(message: JavaString, cause: Throwable | null, enableSuppression: boolean,
         writableStackTrace: boolean);
     /**
      * Constructs a new throwable with the specified cause and a detail message of
@@ -50,7 +50,7 @@ export class Throwable extends JavaObject {
 
         switch (args.length) {
             case 1: {
-                if (args[0] instanceof java.lang.String) {
+                if (args[0] instanceof JavaString) {
                     this.#message = args[0];
                 } else if (args[0] instanceof Throwable) {
                     this.#cause = args[0];
@@ -59,13 +59,13 @@ export class Throwable extends JavaObject {
             }
 
             case 2: {
-                this.#message = args[0] as java.lang.String;
+                this.#message = args[0] as JavaString;
                 this.#cause = args[1] as Throwable;
                 break;
             }
 
             case 4: {
-                this.#message = args[0] as java.lang.String;
+                this.#message = args[0] as JavaString;
                 this.#cause = args[1] as Throwable;
                 break;
             }
@@ -95,10 +95,10 @@ export class Throwable extends JavaObject {
                 cause = Throwable.fromError(error.cause);
             }
 
-            return new Throwable(S`${error.message}`, cause);
+            return new Throwable(new JavaString(`${error.message}`), cause);
         }
 
-        return new Throwable(S`${error}`);
+        return new Throwable(new JavaString(`${error}`));
     }
 
     /**
@@ -138,12 +138,12 @@ export class Throwable extends JavaObject {
     /**
      * @returns a localized description of this throwable.
      */
-    public getLocalizedMessage(): java.lang.String | null {
+    public getLocalizedMessage(): JavaString | null {
         return this.#message;
     }
 
     /** @returns the detail message string of this throwable. */
-    public getMessage(): java.lang.String | null {
+    public getMessage(): JavaString | null {
         return this.#message;
     }
 
@@ -186,23 +186,19 @@ export class Throwable extends JavaObject {
      * Remaining lines represent data previously recorded by the method Throwable.fillInStackTrace().
      * This data is an approximation of the actual stack trace.
      */
-    public printStackTrace(): void;
+    // public printStackTrace(): void;
     /**
      * This method prints a stack trace for this Throwable object on the specified print stream.
      *
      * @param s The print stream.
      */
-    public printStackTrace(s: java.io.PrintStream): void;
+    public printStackTrace(s: PrintStream): void;
     //public printStackTrace(s: java.io.PrintWriter): void
-    public printStackTrace(s?: java.io.PrintStream): void {
+    public printStackTrace(s: PrintStream): void {
         const headLine = this.toString();
-        if (!s) {
-            System.err.println(headLine);
-            System.err.println(S`${this.stack}`);
-        } else {
-            s.println(headLine);
-            s.println(S`${this.stack}`);
-        }
+
+        s.println(headLine);
+        s.println(new JavaString(`${this.stack}`));
     }
 
     /**
@@ -222,20 +218,20 @@ export class Throwable extends JavaObject {
      *
      * @returns this Throwable object.
      */
-    public setMessage(message: java.lang.String): this {
+    public setMessage(message: JavaString): this {
         this.#message = message;
 
         return this;
     }
 
     /** @returns a short description of this throwable. */
-    public toString(): java.lang.String {
+    public toString(): string {
         const message = this.getLocalizedMessage();
         if (!message) {
-            return S`${this.stack}`;
+            return `${this.stack}`;
         }
 
-        return S`${this.constructor.name}: ${message}`;
+        return `${this.constructor.name}: ${message}`;
     }
 
     protected [Symbol.toPrimitive](): string {

@@ -5,9 +5,24 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { NotImplementedError } from "../../../NotImplementedError";
+import { JavaFile } from "../../io/File";
+import { Comparable } from "../../lang/Comparable";
+import { JavaIterable } from "../../lang/Iterable";
+import { JavaObject } from "../../lang/Object";
+import { JavaString } from "../../lang/String";
+import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
+import { URI } from "../../net/URI";
+import { JavaIterator } from "../../util/Iterator";
+import { NoSuchElementException } from "../../util/NoSuchElementException";
+import { JavaFileSystem } from "./FileSystem";
+import { FileSystems } from "./FileSystems";
+import { Watchable } from "./Watchable";
+import { WatchEvent } from "./WatchEvent";
+import { WatchKey } from "./WatchKey";
+import { WatchService } from "./WatchService";
 
-export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Path>, java.nio.file.Watchable {
+export interface Path extends Comparable<Path>, JavaIterable<Path>, Watchable {
     /**
      * Compares two abstract paths lexicographically.
      *
@@ -26,7 +41,7 @@ export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Pat
      *
      * @returns true if this path ends with the given path, otherwise false.
      */
-    endsWith(other: java.lang.String): boolean;
+    endsWith(other: JavaString): boolean;
 
     /**
      * Tests if this path ends with the given path.
@@ -54,15 +69,15 @@ export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Pat
      *
      * @returns The file name of this path as a Path object.
      *
-     * @throws java.lang.UnsupportedOperationException if this path is associated with a provider that does not
-     * support the getFileName operation.
+     * @throws UnsupportedOperationException if this path is associated with a provider that does not
+     *         support the getFileName operation.
      */
     getFileName(): Path | null;
 
     /**
      * @returns The FileSystem that created this object.
      */
-    getFileSystem(): java.nio.file.FileSystem;
+    getFileSystem(): JavaFileSystem;
 
     /**
      * Returns a name element of this path as a Path object.
@@ -113,10 +128,11 @@ export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Pat
 
     // of(uri: URI): Path;
 
-    // register(watcher: WatchService, events: Array<WatchEvent.Kind<Path>>,
-    //    modifiers: WatchEvent.Modifier[]): WatchKey;
+    register(watcher: WatchService, events: Array<WatchEvent.Kind<unknown>>,
+        ...modifiers: WatchEvent.Modifier[]): WatchKey;
 
-    // register(watcher: WatchService, events: Array<WatchEvent.Kind<Path>>): WatchKey;
+    register(watcher: WatchService,
+        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
 
     /**
      * Constructs a relative path between this path and a given path.
@@ -135,7 +151,7 @@ export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Pat
      *
      * @returns The resulting Path.
      */
-    resolve(other: java.lang.String): Path;
+    resolve(other: JavaString): Path;
 
     /**
      * Resolves the given path against this path.
@@ -167,7 +183,7 @@ export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Pat
      *
      * @returns The resulting path.
      */
-    startsWith(other: java.lang.String): boolean;
+    startsWith(other: JavaString): boolean;
 
     /**
      * Tests if this path starts with the given path.
@@ -201,19 +217,50 @@ export interface Path extends java.lang.Comparable<Path>, java.lang.Iterable<Pat
     // toRealPath(options: LinkOption[]): Path;
 
     /** @returns the string representation of this path. */
-    toString(): java.lang.String;
+    toString(): string;
 
     /** @returns a URI to represent this path. */
-    toUri(): java.net.URI;
+    toUri(): URI;
 }
 
-export class Path {
-    public static of(first: java.lang.String, ...more: java.lang.String[]): Path {
-        throw new java.lang.UnsupportedOperationException();
+export class Path extends JavaObject {
+    /**
+     * Returns a Path by converting a URI.
+     * The exact form of the URI is highly implementation dependent and therefore unspecified.
+     *
+     * @param uri The URI to be converted to a Path.
+     *
+     * @returns A Path object.
+     */
+    public static of(uri: URI): Path;
+    /**
+     * Returns a Path by converting a path string, or a sequence of strings that when joined form a path string.
+     *
+     * @param first The path string or initial part of the path string.
+     * @param more Additional strings to be joined to form the path string.
+     *
+     * @returns A Path object.
+     */
+    public static of(first: JavaString, ...more: JavaString[]): Path;
+    public static of(...args: unknown[]): Path {
+        if (args.length === 1 && args[0] instanceof URI) {
+            return FileSystems.getDefault().getPath(args[0].getPath());
+        }
+
+        const [first, ...more] = args as [JavaString, ...JavaString[]];
+
+        return FileSystems.getDefault().getPath(first, ...more);
     }
 
-    public endsWith(other: java.lang.String | Path): boolean {
-        if (other instanceof java.lang.String) {
+    /**
+     * Tests if this path ends with the given path.
+     *
+     * @param other The path to be compared with this path.
+     *
+     * @returns true if this path ends with the given path, otherwise false.
+     */
+    public endsWith(other: JavaString | Path): boolean {
+        if (other instanceof JavaString) {
             return this.endsWith(this.getFileSystem().getPath(other));
         }
 
@@ -230,8 +277,8 @@ export class Path {
      *
      * @returns An iterator over the name elements of this path.
      */
-    public iterator(): java.util.Iterator<Path> {
-        return new class implements java.util.Iterator<Path> {
+    public iterator(): JavaIterator<Path> {
+        return new class implements JavaIterator<Path> {
             private index = 0;
 
             public constructor(private path: Path) {
@@ -246,17 +293,35 @@ export class Path {
                     return this.path.getName(this.index++);
                 }
 
-                throw new java.util.NoSuchElementException();
+                throw new NoSuchElementException();
             }
 
             public remove(): void {
-                throw new java.lang.UnsupportedOperationException();
+                throw new UnsupportedOperationException();
             }
         }(this);
     }
 
-    public toFile(): java.io.File {
-        return new java.io.File(this.toString());
+    /**
+     * Registers the file located by this path with a watch service.
+     *
+     * @param watcher The watch service to which this object is to be registered.
+     * @param events The events for which this object should be registered.
+     * @param modifiers The modifiers, if any, that modify how the object is registered.
+     */
+    public register(watcher: WatchService,
+        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
+    public register(watcher: WatchService, events: Array<WatchEvent.Kind<unknown>>,
+        ...modifiers: WatchEvent.Modifier[]): WatchKey;
+    public register(...args: unknown[]): WatchKey {
+        throw new NotImplementedError();
+    }
+
+    /**
+     * @returns A File object representing this path.
+     */
+    public toFile(): JavaFile {
+        return new JavaFile(new JavaString(this.toString()));
     }
 
 }

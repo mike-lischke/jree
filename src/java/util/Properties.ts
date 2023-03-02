@@ -5,13 +5,24 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { HashMap } from "./HashMap";
 
 import { NotImplementedError } from "../../NotImplementedError";
 import { S } from "../../templates";
+import { JavaString } from "../lang/String";
+import { PrintStream } from "../io/PrintStream";
+import { InputStream } from "../io/InputStream";
+import { Reader } from "../io/Reader";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { StringBuilder } from "../lang/StringBuilder";
+import { JavaIterator } from "./Iterator";
+import { OutputStream } from "../io/OutputStream";
+import { Writer } from "../io/Writer";
+import { System } from "../lang/System";
+import { HashSet } from "./HashSet";
+import { JavaSet } from "./Set";
 
-export class Properties extends HashMap<java.lang.String, java.lang.String> {
+export class Properties extends HashMap<JavaString, JavaString> {
     public constructor(private defaults?: Properties) {
         super();
     }
@@ -24,9 +35,9 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      *
      * @returns the found value or the default value.
      */
-    public getProperty(key: java.lang.String): java.lang.String | null;
-    public getProperty(key: java.lang.String, defaultValue: java.lang.String): java.lang.String;
-    public getProperty(key: java.lang.String, defaultValue?: java.lang.String): java.lang.String | null {
+    public getProperty(key: JavaString): JavaString | null;
+    public getProperty(key: JavaString, defaultValue: JavaString): JavaString;
+    public getProperty(key: JavaString, defaultValue?: JavaString): JavaString | null {
         let result = this.get(key);
         if (!result && this.defaults) {
             result = this.defaults.get(key);
@@ -44,7 +55,7 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      *
      * @param out The stream to which to write the output.
      */
-    public list(out: java.io.PrintStream): void {
+    public list(out: PrintStream): void {
         out.print(this.toString());
     }
 
@@ -53,14 +64,14 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      *
      * @param input The source to read the properties from.
      */
-    public load(input: java.io.InputStream | java.io.Reader): void {
+    public load(input: InputStream | Reader): void {
         let text = "";
-        if (input instanceof java.io.InputStream) {
+        if (input instanceof InputStream) {
             const buffer = new Uint8Array(input.available());
             input.read(buffer);
 
             // Convert all escape sequences to their code point.
-            const builder = new java.lang.StringBuilder();
+            const builder = new StringBuilder();
             let offset = 0;
             while (offset < buffer.length) {
                 let codePoint = buffer.at(offset++)!;
@@ -70,7 +81,7 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
                     if (codePoint === 0x75) { // Letter "u".
                         // Found a unicode sequence. Must consist of exactly 4 values.
                         if (buffer.length - offset < 4) {
-                            throw new java.lang.IllegalArgumentException();
+                            throw new IllegalArgumentException();
                         }
 
                         let code = "";
@@ -86,7 +97,7 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
             text = `${builder.toString()}`;
         } else {
             const buffer = new Uint16Array(10000);
-            const builder = new java.lang.StringBuilder();
+            const builder = new StringBuilder();
 
             let count = 0;
             while ((count = input.read(buffer)) > 0) {
@@ -206,7 +217,7 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      *
      * @param _input tbd
      */
-    public loadFromXML(_input: java.io.InputStream): void {
+    public loadFromXML(_input: InputStream): void {
         throw new NotImplementedError();
     }
 
@@ -214,12 +225,12 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      * @returns an enumeration of all the keys in this property list, including distinct keys in the default property
      * list if a key of the same name has not already been found from the main properties list.
      */
-    public propertyNames(): java.util.Iterator<java.lang.String> {
+    public propertyNames(): JavaIterator<JavaString> {
         return this.keySet().iterator();
     }
 
     // deprecated
-    public save(_out: java.io.OutputStream, _comments: string): void {
+    public save(_out: OutputStream, _comments: JavaString): void {
         throw new NotImplementedError();
     }
 
@@ -233,7 +244,7 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      *
      * @returns The previous value that was set at the given key.
      */
-    public setProperty(key: java.lang.String, value: java.lang.String): java.lang.String | null {
+    public setProperty(key: JavaString, value: JavaString): JavaString | null {
         return this.put(key, value);
     }
 
@@ -244,8 +255,8 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      * @param out The stream to write to.
      * @param comments Comments to write as first to the output stream.
      */
-    public store(out: java.io.OutputStream | java.io.Writer, comments?: java.lang.String): void {
-        const lineSeparator = java.lang.System.lineSeparator().valueOf();
+    public store(out: OutputStream | Writer, comments?: JavaString): void {
+        const lineSeparator = System.lineSeparator().valueOf();
 
         if (comments) {
             // Convert all kinds of line breaks to the system line separator and make sure every line
@@ -288,7 +299,7 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      * @param _comment tbd
      * @param _encoding tbd
      */
-    public storeToXML(_os: java.io.OutputStream, _comment: java.lang.String, _encoding?: java.lang.String): void {
+    public storeToXML(_os: OutputStream, _comment: JavaString, _encoding?: JavaString): void {
         throw new NotImplementedError();
     }
 
@@ -297,8 +308,8 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      * distinct keys in the default property list if a key of the same name has not already been found from the main
      * properties list.
      */
-    public stringPropertyNames(): java.util.Set<java.lang.String> {
-        const result = new java.util.HashSet<java.lang.String>(this.size());
+    public stringPropertyNames(): JavaSet<JavaString> {
+        const result = new HashSet<JavaString>(this.size());
 
         if (this.defaults) {
             for (const [key] of this.defaults) {
@@ -321,8 +332,8 @@ export class Properties extends HashMap<java.lang.String, java.lang.String> {
      * @param out The target channel to write.
      * @param text The text to write.
      */
-    private writeString(out: java.io.OutputStream | java.io.Writer, text: java.lang.String) {
-        if (out instanceof java.io.OutputStream) {
+    private writeString(out: OutputStream | Writer, text: JavaString) {
+        if (out instanceof OutputStream) {
             const buffer = new Uint8Array(text.length() * 6); // Maximum possible target length.
             let offset = 0;
             for (const c of text.valueOf()) {

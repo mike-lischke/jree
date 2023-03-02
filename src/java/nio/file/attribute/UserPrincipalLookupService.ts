@@ -5,8 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../..";
 import { JavaObject } from "../../../lang/Object";
+import { JavaString } from "../../../lang/String";
+import { GroupPrincipal } from "./GroupPrincipal";
+import { UserPrincipal } from "./UserPrincipal";
 
 /**
  * An object to lookup user and group principals by name. This class is used to lookup user and group principals by
@@ -30,7 +32,7 @@ export abstract class UserPrincipalLookupService extends JavaObject {
      *
      * @returns The group principal.
      */
-    public abstract lookupPrincipalByGroupName(name: string): java.nio.file.attribute.GroupPrincipal;
+    public abstract lookupPrincipalByGroupName(name: JavaString): GroupPrincipal;
 
     /**
      * Looks up a user principal by name.
@@ -39,5 +41,5 @@ export abstract class UserPrincipalLookupService extends JavaObject {
      *
      * @returns The user principal.
      */
-    public abstract lookupPrincipalByName(name: string): java.nio.file.attribute.UserPrincipal;
+    public abstract lookupPrincipalByName(name: JavaString): UserPrincipal;
 }

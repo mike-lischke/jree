@@ -5,10 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+export * from "./lang/lang";
+export * from "./util/util";
 export * from "./io/io";
 export * from "./nio/nio";
-export * from "./util/util";
-export * from "./lang/lang";
 export * from "./text/text";
 export * from "./time/time";
 export * from "./security/security";

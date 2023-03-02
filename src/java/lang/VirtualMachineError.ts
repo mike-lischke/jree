@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { Error } from "./Error";
+import { JavaError } from "./Error";
 
-export class VirtualMachineError extends Error {
+export class VirtualMachineError extends JavaError {
 }

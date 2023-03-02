@@ -6,13 +6,17 @@
  */
 
 import { Map } from "immutable";
+import { Serializable } from "../io/Serializable";
+import { Cloneable } from "../lang/Cloneable";
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
+import { Collection } from "./Collection";
+import { JavaMap } from "./Map";
 import { MapEntryView } from "./MapEntryView";
 
 import { MapKeyView } from "./MapKeyView";
 import { MapValueView } from "./MapValueView";
+import { JavaSet } from "./Set";
 
 /**
  * This interface provides shared access to the backend of a HashMap instance for all currently active key, value
@@ -23,14 +27,13 @@ export interface IHashMapViewBackend<K, V> {
     backend: Map<K, V>;
 }
 
-export class HashMap<K, V> extends JavaObject implements java.lang.Cloneable<HashMap<K, V>>, java.io.Serializable,
-    java.util.Map<K, V> {
+export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>>, Serializable, JavaMap<K, V> {
 
     private sharedBackend: IHashMapViewBackend<K, V>;
 
     public constructor(initialCapacity?: number, loadFactor?: number);
-    public constructor(map: java.util.Map<K, V>);
-    public constructor(initialCapacityOrMap?: number | java.util.Map<K, V>, _loadFactor?: number) {
+    public constructor(map: JavaMap<K, V>);
+    public constructor(initialCapacityOrMap?: number | JavaMap<K, V>, _loadFactor?: number) {
         super();
 
         this.sharedBackend = this.createBackend();
@@ -74,7 +77,7 @@ export class HashMap<K, V> extends JavaObject implements java.lang.Cloneable<Has
     }
 
     /** @returns a Set view of the mappings contained in this map. */
-    public entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
+    public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
         return new MapEntryView(this.sharedBackend);
     }
 
@@ -93,7 +96,7 @@ export class HashMap<K, V> extends JavaObject implements java.lang.Cloneable<Has
     }
 
     /** @returns a Set view of the keys contained in this map. */
-    public keySet(): java.util.Set<K> {
+    public keySet(): JavaSet<K> {
         return new MapKeyView<K, V>(this.sharedBackend);
     }
 
@@ -121,7 +124,7 @@ export class HashMap<K, V> extends JavaObject implements java.lang.Cloneable<Has
      *
      * @param map A map with the values to copy.
      */
-    public putAll(map: java.util.Map<K, V>): void {
+    public putAll(map: JavaMap<K, V>): void {
         const m = this.sharedBackend.backend.withMutations((mutable) => {
             for (const entry of map.entrySet()) {
                 mutable.set(entry.getKey(), entry.getValue());
@@ -154,7 +157,7 @@ export class HashMap<K, V> extends JavaObject implements java.lang.Cloneable<Has
         return this.sharedBackend.backend.hashCode();
     }
 
-    public equals(o: java.lang.Object): boolean {
+    public equals(o: Object): boolean {
         if (!(o instanceof HashMap)) {
             return false;
         }
@@ -162,7 +165,7 @@ export class HashMap<K, V> extends JavaObject implements java.lang.Cloneable<Has
         return this.sharedBackend.backend.equals(o.sharedBackend.backend);
     }
 
-    public values(): java.util.Collection<V> {
+    public values(): Collection<V> {
         return new MapValueView(this.sharedBackend);
     }
 

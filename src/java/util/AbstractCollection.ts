@@ -5,14 +5,18 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
+import { Collection } from "./Collection";
+import { Consumer } from "./function/Consumer";
+import { Predicate } from "./function/Predicate";
+import { JavaIterator } from "./Iterator";
+import { Spliterator } from "./Spliterator";
 
 /**
  * This is the base class for all collections in this library. It implements the common methods of the
- * java.util.Collection interface. The actual implementation of the collection is done by the derived classes.
+ * Collection interface. The actual implementation of the collection is done by the derived classes.
  */
-export abstract class AbstractCollection<T> extends JavaObject implements java.util.Collection<T> {
+export abstract class AbstractCollection<T> extends JavaObject implements Collection<T> {
     protected constructor() {
         super();
     }
@@ -20,22 +24,22 @@ export abstract class AbstractCollection<T> extends JavaObject implements java.u
     public abstract [Symbol.iterator](): IterableIterator<T>;
 
     public abstract add(e: T): boolean;
-    public abstract addAll(c: java.util.Collection<T>): boolean;
+    public abstract addAll(c: Collection<T>): boolean;
     public abstract clear(): void;
     public abstract contains(o: T): boolean;
-    public abstract containsAll(c: java.util.Collection<T>): boolean;
+    public abstract containsAll(c: Collection<T>): boolean;
     public abstract equals(other: unknown): boolean;
-    public abstract forEach(action: java.util.function.Consumer<T>): void;
+    public abstract forEach(action: Consumer<T>): void;
     public abstract hashCode(): number;
     public abstract isEmpty(): boolean;
-    public abstract iterator(): java.util.Iterator<T>;
+    public abstract iterator(): JavaIterator<T>;
     public abstract remove(o: unknown): boolean;
-    public abstract removeAll(c: java.util.Collection<T>): boolean;
-    public abstract removeIf(filter: java.util.function.Predicate<T>): boolean;
-    public abstract retainAll(c: java.util.Collection<T>): boolean;
+    public abstract removeAll(c: Collection<T>): boolean;
+    public abstract removeIf(filter: Predicate<T>): boolean;
+    public abstract retainAll(c: Collection<T>): boolean;
     public abstract size(): number;
-    public abstract spliterator(): java.util.Spliterator<T>;
-    public abstract toString(): java.lang.String;
+    public abstract spliterator(): Spliterator<T>;
+    public abstract toString(): string;
     public abstract toArray(): T[];
     public abstract toArray<U>(a: U[]): U[];
 }

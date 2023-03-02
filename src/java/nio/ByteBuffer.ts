@@ -5,9 +5,15 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
-
+import { char } from "../lang";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { BufferImpl } from "./BufferImpl";
+import { BufferOverflowException } from "./BufferOverflowException";
+import { BufferUnderflowException } from "./BufferUnderflowException";
+import { CharBuffer } from "./CharBuffer";
+import { IntBuffer } from "./IntBuffer";
+import { ReadOnlyBufferException } from "./ReadOnlyBufferException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 
 /**
  * A byte buffer.
@@ -70,9 +76,8 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
      *
      * @returns A new char buffer.
      */
-    public asCharBuffer(): java.nio.CharBuffer {
-        return new java.nio.CharBuffer(new Uint16Array(this.backBuffer, this.#buffer.byteOffset,
-            this.#buffer.byteLength));
+    public asCharBuffer(): CharBuffer {
+        return CharBuffer.wrap(new Uint16Array(this.backBuffer, this.#buffer.byteOffset, this.#buffer.byteLength));
     }
 
     /** Creates a view of this byte buffer as a double buffer. */
@@ -86,8 +91,8 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
      *
      * @returns A new int buffer.
      */
-    public asIntBuffer(): java.nio.IntBuffer {
-        return new java.nio.IntBuffer(new Int32Array(this.backBuffer, this.#buffer.byteOffset,
+    public asIntBuffer(): IntBuffer {
+        return new IntBuffer(new Int32Array(this.backBuffer, this.#buffer.byteOffset,
             this.#buffer.byteLength));
     }
 
@@ -104,13 +109,13 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         lengthOrOffset?: number, length?: number): this | number {
         if (indexOrDst === undefined) {
             if (this.currentPosition >= this.currentLimit) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             return this.#buffer.getUint8(this.currentPosition++);
         } else if (typeof indexOrDst === "number") {
             if (indexOrDst < 0 || indexOrDst >= this.currentLimit) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             if (offsetOrDst === undefined) {
@@ -119,7 +124,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
 
             const dst = offsetOrDst as Uint8Array;
             if (this.currentLimit - indexOrDst < dst.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             dst.set(this.array().subarray(lengthOrOffset ?? 0, length ?? dst.length));
@@ -130,11 +135,11 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             const length = lengthOrOffset ?? indexOrDst.length;
 
             if (length > this.remaining()) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             if (offset < 0 || length < 0 || offset + length >= indexOrDst.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             indexOrDst.set(this.array().slice(this.currentPosition, this.currentPosition + length), offset);
@@ -146,16 +151,16 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     }
 
     /** Relative get method for reading a char value. */
-    public getChar(): java.lang.char;
+    public getChar(): char;
     /** Absolute get method for reading a char value. */
-    public getChar(index: number): java.lang.char;
-    public getChar(index?: number): java.lang.char {
+    public getChar(index: number): char;
+    public getChar(index?: number): char {
         if (index === undefined) {
             return this.#buffer.getUint16(this.currentPosition++, this.littleEndian);
         }
 
         if (index < 0 || index >= this.limit() - 1) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#buffer.getUint16(index, this.littleEndian);
@@ -171,7 +176,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         }
 
         if (index < 0 || index >= this.limit() - 1) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#buffer.getFloat64(index, this.littleEndian);
@@ -187,7 +192,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         }
 
         if (index < 0 || index >= this.limit() - 1) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#buffer.getFloat32(index, this.littleEndian);
@@ -203,7 +208,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         }
 
         if (index < 0 || index >= this.limit() - 1) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#buffer.getInt32(index, this.littleEndian);
@@ -219,7 +224,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         }
 
         if (index < 0 || index >= this.limit() - 1) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#buffer.getBigInt64(index, this.littleEndian);
@@ -235,7 +240,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         }
 
         if (index < 0 || index >= this.limit() - 1) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#buffer.getInt16(index, this.littleEndian);
@@ -252,25 +257,25 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     public put(bOrSrcOrIndex: number | Uint8Array | ByteBuffer, offsetOrBOrSrc?: Uint8Array | ByteBuffer | number,
         lengthOrOffset?: number, length?: number): this {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         if (typeof bOrSrcOrIndex === "number") {
             if (offsetOrBOrSrc === undefined) {
                 if (this.remaining() === 0) {
-                    throw new java.nio.BufferOverflowException();
+                    throw new BufferOverflowException();
                 }
 
                 this.#buffer.setUint8(this.currentPosition++, bOrSrcOrIndex);
             } else if (typeof offsetOrBOrSrc === "number") {
                 if (bOrSrcOrIndex < 0 || bOrSrcOrIndex >= this.currentLimit) {
-                    throw new java.lang.IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException();
                 }
 
                 this.#buffer.setUint8(bOrSrcOrIndex, offsetOrBOrSrc);
             } else {
                 if (offsetOrBOrSrc === this) {
-                    throw new java.lang.IllegalArgumentException();
+                    throw new IllegalArgumentException();
                 }
 
                 const source = offsetOrBOrSrc instanceof Uint8Array ? offsetOrBOrSrc : offsetOrBOrSrc.array();
@@ -280,14 +285,14 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
                     this.array().set(source, bOrSrcOrIndex);
                 }
             }
-        } else if (bOrSrcOrIndex instanceof java.nio.ByteBuffer) {
+        } else if (bOrSrcOrIndex instanceof ByteBuffer) {
             if (bOrSrcOrIndex === this) {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
 
             const count = bOrSrcOrIndex.remaining();
             if (this.remaining() < count) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array().set(bOrSrcOrIndex.array().subarray(bOrSrcOrIndex.currentPosition, bOrSrcOrIndex.currentLimit),
@@ -300,11 +305,11 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             const count = (lengthOrOffset as number) ?? bOrSrcOrIndex.length;
 
             if (offset < 0 || count < 0 || offset + count >= bOrSrcOrIndex.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             if (count > this.remaining()) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array().set(bOrSrcOrIndex.subarray(offset, offset + count), this.currentPosition);
@@ -315,24 +320,24 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     }
 
     /** Relative put method for writing a char value(optional operation). */
-    public putChar(value: java.lang.char): ByteBuffer;
+    public putChar(value: char): ByteBuffer;
     /** Absolute put method for writing a char value(optional operation). */
-    public putChar(index: number, value: java.lang.char): ByteBuffer;
-    public putChar(valueOrIndex: number, value?: java.lang.char): ByteBuffer {
+    public putChar(index: number, value: char): ByteBuffer;
+    public putChar(valueOrIndex: number, value?: char): ByteBuffer {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const dataSize = 2; // UTF-16.
         if (typeof valueOrIndex === "number") {
             if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.#buffer.setUint16(valueOrIndex, value ?? 0, this.littleEndian);
         } else {
             if (this.remaining() < dataSize) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             this.#buffer.setUint16(this.currentPosition, valueOrIndex,
@@ -358,19 +363,19 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     public putDouble(index: number, value: number): ByteBuffer;
     public putDouble(valueOrIndex: number, value?: number): ByteBuffer {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const dataSize = 8;
         if (value !== undefined) {
             if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.#buffer.setFloat64(valueOrIndex, value, this.littleEndian);
         } else {
             if (this.remaining() < dataSize) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             this.#buffer.setFloat64(this.currentPosition, valueOrIndex,
@@ -396,19 +401,19 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     public putFloat(index: number, value: number): ByteBuffer;
     public putFloat(valueOrIndex: number, value?: number): ByteBuffer {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const dataSize = 4;
         if (value !== undefined) {
             if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.#buffer.setFloat32(valueOrIndex, value, this.littleEndian);
         } else {
             if (this.remaining() < dataSize) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             this.#buffer.setFloat32(this.currentPosition, valueOrIndex,
@@ -434,19 +439,19 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     public putInt(index: number, value: number): ByteBuffer;
     public putInt(valueOrIndex: number, value?: number): ByteBuffer {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const dataSize = 4;
         if (value !== undefined) {
             if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.#buffer.setInt32(valueOrIndex, value, this.littleEndian);
         } else {
             if (this.remaining() < dataSize) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             this.#buffer.setInt32(this.currentPosition, valueOrIndex,
@@ -472,19 +477,19 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     public putLong(index: number, value: bigint): ByteBuffer;
     public putLong(valueOrIndex: bigint | number, value?: bigint): ByteBuffer {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const dataSize = 8;
         if (typeof valueOrIndex === "number") {
             if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.#buffer.setBigInt64(valueOrIndex, value!, this.littleEndian);
         } else {
             if (this.remaining() < dataSize) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             this.#buffer.setBigInt64(this.currentPosition, valueOrIndex,
@@ -510,19 +515,19 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     public putShort(index: number, value: number): ByteBuffer;
     public putShort(valueOrIndex: number, value?: number): ByteBuffer {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const dataSize = 2;
         if (value !== undefined) {
             if (valueOrIndex < 0 || valueOrIndex > this.limit() - dataSize) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.#buffer.setInt16(valueOrIndex, value, this.littleEndian);
         } else {
             if (this.remaining() < dataSize) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             this.#buffer.setInt16(this.currentPosition, valueOrIndex,

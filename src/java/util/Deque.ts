@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { JavaIterator } from "./Iterator";
 import { Queue } from "./Queue";
 
 /**
@@ -44,7 +44,7 @@ export interface Deque<T> extends Queue<T> {
     contains(o: T): boolean;
 
     /** Returns an iterator over the elements in this deque in reverse sequential order. */
-    descendingIterator(): java.util.Iterator<T>;
+    descendingIterator(): JavaIterator<T>;
 
     /**
      *  Retrieves, but does not remove, the head of the queue represented by this deque(in other words, the first

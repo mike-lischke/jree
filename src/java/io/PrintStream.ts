@@ -8,10 +8,17 @@
 import printf from "printf";
 
 import { NotImplementedError } from "../../NotImplementedError";
-import { S } from "../../templates";
+import { char } from "../lang";
+import { CharSequence } from "../lang/CharSequence";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { JavaString } from "../lang/String";
+import { System } from "../lang/System";
+import { Locale } from "../util/Locale";
+import { JavaFile } from "./File";
+import { FileOutputStream } from "./FileOutputStream";
 
-import { java } from "../..";
 import { FilterOutputStream } from "./FilterOutputStream";
+import { OutputStream } from "./OutputStream";
 
 /** A print stream is an output stream that prints representations of various data values conveniently. */
 export class PrintStream extends FilterOutputStream {
@@ -32,18 +39,18 @@ export class PrintStream extends FilterOutputStream {
     private encoding: BufferEncoding = "utf-8";
 
     /** Creates a new print stream, without automatic line flushing, with the specified file and charset. */
-    public constructor(file: java.io.File, csn?: java.lang.String);
-    public constructor(out: java.io.OutputStream, autoFlush?: boolean, encoding?: java.lang.String);
-    public constructor(fileName: java.lang.String, csn?: java.lang.String);
-    public constructor(fileOrOutOrFileName: java.io.File | java.io.OutputStream | java.lang.String,
-        csnOrAutoFlush?: java.lang.String | boolean, encoding?: java.lang.String) {
-        if (fileOrOutOrFileName instanceof java.io.File) {
+    public constructor(file: JavaFile, csn?: JavaString);
+    public constructor(out: OutputStream, autoFlush?: boolean, encoding?: JavaString);
+    public constructor(fileName: JavaString, csn?: JavaString);
+    public constructor(fileOrOutOrFileName: JavaFile | OutputStream | JavaString,
+        csnOrAutoFlush?: JavaString | boolean, encoding?: JavaString) {
+        if (fileOrOutOrFileName instanceof JavaFile) {
             /* @ts-expect-error, because the super call is not in the root block of the constructor. */
-            super(new java.io.FileOutputStream(fileOrOutOrFileName));
-        } else if (fileOrOutOrFileName instanceof java.io.OutputStream) {
+            super(new FileOutputStream(fileOrOutOrFileName));
+        } else if (fileOrOutOrFileName instanceof OutputStream) {
             super(fileOrOutOrFileName);
         } else {
-            super(new java.io.FileOutputStream(fileOrOutOrFileName));
+            super(new FileOutputStream(fileOrOutOrFileName));
         }
 
         if (typeof csnOrAutoFlush === "boolean") {
@@ -53,7 +60,7 @@ export class PrintStream extends FilterOutputStream {
 
             charset = charset.valueOf().toLowerCase();
             if (!PrintStream.supportedEncodings.has(charset)) {
-                new java.lang.IllegalArgumentException(S`Invalid encoding specified: ${charset}`);
+                new IllegalArgumentException(new JavaString(`Invalid encoding specified: ${charset}`));
             }
 
             this.encoding = charset as BufferEncoding;
@@ -64,12 +71,12 @@ export class PrintStream extends FilterOutputStream {
      * Appends the specified character ((sub) sequence) to this output stream.
      * Because the JS string type does not implement CharSequence, a separate signature only for a string is added.
      */
-    public append(c: java.lang.char | java.lang.String | java.lang.CharSequence): PrintStream;
-    public append(csq: java.lang.CharSequence, start: number, end: number): PrintStream;
-    public append(cOrSOrCsq: java.lang.char | java.lang.String | java.lang.CharSequence, start?: number,
+    public append(c: char | JavaString | CharSequence): PrintStream;
+    public append(csq: CharSequence, start: number, end: number): PrintStream;
+    public append(cOrSOrCsq: char | JavaString | CharSequence, start?: number,
         end?: number): PrintStream {
         let text: string;
-        if (cOrSOrCsq instanceof java.lang.String) {
+        if (cOrSOrCsq instanceof JavaString) {
             text = cOrSOrCsq.valueOf();
         } else if (typeof cOrSOrCsq === "number") {
             text = String.fromCodePoint(cOrSOrCsq);
@@ -118,25 +125,25 @@ export class PrintStream extends FilterOutputStream {
      *
      * @returns tbd
      */
-    public format(l: java.util.Locale, format: java.lang.String, ...args: unknown[]): PrintStream;
-    public format(format: java.lang.String, ...args: unknown[]): PrintStream;
+    public format(l: Locale, format: JavaString, ...args: unknown[]): PrintStream;
+    public format(format: JavaString, ...args: unknown[]): PrintStream;
     public format(...args: unknown[]): PrintStream {
         let index = 0;
-        if (args[0] instanceof java.util.Locale) {
+        if (args[0] instanceof Locale) {
             ++index; // Ignore the locale for now.
         }
 
         const text = printf(`${args[index]}`, args.slice(index + 1));
-        this.append(S`${text}`);
+        this.append(new JavaString(text));
 
         return this;
     }
 
-    public print(v: boolean | java.lang.char | number | java.lang.Object | java.lang.String | null): void {
+    public print(v: boolean | char | number | Object | JavaString | null): void {
         if (v === null) {
-            this.append(S`null`);
+            this.append(new JavaString("null"));
         } else {
-            this.append(S`${v}`);
+            this.append(new JavaString(`${v}`));
         }
     }
 
@@ -149,17 +156,17 @@ export class PrintStream extends FilterOutputStream {
      *
      * @returns tbd
      */
-    public printf(format: java.lang.String, ...args: unknown[]): PrintStream {
+    public printf(format: JavaString, ...args: unknown[]): PrintStream {
         return this.format(format, args);
     }
 
     // Terminates the current line by writing the line separator string.
-    public println(v?: boolean | java.lang.char | number | java.lang.Object | java.lang.String | null): void {
+    public println(v?: boolean | char | number | Object | JavaString | null): void {
         if (v !== undefined) {
             this.print(v);
         }
 
-        this.print(java.lang.System.getProperty(S`line.separator`));
+        this.print(System.getProperty(new JavaString("line.separator")));
 
         if (this.autoFlush) {
             this.flush();

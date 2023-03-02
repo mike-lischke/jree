@@ -115,6 +115,11 @@ In alphabetical order:
       - 𝑪 Ⓟ Charset
       - 𝑪 Ⓟ IllegalCharsetNameException
       - 𝑪 🅵 StandardCharsets
+    - *file*
+      - 🅵 OpenOption
+      - 🅵 StandardOpenOption
+    - *channels*
+      - 🅵 FileChannel (no support for `SPARSE` open option)
   - *util*
     - 𝑪 Ⓟ ArrayList
     - 𝑪 Ⓟ Arrays

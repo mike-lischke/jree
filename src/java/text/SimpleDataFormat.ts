@@ -5,16 +5,24 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, NotImplementedError } from "../..";
+import { NotImplementedError } from "../../NotImplementedError";
+import { NullPointerException } from "../lang/NullPointerException";
+import { JavaString } from "../lang/String";
+import { StringBuffer } from "../lang/StringBuffer";
+import { JavaDate } from "../util/Date";
+import { Locale } from "../util/Locale";
 import { DateFormat } from "./DateFormat";
+import { DateFormatSymbols } from "./DateFormatSymbols";
+import { FieldPosition } from "./FieldPosition";
+import { ParsePosition } from "./ParsePosition";
 
 export class SimpleDateFormat extends DateFormat {
-    #pattern: java.lang.String;
-    #locale?: java.util.Locale;
+    #pattern: JavaString;
+    #locale?: Locale;
 
-    public constructor(pattern: java.lang.String);
-    public constructor(pattern: java.lang.String, locale: java.util.Locale);
-    public constructor(pattern: java.lang.String, locale?: java.util.Locale) {
+    public constructor(pattern: JavaString);
+    public constructor(pattern: JavaString, locale: Locale);
+    public constructor(pattern: JavaString, locale?: Locale) {
         super();
         this.#pattern = pattern;
         this.#locale = locale;
@@ -25,9 +33,9 @@ export class SimpleDateFormat extends DateFormat {
      *
      * @param pattern The localized pattern to apply.
      */
-    public applyLocalizedPattern(pattern: java.lang.String | null): void {
+    public applyLocalizedPattern(pattern: JavaString | null): void {
         if (pattern === null) {
-            throw new java.lang.NullPointerException();
+            throw new NullPointerException();
         }
         this.#pattern = pattern;
     }
@@ -37,9 +45,9 @@ export class SimpleDateFormat extends DateFormat {
      *
      * @param pattern The pattern to apply.
      */
-    public applyPattern(pattern: java.lang.String | null): void {
+    public applyPattern(pattern: JavaString | null): void {
         if (pattern === null) {
-            throw new java.lang.NullPointerException();
+            throw new NullPointerException();
         }
         this.#pattern = pattern;
     }
@@ -60,7 +68,7 @@ export class SimpleDateFormat extends DateFormat {
      *
      * @returns true if the objects are equal; false otherwise.
      */
-    public equals(obj: java.lang.Object): boolean {
+    public equals(obj: unknown): boolean {
         if (obj instanceof SimpleDateFormat) {
             return this.#pattern === obj.#pattern;
         }
@@ -68,19 +76,19 @@ export class SimpleDateFormat extends DateFormat {
         return false;
     }
 
-    public format(obj: java.util.Date): java.lang.String;
-    public format(date: java.util.Date, toAppendTo: java.lang.StringBuffer,
-        pos: java.text.FieldPosition): java.lang.StringBuffer;
-    public format(date: java.util.Date, toAppendTo?: java.lang.StringBuffer,
-        pos?: java.text.FieldPosition): java.lang.StringBuffer | java.lang.String {
+    public format(obj: JavaDate): JavaString;
+    public format(date: JavaDate, toAppendTo: StringBuffer,
+        pos: FieldPosition): StringBuffer;
+    public format(date: JavaDate, toAppendTo?: StringBuffer,
+        pos?: FieldPosition): StringBuffer | JavaString {
         throw new NotImplementedError();
     }
 
-    public get2DigitYearStart(): java.util.Date {
+    public get2DigitYearStart(): JavaDate {
         throw new NotImplementedError();
     }
 
-    public getDateFormatSymbols(): java.text.DateFormatSymbols {
+    public getDateFormatSymbols(): DateFormatSymbols {
         throw new NotImplementedError();
     }
 
@@ -88,23 +96,23 @@ export class SimpleDateFormat extends DateFormat {
         throw new NotImplementedError();
     }
 
-    public parse(source: string, pos: java.text.ParsePosition): java.util.Date {
+    public parse(source: JavaString, pos: ParsePosition): JavaDate {
         throw new NotImplementedError();
     }
 
-    public set2DigitYearStart(start: java.util.Date): void {
+    public set2DigitYearStart(start: JavaDate): void {
         throw new NotImplementedError();
     }
 
-    public setDateFormatSymbols(newFormatSymbols: java.text.DateFormatSymbols): void {
+    public setDateFormatSymbols(newFormatSymbols: DateFormatSymbols): void {
         throw new NotImplementedError();
     }
 
-    public toLocalizedPattern(): string {
+    public toLocalizedPattern(): JavaString {
         throw new NotImplementedError();
     }
 
-    public toPattern(): string {
+    public toPattern(): JavaString {
         throw new NotImplementedError();
     }
 }

@@ -5,10 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, NotImplementedError } from "../..";
+import { NotImplementedError } from "../../NotImplementedError";
+import { JavaIterable } from "../lang/Iterable";
 import { JavaObject } from "../lang/Object";
+import { Predicate } from "./function/Predicate";
+import { JavaIterator } from "./Iterator";
+import { Spliterator } from "./Spliterator";
 
-export interface Collection<T> extends java.lang.Iterable<T> {
+export interface Collection<T> extends JavaIterable<T> {
     /**
      * Ensures that this collection contains the specified element.
      */
@@ -50,7 +54,7 @@ export interface Collection<T> extends java.lang.Iterable<T> {
     isEmpty(): boolean;
 
     /** Returns an iterator over the elements in this collection. */
-    iterator(): java.util.Iterator<T>;
+    iterator(): JavaIterator<T>;
 
     // parallelStream(): java.util.stream.Stream<T>;
 
@@ -85,7 +89,7 @@ export interface Collection<T> extends java.lang.Iterable<T> {
      *
      * @returns a string representation of this collection
      */
-    toString(): java.lang.String;
+    toString(): string;
 
     /**
      * Returns an array containing all of the elements in this collection.
@@ -107,7 +111,7 @@ export class Collection<T> extends JavaObject {
      *
      * @returns true if any elements were removed
      */
-    public removeIf(filter: java.util.function.Predicate<T>): boolean {
+    public removeIf(filter: Predicate<T>): boolean {
         let removed = false;
         const it = this.iterator();
         while (it.hasNext()) {
@@ -123,7 +127,7 @@ export class Collection<T> extends JavaObject {
     /**
      * Creates a {@link Spliterator} over the elements in this collection.
      */
-    public spliterator(): java.util.Spliterator<T> {
+    public spliterator(): Spliterator<T> {
         throw new NotImplementedError();
     }
 
@@ -134,7 +138,7 @@ export class Collection<T> extends JavaObject {
      * @param generator a function which produces a new array of the desired type and the provided length
      */
     /* Enabling this causes a compiler error in the interface declaration.
-        public toArray<T>(generator: java.util.function.IntFunction<T[]>): T[] {
+        public toArray<T>(generator: IntFunction<T[]>): T[] {
         throw new NotImplementedError();
     }*/
 

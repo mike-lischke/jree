@@ -7,6 +7,5 @@
 
 import { JavaObject } from "../lang/Object";
 
-export class Console extends JavaObject {
-
+export class JavaConsole extends JavaObject {
 }

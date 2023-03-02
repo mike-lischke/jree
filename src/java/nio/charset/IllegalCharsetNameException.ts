@@ -5,6 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { IllegalArgumentException } from "../../lang";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
 
 export class IllegalCharsetNameException extends IllegalArgumentException { }

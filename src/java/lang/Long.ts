@@ -5,17 +5,22 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
 import { MurmurHash } from "../../MurmurHash";
 
-import { java } from "../..";
-import { JavaObject } from "./Object";
+import { JavaString } from "./String";
+import { Class, JavaObject } from "./Object";
+import { Serializable } from "../io/Serializable";
+import { Comparable } from "./Comparable";
+import { NumberFormatException } from "./NumberFormatException";
+import { Throwable } from "./Throwable";
+import { System } from "./System";
+import { Integer } from "./Integer";
 
-export class Long extends JavaObject implements java.io.Serializable, java.lang.Comparable<Long>  {
+export class Long extends JavaObject implements Serializable, Comparable<Long>  {
     public static readonly MAX_VALUE = 0x7FFFFFFFFFFFFFFFn;
     public static readonly MIN_VALUE = -0x8000000000000000n;
     public static readonly SIZE = 64;
-    public static readonly TYPE: java.lang.Class<Long>;
+    public static readonly TYPE: Class<Long>;
 
     private value: bigint;
 
@@ -24,10 +29,10 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @param value A primitive type to wrap in this instance.
      */
-    public constructor(value: bigint | number | string | java.lang.String) {
+    public constructor(value: bigint | number | string | JavaString) {
         super();
 
-        if (value instanceof java.lang.String) {
+        if (value instanceof JavaString) {
             this.value = BigInt(`${value}`);
         } else {
             this.value = BigInt(value);
@@ -70,10 +75,10 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns A new Long with the converted value.
      */
-    public static decode(nm: string): Long {
-        const n = nm.trim().toLowerCase();
+    public static decode(nm: JavaString): Long {
+        const n = nm.valueOf().trim().toLowerCase();
         if (n.length === 0) {
-            throw new java.lang.NumberFormatException();
+            throw new NumberFormatException();
         }
 
         try {
@@ -103,7 +108,7 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
 
             return new Long(parseInt(sign + n.substring(start), radix));
         } catch (reason) {
-            throw new java.lang.NumberFormatException(java.lang.Throwable.fromError(reason));
+            throw new NumberFormatException(Throwable.fromError(reason));
         }
     }
 
@@ -115,8 +120,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns The system property as Integer or the default value as Long.
      */
-    public static getLong(nm?: java.lang.String, val?: number): Long | null {
-        const p = nm && nm.length() > 0 ? java.lang.System.getProperty(nm) : undefined;
+    public static getLong(nm?: JavaString, val?: number): Long | null {
+        const p = nm && nm.length() > 0 ? System.getProperty(nm) : undefined;
         if (!p) {
             if (val === undefined) {
                 return null;
@@ -161,8 +166,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
     public static numberOfLeadingZeros(i: bigint): number {
         const x = Number((i >> 32n) & 0xFFFFFFFFn);
 
-        return x === 0 ? 32 + java.lang.Integer.numberOfLeadingZeros(Number(i))
-            : java.lang.Integer.numberOfLeadingZeros(x);
+        return x === 0 ? 32 + Integer.numberOfLeadingZeros(Number(i))
+            : Integer.numberOfLeadingZeros(x);
     }
 
     /**
@@ -315,8 +320,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @param i The number to convert.
      */
-    public static toBinaryString(i: bigint): java.lang.String {
-        return new java.lang.String(i.toString(2));
+    public static toBinaryString(i: bigint): JavaString {
+        return new JavaString(i.toString(2));
     }
 
     /**
@@ -324,8 +329,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @param i The number to convert.
      */
-    public static toHexString(i: bigint): java.lang.String {
-        return new java.lang.String(i.toString(16));
+    public static toHexString(i: bigint): JavaString {
+        return new JavaString(i.toString(16));
 
     }
 
@@ -334,8 +339,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @param i The number to convert.
      */
-    public static toOctalString(i: bigint): java.lang.String {
-        return new java.lang.String(i.toString(8));
+    public static toOctalString(i: bigint): JavaString {
+        return new JavaString(i.toString(8));
 
     }
 
@@ -345,8 +350,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      * @param i The number to convert.
      * @param radix The radix of the result string.
      */
-    public static toString(i: bigint, radix?: number): java.lang.String {
-        return new java.lang.String(i.toString(radix));
+    public static toString(i: bigint, radix?: number): JavaString {
+        return new JavaString(i.toString(radix));
 
     }
 
@@ -355,8 +360,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      * radix given by the second argument.
      */
     public static valueOf(i: bigint): Long;
-    public static valueOf(s: string | java.lang.String, radix?: number): Long;
-    public static valueOf(value: bigint | string | java.lang.String, radix?: number): Long {
+    public static valueOf(s: string | JavaString, radix?: number): Long;
+    public static valueOf(value: bigint | string | JavaString, radix?: number): Long {
         if (typeof value === "bigint") {
             return new Long(value);
         }
@@ -372,12 +377,12 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      * @param s The string to parse.
      * @param radix A radix for the string.
      *
-     * @returns a new java.lang.Long with the number value from the string.
+     * @returns a new Long with the number value from the string.
      */
-    public static parseLong(s: string | java.lang.String, radix = 10): Long {
+    public static parseLong(s: string | JavaString, radix = 10): Long {
         const value = parseInt(`${s}`, radix);
         if (isNaN(value) || value > Long.MAX_VALUE || value < Long.MIN_VALUE) {
-            throw new java.lang.NumberFormatException();
+            throw new NumberFormatException();
         }
 
         return new Long(parseInt(`${s}`, radix));
@@ -409,10 +414,10 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @param obj The object to compare this instance to.
      *
-     * @returns True if obj is an instance of java.lang.Integer and both represent the same numerical value,
+     * @returns True if obj is an instance of Integer and both represent the same numerical value,
      *          otherwise false.
      */
-    public equals(obj?: java.lang.Object): boolean {
+    public equals(obj?: unknown): boolean {
         if (obj instanceof Long) {
             return this.value === obj.value;
         }
@@ -451,8 +456,8 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
     }
 
     // Returns a String object representing this Integer's value.
-    public toString(): java.lang.String {
-        return S`${this.value}`;
+    public toString(): string {
+        return `${this.value}`;
     }
 
     public valueOf(): bigint {
@@ -471,7 +476,7 @@ export class Long extends JavaObject implements java.io.Serializable, java.lang.
         // Defer initializing the TYPE field, to ensure the Class class is loaded before using it.
         setTimeout(() => {
             /* @ts-expect-error */
-            Long.TYPE = java.lang.Class.fromConstructor(Long);
+            Long.TYPE = Class.fromConstructor(Long);
             Object.freeze(Long);
         }, 0);
     }

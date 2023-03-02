@@ -5,13 +5,24 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { is, List } from "immutable";
+import { is, List as ImmList } from "immutable";
 
-import { java, MurmurHash, NotImplementedError, S } from "../..";
-
-import { JavaIterator } from "../../JavaIterator";
+import { IteratorWrapper } from "../../IteratorWrapper";
 import { IListBackend, ListIteratorImpl } from "./ListIteratorImpl";
 import { AbstractCollection } from "./AbstractCollection";
+import { List } from "./List";
+import { StringBuilder } from "../lang/StringBuilder";
+import { Collection } from "./Collection";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { Consumer } from "./function/Consumer";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { MurmurHash } from "../../MurmurHash";
+import { JavaIterator } from "./Iterator";
+import { ListIterator } from "./ListIterator";
+import { Predicate } from "./function/Predicate";
+import { Spliterator } from "./Spliterator";
+import { NotImplementedError } from "../../NotImplementedError";
 
 /**
  * This is the base class for all list implementations. It provides the core functionality and the
@@ -21,7 +32,7 @@ import { AbstractCollection } from "./AbstractCollection";
  * The actual implementation here goes a bit further and implements all abstract methods too. It manages the underlying
  * memory and sub list handling. It's essentially a combined implementation of AbstractList and AbstractCollection.
  */
-export class AbstractList<T> extends AbstractCollection<T> implements java.util.List<T> {
+export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
 
     protected modCount = 0;
 
@@ -31,7 +42,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
         super();
 
         this.#sharedBackend = list ?? {
-            list: List(),
+            list: ImmList(),
             start: 0,
             end: 0,
             updateEnd: (delta: number) => {
@@ -77,7 +88,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
             case 2: {
                 const index = args[0] as number;
                 if (index < 0 || index > this.size()) {
-                    throw new java.lang.ArrayIndexOutOfBoundsException();
+                    throw new ArrayIndexOutOfBoundsException();
                 }
 
                 const element = args[1] as T;
@@ -96,7 +107,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
         }
     }
@@ -112,7 +123,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      *
      * @returns true if this list changed as a result of the call.
      */
-    public addAll(c: java.util.Collection<T>): boolean;
+    public addAll(c: Collection<T>): boolean;
     /**
      * Inserts all of the elements in the specified collection into this list, starting at the
      * specified position. Shifts the element currently at that position (if any) and any subsequent
@@ -127,11 +138,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      *
      * @returns true if this list changed as a result of the call.
      */
-    public addAll(index: number, c: java.util.Collection<T>): boolean;
+    public addAll(index: number, c: Collection<T>): boolean;
     public addAll(...args: unknown[]): boolean {
         switch (args.length) {
             case 1: {
-                const c = args[0] as java.util.Collection<T>;
+                const c = args[0] as Collection<T>;
                 this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.end, 0, ...c);
                 this.changeSize(c.size());
 
@@ -141,10 +152,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
             case 2: {
                 const index = this.#sharedBackend.start + (args[0] as number);
                 if (index < 0 || index >= this.size()) {
-                    throw new java.lang.ArrayIndexOutOfBoundsException();
+                    throw new ArrayIndexOutOfBoundsException();
                 }
 
-                const c = args[1] as java.util.Collection<T>;
+                const c = args[1] as Collection<T>;
                 this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.start + index, 0, ...c);
                 this.changeSize(c.size());
 
@@ -152,7 +163,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
         }
     }
@@ -165,7 +176,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
         const count = this.size();
         if (this.#sharedBackend.start === 0 && this.#sharedBackend.end === undefined) {
             // Fast path.
-            this.#sharedBackend.list = List();
+            this.#sharedBackend.list = ImmList();
             this.changeSize(-count);
         } else {
             this.removeRange(0, this.size());
@@ -202,7 +213,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      *
      * @returns true if this list contains all of the elements of the specified collection.
      */
-    public containsAll(c: java.util.Collection<T>): boolean {
+    public containsAll(c: Collection<T>): boolean {
         for (const element of c) {
             if (!this.contains(element)) {
                 return false;
@@ -248,7 +259,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
         return true;
     }
 
-    public forEach(action: java.util.function.Consumer<T>): void {
+    public forEach(action: Consumer<T>): void {
         for (let i = this.#sharedBackend.start; i < this.#sharedBackend.end; ++i) {
             action.accept(this.#sharedBackend.list.get(i)!);
         }
@@ -265,7 +276,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      */
     public get(index: number): T {
         if (index < 0 || index >= this.size()) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return this.#sharedBackend.list.get(this.#sharedBackend.start + index)!;
@@ -324,21 +335,21 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      * Returns an iterator over the elements in this list in proper sequence.
      * The elements will be returned in order from first (index 0) to last (index size() - 1).
      * The returned iterator is a "weakly consistent" iterator that will never throw
-     * {@link java.util.ConcurrentModificationException}, and guarantees to traverse elements as they existed upon
+     * {@link ConcurrentModificationException}, and guarantees to traverse elements as they existed upon
      * construction of the iterator, and may (but is not guaranteed to) reflect any modifications
      * subsequent to construction.
      *
      * @returns An iterator over the elements in this list in proper sequence.
      */
-    public iterator(): java.util.Iterator<T> {
+    public iterator(): JavaIterator<T> {
         if (this.#sharedBackend.start === 0 && this.#sharedBackend.end === undefined) {
             // Fast path
-            return new JavaIterator(this.#sharedBackend.list[Symbol.iterator]());
+            return new IteratorWrapper(this.#sharedBackend.list[Symbol.iterator]());
         }
 
         const subList = this.#sharedBackend.list.slice(this.#sharedBackend.start, this.#sharedBackend.end);
 
-        return new JavaIterator(subList[Symbol.iterator]());
+        return new IteratorWrapper(subList[Symbol.iterator]());
     }
 
     /**
@@ -371,14 +382,14 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      * Returns a list iterator over the elements in this list (in proper sequence).
      * The elements will be returned in order from first (index 0) to last (index size() - 1).
      * The returned iterator is a "weakly consistent" iterator that will never throw
-     * {@link java.util.ConcurrentModificationException}, and guarantees to traverse elements as they existed upon
+     * {@link ConcurrentModificationException}, and guarantees to traverse elements as they existed upon
      * construction of the iterator, and may (but is not guaranteed to) reflect any modifications
      * subsequent to construction.
      *
      * @param index The index of the first element to be returned from the list iterator (by a call to
      * @returns A list iterator over the elements in this list (in proper sequence).
      */
-    public listIterator(index = 0): java.util.ListIterator<T> {
+    public listIterator(index = 0): ListIterator<T> {
         return new ListIteratorImpl(this.#sharedBackend, this.#sharedBackend.start + index);
     }
 
@@ -410,7 +421,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
                 if (typeof args[0] === "number") {
                     const index = args[0] - this.#sharedBackend.start;
                     if (index < 0 || index >= this.size()) {
-                        throw new java.lang.IndexOutOfBoundsException();
+                        throw new IndexOutOfBoundsException();
                     }
 
                     const result = this.#sharedBackend.list.get(index)!;
@@ -434,7 +445,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
         }
     }
@@ -446,7 +457,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      *
      * @returns true if this list changed as a result of the call.
      */
-    public removeAll(c: java.util.Collection<T>): boolean {
+    public removeAll(c: Collection<T>): boolean {
         const oldSize = this.#sharedBackend.list.count();
         this.#sharedBackend.list = this.#sharedBackend.list.filter((value, index) => {
             return index >= this.#sharedBackend.start && index < this.#sharedBackend.end && !c.contains(value);
@@ -468,7 +479,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      *
      * @returns true if any elements were removed.
      */
-    public removeIf(filter: java.util.function.Predicate<T>): boolean {
+    public removeIf(filter: Predicate<T>): boolean {
         const oldSize = this.#sharedBackend.list.count();
         this.#sharedBackend.list = this.#sharedBackend.list.filterNot((value, index) => {
             return index >= this.#sharedBackend.start && index < this.#sharedBackend.end && filter.test(value);
@@ -495,11 +506,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      */
     public removeRange(fromIndex: number, toIndex: number): void {
         if (fromIndex < 0 || toIndex > this.size()) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (fromIndex > toIndex) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         const delta = toIndex - fromIndex;
@@ -520,7 +531,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      *
      * @returns true if this list changed as a result of the call.
      */
-    public retainAll(c: java.util.Collection<T>): boolean {
+    public retainAll(c: Collection<T>): boolean {
         const oldSize = this.#sharedBackend.list.count();
         this.#sharedBackend.list = this.#sharedBackend.list.filter((value, index) => {
             return index >= this.#sharedBackend.start && index < this.#sharedBackend.end && c.contains(value);
@@ -545,7 +556,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      */
     public set(index: number, element: T): T {
         if (index < 0 || index >= this.size()) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         const result = this.#sharedBackend.list.get(this.#sharedBackend.start + index)!;
@@ -561,7 +572,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
         return this.#sharedBackend.end - this.#sharedBackend.start;
     }
 
-    public spliterator(): java.util.Spliterator<T> {
+    public spliterator(): Spliterator<T> {
         throw new NotImplementedError();
     }
 
@@ -579,13 +590,13 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      * @throws IndexOutOfBoundsException if an endpoint index value is out of range
      * @throws IllegalArgumentException if the endpoint indices are out of order
      */
-    public subList(fromIndex: number, toIndex: number): java.util.List<T> {
+    public subList(fromIndex: number, toIndex: number): List<T> {
         if (fromIndex < 0 || toIndex > this.size()) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (fromIndex > toIndex) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         const list = new AbstractList<T>({
@@ -637,20 +648,20 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      * Returns a string representation of this list. The string representation consists of a list of the list's
      * elements in the order they are returned by its iterator, enclosed in square brackets ("[]"). Adjacent elements
      * are separated by the characters ", " (comma and space). Elements are converted to strings as by
-     * java.lang.String.valueOf(Object).
+     * JavaString.valueOf(Object).
      *
      * @returns A string representation of this list.
      */
-    public toString(): java.lang.String {
-        const builder = new java.lang.StringBuilder();
-        builder.append(S`[`);
+    public toString(): string {
+        const builder = new StringBuilder();
+        builder.append("[");
         for (let i = 0; i < this.size(); i++) {
             if (i > 0) {
-                builder.append(S`, `);
+                builder.append(", ");
             }
-            builder.append(java.lang.String.valueOf(this.get(i)));
+            builder.append(`${this.get(i)}`);
         }
-        builder.append(S`]`);
+        builder.append("]");
 
         return builder.toString();
     }
@@ -684,11 +695,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements java.util.
      */
     protected copyToArray(array: T[], index: number): void {
         if (index < 0 || index >= array.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (index + this.size() > array.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         const end = this.#sharedBackend.end;

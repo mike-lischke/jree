@@ -5,8 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from ".";
-import { IEquatable } from "./types";
+import { AutoCloseable } from "./java/lang/AutoCloseable";
+import { Throwable } from "./java/lang/Throwable";
 
 // The 3 following functions comprise the emulation of the try-with-resource Java statement.
 // They are used in different places of the generated double-try block.
@@ -20,15 +20,15 @@ import { IEquatable } from "./types";
  *
  * @returns A Throwable if an error occurred while closing the objects.
  */
-export const closeResources = (list: java.lang.AutoCloseable[]): java.lang.Throwable | undefined => {
-    let error: java.lang.Throwable | undefined;
+export const closeResources = (list: AutoCloseable[]): Throwable | undefined => {
+    let error: Throwable | undefined;
 
     // Close in reverse order.
     for (const closeable of list.reverse()) {
         try {
             closeable.close();
         } catch (x) {
-            const t = java.lang.Throwable.fromError(x);
+            const t = Throwable.fromError(x);
             if (!error) {
                 error = t;
             } else {
@@ -50,8 +50,8 @@ export const closeResources = (list: java.lang.AutoCloseable[]): java.lang.Throw
  *
  * @returns A new Throwable instance created from the given resource error.
  */
-export const handleResourceError = (e: unknown, error?: java.lang.Throwable): java.lang.Throwable => {
-    const t = java.lang.Throwable.fromError(e);
+export const handleResourceError = (e: unknown, error?: Throwable): Throwable => {
+    const t = Throwable.fromError(e);
     if (error) {
         t.addSuppressed(error);
     }
@@ -64,30 +64,8 @@ export const handleResourceError = (e: unknown, error?: java.lang.Throwable): ja
  *
  * @param error A possible error.
  */
-export const throwResourceError = (error?: java.lang.Throwable): void => {
+export const throwResourceError = (error?: Throwable): void => {
     if (error) {
         throw error;
     }
-};
-
-/**
- * Type guard to check if a value supports the IEquatable interface.
- *
- * @param candidate The value to check.
- *
- * @returns The guard result.
- */
-export const isEquatable = (candidate: unknown): candidate is IEquatable => {
-    return (candidate as IEquatable).equals !== undefined && (candidate as IEquatable).hashCode !== undefined;
-};
-
-/**
- * Type guard to check if a value has a length property.
- *
- * @param candidate The value to check.
- *
- * @returns The guard result.
- */
-export const isArrayLike = <T>(candidate: unknown): candidate is ArrayLike<T> => {
-    return (candidate as ArrayLike<T>).length !== undefined;
 };

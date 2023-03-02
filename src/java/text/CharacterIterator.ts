@@ -5,19 +5,20 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { Cloneable } from "../lang/Cloneable";
+import { JavaString } from "../lang/String";
 
 /**
  * This interface defines a protocol for bidirectional iteration over text. The iterator iterates over a bounded
  * sequence of characters. Characters are indexed with values beginning with the value returned by getBeginIndex()
  * and continuing through the value returned by getEndIndex()-1.
  */
-export interface CharacterIterator extends java.lang.Cloneable<CharacterIterator> {
+export interface CharacterIterator extends Cloneable<CharacterIterator> {
     /** Gets the character at the current position (as returned by getIndex()). */
-    current(): string;
+    current(): JavaString;
 
     /** Sets the position to getBeginIndex() and returns the character at that position. */
-    first(): string;
+    first(): JavaString;
 
     /** Returns the start index of the text. */
     getBeginIndex(): number;
@@ -32,13 +33,13 @@ export interface CharacterIterator extends java.lang.Cloneable<CharacterIterator
      * Sets the position to getEndIndex()-1 (getEndIndex() if the text is empty) and returns the character at that
      * position.
      */
-    last(): string;
+    last(): JavaString;
 
     /** Increments the iterator's index by one and returns the character at the new index. */
-    next(): string;
+    next(): JavaString;
 
     /** Decrements the iterator's index by one and returns the character at the new index. */
-    previous(): string;
+    previous(): JavaString;
 
     /**
      * Sets the position to the specified position in the text and returns that character.
@@ -48,7 +49,7 @@ export interface CharacterIterator extends java.lang.Cloneable<CharacterIterator
      *
      * @returns the character at the specified position or DONE if the specified position is equal to getEndIndex().
      */
-    setIndex(position: number): string;
+    setIndex(position: number): JavaString;
 }
 
 export namespace CharacterIterator {

@@ -6,9 +6,8 @@
  */
 
 import { java } from "../../../src";
-import { OutputStream } from "../../../src/java/io/OutputStream";
 
-class TestOutputStream extends OutputStream {
+class TestOutputStream extends java.io.OutputStream {
     public output = new Uint8Array(1000);
     public close = jest.fn(() => {/* */ });
 

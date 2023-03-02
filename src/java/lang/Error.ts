@@ -7,6 +7,6 @@
 
 import { Throwable } from "./Throwable";
 
-export class Error extends Throwable {
+export class JavaError extends Throwable {
 
 }

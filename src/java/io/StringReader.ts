@@ -5,7 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, S } from "../..";
+import { java } from "../..";
+import { S } from "../../templates";
 import { Reader } from "./Reader";
 
 export class StringReader extends Reader {

@@ -7,3 +7,5 @@
 
 export * from "./Pattern";
 export * from "./Matcher";
+
+export * from "./PatternSyntaxException";

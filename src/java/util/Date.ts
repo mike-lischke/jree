@@ -5,11 +5,17 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, NotImplementedError, S } from "../..";
+import { NotImplementedError } from "../../NotImplementedError";
+import { S } from "../../templates";
+import { Serializable } from "../io/Serializable";
+import { Cloneable } from "../lang/Cloneable";
+import { Comparable } from "../lang/Comparable";
+import { Long } from "../lang/Long";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
+import { Instant } from "../time/Instant";
 
-export class Date extends JavaObject implements java.io.Serializable, java.lang.Cloneable<Date>,
-    java.lang.Comparable<Date> {
+export class JavaDate extends JavaObject implements Serializable, Cloneable<JavaDate>, Comparable<JavaDate> {
 
     #value: bigint;
     #d: InstanceType<typeof window.Date>;
@@ -34,8 +40,8 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @deprecated
      */
-    public constructor(s: java.lang.String);
-    public constructor(yearOrDateOrS?: number | bigint | java.lang.String, month?: number, date?: number, hrs?: number,
+    public constructor(s: String);
+    public constructor(yearOrDateOrS?: number | bigint | String, month?: number, date?: number, hrs?: number,
         min?: number, sec?: number) {
         super();
 
@@ -43,7 +49,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
             this.#value = BigInt(window.Date.now());
         } else if (typeof yearOrDateOrS === "bigint") {
             this.#value = yearOrDateOrS;
-        } else if (yearOrDateOrS instanceof java.lang.String) {
+        } else if (yearOrDateOrS instanceof String) {
             // Note: TS only supports the ISO 8601 date format, while Java supports many more.
             const d = window.Date.parse(yearOrDateOrS.valueOf());
             this.#value = BigInt(d);
@@ -72,6 +78,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns tbd
      */
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     public static UTC(year: number, month: number, date: number, hrs: number, min: number, sec: number): bigint {
         const d = window.Date.UTC(year, month, date, hrs, min, sec);
 
@@ -83,7 +90,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @param _instant tbd
      */
-    public static from(_instant: java.time.Instant): Date {
+    public static from(_instant: Instant): JavaDate {
         throw new NotImplementedError();
     }
 
@@ -96,8 +103,8 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @deprecated
      */
-    public static parse(s: java.lang.String): bigint {
-        return new Date(s).#value;
+    public static parse(s: String): bigint {
+        return new JavaDate(s).#value;
     }
 
     /**
@@ -107,7 +114,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns tbd
      */
-    public after(when: Date): boolean {
+    public after(when: JavaDate): boolean {
         return this.#value < when.#value;
     }
 
@@ -118,13 +125,13 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns tbd
      */
-    public before(when: Date): boolean {
+    public before(when: JavaDate): boolean {
         return this.#value > when.#value;
     }
 
     /** @returns a copy of this object. */
-    public clone(): Date {
-        return new Date(this.#value);
+    public clone(): JavaDate {
+        return new JavaDate(this.#value);
     }
 
     /**
@@ -134,7 +141,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns tbd
      */
-    public compareTo(anotherDate: Date): number {
+    public compareTo(anotherDate: JavaDate): number {
         return Number(this.#value - anotherDate.#value);
     }
 
@@ -150,7 +157,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
             return true;
         }
 
-        if (!(obj instanceof Date)) {
+        if (!(obj instanceof JavaDate)) {
             return false;
         }
 
@@ -255,7 +262,7 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
 
     /** @returns a hash code value for this object. */
     public hashCode(): number {
-        return new java.lang.Long(this.#value).hashCode();
+        return new Long(this.#value).hashCode();
     }
 
     /**
@@ -348,12 +355,12 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @deprecated tbd
      */
-    public toGMTString(): java.lang.String {
+    public toGMTString(): JavaString {
         return S`${this.#d.toISOString()}`;
     }
 
     /** Converts this Date object to an Instant. */
-    public toInstant(): java.time.Instant {
+    public toInstant(): Instant {
         throw new NotImplementedError();
     }
 
@@ -364,8 +371,8 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @deprecated
      */
-    public toLocaleString(): java.lang.String {
-        return S`${this.#d.toLocaleDateString()}`;
+    public toLocaleString(): string {
+        return `${this.#d.toLocaleDateString()}`;
     }
 
     /**
@@ -373,8 +380,8 @@ export class Date extends JavaObject implements java.io.Serializable, java.lang.
      *
      * @returns tbd
      */
-    public toString(): java.lang.String {
-        return S`${this.#d.toString()}`;
+    public toString(): string {
+        return `${this.#d.toString()}`;
     }
 
 }

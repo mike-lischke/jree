@@ -5,6 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { JavaString } from "../../lang/String";
+
 /**
  * An event or a repeated event for an object that is registered with a watch service.
  */
@@ -35,7 +37,7 @@ export namespace WatchEvent {
         /**
          * @returns the name of the event kind.
          */
-        name(): string;
+        name(): JavaString;
 
         /**
          * @returns the type of the context value.
@@ -50,6 +52,6 @@ export namespace WatchEvent {
         /**
          * @returns the name of the modifier.
          */
-        name(): string;
+        name(): JavaString;
     }
 }

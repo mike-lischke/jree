@@ -3,7 +3,6 @@
 * See the LICENSE file for more information.
 */
 
-import { java, S } from "../..";
 import { JavaObject } from "../lang/Object";
 
 /**
@@ -27,7 +26,7 @@ export class ParsePosition extends JavaObject {
      *
      * @returns true if the objects are equal; false otherwise.
      */
-    public equals(obj: java.lang.Object): boolean {
+    public equals(obj: JavaObject): boolean {
         if (obj instanceof ParsePosition) {
             return this.#index === obj.#index;
         }
@@ -79,7 +78,7 @@ export class ParsePosition extends JavaObject {
     /**
      * @returns A string representation of this ParsePosition.
      */
-    public toString(): java.lang.String {
-        return S`ParsePosition(index=${this.#index}, errorIndex=${this.#errorIndex})`;
+    public toString(): string {
+        return `ParsePosition(index=${this.#index}, errorIndex=${this.#errorIndex})`;
     }
 }

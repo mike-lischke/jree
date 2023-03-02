@@ -5,7 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { JavaString } from "../lang/String";
+import { CharSequence } from "../lang/CharSequence";
+import { char } from "../lang";
+import { Charset } from "../nio/charset/Charset";
+import { OutputStream } from "./OutputStream";
 import { Writer } from "./Writer";
 
 export class OutputStreamWriter extends Writer {
@@ -15,18 +19,18 @@ export class OutputStreamWriter extends Writer {
     private encoding: BufferEncoding;
     private buffer = Buffer.alloc(OutputStreamWriter.writeBufferSize);
 
-    public constructor(out: java.io.OutputStream, charsetName?: java.lang.String);
-    public constructor(out: java.io.OutputStream, cs?: java.nio.charset.Charset);
-    public constructor(private out: java.io.OutputStream,
-        charsetNameOrCs?: java.lang.String | java.nio.charset.Charset) {
+    public constructor(out: OutputStream, charsetName?: JavaString);
+    public constructor(out: OutputStream, cs?: Charset);
+    public constructor(private out: OutputStream,
+        charsetNameOrCs?: JavaString | Charset) {
         super(out);
 
         if (!charsetNameOrCs) {
             this.encoding = "utf8";
-        } else if (charsetNameOrCs instanceof java.lang.String) {
+        } else if (charsetNameOrCs instanceof JavaString) {
             this.encoding = charsetNameOrCs.valueOf() as BufferEncoding;
         } else {
-            this.encoding = charsetNameOrCs.name() as BufferEncoding;
+            this.encoding = charsetNameOrCs.name().valueOf() as BufferEncoding;
         }
     }
 
@@ -47,8 +51,8 @@ export class OutputStreamWriter extends Writer {
      *
      * @see Charset
      */
-    public getEncoding(): string {
-        return this.encoding;
+    public getEncoding(): JavaString {
+        return new JavaString(this.encoding);
     }
 
     /**
@@ -60,12 +64,12 @@ export class OutputStreamWriter extends Writer {
         this.out.flush();
     }
 
-    public write(c: java.lang.char): void;
+    public write(c: char): void;
     public write(array: Uint16Array): void;
     public write(array: Uint16Array, offset: number, length: number): void;
-    public write(str: java.lang.String): void;
-    public write(str: java.lang.String, off: number, len: number): void;
-    public write(cOrArrayOrStr: java.lang.char | Uint16Array | java.lang.String, offset?: number,
+    public write(str: JavaString): void;
+    public write(str: JavaString, off: number, len: number): void;
+    public write(cOrArrayOrStr: char | Uint16Array | JavaString, offset?: number,
         length?: number): void {
         let data: string;
         offset ??= 0;
@@ -73,7 +77,7 @@ export class OutputStreamWriter extends Writer {
         if (typeof cOrArrayOrStr === "number") {
             data = String.fromCodePoint(cOrArrayOrStr);
             length = 1;
-        } else if (cOrArrayOrStr instanceof java.lang.String) {
+        } else if (cOrArrayOrStr instanceof JavaString) {
             data = cOrArrayOrStr.valueOf();
             length ??= data.length;
         } else {
@@ -87,17 +91,17 @@ export class OutputStreamWriter extends Writer {
         this.out.write(buffer);
     }
 
-    public append(c: java.lang.char): this;
-    public append(csq: java.lang.CharSequence): this;
-    public append(csq: java.lang.CharSequence, start: number, end: number): this;
-    public append(cOrCsq: java.lang.char | java.lang.CharSequence, start?: number, end?: number): this {
+    public append(c: char): this;
+    public append(csq: CharSequence): this;
+    public append(csq: CharSequence, start: number, end: number): this;
+    public append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
         if (typeof cOrCsq === "number") {
             this.write(cOrCsq);
         } else {
             if (start !== undefined && end !== undefined) {
-                this.write(cOrCsq.subSequence(start, end).toString());
+                this.write(new JavaString(cOrCsq.subSequence(start, end).toString()));
             } else {
-                this.write(cOrCsq.toString());
+                this.write(new JavaString(cOrCsq.toString()));
             }
         }
 

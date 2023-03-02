@@ -5,7 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, MurmurHash, NotImplementedError, S } from "../..";
+import { java, MurmurHash, NotImplementedError } from "../..";
+import { S } from "../../templates";
 import { JavaObject } from "../lang/Object";
 
 /** Represents a Uniform Resource Identifier (URI) reference. */
@@ -264,12 +265,12 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
     }
 
     /** @returns The host component of this URI, or null if the host is undefined */
-    public getHost(): java.lang.String | null {
+    public getHost(): java.lang.String {
         return S`${this.#uri.host}`;
     }
 
     /** @returns The decoded path component of this URI, or null if the path is undefined */
-    public getPath(): java.lang.String | null {
+    public getPath(): java.lang.String {
         return S`${this.#uri.pathname}`;
     }
 
@@ -279,7 +280,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
     }
 
     /** @returns The decoded query component of this URI, or null if the query is undefined */
-    public getQuery(): java.lang.String | null {
+    public getQuery(): java.lang.String {
         return S`${this.#uri.search}`;
     }
 
@@ -383,8 +384,8 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
         return S`${this.#uri}`;
     }
 
-    public toString(): java.lang.String {
-        return S`${this.#uri}`;
+    public toString(): string {
+        return `${this.#uri}`;
     }
 
     // public toURL(): java.net.URL { return new URL(S`${this.#uri}`); }

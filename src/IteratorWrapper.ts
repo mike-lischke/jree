@@ -5,11 +5,12 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from ".";
 import { JavaObject } from "./java/lang/Object";
+import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException";
+import { JavaIterator } from "./java/util/Iterator";
 
 /** A JRE iterator which wraps a Typescript iterator. */
-export class JavaIterator<T> extends JavaObject implements java.util.Iterator<T> {
+export class IteratorWrapper<T> extends JavaObject implements JavaIterator<T> {
 
     private nextValue: IteratorResult<T, T>;
 
@@ -41,7 +42,7 @@ export class JavaIterator<T> extends JavaObject implements java.util.Iterator<T>
     }
 
     public remove(): void {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
 }

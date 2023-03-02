@@ -6,11 +6,12 @@
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
-import { S } from "../../templates";
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
+import { Collection } from "./Collection";
+import { JavaMap } from "./Map";
+import { JavaSet } from "./Set";
 
-export class WeakHashMap<K extends object, V> extends JavaObject implements java.util.Map<K, V> {
+export class WeakHashMap<K extends object, V> extends JavaObject implements JavaMap<K, V> {
     // Implementation based on https://github.com/tc39/proposal-weakrefs#iterable-weakmaps.
     #backend = new WeakMap<K, { value: V, ref: WeakRef<K>; }>();
     #refSet = new Set<WeakRef<K>>();
@@ -19,8 +20,8 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements java
     /** Constructs a new, empty WeakHashMap with the given initial capacity and the given load factor. */
     public constructor(initialCapacity?: number, loadFactor?: number);
     /** Constructs a new WeakHashMap with the same mappings as the specified map. */
-    public constructor(m: java.util.Map<K, V>);
-    public constructor(initialCapacityOrM?: number | java.util.Map<K, V>, _loadFactor?: number) {
+    public constructor(m: JavaMap<K, V>);
+    public constructor(initialCapacityOrM?: number | JavaMap<K, V>, _loadFactor?: number) {
         super();
 
         // Capacity and load factor are ignored.
@@ -80,7 +81,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements java
     }
 
     /** returns a Set view of the mappings contained in this map. */
-    public entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
+    public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
         throw new NotImplementedError();
     }
 
@@ -101,7 +102,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements java
     }
 
     /** Returns a Set view of the keys contained in this map. */
-    public keySet(): java.util.Set<K> {
+    public keySet(): JavaSet<K> {
         throw new NotImplementedError();
     }
 
@@ -131,7 +132,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements java
      *
      * @param m A map with the values to copy.
      */
-    public putAll(m: java.util.Map<K, V>): void {
+    public putAll(m: JavaMap<K, V>): void {
         for (const entry of m.entrySet()) {
             this.put(entry.getKey(), entry.getValue());
         }
@@ -164,7 +165,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements java
     }
 
     /** Returns a Collection view of the values contained in this map. */
-    public values(): java.util.Collection<V> {
+    public values(): Collection<V> {
         throw new NotImplementedError();
     }
 
@@ -198,12 +199,12 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements java
         return true;
     }
 
-    public toString(): java.lang.String {
+    public toString(): string {
         const entries: string[] = [];
         for (const [key, value] of this) {
             entries.push(`${key}=${value}`);
         }
 
-        return S`{${entries.join(", ")}}`;
+        return `{${entries.join(", ")}}`;
     }
 }

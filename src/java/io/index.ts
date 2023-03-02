@@ -9,16 +9,16 @@ export * from "./Serializable";
 export * from "./Closeable";
 export * from "./Flushable";
 
-export * from "./FileDescriptor";
-export * from "./File";
-export * from "./Console";
-export * from "./PrintStream";
-
 export * from "./IOException";
 export * from "./FileNotFoundException";
 export * from "./UnsupportedEncodingException";
 export * from "./ObjectStreamException";
 export * from "./InvalidClassException";
+
+export * from "./FileDescriptor";
+export { JavaFile as File } from "./File";
+export * from "./Console";
+export * from "./PrintStream";
 
 export * from "./InputStream";
 export * from "./OutputStream";

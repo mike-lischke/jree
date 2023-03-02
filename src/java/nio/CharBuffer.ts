@@ -7,29 +7,68 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
-
+import { S } from "../..";
 import { char } from "../lang";
+
+import { Appendable } from "../lang/Appendable";
+import { CharSequence } from "../lang/CharSequence";
+import { Readable } from "../lang/Readable";
+
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { ReadOnlyBufferException } from "./ReadOnlyBufferException";
+import { BufferOverflowException } from "./BufferOverflowException";
+import { BufferUnderflowException } from "./BufferUnderflowException";
+
 import { BufferImpl } from "./BufferImpl";
 
-export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
-    implements java.lang.Appendable, java.lang.CharSequence, java.lang.Readable {
-
+export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements Appendable, CharSequence, Readable {
     public constructor(capacity: number);
-    public constructor(buffer: Uint16Array, offset?: number, length?: number);
-    public constructor(csq: java.lang.CharSequence, offset?: number, length?: number);
-    public constructor(s: java.lang.String, offset?: number, length?: number);
-    public constructor(capacityOrBufferOrCsqOrS: number | Uint16Array | java.lang.String | java.lang.CharSequence,
-        offset?: number, length?: number) {
+    public constructor(buffer: Uint16Array);
+    public constructor(buffer: Uint16Array, offset: number, length: number);
+    public constructor(csq: CharSequence);
+    public constructor(csq: CharSequence, offset: number, length: number);
+    public constructor(...args: unknown[]) {
         let backBuffer;
-        if (typeof capacityOrBufferOrCsqOrS === "number") {
-            backBuffer = new ArrayBuffer(2 * capacityOrBufferOrCsqOrS);
-        } else if (capacityOrBufferOrCsqOrS instanceof Uint16Array) {
-            backBuffer = capacityOrBufferOrCsqOrS.buffer;
-        } else if (capacityOrBufferOrCsqOrS instanceof java.lang.String) {
-            backBuffer = capacityOrBufferOrCsqOrS.toCharArray().buffer;
-        } else {
-            backBuffer = capacityOrBufferOrCsqOrS.toString().toCharArray().buffer;
+        let offset: number | undefined;
+        let length: number | undefined;
+
+        switch (args.length) {
+            case 1: {
+                if (typeof args[0] === "number") {
+                    backBuffer = new ArrayBuffer(2 * args[0]);
+                } else if (args[0] instanceof Uint16Array) {
+                    backBuffer = args[0].buffer;
+                } else {
+                    const s = (args[0] as CharSequence).toString();
+                    backBuffer = new Uint16Array(s.length);
+                    for (let i = 0; i < s.length; ++i) {
+                        backBuffer[i] = s.charCodeAt(i);
+                    }
+                }
+                break;
+            }
+
+            case 3: {
+                const [input, o, l] = args as [Uint16Array | CharSequence, number, number];
+                if (input instanceof Uint16Array) {
+                    backBuffer = input.buffer;
+                } else {
+                    const s = (args[0] as CharSequence).toString();
+                    backBuffer = new Uint16Array(s.length);
+                    for (let i = 0; i < s.length; ++i) {
+                        backBuffer[i] = s.charCodeAt(i);
+                    }
+                }
+
+                offset = o;
+                length = l;
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(S`Invalid arguments`);
+            }
         }
 
         super(backBuffer, Uint16Array, CharBuffer, offset, length);
@@ -47,54 +86,67 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
     }
 
     /** Wraps a char array into a buffer. */
-    public static wrap(s: java.lang.String): CharBuffer;
+    public static wrap(array: Uint16Array): CharBuffer;
     /** Wraps a char array into a buffer. */
-    public static wrap(s: java.lang.String, offset: number, length: number): CharBuffer;
+    public static wrap(array: Uint16Array, offset: number, length: number): CharBuffer;
     /** Wraps a character sequence into a buffer. */
-    public static wrap(csq: java.lang.CharSequence): CharBuffer;
+    public static wrap(csq: CharSequence): CharBuffer;
     /** Wraps a character sequence into a buffer. */
-    public static wrap(csq: java.lang.CharSequence, start: number, end: number): CharBuffer;
-    public static wrap(sOrCsq: java.lang.String | java.lang.CharSequence, offsetOrStart?: number,
-        lengthOrEnd?: number): CharBuffer {
-        if (sOrCsq instanceof java.lang.String) {
-            if (offsetOrStart !== undefined && lengthOrEnd !== undefined) {
-                if (offsetOrStart < 0 || offsetOrStart > sOrCsq.length() || lengthOrEnd < 0
-                    || lengthOrEnd > sOrCsq.length() - offsetOrStart) {
-                    throw new java.lang.IndexOutOfBoundsException();
+    public static wrap(csq: CharSequence, start: number, end: number): CharBuffer;
+    public static wrap(...args: unknown[]): CharBuffer {
+        switch (args.length) {
+            case 1: {
+                const input = args[0] as Uint16Array | CharSequence;
+                if (input instanceof Uint16Array) {
+                    return new CharBuffer(input);
+                } else {
+                    return new CharBuffer(input);
                 }
             }
 
-            return new CharBuffer(sOrCsq, offsetOrStart, lengthOrEnd);
-        } else {
-            if (offsetOrStart !== undefined && lengthOrEnd !== undefined) {
-                if (offsetOrStart < 0 || offsetOrStart > sOrCsq.length() || lengthOrEnd < offsetOrStart
-                    || lengthOrEnd > sOrCsq.length()) {
-                    throw new java.lang.IndexOutOfBoundsException();
+            case 3: {
+                const input = args[0] as Uint16Array | CharSequence;
+                if (input instanceof Uint16Array) {
+                    const [offset, length] = args as [number, number];
+                    if (offset < 0 || length < 0 || offset + length > input.length) {
+                        throw new IndexOutOfBoundsException();
+                    }
+
+                    return new CharBuffer(input, offset, length);
+                } else {
+                    const [start, end] = args as [number, number];
+                    if (start < 0 || end < 0 || start > end || end > input.length()) {
+                        throw new IndexOutOfBoundsException();
+                    }
+
+                    return new CharBuffer(input, start, end - start);
                 }
             }
 
-            const buffer = new CharBuffer(sOrCsq, offsetOrStart, lengthOrEnd);
-            buffer.currentPosition = offsetOrStart ?? 0;
-            buffer.currentLimit = lengthOrEnd ?? sOrCsq.length();
-
-            return buffer.asReadOnlyBuffer();
+            default: {
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
+            }
         }
+    }
+
+    public [Symbol.toPrimitive](): string {
+        return this.toString().valueOf();
     }
 
     /** Appends the specified char to this buffer(optional operation). */
     public append(c: char): this;
     /** Appends the specified character sequence to this buffer(optional operation). */
-    public append(csq: java.lang.CharSequence): this;
+    public append(csq: CharSequence): this;
     /** Appends a subsequence of the specified character sequence to this buffer(optional operation). */
-    public append(csq: java.lang.CharSequence, start: number, end: number): this;
-    public append(cOrCsq: char | java.lang.CharSequence, start?: number, end?: number): this {
+    public append(csq: CharSequence, start: number, end: number): this;
+    public append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         if (typeof cOrCsq === "number") {
             if (this.position() === this.limit()) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array()[this.currentPosition++] = cOrCsq;
@@ -102,11 +154,11 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
             start ??= 0;
             end ??= cOrCsq.length();
             if (start < 0 || end < 0 || start > end || end > cOrCsq.length()) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             if (this.currentPosition + cOrCsq.length() >= this.limit()) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             const array: char[] = [];
@@ -128,8 +180,8 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
      *
      * @returns The code point at this position.
      */
-    public charAt(index: number): char | undefined {
-        return this.array().at(index);
+    public charAt(index: number): char | null {
+        return this.array().at(index) ?? null;
     }
 
     /**
@@ -140,7 +192,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
      * @returns < 0 if this buffer is less than the given buffer, 0 for equality and > 0 if larger.
      */
     public compareTo(that: CharBuffer): number {
-        return this.toString().compareTo(that.toString());
+        return this.toString().localeCompare(that.toString());
     }
 
     /** @returns the length of this character buffer. */
@@ -155,13 +207,13 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
     public get(dstOrIndex?: char[] | number, offset?: number, length?: number): char | this {
         if (dstOrIndex === undefined) {
             if (this.currentPosition >= this.currentLimit) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             return this.array()[this.currentPosition++];
         } else if (typeof dstOrIndex === "number") {
             if (dstOrIndex >= this.currentLimit) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             return this.array()[dstOrIndex];
@@ -170,7 +222,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
             length ??= dstOrIndex.length;
 
             if (offset + length >= this.currentLimit) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             dstOrIndex.splice(offset, length,
@@ -194,20 +246,20 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
         offsetOrCOrStart?: number | char, lengthOrEnd?: number): this {
 
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         if (typeof cOrSrcOrIndex === "number" && offsetOrCOrStart === undefined) {
             // A single code point, relative.
             if (this.currentPosition === this.limit()) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array()[this.currentPosition++] = cOrSrcOrIndex;
         } else if (typeof cOrSrcOrIndex === "number" && offsetOrCOrStart !== undefined) {
             // A single code point absolute.
             if (cOrSrcOrIndex < 0 || cOrSrcOrIndex >= this.currentLimit) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
             this.array()[cOrSrcOrIndex] = offsetOrCOrStart;
         } else if (cOrSrcOrIndex instanceof Uint16Array) {
@@ -216,11 +268,11 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
             const length = lengthOrEnd ?? cOrSrcOrIndex.length;
 
             if (offset < 0 || offset + length > cOrSrcOrIndex.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             if (length > this.remaining()) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array().set(cOrSrcOrIndex.subarray(offset, offset + length), this.currentPosition);
@@ -228,11 +280,11 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
         } else if (cOrSrcOrIndex instanceof CharBuffer) {
             const length = cOrSrcOrIndex.remaining();
             if (this.currentPosition + length > this.currentLimit) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             if (cOrSrcOrIndex === this) {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
 
             this.array().set(cOrSrcOrIndex.array().slice(cOrSrcOrIndex.currentPosition, cOrSrcOrIndex.currentLimit),
@@ -245,11 +297,11 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
             const offset = offsetOrCOrStart ?? 0;
             const end = lengthOrEnd ?? src.length;
             if (this.currentPosition + end > this.currentLimit) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             if (offset < 0 || offset > src.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             for (let i = offset; i < end; ++i) {
@@ -269,7 +321,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
      */
     public read(target: CharBuffer): number {
         if (target.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         const length = Math.min(this.remaining(), target.remaining());
@@ -292,7 +344,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
      */
     public subSequence(start: number, end: number): CharBuffer {
         if (start < 0 || start > this.remaining() || end < start || end > this.remaining()) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         const buffer = new CharBuffer(this.array(), this.currentPosition + start, this.currentPosition + end);
@@ -301,9 +353,8 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer>
     }
 
     /** @returns a string containing the characters in this buffer. */
-    public toString(): java.lang.String {
-        return new java.lang.String(
-            String.fromCharCode(...this.array().subarray(this.currentPosition, this.currentLimit)));
+    public toString(): string {
+        return String.fromCharCode(...this.array().subarray(this.currentPosition, this.currentLimit));
     }
 
 }

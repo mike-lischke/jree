@@ -5,8 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, NotImplementedError } from "../..";
+import { NotImplementedError } from "../../NotImplementedError";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
+import { JavaDate } from "./Date";
+import { TimeZone } from "./TimeZone";
 
 export class Calendar extends JavaObject {
     public static readonly ERA = 0;
@@ -85,7 +88,7 @@ export class Calendar extends JavaObject {
          *
          * @param type the calendar type to set
          */
-        public setCalendarType(type: string): this {
+        public setCalendarType(type: JavaString): this {
             throw new NotImplementedError();
         }
 
@@ -120,8 +123,8 @@ export class Calendar extends JavaObject {
          *
          * @param date the Date to set
          */
-        public setInstant(date: Date): this;
-        public setInstant(instantOrDate: number | Date): this {
+        public setInstant(date: JavaDate): this;
+        public setInstant(instantOrDate: number | JavaDate): this {
             throw new NotImplementedError();
         }
 
@@ -139,7 +142,7 @@ export class Calendar extends JavaObject {
          *
          * @param locale the locale to set
          */
-        public setLocale(locale: string): this {
+        public setLocale(locale: JavaString): this {
             throw new NotImplementedError();
         }
 
@@ -169,7 +172,7 @@ export class Calendar extends JavaObject {
          *
          * @param zone the time zone to set
          */
-        public setTimeZone(zone: java.util.TimeZone): this {
+        public setTimeZone(zone: TimeZone): this {
             throw new NotImplementedError();
         }
 

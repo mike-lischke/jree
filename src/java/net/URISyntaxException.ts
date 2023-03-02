@@ -5,34 +5,36 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, S } from "../..";
-import { Exception } from "../lang";
+import { S } from "../../templates";
+import { Exception } from "../lang/Exception";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { JavaString } from "../lang/String";
 
 export class URISyntaxException extends Exception {
     #index: number;
-    #input: java.lang.String;
-    #reason: java.lang.String;
+    #input: JavaString;
+    #reason: JavaString;
 
-    public constructor(input: java.lang.String, reason: java.lang.String);
-    public constructor(input: java.lang.String, reason: java.lang.String, index: number);
+    public constructor(input: JavaString, reason: JavaString);
+    public constructor(input: JavaString, reason: JavaString, index: number);
     public constructor(...args: unknown[]) {
-        let input: java.lang.String;
-        let reason: java.lang.String;
+        let input: JavaString;
+        let reason: JavaString;
         let index = -1;
         switch (args.length) {
             case 2: {
-                [input, reason] = args as [java.lang.String, java.lang.String];
+                [input, reason] = args as [JavaString, JavaString];
 
                 break;
             }
 
             case 3: {
-                [input, reason, index] = args as [java.lang.String, java.lang.String, number];
+                [input, reason, index] = args as [JavaString, JavaString, number];
                 break;
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
             }
         }
 
@@ -55,14 +57,14 @@ export class URISyntaxException extends Exception {
     /**
      * @returns The input string.
      */
-    public getInput(): java.lang.String {
+    public getInput(): JavaString {
         return this.#input;
     }
 
     /**
      * @returns The reason why the input string could not be parsed.
      */
-    public getReason(): java.lang.String {
+    public getReason(): JavaString {
         return this.#reason;
     }
 

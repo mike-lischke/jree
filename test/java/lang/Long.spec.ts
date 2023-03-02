@@ -5,7 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, S } from "../../../src";
+import { java } from "../../../src";
+import { S } from "../../../src/templates";
 
 describe("java.lang.Long Tests", () => {
     it("Base", () => {
@@ -34,22 +35,22 @@ describe("java.lang.Long Tests", () => {
     });
 
     it("decode", () => {
-        expect(() => { java.lang.Long.decode(""); }).toThrowError();
-        expect(() => { java.lang.Long.decode(" .  \n"); }).toThrowError();
+        expect(() => { java.lang.Long.decode(S``); }).toThrowError();
+        expect(() => { java.lang.Long.decode(S` .  \n`); }).toThrowError();
 
-        expect(() => { java.lang.Long.decode("abc"); }).toThrowError();
+        expect(() => { java.lang.Long.decode(S`abc`); }).toThrowError();
 
-        expect(java.lang.Long.decode("0").intValue()).toBe(0);
-        expect(java.lang.Long.decode("00000").intValue()).toBe(0);
-        expect(java.lang.Long.decode("123").intValue()).toBe(123);
-        expect(java.lang.Long.decode("0123").intValue()).toBe(83);
-        expect(java.lang.Long.decode("0x123").intValue()).toBe(291);
+        expect(java.lang.Long.decode(S`0`).intValue()).toBe(0);
+        expect(java.lang.Long.decode(S`00000`).intValue()).toBe(0);
+        expect(java.lang.Long.decode(S`123`).intValue()).toBe(123);
+        expect(java.lang.Long.decode(S`0123`).intValue()).toBe(83);
+        expect(java.lang.Long.decode(S`0x123`).intValue()).toBe(291);
 
-        expect(java.lang.Long.decode("-0").intValue()).toBe(0);
-        expect(java.lang.Long.decode("-00000").intValue()).toBe(0);
-        expect(java.lang.Long.decode("-123").intValue()).toBe(-123);
-        expect(java.lang.Long.decode("-0123").intValue()).toBe(-83);
-        expect(java.lang.Long.decode("-0x123").intValue()).toBe(-291);
+        expect(java.lang.Long.decode(S`-0`).intValue()).toBe(0);
+        expect(java.lang.Long.decode(S`-00000`).intValue()).toBe(0);
+        expect(java.lang.Long.decode(S`-123`).intValue()).toBe(-123);
+        expect(java.lang.Long.decode(S`-0123`).intValue()).toBe(-83);
+        expect(java.lang.Long.decode(S`-0x123`).intValue()).toBe(-291);
     });
 
     it("getLong", (done) => {
@@ -245,7 +246,7 @@ describe("java.lang.Long Tests", () => {
 
         const c = i1.getClass();
         expect(c.isInstance(i2)).toBe(true);
-        expect(c.getName().equals(S`Long`)).toBe(true);
+        expect(c.getName()).toBe("Long");
 
         // Unboxing/explicit coercion.
         // @ts-ignore

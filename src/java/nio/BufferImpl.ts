@@ -5,23 +5,20 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
-
 import { MurmurHash } from "../../MurmurHash";
-import { S } from "../../templates";
+import { Comparable } from "../lang/Comparable";
 import { TypedArray, TypedArrayConstructor } from "../util";
-import { Buffer } from "./Buffer";
+import { JavaBuffer } from "./Buffer";
+import { ByteOrder } from "./ByteOrder";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type BufferConstructor<B> = new (...args: any[]) => B;
 
 /** Implements common functionality of the various Java buffers. */
-export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
-    extends Buffer<T>
-    implements java.lang.Comparable<C> {
+export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extends JavaBuffer<T> implements Comparable<C> {
     #array: T;
     #readOnly = false;
-    #byteOrder: java.nio.ByteOrder;
+    #byteOrder: ByteOrder;
 
     protected constructor(buffer: ArrayBuffer,
         private arrayConstructor: TypedArrayConstructor,
@@ -29,7 +26,7 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
         offset?: number, length?: number) {
         super(buffer, arrayConstructor.BYTES_PER_ELEMENT);
         this.#array = new this.arrayConstructor(buffer, offset, length) as T;
-        this.#byteOrder = java.nio.ByteOrder.BIG_ENDIAN;
+        this.#byteOrder = ByteOrder.BIG_ENDIAN;
         this.limit(this.#array.length);
         this.position(0);
 
@@ -62,7 +59,7 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
     }
 
     public get littleEndian(): boolean {
-        return this.#byteOrder === java.nio.ByteOrder.LITTLE_ENDIAN;
+        return this.#byteOrder === ByteOrder.LITTLE_ENDIAN;
     }
 
     /**
@@ -218,12 +215,12 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
     }
 
     /** @returns this buffer's byte order. */
-    public get order(): java.nio.ByteOrder {
+    public get order(): ByteOrder {
         return this.#byteOrder;
     }
 
     /** Modifies this buffer's byte order. */
-    public set order(bo: java.nio.ByteOrder) {
+    public set order(bo: ByteOrder) {
         this.#byteOrder = bo;
     }
 
@@ -239,8 +236,8 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>>
     }
 
     /** @returns a string summarizing the state of this buffer. */
-    public toString(): java.lang.String {
-        return S`${this.constructor.name}[pos=${this.position()} lim=${this.limit()} cap=${this.capacity()}]`;
+    public toString(): string {
+        return `${this.constructor.name}[pos=${this.position()} lim=${this.limit()} cap=${this.capacity()}]`;
     }
 
 }

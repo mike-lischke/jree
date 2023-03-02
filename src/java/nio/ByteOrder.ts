@@ -7,10 +7,7 @@
 
 import { endianness } from "os";
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
-
-import { S } from "../../templates";
 
 export class ByteOrder extends JavaObject {
     public static readonly BIG_ENDIAN = new ByteOrder(true);
@@ -32,11 +29,11 @@ export class ByteOrder extends JavaObject {
         return ByteOrder.LITTLE_ENDIAN;
     }
 
-    public toString(): java.lang.String {
+    public toString(): string {
         if (this.bigEndian) {
-            return S`BIG_ENDIAN`;
+            return `BIG_ENDIAN`;
         }
 
-        return S`LITTLE_ENDIAN`;
+        return `LITTLE_ENDIAN`;
     }
 }

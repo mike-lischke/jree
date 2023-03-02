@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export interface Iterator<T> {
+export interface JavaIterator<T> {
     /** Returns true if the iteration has more elements. */
     hasNext(): boolean;
 

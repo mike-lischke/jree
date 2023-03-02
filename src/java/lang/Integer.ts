@@ -5,17 +5,23 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
 import { MurmurHash } from "../../MurmurHash";
 
-import { java } from "../..";
-import { JavaObject } from "./Object";
+import { JavaNumber } from "./Number";
+import { System } from "./System";
+import { Serializable } from "../io/Serializable";
+import { Comparable } from "./Comparable";
+import { Class } from "./Object";
+import { JavaString } from "./String";
+import { IllegalArgumentException } from "./IllegalArgumentException";
+import { NumberFormatException } from "./NumberFormatException";
+import { Throwable } from "./Throwable";
 
-export class Integer extends JavaObject implements java.io.Serializable, java.lang.Comparable<Integer>  {
+export class Integer extends JavaNumber implements Serializable, Comparable<Integer>  {
     public static readonly MAX_VALUE = 2147483647;
     public static readonly MIN_VALUE = -2147483648;
     public static readonly SIZE = 32;
-    public static readonly TYPE: java.lang.Class<Integer>;
+    public static readonly TYPE: Class<Integer>;
 
     // All number types are signed in Java.
     private static byte = new Int8Array(1);
@@ -28,17 +34,17 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @param value A primitive type to wrap in this instance.
      */
-    public constructor(value: number | string | java.lang.String) {
+    public constructor(value: number | string | JavaString) {
         super();
 
         if (typeof value === "string") {
             this.value = parseInt(value, 10);
-        } else if (value instanceof java.lang.String) {
+        } else if (value instanceof JavaString) {
             this.value = parseInt(`${value}`, 10);
         } else if (Number.isInteger(value)) {
             this.value = value;
         } else {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
     }
 
@@ -55,7 +61,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
             return ((i + (i >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
         }
 
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
     }
 
     /**
@@ -68,7 +74,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static compare(x: number, y: number): number {
         if (!Number.isInteger(x) || !Number.isInteger(y)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         return x - y;
@@ -81,10 +87,10 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @returns A new Integer with the converted value.
      */
-    public static decode(nm: string): Integer {
-        const n = nm.trim().toLowerCase();
+    public static decode(nm: JavaString): Integer {
+        const n = nm.valueOf().trim().toLowerCase();
         if (n.length === 0) {
-            throw new java.lang.NumberFormatException();
+            throw new NumberFormatException();
         }
 
         try {
@@ -112,9 +118,9 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
                 }
             }
 
-            return new java.lang.Integer(parseInt(sign + n.substring(start), radix));
+            return new Integer(parseInt(sign + n.substring(start), radix));
         } catch (reason) {
-            throw new java.lang.NumberFormatException(java.lang.Throwable.fromError(reason));
+            throw new NumberFormatException(Throwable.fromError(reason));
         }
     }
 
@@ -126,8 +132,8 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @returns The system property as Integer or the default value as Integer.
      */
-    public static getInteger(nm?: java.lang.String, val?: number): Integer | null {
-        const p = nm && nm.length() > 0 ? java.lang.System.getProperty(nm) : undefined;
+    public static getInteger(nm?: JavaString, val?: number): Integer | null {
+        const p = nm && nm.length() > 0 ? System.getProperty(nm) : undefined;
         if (!p) {
             if (val === undefined) {
                 return null;
@@ -151,7 +157,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static highestOneBit(i: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         return i & (Integer.MIN_VALUE >>> this.numberOfLeadingZeros(i));
@@ -165,7 +171,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static lowestOneBit(i: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         return i & -i;
@@ -179,7 +185,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static numberOfLeadingZeros(i: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         if (i <= 0) {
@@ -218,7 +224,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static numberOfTrailingZeros(i: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         i = ~i & (i - 1);
@@ -259,7 +265,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static reverse(i: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         i = ((i & 0x55555555) << 1) | ((i >>> 1) & 0x55555555);
@@ -278,7 +284,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static reverseBytes(i: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         return (i << 24) | ((i & 0xFF00) << 8) | ((i >>> 8) & 0xFF00) | (i >>> 24);
@@ -293,7 +299,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static rotateLeft(i: number, distance: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         return (i << distance) | (i >>> -distance);
@@ -308,7 +314,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      */
     public static rotateRight(i: number, distance: number): number {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         return (i >>> distance) | (i << -distance);
@@ -328,12 +334,12 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @param i The number to convert.
      */
-    public static toBinaryString(i: number): java.lang.String {
+    public static toBinaryString(i: number): JavaString {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
-        return S`${i.toString(2)}`;
+        return new JavaString(`${i.toString(2)}`);
     }
 
     /**
@@ -341,12 +347,12 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @param i The number to convert.
      */
-    public static toHexString(i: number): java.lang.String {
+    public static toHexString(i: number): JavaString {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
-        return S`${i.toString(16)}`;
+        return new JavaString(`${i.toString(16)}`);
 
     }
 
@@ -355,12 +361,12 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @param i The number to convert.
      */
-    public static toOctalString(i: number): java.lang.String {
+    public static toOctalString(i: number): JavaString {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
-        return S`${i.toString(8)}`;
+        return new JavaString(`${i.toString(8)}`);
 
     }
 
@@ -370,12 +376,12 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      * @param i The number to convert.
      * @param radix The radix of the result string.
      */
-    public static toString(i: number, radix?: number): java.lang.String {
+    public static toString(i: number, radix?: number): JavaString {
         if (!Number.isInteger(i)) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
-        return S`${i.toString(radix)}`;
+        return new JavaString(`${i.toString(radix)}`);
 
     }
 
@@ -384,19 +390,19 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      * radix given by the second argument.
      */
     public static valueOf(i: number): Integer;
-    public static valueOf(s: string, radix?: number): Integer;
-    public static valueOf(value: number | string, radix?: number): Integer {
+    public static valueOf(s: JavaString, radix?: number): Integer;
+    public static valueOf(value: number | JavaString, radix?: number): Integer {
         if (!radix || typeof value === "number") {
             return new Integer(value);
         }
 
-        return new Integer(parseInt(value, radix));
+        return new Integer(parseInt(value.valueOf(), radix));
     }
 
-    public static parseInt(s: string | java.lang.String, radix = 10): number {
+    public static parseInt(s: string | JavaString, radix = 10): number {
         const result = parseInt(`${s}`, radix);
         if (isNaN(result) || result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
-            throw new java.lang.NumberFormatException();
+            throw new NumberFormatException();
         }
 
         return result;
@@ -430,10 +436,10 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
      *
      * @param obj The object to compare this instance to.
      *
-     * @returns True if obj is an instance of java.lang.Integer and both represent the same numerical value,
+     * @returns True if obj is an instance of Integer and both represent the same numerical value,
      *          otherwise false.
      */
-    public equals(obj?: java.lang.Object): boolean {
+    public equals(obj?: unknown): boolean {
         if (obj instanceof Integer) {
             return this.value === obj.value;
         }
@@ -461,8 +467,8 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
     }
 
     /** @returns the value of this Integer as a long. */
-    public longValue(): number {
-        return this.value;
+    public longValue(): bigint {
+        return BigInt(this.value);
     }
 
     /** @returns the value of this Integer as a short. */
@@ -473,8 +479,8 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
     }
 
     // Returns a String object representing this Integer's value.
-    public toString(): java.lang.String {
-        return S`${this.value}`;
+    public toString(): string {
+        return `${this.value}`;
     }
 
     public valueOf(): number {
@@ -493,7 +499,7 @@ export class Integer extends JavaObject implements java.io.Serializable, java.la
         // Defer initializing the TYPE field, to ensure the Class class is loaded before using it.
         setTimeout(() => {
             /* @ts-expect-error */
-            Integer.TYPE = java.lang.Class.fromConstructor(Integer);
+            Integer.TYPE = Class.fromConstructor(Integer);
             Object.freeze(Integer);
         }, 0);
     }

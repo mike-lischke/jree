@@ -5,13 +5,19 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, S } from "../..";
-import { JavaObject } from "./Object";
+import { JavaString } from "./String";
+import { final } from "../../Decorators";
+import { S } from "../../templates";
+import { Serializable } from "../io/Serializable";
+import { Comparable } from "./Comparable";
+import { JavaObject, Class } from "./Object";
+import { System } from "./System";
 
-export class Boolean extends JavaObject implements java.io.Serializable, java.lang.Comparable<Boolean> {
-    public static readonly TRUE: Boolean;
-    public static readonly FALSE: Boolean;
-    public static readonly TYPE: java.lang.Class<Boolean>;
+@final
+export class JavaBoolean extends JavaObject implements Serializable, Comparable<JavaBoolean> {
+    public static readonly TRUE: JavaBoolean;
+    public static readonly FALSE: JavaBoolean;
+    public static readonly TYPE: Class<JavaBoolean>;
 
     private value = false;
 
@@ -39,17 +45,17 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      * @param s The string to be parsed.
      * @returns a Boolean instance representing the specified string.
      */
-    public static parseBoolean(s: java.lang.String | null): Boolean | null {
+    public static parseBoolean(s: JavaString | null): JavaBoolean | null {
         if (s === null) {
             return null;
         }
 
         if (s.compareToIgnoreCase(S`true`)) {
-            return Boolean.TRUE;
+            return JavaBoolean.TRUE;
         }
 
         if (s.compareToIgnoreCase(S`false`)) {
-            return Boolean.FALSE;
+            return JavaBoolean.FALSE;
         }
 
         return null;
@@ -62,7 +68,7 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      * @param b The boolean to be converted.
      * @returns a string representation of the specified boolean.
      */
-    public static toString(b: boolean): java.lang.String {
+    public static toString(b: boolean): JavaString {
         return b ? S`true` : S`false`;
     }
 
@@ -73,8 +79,8 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      *
      * @returns tbd
      */
-    public static valueOf(value?: boolean | string): java.lang.Boolean {
-        return new java.lang.Boolean(value);
+    public static valueOf(value?: boolean | string): JavaBoolean {
+        return new JavaBoolean(value);
     }
 
     /**
@@ -112,10 +118,10 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      *
      * @returns the boolean value of the system property.
      */
-    public static getBoolean(name: java.lang.String): boolean {
-        const value = java.lang.System.getProperty(name);
+    public static getBoolean(name: JavaString): boolean {
+        const value = System.getProperty(name);
 
-        const bool = Boolean.parseBoolean(value);
+        const bool = JavaBoolean.parseBoolean(value);
 
         return bool !== null ? bool.value : false;
     }
@@ -134,8 +140,8 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
      *
      * @returns true if the Boolean objects represent the same value; false otherwise.
      */
-    public compareTo(b: Boolean): number {
-        return Boolean.compare(this.value, b.value);
+    public compareTo(b: JavaBoolean): number {
+        return JavaBoolean.compare(this.value, b.value);
     }
 
     /**
@@ -151,7 +157,7 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
             return true;
         }
 
-        if (obj instanceof Boolean) {
+        if (obj instanceof JavaBoolean) {
             return this.value === obj.value;
         }
 
@@ -164,8 +170,8 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
     }
 
     /** @returns a string representing this Boolean's value. */
-    public toString(): java.lang.String {
-        return this.value ? new java.lang.String("true") : new java.lang.String("false");
+    public toString(): string {
+        return this.value ? "true" : "false";
     }
 
     /**
@@ -185,14 +191,14 @@ export class Boolean extends JavaObject implements java.io.Serializable, java.la
         // Defer initializing the TYPE field, to ensure the Class class is loaded before using it.
         setTimeout(() => {
             /* @ts-expect-error */
-            Boolean.TRUE = new java.lang.Boolean(true);
+            JavaBoolean.TRUE = new JavaBoolean(true);
 
             /* @ts-expect-error */
-            Boolean.FALSE = new java.lang.Boolean(false);
+            JavaBoolean.FALSE = new JavaBoolean(false);
 
             /* @ts-expect-error */
-            Boolean.TYPE = java.lang.Class.fromConstructor(Boolean);
-            Object.freeze(Boolean);
+            JavaBoolean.TYPE = Class.fromConstructor(JavaBoolean);
+            Object.freeze(JavaBoolean);
         }, 0);
     }
 

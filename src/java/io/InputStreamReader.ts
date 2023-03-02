@@ -7,8 +7,14 @@
 
 import { StringDecoder } from "string_decoder";
 
-import { java } from "../..";
+import { JavaString, S } from "../..";
+import { char } from "../lang";
+import { CharBuffer } from "../nio/CharBuffer";
+import { Charset } from "../nio/charset/Charset";
+import { InputStream } from "./InputStream";
 import { Reader } from "./Reader";
+import { UnsupportedEncodingException } from "./UnsupportedEncodingException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
 export class InputStreamReader extends Reader {
     // The size of the raw buffer used to keep input data.
@@ -16,30 +22,31 @@ export class InputStreamReader extends Reader {
 
     private buffer = Buffer.alloc(InputStreamReader.readBufferSize);
 
-    private encoding: string;
+    private encoding: JavaString;
     private decoder: StringDecoder;
     private currentText = "";
 
     private eof = false;
 
-    public constructor(input: java.io.InputStream, charsetName?: java.lang.String);
-    public constructor(input: java.io.InputStream, cs?: java.nio.charset.Charset);
-    public constructor(private input: java.io.InputStream,
-        charsetNameOrCs?: java.lang.String | java.nio.charset.Charset) {
+    public constructor(input: InputStream, charsetName?: JavaString);
+    public constructor(input: InputStream, cs?: Charset);
+    public constructor(private input: InputStream,
+        charsetNameOrCs?: JavaString | Charset) {
         super();
 
         if (!charsetNameOrCs) {
-            this.encoding = java.nio.charset.Charset.defaultCharset.name();
-        } else if (charsetNameOrCs instanceof java.nio.charset.Charset) {
+            this.encoding = Charset.defaultCharset().name();
+        } else if (charsetNameOrCs instanceof Charset) {
             this.encoding = charsetNameOrCs.name();
         } else {
-            this.encoding = charsetNameOrCs.valueOf();
+            this.encoding = charsetNameOrCs;
         }
 
-        if (Buffer.isEncoding(this.encoding)) {
-            this.decoder = new StringDecoder(this.encoding);
+        const encoding = this.encoding.valueOf();
+        if (Buffer.isEncoding(encoding)) {
+            this.decoder = new StringDecoder(encoding);
         } else {
-            throw new java.io.UnsupportedEncodingException("Invalid charset specified");
+            throw new UnsupportedEncodingException(S`Invalid charset specified`);
         }
     }
 
@@ -49,16 +56,16 @@ export class InputStreamReader extends Reader {
     }
 
     /** @returns the name of the character encoding being used by this stream. */
-    public getEncoding(): string {
+    public getEncoding(): JavaString {
         return this.encoding;
     }
 
     /** Reads a single character. */
-    public read(): java.lang.char;
-    public read(chars: Uint16Array | java.nio.CharBuffer): number;
+    public read(): char;
+    public read(chars: Uint16Array | CharBuffer): number;
     /** Reads characters into a portion of an array. */
     public read(chars: Uint16Array, offset: number, length: number): number;
-    public read(chars?: Uint16Array | java.nio.CharBuffer, offset?: number, length?: number): java.lang.char | number {
+    public read(chars?: Uint16Array | CharBuffer, offset?: number, length?: number): char | number {
         if (!this.ready()) {
             return -1;
         }
@@ -84,7 +91,7 @@ export class InputStreamReader extends Reader {
 
         const end = offset + length;
         if (offset < 0 || length < 0 || end > chars.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         let processed = 0;

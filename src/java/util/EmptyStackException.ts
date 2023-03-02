@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { RuntimeException } from "../lang";
+import { RuntimeException } from "../lang/RuntimeException";
 
 /**
  * Thrown by methods in the Stack class to indicate that the stack is empty.

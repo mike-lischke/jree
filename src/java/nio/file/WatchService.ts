@@ -12,7 +12,7 @@ import { java } from "../../..";
  * watch service to monitor a directory for changes so that it can update its display of the list of files when
  * files are created or deleted.
  */
-export interface WatchService extends java.lang.AutoCloseable, java.lang.Iterable<java.nio.file.WatchKey> {
+export interface WatchService extends java.lang.AutoCloseable, java.lang.JavaIterable<java.nio.file.WatchKey> {
     /** Closes this watch service. */
     close(): void;
 

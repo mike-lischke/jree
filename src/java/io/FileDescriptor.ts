@@ -5,16 +5,18 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/* cSpell: ignore closeables */
-
 import * as fs from "fs/promises";
 
-import { java } from "../..";
+import { final } from "../../Decorators";
 import { JavaObject } from "../lang/Object";
+import { Throwable } from "../lang/Throwable";
+import { Closeable } from "./Closeable";
+import { IOException } from "./IOException";
 
+@final
 export class FileDescriptor extends JavaObject {
-    private parent?: java.io.Closeable;
-    private otherParents: java.io.Closeable[] = [];
+    private parent?: Closeable;
+    private otherParents: Closeable[] = [];
     private closed = false;
 
     private fileHandle?: fs.FileHandle;
@@ -52,7 +54,7 @@ export class FileDescriptor extends JavaObject {
      *
      * @param c tbd
      */
-    public attach(c: java.io.Closeable): void {
+    public attach(c: Closeable): void {
         if (!this.parent) {
             // first caller gets to do this
             this.parent = c;
@@ -72,10 +74,10 @@ export class FileDescriptor extends JavaObject {
      *
      * @param releaser tbd
      */
-    public closeAll(releaser: java.io.Closeable): void {
+    public closeAll(releaser: Closeable): void {
         if (!this.closed) {
             this.closed = true;
-            let ioe: java.io.IOException | undefined;
+            let ioe: IOException | undefined;
 
             try {
                 try {
@@ -83,7 +85,7 @@ export class FileDescriptor extends JavaObject {
                         try {
                             referent.close();
                         } catch (x) {
-                            const t = java.lang.Throwable.fromError(x);
+                            const t = Throwable.fromError(x);
                             if (!ioe) {
                                 ioe = t;
                             } else {
@@ -99,7 +101,7 @@ export class FileDescriptor extends JavaObject {
                  * If releaser close() throws IOException
                  * add other exceptions as suppressed.
                  */
-                const t = java.lang.Throwable.fromError(ex);
+                const t = Throwable.fromError(ex);
                 if (ioe) {
                     t.addSuppressed(ioe);
                 }

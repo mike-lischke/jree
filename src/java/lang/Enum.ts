@@ -8,11 +8,14 @@
 import { java } from "../..";
 import { JavaObject } from "./Object";
 
-import { NotImplementedError } from "../../NotImplementedError";
 import { MurmurHash } from "../../MurmurHash";
+import { S } from "../../templates";
 
 export class Enum<T extends Enum<T>> extends JavaObject {
-    #name: java.lang.String = new java.lang.String();
+    // Holds all created enum values for the class.
+    private static members: unknown[] = [];
+
+    #name: java.lang.String;
     #ordinal = 0;
 
     public constructor(name: java.lang.String, ordinal: number) {
@@ -20,16 +23,41 @@ export class Enum<T extends Enum<T>> extends JavaObject {
 
         this.#name = name;
         this.#ordinal = ordinal;
+
+        Enum.members.push(this);
     }
 
     /**
-     * Returns the enum constant of the specified enum type with the specified name.;
+     * Returns the enum constant of the specified enum type with the specified name.
      *
-     * @param _enumType tbd
-     * @param _name tbd
+     * @param name the name of the enum constant to be returned.
+     *
+     * @returns the enum constant with the specified name.
+     *
+     * @throws IllegalArgumentException if the specified enum type has no constant with the specified name.
      */
-    public static valueOf<T extends Enum<T>>(_enumType: java.lang.Class<JavaObject>, _name: java.lang.String): T {
-        throw new NotImplementedError();
+    public static valueOf<T extends Enum<T>>(name: java.lang.String): T {
+        for (const value of Enum.members as T[]) {
+            if (value.name() === name) {
+                return value;
+            }
+        }
+
+        throw new java.lang.IllegalArgumentException(S`No enum constant ${name}`);
+    }
+
+    /**
+     * Returns an array containing the constants of this enum type, in the order they are declared.
+     * This method may be used to iterate over the constants as follows:
+     * ```
+     * for (const c of Enum.values())
+     *    System.out.println(c);
+     * ```
+     *
+     * @returns an array containing the constants of this enum type, in the order they are declared.
+     */
+    public static values<T extends Enum<T>>(): T[] {
+        return Enum.members as T[];
     }
 
     /** @returns a hash code for this enum constant. */
@@ -55,8 +83,8 @@ export class Enum<T extends Enum<T>> extends JavaObject {
     }
 
     /** @returns the name of this enum constant, as contained in the declaration. */
-    public toString(): java.lang.String {
-        return this.#name;
+    public toString(): string {
+        return `${this.#name}`;
     }
 
     protected [Symbol.toPrimitive](hint: string): number | string {

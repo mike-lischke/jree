@@ -5,6 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { JavaString } from "../lang/String";
+
 /**
  * This interface represents the abstract notion of a principal, which can be used to represent any entity, such as
  * an individual, a corporation, and a login id.
@@ -22,7 +24,7 @@ export interface Principal {
     /**
      * @returns a string representation of this principal.
      */
-    getName(): string;
+    getName(): JavaString;
 
     /**
      * @returns a hash code for this principal.

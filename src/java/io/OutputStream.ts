@@ -5,12 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
+import { Closeable } from "./Closeable";
+import { Flushable } from "./Flushable";
 
-export abstract class OutputStream extends JavaObject
-    implements java.io.Closeable, java.io.Flushable, java.lang.AutoCloseable {
-
+/**
+ * This is the base class for all output streams. An output stream accepts output bytes and sends them to some sink.
+ */
+export abstract class OutputStream extends JavaObject implements Closeable, Flushable {
     public constructor() {
         super();
     }

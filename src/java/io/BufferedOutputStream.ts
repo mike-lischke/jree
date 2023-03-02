@@ -5,8 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
-import { IllegalArgumentException } from "../lang";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { JavaString } from "../lang/String";
 import { FilterOutputStream } from "./FilterOutputStream";
 import { OutputStream } from "./OutputStream";
 
@@ -38,7 +38,8 @@ export class BufferedOutputStream extends FilterOutputStream {
             const offset = off ?? 0;
             const length = len ?? b.length;
             if (offset + length > b.length) {
-                throw new IllegalArgumentException(S`The specified values exceed the size of the specified source.`);
+                throw new IllegalArgumentException(
+                    new JavaString(`The specified values exceed the size of the specified source.`));
             }
 
             const data = b.subarray(offset, offset + length);

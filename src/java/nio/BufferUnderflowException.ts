@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { RuntimeException } from "../lang";
+import { RuntimeException } from "../lang/RuntimeException";
 
 export class BufferUnderflowException extends RuntimeException {
 }

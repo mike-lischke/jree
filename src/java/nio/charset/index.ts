@@ -6,5 +6,11 @@
  */
 
 export * from "./Charset";
+export * from "./CharsetDecoder";
 export * from "./StandardCharsets";
+export * from "./CodingErrorAction";
+
 export * from "./IllegalCharsetNameException";
+export * from "./UnmappableCharacterException";
+export * from "./MalformedInputException";
+export * from "./CharacterCodingException";

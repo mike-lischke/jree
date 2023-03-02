@@ -8,8 +8,7 @@
 import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
-export abstract class Writer extends JavaObject implements java.io.Closeable, java.io.Flushable, java.lang.Appendable,
-    java.lang.AutoCloseable {
+export abstract class Writer extends JavaObject implements java.io.Closeable, java.io.Flushable, java.lang.Appendable {
     /**
      * The object used to synchronize operations on this stream.  For
      * efficiency, a character-stream object may use an object other than

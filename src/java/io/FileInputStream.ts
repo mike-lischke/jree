@@ -5,50 +5,57 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { readSync } from "fs";
-import * as fs from "fs/promises";
-import { S } from "../../templates";
-
-import { java } from "../..";
-
 import { InputStream } from "./InputStream";
+import { AutoCloseable } from "../lang/AutoCloseable";
+import { FileChannel } from "../nio/channels/FileChannel";
+import { StandardOpenOption } from "../nio/file/StandardOpenOption";
+import { FileSystems } from "../nio/file/FileSystems";
+import { ByteBuffer } from "../nio/ByteBuffer";
+import { JavaFile } from "./File";
+import { FileDescriptor } from "./FileDescriptor";
+import { JavaString } from "../lang/String";
+import { NotImplementedError } from "../../NotImplementedError";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
-export class FileInputStream extends InputStream implements java.lang.AutoCloseable {
-    private fd: java.io.FileDescriptor;
-    private path: string;
+export class FileInputStream extends InputStream implements AutoCloseable {
+    #channel: FileChannel;
 
     /**
      * Creates a FileInputStream by opening a connection to an actual file, the file named by the File object
      * file in the file system.
      */
-    public constructor(file: java.io.File);
+    public constructor(file: JavaFile);
     /**
      * Creates a FileInputStream by using the file descriptor fdObj, which represents an existing connection
      * to an actual file in the file system.
      */
-    public constructor(fdObj: java.io.FileDescriptor);
+    public constructor(fdObj: FileDescriptor);
     /**
      * Creates a FileInputStream by opening a connection to an actual file, the file named by the path name
      * in the file system.
      */
-    public constructor(name: java.lang.String);
-    public constructor(fileOrFdObjOrName: java.io.File | java.io.FileDescriptor | java.lang.String) {
+    public constructor(name: JavaString);
+    public constructor(fileOrFdObjOrName: JavaFile | FileDescriptor | JavaString) {
         super();
 
-        if (fileOrFdObjOrName instanceof java.io.File) {
-            this.path = fileOrFdObjOrName.getPath();
-            this.fd = new java.io.FileDescriptor();
-            this.open();
-        } else if (fileOrFdObjOrName instanceof java.lang.String) {
-            this.path = fileOrFdObjOrName.valueOf();
-            this.fd = new java.io.FileDescriptor();
-            this.open();
+        if (fileOrFdObjOrName instanceof JavaFile) {
+            this.#channel = FileChannel.open(fileOrFdObjOrName.toPath(), StandardOpenOption.READ);
+        } else if (fileOrFdObjOrName instanceof JavaString) {
+            const path = FileSystems.getDefault().getPath(fileOrFdObjOrName);
+            this.#channel = FileChannel.open(path, StandardOpenOption.READ);
         } else {
-            this.fd = fileOrFdObjOrName;
-            this.path = "";
+            throw new NotImplementedError();
         }
+    }
 
-        this.fd.attach(this);
+    /** Closes this file input stream and releases any system resources associated with the stream. */
+    public close(): void {
+        this.#channel.close();
+    }
+
+    /** @returns the FileChannel object associated with this file input stream. */
+    public getChannel(): FileChannel {
+        return this.#channel;
     }
 
     /** Reads the next byte of data from the input stream. */
@@ -59,40 +66,34 @@ export class FileInputStream extends InputStream implements java.lang.AutoClosea
     public read(b: Uint8Array, offset: number, length: number): number;
     public read(b?: Uint8Array, offset?: number, length?: number): number {
         if (!b) {
-            const buffer = Buffer.alloc(1);
-            const read = readSync(this.fd.handle!.fd, buffer, 0, 1, null);
+            const buffer = ByteBuffer.allocate(1);
+            const read = this.#channel.read(buffer);
 
             if (read === 0) {
                 return -1;
             }
 
-            return buffer.at(0)!;
+            return buffer.get(0);
         }
 
         offset ??= 0;
         length ??= b.length;
 
         if (offset < 0 || length < 0 || offset + length > b.length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
-        const read = readSync(this.fd.handle!.fd, b, offset ?? 0, length ?? b.length, null);
-        if (read === 0) {
+        const buffer = ByteBuffer.wrap(b, offset, length);
+        const read = this.#channel.read([buffer], offset, length);
+        //const read = readSync(this.#fd.handle!.fd, b, offset ?? 0, length ?? b.length, null);
+        if (read === 0n) {
             return - 1;
         }
 
-        return read;
+        return Number(read);
     }
 
-    public getFD(): java.io.FileDescriptor {
-        return this.fd;
-    }
-
-    private open(): void {
-        fs.open(this.path, "r", 0x400).then((handle) => {
-            this.fd.handle = handle;
-        }).catch((reason) => {
-            throw new java.io.IOException(S`Cannot open file`, java.lang.Throwable.fromError(reason));
-        });
+    public getFD(): FileDescriptor {
+        throw new NotImplementedError();
     }
 }

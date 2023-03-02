@@ -6,10 +6,10 @@
  */
 
 import unicode from "unicode-properties";
+import { char, JavaString } from ".";
 
 import { final } from "../../Decorators";
 
-import { java } from "../..";
 import { JavaObject } from "./Object";
 
 /**
@@ -243,7 +243,7 @@ export class Character extends JavaObject {
     public static readonly MAX_CODE_POINT = 0X10FFFF;
 
     public static readonly Subset = class {
-        protected constructor(public name: string) { }
+        protected constructor(public name: JavaString) { }
 
         public equals(obj: unknown): boolean {
             return obj === this;
@@ -253,7 +253,7 @@ export class Character extends JavaObject {
     public static readonly UnicodeBlock = class {
         public static readonly BASIC_LATIN = 1;
 
-        public static of = (_c: java.lang.char): number => {
+        public static of = (_c: char): number => {
             return 0;
         };
 
@@ -262,7 +262,7 @@ export class Character extends JavaObject {
     public static readonly UnicodeScript = class {
         public static readonly BASIC_LATIN = 1;
 
-        public static of = (_c: java.lang.char): number => {
+        public static of = (_c: char): number => {
             return 0;
         };
     };
@@ -283,13 +283,13 @@ export class Character extends JavaObject {
      * Note: In typescript we cannot differentiate between char and number (java.lang.char is a type alias for number).
      *       That means there's only one method for the two Java getType methods.
      */
-    public static getType(c: java.lang.char | number): number {
+    public static getType(c: char | number): number {
         const category = unicode.getCategory(c);
 
         return Character.CategoryMapper.get(category) ?? Character.UNASSIGNED;
     }
 
-    public static isDigit(c: java.lang.char): boolean {
+    public static isDigit(c: char): boolean {
         return unicode.isDigit(c);
     }
 
@@ -301,7 +301,7 @@ export class Character extends JavaObject {
      *
      * @returns True, if the character is a high surrogate, otherwise false.
      */
-    public static isHighSurrogate(ch: java.lang.char): boolean {
+    public static isHighSurrogate(ch: char): boolean {
         return Character.MIN_HIGH_SURROGATE <= ch && ch <= Character.MAX_HIGH_SURROGATE;
     }
 
@@ -312,7 +312,7 @@ export class Character extends JavaObject {
      *
      * @returns True, if the character is an lowercase character, otherwise false.
      */
-    public static isLowerCase(c: java.lang.char): boolean {
+    public static isLowerCase(c: char): boolean {
         return unicode.isLowerCase(c);
     }
 
@@ -324,7 +324,7 @@ export class Character extends JavaObject {
      *
      * @returns True, if the character is a low surrogate, otherwise false.
      */
-    public static isLowSurrogate(c: java.lang.char): boolean {
+    public static isLowSurrogate(c: char): boolean {
         return Character.MIN_LOW_SURROGATE <= c && c <= Character.MAX_LOW_SURROGATE;
     }
 
@@ -336,7 +336,7 @@ export class Character extends JavaObject {
      *
      * @returns True, if the character may be part of a Unicode identifier, otherwise false.
      */
-    public static isUnicodeIdentifierPart(c: java.lang.char): boolean {
+    public static isUnicodeIdentifierPart(c: char): boolean {
         return this.isUnicodeIdentifierStart(c);
     }
 
@@ -348,7 +348,7 @@ export class Character extends JavaObject {
      *
      * @returns True, if the character is permissible as the first character in a Unicode identifier, otherwise false.
      */
-    public static isUnicodeIdentifierStart(c: java.lang.char): boolean {
+    public static isUnicodeIdentifierStart(c: char): boolean {
         const type = this.getType(c);
 
         // In UnicodeSet notation:
@@ -356,7 +356,6 @@ export class Character extends JavaObject {
         return type === Character.UPPERCASE_LETTER || type === Character.LOWERCASE_LETTER ||
             type === Character.TITLECASE_LETTER || type === Character.MODIFIER_LETTER ||
             type === Character.OTHER_LETTER || // p{L}
-
             type === Character.LETTER_NUMBER; // p{Nl}
 
         // TODO: add support for the other sets.
@@ -369,7 +368,7 @@ export class Character extends JavaObject {
      *
      * @returns True, if the character is an uppercase character, otherwise false.
      */
-    public static isUpperCase(c: java.lang.char): boolean {
+    public static isUpperCase(c: char): boolean {
         return unicode.isUpperCase(c);
     }
 
@@ -381,21 +380,21 @@ export class Character extends JavaObject {
      *
      * @returns The computed Unicode codepoint.
      */
-    public static toCodePoint(high: java.lang.char, low: java.lang.char): number {
+    public static toCodePoint(high: char, low: char): number {
         return (high << 10) + low + Character.MIN_SUPPLEMENTARY_CODE_POINT - (Character.MIN_HIGH_SURROGATE << 10) -
             Character.MIN_LOW_SURROGATE;
     }
 
-    public static toString(c: java.lang.char): string {
-        return String.fromCodePoint(c);
+    public static toString(c: char): JavaString {
+        return JavaString.fromCodePoint(c);
     }
 
-    public static toUpperCase(s: string): string {
-        return s.toUpperCase();
+    public static toUpperCase(s: JavaString): JavaString {
+        return new JavaString(s.valueOf().toUpperCase());
     }
 
-    public static toLowerCase(s: string): string {
-        return s.toLowerCase();
+    public static toLowerCase(s: JavaString): JavaString {
+        return new JavaString(s.valueOf().toLowerCase());
     }
 
     static {

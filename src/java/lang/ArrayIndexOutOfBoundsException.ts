@@ -5,10 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
-import { S } from "../../templates";
-
 import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
+import { JavaString } from "./String";
 
 /**
  * Thrown to indicate that an array has been accessed with an illegal index. The index is either negative or greater
@@ -17,15 +15,18 @@ import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
 export class ArrayIndexOutOfBoundsException extends IndexOutOfBoundsException {
     public constructor();
     public constructor(index: number);
-    public constructor(message?: java.lang.String);
-    public constructor(indexOrMessage?: number | java.lang.String) {
-        let message;
-        if (typeof indexOrMessage === "number") {
-            message = S`Array index out of range: ${indexOrMessage}`;
-        } else {
-            message = indexOrMessage;
+    public constructor(message: JavaString);
+    public constructor(...args: unknown[]) {
+        if (args.length === 0) {
+            super();
+
+            return;
         }
 
-        super(message);
+        if (args[0] instanceof JavaString) {
+            super(args[0]);
+        } else {
+            super(new JavaString(`Array index out of range: ${args[0]}`));
+        }
     }
 }

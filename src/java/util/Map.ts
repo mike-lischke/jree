@@ -5,10 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { Collection } from "./Collection";
+import { JavaSet } from "./Set";
 
-export interface Map<K, V> {
+export interface JavaMap<K, V> {
     /** Removes all of the mappings from this map (optional operation). */
     clear(): void;
 
@@ -19,7 +19,7 @@ export interface Map<K, V> {
     containsValue(value: V): boolean;
 
     /** Returns a Set view of the mappings contained in this map. */
-    entrySet(): java.util.Set<Map.Entry<K, V>>;
+    entrySet(): JavaSet<JavaMap.Entry<K, V>>;
 
     /** Compares the specified object with this map for equality. */
     equals(o: unknown): boolean;
@@ -34,13 +34,13 @@ export interface Map<K, V> {
     isEmpty(): boolean;
 
     /** Returns a Set view of the keys contained in this map. */
-    keySet(): java.util.Set<K>;
+    keySet(): JavaSet<K>;
 
     /** Associates the specified value with the specified key in this map (optional operation). */
     put(key: K, value: V): V | null;
 
     /** Copies all of the mappings from the specified map to this map (optional operation). */
-    putAll(m: java.util.Map<K, V>): void;
+    putAll(m: JavaMap<K, V>): void;
 
     /** Removes the mapping for a key from this map if it is present (optional operation). */
     remove(key: K): V | null;
@@ -52,7 +52,7 @@ export interface Map<K, V> {
     values(): Collection<V>;
 }
 
-export namespace Map {
+export namespace JavaMap {
     export abstract class Entry<K, V> {
         /** Compares the specified object with this entry for equality. */
         public abstract equals(o: unknown): boolean;

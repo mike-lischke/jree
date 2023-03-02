@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { UnsupportedOperationException } from "../lang";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 
 export class ReadOnlyBufferException extends UnsupportedOperationException {
 }

@@ -5,13 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 import { InvalidMarkException } from "./InvalidMarkException";
-import { S } from "../../templates";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { JavaString } from "../lang/String";
 
-export abstract class Buffer<T> extends JavaObject {
+export abstract class JavaBuffer<T> extends JavaObject {
     // This is the raw memory storage for the buffer. Only a part might actually be used.
     protected backBuffer: ArrayBuffer;
 
@@ -87,7 +87,7 @@ export abstract class Buffer<T> extends JavaObject {
         }
 
         if (newLimit < 0 || newLimit > this.capacity()) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         this.currentLimit = newLimit;
@@ -125,7 +125,7 @@ export abstract class Buffer<T> extends JavaObject {
         }
 
         if (newPosition > this.currentLimit || newPosition < 0) {
-            throw new java.lang.IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         if (this.currentMark > newPosition) {
@@ -153,7 +153,7 @@ export abstract class Buffer<T> extends JavaObject {
      */
     public reset(): this {
         if (this.currentMark < 0) {
-            throw new InvalidMarkException(S`No mark is set`);
+            throw new InvalidMarkException(new JavaString("No mark is set"));
         }
         this.currentPosition = this.currentMark;
 

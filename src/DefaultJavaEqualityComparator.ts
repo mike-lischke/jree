@@ -5,8 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from ".";
-import { isEquatable } from "./helpers";
+import { isEquatable } from "./type-guards";
+import { Arrays } from "./java/util/Arrays";
 import { JavaEqualityComparator } from "./JavaEqualityComparator";
 
 import { MurmurHash } from "./MurmurHash";
@@ -38,7 +38,7 @@ export class DefaultJavaEqualityComparator<T> implements JavaEqualityComparator<
         }
 
         if (Array.isArray(a) && Array.isArray(b)) {
-            return java.util.Arrays.equals(a, b);
+            return Arrays.equals(a, b);
         }
 
         return this.hashCode(a) === this.hashCode(b);

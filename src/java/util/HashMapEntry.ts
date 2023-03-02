@@ -5,11 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
-
 import { MurmurHash } from "../../MurmurHash";
+import { JavaMap } from "./Map";
 
-export class HashMapEntry<K, V> implements java.util.Map.Entry<K, V> {
+export class HashMapEntry<K, V> implements JavaMap.Entry<K, V> {
     private computedHash: number | undefined;
 
     public constructor(private key: K, private value: V) {

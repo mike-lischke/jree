@@ -5,7 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from ".";
+import { JavaBoolean } from "./java/lang/Boolean";
+import { Integer } from "./java/lang/Integer";
+import { JavaString } from "./java/lang/String";
 
 // Tagged templates for emulation of automatic boxing of primitive values.
 
@@ -17,7 +19,7 @@ import { java } from ".";
  *
  * @returns A `java.lang.String` instance with all strings concatenated.
  */
-export const S = (strings: TemplateStringsArray, ...values: unknown[]): java.lang.String => {
+export const S = (strings: TemplateStringsArray, ...values: unknown[]): JavaString => {
     const entries: string[] = [];
     let i = 0;
     while (true) {
@@ -29,7 +31,7 @@ export const S = (strings: TemplateStringsArray, ...values: unknown[]): java.lan
         }
     }
 
-    return new java.lang.String(entries.join(""));
+    return new JavaString(entries.join(""));
 };
 
 /**
@@ -41,12 +43,12 @@ export const S = (strings: TemplateStringsArray, ...values: unknown[]): java.lan
  *
  * @returns A `java.lang.String` instance with all strings concatenated.
  */
-export const I = (strings: TemplateStringsArray, ...values: number[]): java.lang.Integer => {
+export const I = (strings: TemplateStringsArray, ...values: number[]): Integer => {
     if (values.length > 0) {
-        return new java.lang.Integer(values[0]);
+        return new Integer(values[0]);
     }
 
-    return new java.lang.Integer(strings[0]);
+    return new Integer(strings[0]);
 };
 
 /**
@@ -58,10 +60,10 @@ export const I = (strings: TemplateStringsArray, ...values: number[]): java.lang
  *
  * @returns A `java.lang.String` instance with all strings concatenated.
  */
-export const B = (strings: TemplateStringsArray, ...values: boolean[]): java.lang.Boolean => {
+export const B = (strings: TemplateStringsArray, ...values: boolean[]): JavaBoolean => {
     if (values.length > 0) {
-        return new java.lang.Boolean(values[0]);
+        return new JavaBoolean(values[0]);
     }
 
-    return new java.lang.Boolean(strings[0]);
+    return new JavaBoolean(strings[0]);
 };

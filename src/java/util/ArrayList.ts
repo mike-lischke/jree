@@ -7,21 +7,24 @@
 
 import { List } from "immutable";
 
-import { java, S } from "../..";
-
 import { IListBackend } from "./ListIteratorImpl";
 import { AbstractList } from "./AbstractList";
+import { S } from "../../templates";
+import { Cloneable } from "../lang/Cloneable";
+import { RandomAccess } from "./RandomAccess";
+import { Serializable } from "../io/Serializable";
+import { Collection } from "./Collection";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 
 /**
  * Resizable-array implementation of the List interface. Implements all optional list operations, and permits all
  * elements (including null).
  */
-export class ArrayList<T> extends AbstractList<T>
-    implements java.lang.Cloneable<ArrayList<T>>, java.util.RandomAccess, java.io.Serializable {
+export class ArrayList<T> extends AbstractList<T> implements Cloneable<ArrayList<T>>, RandomAccess, Serializable {
 
     public constructor();
     public constructor(initialCapacity: number);
-    public constructor(c: java.util.Collection<T>);
+    public constructor(c: Collection<T>);
     /** This constructor is not part of the Java API, but helps creating lists from Typescript arrays. */
     public constructor(array: T[]);
     public constructor(...args: unknown[]) {
@@ -34,8 +37,8 @@ export class ArrayList<T> extends AbstractList<T>
             }
 
             case 1: {
-                const end = Array.isArray(args[0]) ? args[0].length : (args[0] as java.util.Collection<T>).size();
-                const input = args[0] as java.util.Collection<T> | T[];
+                const end = Array.isArray(args[0]) ? args[0].length : (args[0] as Collection<T>).size();
+                const input = args[0] as Collection<T> | T[];
                 backend = {
                     list: List(input),
                     start: 0,
@@ -48,7 +51,7 @@ export class ArrayList<T> extends AbstractList<T>
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Wrong number of arguments`);
+                throw new IllegalArgumentException(S`Wrong number of arguments`);
             }
         }
 

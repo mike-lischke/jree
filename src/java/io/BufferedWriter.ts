@@ -6,7 +6,14 @@
  */
 
 import { S } from "../../templates";
-import { java } from "../..";
+
+import { JavaString } from "../lang/String";
+import { char } from "../lang";
+import { CharSequence } from "../lang/CharSequence";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { System } from "../lang/System";
+import { IOException } from "./IOException";
 
 import { Writer } from "./Writer";
 
@@ -17,8 +24,8 @@ export class BufferedWriter extends Writer {
     private out?: Writer;
 
     private cb: Uint16Array;
-    private nChars: java.lang.char;
-    private nextChar: java.lang.char;
+    private nChars: char;
+    private nextChar: char;
 
     /**
      * Creates a new buffered character-output stream that uses an output
@@ -30,7 +37,7 @@ export class BufferedWriter extends Writer {
     public constructor(out: Writer, sz = BufferedWriter.defaultCharBufferSize) {
         super(out);
         if (sz <= 0) {
-            throw new java.lang.IllegalArgumentException(S`Buffer size <= 0`);
+            throw new IllegalArgumentException(S`Buffer size <= 0`);
         }
 
         this.cb = new Uint16Array(sz);
@@ -61,7 +68,7 @@ export class BufferedWriter extends Writer {
      * @param c
      * @throws     IOException  If an I/O error occurs
      */
-    public write(c: java.lang.char): void;
+    public write(c: char): void;
     public write(buffer: Uint16Array): void;
     /**
      * Writes a portion of an array of characters.
@@ -87,7 +94,7 @@ export class BufferedWriter extends Writer {
      * @throws  IOException  If an I/O error occurs
      */
     public write(buffer: Uint16Array, offset: number, length: number): void;
-    public write(s: java.lang.String): void;
+    public write(s: JavaString): void;
     /**
      * Writes a portion of a String.
      *
@@ -102,8 +109,8 @@ export class BufferedWriter extends Writer {
      *
      * @throws  IOException  If an I/O error occurs
      */
-    public write(s: java.lang.String, offset: number, length: number): void;
-    public write(cOrBufferOrS: java.lang.char | Uint16Array | java.lang.String, offset?: number,
+    public write(s: JavaString, offset: number, length: number): void;
+    public write(cOrBufferOrS: char | Uint16Array | JavaString, offset?: number,
         length?: number): void {
         this.ensureOpen();
         if (typeof cOrBufferOrS === "number") {
@@ -117,7 +124,7 @@ export class BufferedWriter extends Writer {
                 length ??= cOrBufferOrS.length;
 
                 if ((offset < 0) || (length < 0) || (offset + length > cOrBufferOrS.length)) {
-                    throw new java.lang.IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException();
                 } else if (length === 0) {
                     return;
                 }
@@ -147,7 +154,7 @@ export class BufferedWriter extends Writer {
                 length ??= cOrBufferOrS.length();
 
                 if ((offset < 0) || (length < 0) || (offset + length > cOrBufferOrS.length())) {
-                    throw new java.lang.IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException();
                 } else if (length === 0) {
                     return;
                 }
@@ -169,10 +176,10 @@ export class BufferedWriter extends Writer {
         }
     }
 
-    public append(c: java.lang.char): this;
-    public append(csq: java.lang.CharSequence): this;
-    public append(csq: java.lang.CharSequence, start: number, end: number): this;
-    public append(cOrCsq: java.lang.char | java.lang.CharSequence, start?: number, end?: number): this {
+    public append(c: char): this;
+    public append(csq: CharSequence): this;
+    public append(csq: CharSequence, start: number, end: number): this;
+    public append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
         if (typeof cOrCsq === "number") {
             this.write(cOrCsq);
         } else {
@@ -193,7 +200,7 @@ export class BufferedWriter extends Writer {
      * @throws     IOException  If an I/O error occurs
      */
     public newLine(): void {
-        this.write(java.lang.System.lineSeparator());
+        this.write(System.lineSeparator());
     }
 
     /**
@@ -227,7 +234,7 @@ export class BufferedWriter extends Writer {
     /** Checks to make sure that the stream has not been closed */
     private ensureOpen(): void {
         if (this.out === undefined) {
-            throw new java.io.IOException(S`Stream closed`);
+            throw new IOException(S`Stream closed`);
         }
     }
 

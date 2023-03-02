@@ -5,13 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, S } from "../../../src";
+import { java } from "../../../src";
+import { S } from "../../../src/templates";
 
 describe("java.lang.Integer Tests", () => {
     it("Base", () => {
         const i = new java.lang.Integer(0);
         expect(i.equals(new java.lang.Integer(0))).toBe(true);
-        expect(i.equals(new java.lang.Integer("0"))).toBe(true);
+        expect(i.equals(new java.lang.Integer(S`0`))).toBe(true);
         expect(i.equals(new java.lang.Integer(1))).toBe(false);
 
         expect(java.lang.Integer.MAX_VALUE).toBe(2147483647);
@@ -39,22 +40,22 @@ describe("java.lang.Integer Tests", () => {
     });
 
     it("decode", () => {
-        expect(() => { java.lang.Integer.decode(""); }).toThrowError();
-        expect(() => { java.lang.Integer.decode(" .  \n"); }).toThrowError();
+        expect(() => { java.lang.Integer.decode(S``); }).toThrowError();
+        expect(() => { java.lang.Integer.decode(S` .  \n`); }).toThrowError();
 
-        expect(() => { java.lang.Integer.decode("abc"); }).toThrowError();
+        expect(() => { java.lang.Integer.decode(S`abc`); }).toThrowError();
 
-        expect(java.lang.Integer.decode("0").intValue()).toBe(0);
-        expect(java.lang.Integer.decode("00000").intValue()).toBe(0);
-        expect(java.lang.Integer.decode("123").intValue()).toBe(123);
-        expect(java.lang.Integer.decode("0123").intValue()).toBe(83);
-        expect(java.lang.Integer.decode("0x123").intValue()).toBe(291);
+        expect(java.lang.Integer.decode(S`0`).intValue()).toBe(0);
+        expect(java.lang.Integer.decode(S`00000`).intValue()).toBe(0);
+        expect(java.lang.Integer.decode(S`123`).intValue()).toBe(123);
+        expect(java.lang.Integer.decode(S`0123`).intValue()).toBe(83);
+        expect(java.lang.Integer.decode(S`0x123`).intValue()).toBe(291);
 
-        expect(java.lang.Integer.decode("-0").intValue()).toBe(-0);
-        expect(java.lang.Integer.decode("-00000").intValue()).toBe(-0);
-        expect(java.lang.Integer.decode("-123").intValue()).toBe(-123);
-        expect(java.lang.Integer.decode("-0123").intValue()).toBe(-83);
-        expect(java.lang.Integer.decode("-0x123").intValue()).toBe(-291);
+        expect(java.lang.Integer.decode(S`-0`).intValue()).toBe(-0);
+        expect(java.lang.Integer.decode(S`-00000`).intValue()).toBe(-0);
+        expect(java.lang.Integer.decode(S`-123`).intValue()).toBe(-123);
+        expect(java.lang.Integer.decode(S`-0123`).intValue()).toBe(-83);
+        expect(java.lang.Integer.decode(S`-0x123`).intValue()).toBe(-291);
     });
 
     it("getInteger", (done) => {
@@ -194,16 +195,16 @@ describe("java.lang.Integer Tests", () => {
         expect(i).toBeInstanceOf(java.lang.Integer);
         expect(i.intValue()).toBe(88);
 
-        i = java.lang.Integer.valueOf("88");
+        i = java.lang.Integer.valueOf(S`88`);
         expect(i).toBeInstanceOf(java.lang.Integer);
         expect(i.intValue()).toBe(88);
 
-        i = java.lang.Integer.valueOf("88", 10);
+        i = java.lang.Integer.valueOf(S`88`, 10);
         expect(i).toBeInstanceOf(java.lang.Integer);
         expect(i.intValue()).toBe(88);
 
-        expect(() => { java.lang.Integer.valueOf("88", 2); }).toThrowError();
-        i = java.lang.Integer.valueOf("12332", 5);
+        expect(() => { java.lang.Integer.valueOf(S`88`, 2); }).toThrowError();
+        i = java.lang.Integer.valueOf(S`12332`, 5);
         expect(i).toBeInstanceOf(java.lang.Integer);
         expect(i.intValue()).toBe(967);
 
@@ -238,10 +239,10 @@ describe("java.lang.Integer Tests", () => {
         expect(new java.lang.Integer(-88).intValue()).toBe(-88);
         expect(new java.lang.Integer(-8888).intValue()).toBe(-8888);
 
-        expect(new java.lang.Integer(88).longValue()).toBe(88);
-        expect(new java.lang.Integer(8888).longValue()).toBe(8888);
-        expect(new java.lang.Integer(-88).longValue()).toBe(-88);
-        expect(new java.lang.Integer(-8888).longValue()).toBe(-8888);
+        expect(new java.lang.Integer(88).longValue()).toBe(88n);
+        expect(new java.lang.Integer(8888).longValue()).toBe(8888n);
+        expect(new java.lang.Integer(-88).longValue()).toBe(-88n);
+        expect(new java.lang.Integer(-8888).longValue()).toBe(-8888n);
 
         expect(new java.lang.Integer(88).floatValue()).toBe(88);
         expect(new java.lang.Integer(8888).floatValue()).toBe(8888);
@@ -265,7 +266,7 @@ describe("java.lang.Integer Tests", () => {
 
         const c = i1.getClass();
         expect(c.isInstance(i2)).toBe(true);
-        expect(c.getName().equals(S`Integer`)).toBe(true);
+        expect(c.getName()).toBe("Integer");
 
         // Unboxing/explicit coercion.
         expect(3 - +i1).toBe(-120);
