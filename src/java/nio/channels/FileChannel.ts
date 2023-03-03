@@ -232,7 +232,7 @@ export class FileChannelImpl extends FileChannel {
         }
 
         const permissions = attrs.find((attr) => {
-            return attr.name().toString() === "posix:permissions";
+            return attr.name().valueOf() === "posix:permissions";
         })?.value() as JavaSet<PosixFilePermission> | undefined;
 
         let mode = "666";
@@ -265,10 +265,10 @@ export class FileChannelImpl extends FileChannel {
         }
     }
 
-    public read(dst: ByteBuffer): number;
-    public read(dst: ByteBuffer[]): bigint;
-    public read(dst: ByteBuffer[], offset: number, length: number): bigint;
-    public read(...args: unknown[]): bigint | number {
+    public override read(dst: ByteBuffer): number;
+    public override read(dst: ByteBuffer[]): bigint;
+    public override read(dst: ByteBuffer[], offset: number, length: number): bigint;
+    public override read(...args: unknown[]): bigint | number {
         let currentBuffer = 0;
         let end: number;
         let targets: ByteBuffer[];
@@ -397,11 +397,11 @@ export class FileChannelImpl extends FileChannel {
     // public tryLock(): FileLock | null;
     // public tryLock(position: bigint, size: bigint, shared: boolean): FileLock | null;
 
-    public write(src: ByteBuffer): number;
-    public write(src: ByteBuffer[]): bigint;
-    public write(src: ByteBuffer[], offset: number, length: number): bigint;
-    public write(src: ByteBuffer, position: bigint): number;
-    public write(...args: unknown[]): bigint | number {
+    public override write(src: ByteBuffer): number;
+    public override write(src: ByteBuffer[]): bigint;
+    public override write(src: ByteBuffer[], offset: number, length: number): bigint;
+    public override write(src: ByteBuffer, position: bigint): number;
+    public override write(...args: unknown[]): bigint | number {
         let currentBuffer = 0;
         let end: number;
         let targets: ByteBuffer[];

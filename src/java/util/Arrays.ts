@@ -5,12 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 import { isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
-import { S } from "../../templates";
+import { JavaString } from "../..";
+import { ArrayList } from "./ArrayList";
+import { List } from "./List";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =
@@ -38,16 +39,16 @@ export class Arrays extends JavaObject {
 
     /**
      * Returns a list backed by the specified array. (Changes to the returned list "write through" to the array.)
-     * The returned list is serializable and implements java.util.RandomAccess.
+     * The returned list is serializable and implements RandomAccess.
      * This method acts as bridge between array-based and collection-based APIs, in combination with
-     * java.util.Collection.toArray().
+     * Collection.toArray().
      *
      * @param list The array to be wrapped as a list.
      *
      * @returns A list view of the specified array.
      */
-    public static asList<T>(list: T[]): java.util.List<T> {
-        return new java.util.ArrayList<T>(list);
+    public static asList<T>(list: T[]): List<T> {
+        return new ArrayList<T>(list);
     }
 
     public static sort<T>(list: T[]): void {
@@ -218,9 +219,9 @@ export class Arrays extends JavaObject {
         return MurmurHash.finish(hash, 1);
     }
 
-    public static toString(value: TypedArray | null): java.lang.String;
-    public static toString<T>(value: T[] | null): java.lang.String;
-    public static toString<T>(value: T[] | TypedArray | null): java.lang.String {
-        return S`${JSON.stringify(value)}`;
+    public static override toString(value: TypedArray | null): JavaString;
+    public static override toString<T>(value: T[] | null): JavaString;
+    public static override toString<T>(value: T[] | TypedArray | null): JavaString {
+        return new JavaString(`${JSON.stringify(value)}`);
     }
 }

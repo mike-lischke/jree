@@ -57,11 +57,6 @@ export class JavaObject {
         // No implementation needed.
     }
 
-    /** @returns a string representation of the object. */
-    public toString(): string {
-        return `${this.constructor.name}@${this.#id.toString(16)}`;
-    }
-
     /**
      * Causes the current thread to wait until either another thread invokes the notify() method or the notifyAll()
      * method for this object, or a specified amount of time has elapsed.
@@ -79,7 +74,7 @@ export class JavaObject {
     }
 
     protected [Symbol.toPrimitive](_hint: string): bigint | number | boolean | string | null {
-        return `${this.toString()}`;
+        return `${this.constructor.name}@${this.#id.toString(16)}`;
     }
 }
 

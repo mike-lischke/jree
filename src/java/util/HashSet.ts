@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { java } from "../..";
+import { java, JavaString } from "../..";
 
 import { Set } from "immutable";
 import { IteratorWrapper } from "../../IteratorWrapper";
@@ -41,11 +41,11 @@ export class HashSet<T> extends Collection<T>
         yield* this.#sharedBackend.backend[Symbol.iterator]();
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.#sharedBackend.backend.hashCode();
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (!(o instanceof HashSet)) {
             return false;
         }
@@ -60,7 +60,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns True if the value was actually added (i.e. wasn't member of this set yet), otherwise false.
      */
-    public add(t: T): boolean {
+    public override add(t: T): boolean {
         const set = this.#sharedBackend.backend.add(t);
         if (set !== this.#sharedBackend.backend) {
             this.#sharedBackend.backend = set;
@@ -72,17 +72,17 @@ export class HashSet<T> extends Collection<T>
     }
 
     /** @returns the number of elements in this set (its cardinality). */
-    public size(): number {
+    public override size(): number {
         return this.#sharedBackend.backend.count();
     }
 
     /** @returns true if this set contains no elements. */
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.#sharedBackend.backend.isEmpty();
     }
 
     /** @returns an iterator over the elements in this set. */
-    public iterator(): JavaIterator<T> {
+    public override iterator(): JavaIterator<T> {
         return new IteratorWrapper(this.#sharedBackend.backend[Symbol.iterator]());
     }
 
@@ -91,14 +91,14 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns true if this set contains the specified element.
      */
-    public contains(o: T): boolean {
+    public override contains(o: T): boolean {
         return this.#sharedBackend.backend.has(o);
     }
 
     /** @returns an array containing all of the elements in this collection. */
-    public toArray(): T[];
-    public toArray<U extends T>(a: U[]): U[];
-    public toArray<U extends T>(a?: U[]): T[] | U[] {
+    public override toArray(): T[];
+    public override toArray<U extends T>(a: U[]): U[];
+    public override toArray<U extends T>(a?: U[]): T[] | U[] {
         if (a === undefined) {
             return this.#sharedBackend.backend.toArray();
         } else {
@@ -113,7 +113,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns True if the value was part of this set (i.e. the set has been changed by this call), otherwise false.
      */
-    public remove(obj: T): boolean {
+    public override remove(obj: T): boolean {
         if (obj === undefined) {
             return false;
         }
@@ -133,7 +133,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns true if this collection contains all of the elements in the specified collection.
      */
-    public containsAll(collection: java.util.Collection<T>): boolean {
+    public override containsAll(collection: java.util.Collection<T>): boolean {
         if (collection instanceof HashSet) {
             let allFound = true;
             collection.#sharedBackend.backend.forEach((value) => {
@@ -158,7 +158,7 @@ export class HashSet<T> extends Collection<T>
         return true;
     }
 
-    public addAll(c: java.util.Collection<T>): boolean {
+    public override addAll(c: java.util.Collection<T>): boolean {
         const s = this.#sharedBackend.backend.withMutations((set) => {
             if (c instanceof HashSet) {
                 c.#sharedBackend.backend.forEach((value) => {
@@ -187,7 +187,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns True if this set was changed by this method, otherwise false.
      */
-    public retainAll(c: java.util.Collection<T>): boolean {
+    public override retainAll(c: java.util.Collection<T>): boolean {
         const s = this.#sharedBackend.backend.intersect(c);
         if (s !== this.#sharedBackend.backend) {
             this.#sharedBackend.backend = s;
@@ -205,7 +205,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns True if this set was changed by this method, otherwise false.
      */
-    public removeAll(c: java.util.Collection<T>): boolean {
+    public override removeAll(c: java.util.Collection<T>): boolean {
         const s = this.#sharedBackend.backend.withMutations((set) => {
             for (const o of c) {
                 set.delete(o);
@@ -222,20 +222,20 @@ export class HashSet<T> extends Collection<T>
     }
 
     /** Removes all of the elements from this set. */
-    public clear(): void {
+    public override clear(): void {
         this.#sharedBackend.backend = this.#sharedBackend.backend.clear();
     }
 
     /** @returns a shallow copy of this HashSet instance: the elements themselves are not cloned. */
-    public clone(): HashSet<T> {
+    public override clone(): HashSet<T> {
         const result = new HashSet<T>(this);
 
         return result;
     }
 
-    public toString(): string {
+    public override toString(): JavaString {
         if (this.size() === 0) {
-            return "{}";
+            return new JavaString("{}");
         }
 
         const buf = new java.lang.StringBuilder();

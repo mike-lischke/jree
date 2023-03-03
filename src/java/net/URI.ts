@@ -226,7 +226,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
      *
      * @returns true if, and only if, the given object is a URI that is identical to this URI
      */
-    public equals(obj: unknown): boolean {
+    public override equals(obj: unknown): boolean {
         if (obj === null) {
             return false;
         }
@@ -330,7 +330,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
     }
 
     /** @returns The hash code of this URI */
-    public hashCode(): number {
+    public override hashCode(): number {
         let hash = MurmurHash.initialize(13);
         hash = MurmurHash.update(hash, this.#scheme);
         hash = MurmurHash.update(hash, this.#schemeSpecificPart);
@@ -384,7 +384,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
         return S`${this.#uri}`;
     }
 
-    public toString(): string {
+    public override toString(): string {
         return `${this.#uri}`;
     }
 

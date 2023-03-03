@@ -225,13 +225,13 @@ export class Throwable extends JavaObject {
     }
 
     /** @returns a short description of this throwable. */
-    public toString(): string {
+    public override toString(): JavaString {
         const message = this.getLocalizedMessage();
         if (!message) {
-            return `${this.stack}`;
+            return new JavaString(`${this.stack}`);
         }
 
-        return `${this.constructor.name}: ${message}`;
+        return new JavaString(`${this.constructor.name}: ${message}`);
     }
 
     protected [Symbol.toPrimitive](): string {

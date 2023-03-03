@@ -438,7 +438,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param end tbd
      */
     public subSequence(start: number, end: number): CharSequence {
-        const buffer = CharBuffer.wrap(new JavaString());
+        const buffer = CharBuffer.wrap(new Uint16Array());
         buffer.put(this.data, start, end);
 
         return buffer;
@@ -464,8 +464,8 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
     }
 
     /** @returns a string representing of the data in this sequence. */
-    public toString(): string {
-        return String.fromCharCode(...this.data.subarray(0, this.currentLength));
+    public override toString(): JavaString {
+        return new JavaString(String.fromCharCode(...this.data.subarray(0, this.currentLength)));
     }
 
     public array(): Uint16Array {

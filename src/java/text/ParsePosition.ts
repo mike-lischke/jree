@@ -26,7 +26,7 @@ export class ParsePosition extends JavaObject {
      *
      * @returns true if the objects are equal; false otherwise.
      */
-    public equals(obj: JavaObject): boolean {
+    public override equals(obj: JavaObject): boolean {
         if (obj instanceof ParsePosition) {
             return this.#index === obj.#index;
         }
@@ -53,7 +53,7 @@ export class ParsePosition extends JavaObject {
     /**
      * @returns A hash code value for this object.
      */
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.#index;
     }
 
@@ -78,7 +78,7 @@ export class ParsePosition extends JavaObject {
     /**
      * @returns A string representation of this ParsePosition.
      */
-    public toString(): string {
+    public override toString(): string {
         return `ParsePosition(index=${this.#index}, errorIndex=${this.#errorIndex})`;
     }
 }

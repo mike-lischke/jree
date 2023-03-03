@@ -22,9 +22,9 @@ class Test<K, V> extends JavaObject implements java.util.Map<K, V> {
 
         return set;
     }
-    public equals(_o: unknown): boolean { return false; }
+    public override equals(_o: unknown): boolean { return false; }
     public get(_key: K): V | null { return null; }
-    public hashCode(): number { return 0; }
+    public override hashCode(): number { return 0; }
     public isEmpty(): boolean { return false; }
     public keySet(): java.util.Set<K> { return new java.util.HashSet<K>(); }
     public put(_key: K, value: V): V { return value; }

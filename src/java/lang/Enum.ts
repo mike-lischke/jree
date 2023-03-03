@@ -36,7 +36,7 @@ export class Enum<T extends Enum<T>> extends JavaObject {
      *
      * @throws IllegalArgumentException if the specified enum type has no constant with the specified name.
      */
-    public static valueOf<T extends Enum<T>>(name: java.lang.String): T {
+    public static override valueOf<T extends Enum<T>>(name: java.lang.String): T {
         for (const value of Enum.members as T[]) {
             if (value.name() === name) {
                 return value;
@@ -61,7 +61,7 @@ export class Enum<T extends Enum<T>> extends JavaObject {
     }
 
     /** @returns a hash code for this enum constant. */
-    public hashCode(): number {
+    public override hashCode(): number {
         let result = MurmurHash.initialize(37);
         result = MurmurHash.update(result, this.#name);
         result = MurmurHash.update(result, this.#ordinal);
@@ -83,7 +83,7 @@ export class Enum<T extends Enum<T>> extends JavaObject {
     }
 
     /** @returns the name of this enum constant, as contained in the declaration. */
-    public toString(): string {
+    public override toString(): string {
         return `${this.#name}`;
     }
 

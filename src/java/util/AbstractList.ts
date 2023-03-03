@@ -23,6 +23,7 @@ import { ListIterator } from "./ListIterator";
 import { Predicate } from "./function/Predicate";
 import { Spliterator } from "./Spliterator";
 import { NotImplementedError } from "../../NotImplementedError";
+import { JavaString } from "../lang";
 
 /**
  * This is the base class for all list implementations. It provides the core functionality and the
@@ -652,7 +653,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns A string representation of this list.
      */
-    public toString(): string {
+    public toString(): JavaString {
         const builder = new StringBuilder();
         builder.append("[");
         for (let i = 0; i < this.size(); i++) {

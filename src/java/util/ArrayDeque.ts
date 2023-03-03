@@ -7,6 +7,7 @@
 
 import { NotImplementedError } from "../../NotImplementedError";
 import { Serializable } from "../io/Serializable";
+import { JavaString } from "../lang";
 import { Cloneable } from "../lang/Cloneable";
 import { AbstractCollection } from "./AbstractCollection";
 import { ArrayList } from "./ArrayList";
@@ -106,7 +107,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements Deque<T>, Se
      *
      * @returns a shallow copy of this ArrayDeque instance
      */
-    public clone(): ArrayDeque<T> {
+    public override clone(): ArrayDeque<T> {
         return new ArrayDeque<T>(this.#backend);
     }
 
@@ -487,7 +488,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements Deque<T>, Se
         return this.#backend.toArray();
     }
 
-    public toString(): string {
+    public override toString(): JavaString {
         return this.#backend.toString();
     }
 }

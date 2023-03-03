@@ -6,6 +6,7 @@
  */
 
 import { char } from ".";
+import { JavaString } from "../lang/String";
 
 export interface CharSequence {
     /** Returns the 16 bit char value at the specified index. */
@@ -18,5 +19,5 @@ export interface CharSequence {
     subSequence(start: number, end: number): CharSequence;
 
     /** Returns a string containing the characters in this sequence in the same order as this sequence. */
-    toString(): string;
+    toString(): JavaString;
 }

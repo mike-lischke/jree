@@ -54,7 +54,7 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
     }
 
     /** @returns a shallow copy of this HashMap instance: the keys and values themselves are not cloned. */
-    public clone(): HashMap<K, V> {
+    public override clone(): HashMap<K, V> {
         return new HashMap<K, V>(this);
     }
 
@@ -153,11 +153,11 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
         return this.sharedBackend.backend.count();
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.sharedBackend.backend.hashCode();
     }
 
-    public equals(o: Object): boolean {
+    public override equals(o: Object): boolean {
         if (!(o instanceof HashMap)) {
             return false;
         }

@@ -63,8 +63,10 @@ export const handleResourceError = (e: unknown, error?: Throwable): Throwable =>
  * Last part of the try-with-resource handling. If an error is actually given, then it will be thrown.
  *
  * @param error A possible error.
+ *
+ * @throws The given error if it's not undefined.
  */
-export const throwResourceError = (error?: Throwable): void => {
+export const throwResourceError = (error?: Throwable): void | never => {
     if (error) {
         throw error;
     }

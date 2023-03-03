@@ -33,7 +33,7 @@ export class StringReader extends Reader {
      *                       Because the stream's input comes from a string, there is no actual limit, so this
      *                       argument must not be negative, but is otherwise ignored.
      */
-    public mark(readAheadLimit: number): void {
+    public override mark(readAheadLimit: number): void {
         if (readAheadLimit < 0) {
             throw new java.lang.IllegalArgumentException(S`readAheadLimit < 0`);
         }
@@ -46,11 +46,11 @@ export class StringReader extends Reader {
      *
      * @returns true
      */
-    public markSupported(): boolean {
+    public override markSupported(): boolean {
         return true;
     }
 
-    public read(): number;
+    public override read(): number;
     /**
      * Reads characters into a portion of an array.
      *
@@ -62,8 +62,8 @@ export class StringReader extends Reader {
      *
      * @throws IndexOutOfBoundsException If offset or length are out of bounds.
      */
-    public read(target: Uint16Array, offset: number, length: number): number;
-    public read(...args: unknown[]): number {
+    public override read(target: Uint16Array, offset: number, length: number): number;
+    public override read(...args: unknown[]): number {
         switch (args.length) {
             case 0: {
                 if (this.#position >= this.#content.length()) {
@@ -106,14 +106,14 @@ export class StringReader extends Reader {
      *
      * @returns true
      */
-    public ready(): boolean {
+    public override ready(): boolean {
         return true;
     }
 
     /**
      * Resets the stream to the most recent mark, or to the beginning of the string if it has never been marked.
      */
-    public reset(): void {
+    public override reset(): void {
         if (this.#mark === -1) {
             this.#position = 0;
         } else {
@@ -128,7 +128,7 @@ export class StringReader extends Reader {
      *
      * @returns The number of characters actually skipped.
      */
-    public skip(n: number): number {
+    public override skip(n: number): number {
         let count = 0;
         if (n < 0) {
             count = -Math.min(this.#position, -n);

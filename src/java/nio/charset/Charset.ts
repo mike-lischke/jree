@@ -282,7 +282,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
     /**
      * Computes a hash code for this charset.
      */
-    public hashCode(): number {
+    public override hashCode(): number {
         throw new NotImplementedError();
     }
 
@@ -291,14 +291,14 @@ export class Charset extends JavaObject implements Comparable<Charset> {
      *
      * @param ob The object to which this object is to be compared
      */
-    public equals(ob: unknown): boolean {
+    public override equals(ob: unknown): boolean {
         throw new NotImplementedError();
     }
 
     /**
      * Returns a string describing this charset.
      */
-    public toString(): string {
+    public override toString(): JavaString {
         throw new NotImplementedError();
     }
 

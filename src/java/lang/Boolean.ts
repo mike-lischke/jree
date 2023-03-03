@@ -7,7 +7,6 @@
 
 import { JavaString } from "./String";
 import { final } from "../../Decorators";
-import { S } from "../../templates";
 import { Serializable } from "../io/Serializable";
 import { Comparable } from "./Comparable";
 import { JavaObject, Class } from "./Object";
@@ -50,11 +49,11 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
             return null;
         }
 
-        if (s.compareToIgnoreCase(S`true`)) {
+        if (s.compareToIgnoreCase(new JavaString("true"))) {
             return JavaBoolean.TRUE;
         }
 
-        if (s.compareToIgnoreCase(S`false`)) {
+        if (s.compareToIgnoreCase(new JavaString("false"))) {
             return JavaBoolean.FALSE;
         }
 
@@ -68,8 +67,8 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
      * @param b The boolean to be converted.
      * @returns a string representation of the specified boolean.
      */
-    public static toString(b: boolean): JavaString {
-        return b ? S`true` : S`false`;
+    public static override toString(b: boolean): JavaString {
+        return b ? new JavaString("true") : new JavaString("false");
     }
 
     /**
@@ -79,7 +78,7 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
      *
      * @returns tbd
      */
-    public static valueOf(value?: boolean | string): JavaBoolean {
+    public static override valueOf(value?: boolean | string): JavaBoolean {
         return new JavaBoolean(value);
     }
 
@@ -152,7 +151,7 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
      *
      * @returns true if the Boolean objects represent the same value; false otherwise.
      */
-    public equals(obj: unknown): boolean {
+    public override equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
         }
@@ -165,12 +164,12 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
     }
 
     /** @returns a hash code for this Boolean object. */
-    public hashCode(): number {
+    public override hashCode(): number {
         return 0;
     }
 
     /** @returns a string representing this Boolean's value. */
-    public toString(): string {
+    public override toString(): string {
         return this.value ? "true" : "false";
     }
 

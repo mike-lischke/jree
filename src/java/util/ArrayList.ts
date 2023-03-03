@@ -58,7 +58,7 @@ export class ArrayList<T> extends AbstractList<T> implements Cloneable<ArrayList
         super(backend);
     }
 
-    public clone(): ArrayList<T> {
+    public override clone(): ArrayList<T> {
         return this.createClone(ArrayList) as ArrayList<T>;
     }
 

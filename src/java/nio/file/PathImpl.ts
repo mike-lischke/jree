@@ -6,18 +6,26 @@
  */
 
 import * as path from "path";
+import { MurmurHash } from "../../../MurmurHash";
+import { NotImplementedError } from "../../../NotImplementedError";
 
-import { java, MurmurHash, NotImplementedError } from "../../..";
 import { S } from "../../../templates";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
+import { JavaString } from "../../lang/String";
+import { URI } from "../../net/URI";
+import { JavaFileSystem } from "./FileSystem";
 import { Path } from "./Path";
+import { WatchEvent } from "./WatchEvent";
+import { WatchKey } from "./WatchKey";
+import { WatchService } from "./WatchService";
 
-export class PathImpl extends Path implements java.nio.file.Path {
+export class PathImpl extends Path {
     #parsed: path.ParsedPath;
     #path: string;
     #elements: string[];
 
-    public constructor(private fileSystem: java.nio.file.JavaFileSystem, first: java.lang.String,
-        ...more: java.lang.String[]) {
+    public constructor(private fileSystem: JavaFileSystem, first: JavaString,
+        ...more: JavaString[]) {
         super();
 
         const paths = [first, ...more].map((part) => { return `${part}`; });
@@ -26,7 +34,7 @@ export class PathImpl extends Path implements java.nio.file.Path {
         this.#parsed = path.parse(this.#path);
     }
 
-    public compareTo(other: java.lang.Object): number {
+    public override compareTo(other: unknown): number {
         if (other instanceof PathImpl) {
             return this.#path.localeCompare(other.#path);
         }
@@ -34,11 +42,11 @@ export class PathImpl extends Path implements java.nio.file.Path {
         return -1;
     }
 
-    public endsWith(other: java.lang.String | java.nio.file.Path): boolean {
+    public override endsWith(other: JavaString | Path): boolean {
         return this.#path.endsWith(`${other}`);
     }
 
-    public equals(other: java.lang.Object): boolean {
+    public override equals(other: Object): boolean {
         if (other instanceof PathImpl) {
             return this.#path === other.#path;
         }
@@ -46,44 +54,44 @@ export class PathImpl extends Path implements java.nio.file.Path {
         return false;
     }
 
-    public getFileName(): java.nio.file.Path {
+    public override getFileName(): Path {
         return new PathImpl(this.fileSystem, S`${this.#parsed.base}`);
     }
 
-    public getFileSystem(): java.nio.file.JavaFileSystem {
+    public override getFileSystem(): JavaFileSystem {
         return this.fileSystem;
     }
 
-    public getName(index: number): java.nio.file.Path {
+    public override getName(index: number): Path {
         return new PathImpl(this.fileSystem, S`${this.#elements[index]}`);
     }
 
-    public getNameCount(): number {
+    public override getNameCount(): number {
         return this.#elements.length;
     }
 
-    public getParent(): java.nio.file.Path {
+    public override getParent(): Path {
         return new PathImpl(this.fileSystem, S`${this.#parsed.dir}`);
     }
 
-    public getRoot(): java.nio.file.Path {
+    public override getRoot(): Path {
         return new PathImpl(this.fileSystem, S`${this.#parsed.root}`);
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return MurmurHash.hashCode(this.#path);
     }
 
-    public isAbsolute(): boolean {
+    public override isAbsolute(): boolean {
         return path.isAbsolute(this.#path);
     }
 
-    public normalize(): java.nio.file.Path {
+    public override normalize(): Path {
         return new PathImpl(this.fileSystem, S`${this.#path}`);
     }
 
-    public register(watcher: java.nio.file.WatchService,
-        ...events: Array<java.nio.file.WatchEvent.Kind<unknown>>): java.nio.file.WatchKey;
+    public override register(watcher: WatchService,
+        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
     /**
      * Registers the file located by this path with a watch service.
      *
@@ -91,10 +99,10 @@ export class PathImpl extends Path implements java.nio.file.Path {
      * @param events The events to watch for.
      * @param modifiers The modifiers to apply.
      */
-    public register(watcher: java.nio.file.WatchService,
-        events: Array<java.nio.file.WatchEvent.Kind<unknown>>,
-        ...modifiers: java.nio.file.WatchEvent.Modifier[]): java.nio.file.WatchKey;
-    public register(...args: unknown[]): java.nio.file.WatchKey {
+    public override register(watcher: WatchService,
+        events: Array<WatchEvent.Kind<unknown>>,
+        ...modifiers: WatchEvent.Modifier[]): WatchKey;
+    public override register(...args: unknown[]): WatchKey {
         throw new NotImplementedError();
     }
 
@@ -105,7 +113,7 @@ export class PathImpl extends Path implements java.nio.file.Path {
      *
      * @returns The relativized path.
      */
-    public relativize(other: java.nio.file.Path): java.nio.file.Path {
+    public override relativize(other: Path): Path {
         return new PathImpl(this.fileSystem, S`${path.relative(this.#path, `${other}`)}`);
     }
 
@@ -118,7 +126,7 @@ export class PathImpl extends Path implements java.nio.file.Path {
      *
      * @returns The resulting path.
      */
-    public resolve(other: java.lang.String | java.nio.file.Path): java.nio.file.Path {
+    public override resolve(other: JavaString | Path): Path {
         if (other instanceof PathImpl && other.isAbsolute()) {
             return other;
         }
@@ -135,9 +143,9 @@ export class PathImpl extends Path implements java.nio.file.Path {
      *
      * @returns The resulting path.
      */
-    public resolveSibling(other: java.lang.String | java.nio.file.Path): java.nio.file.Path {
+    public override resolveSibling(other: JavaString | Path): Path {
         if (this.#parsed.dir === "") {
-            throw new java.lang.IllegalArgumentException(S`Path has no parent`);
+            throw new IllegalArgumentException(S`Path has no parent`);
         }
 
         return new PathImpl(this.fileSystem, S`${path.resolve(this.#parsed.dir, `${other}`)}`);
@@ -150,7 +158,7 @@ export class PathImpl extends Path implements java.nio.file.Path {
      *
      * @returns True if this path starts with the given path, false otherwise.
      */
-    public startsWith(other: java.lang.String | java.nio.file.Path): boolean {
+    public override startsWith(other: JavaString | Path): boolean {
         return this.#path.startsWith(`${other}`);
     }
 
@@ -163,7 +171,7 @@ export class PathImpl extends Path implements java.nio.file.Path {
      *
      * @returns The resulting path.
      */
-    public subpath(beginIndex: number, endIndex: number): java.nio.file.Path {
+    public override subpath(beginIndex: number, endIndex: number): Path {
         return new PathImpl(this.fileSystem, S`${this.#elements.slice(beginIndex, endIndex).join(path.sep)}`);
     }
 
@@ -173,7 +181,7 @@ export class PathImpl extends Path implements java.nio.file.Path {
      *
      * @returns The resulting path.
      */
-    public toAbsolutePath(): java.nio.file.Path {
+    public override toAbsolutePath(): Path {
         if (this.isAbsolute()) {
             return this;
         }
@@ -181,13 +189,13 @@ export class PathImpl extends Path implements java.nio.file.Path {
         return new PathImpl(this.fileSystem, S`${path.resolve(this.#path)}`);
     }
 
-    // public toRealPath(options: java.nio.file.LinkOption[]): java.nio.file.Path;
+    // public toRealPath(options: LinkOption[]): Path;
 
-    public toString(): string {
-        return `${this.#path}`;
+    public override toString(): JavaString {
+        return new JavaString(this.#path);
     }
 
-    public toUri(): java.net.URI {
-        return new java.net.URI(S`file://${this.#path}`);
+    public override toUri(): URI {
+        return new URI(S`file://${this.#path}`);
     }
 }

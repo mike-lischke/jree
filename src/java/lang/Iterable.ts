@@ -9,6 +9,8 @@ import { NotImplementedError } from "../../NotImplementedError";
 import { Consumer } from "../util/function/Consumer";
 import { JavaIterator } from "../util/Iterator";
 import { Spliterator } from "../util/Spliterator";
+import { JavaObject } from "./Object";
+import { JavaString } from "./String";
 
 /**
  * Implementing this interface allows an object to be the target of the "for-each loop" statement.
@@ -26,7 +28,7 @@ export interface JavaIterable<T> {
     iterator(): JavaIterator<T>;
 }
 
-export class JavaIterable<T> {
+export class JavaIterable<T> extends JavaObject {
     /**
      * Performs the given action for each element of the Iterable until all elements have been processed or the action
      * throws an exception.
@@ -45,5 +47,9 @@ export class JavaIterable<T> {
      */
     public spliterator(): Spliterator<T> {
         throw new NotImplementedError();
+    }
+
+    public override toString(): JavaString {
+        return new JavaString(super.toString());
     }
 }

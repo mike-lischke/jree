@@ -7,6 +7,7 @@
 
 import { endianness } from "os";
 
+import { JavaString } from "../lang/String";
 import { JavaObject } from "../lang/Object";
 
 export class ByteOrder extends JavaObject {
@@ -29,11 +30,11 @@ export class ByteOrder extends JavaObject {
         return ByteOrder.LITTLE_ENDIAN;
     }
 
-    public toString(): string {
+    public override toString(): JavaString {
         if (this.bigEndian) {
-            return `BIG_ENDIAN`;
+            return new JavaString(`BIG_ENDIAN`);
         }
 
-        return `LITTLE_ENDIAN`;
+        return new JavaString(`LITTLE_ENDIAN`);
     }
 }

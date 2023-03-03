@@ -62,7 +62,7 @@ export class StackTraceElement extends JavaObject {
      * @returns true if the specified object is another StackTraceElement instance representing the same
      * execution point as this instance.
      */
-    public equals(obj: JavaObject): boolean {
+    public override equals(obj: JavaObject): boolean {
         if (obj instanceof StackTraceElement) {
             return this.declaringClass === obj.declaringClass &&
                 this.methodName === obj.methodName &&
@@ -75,7 +75,7 @@ export class StackTraceElement extends JavaObject {
     }
 
     /** @returns a hash code value for this stack trace element. */
-    public hashCode(): number {
+    public override hashCode(): number {
         const hash = MurmurHash.initialize(17);
         MurmurHash.update(hash, this.declaringClass);
         MurmurHash.update(hash, this.methodName);
@@ -121,7 +121,7 @@ export class StackTraceElement extends JavaObject {
     }
 
     /** @returns a string representation of this stack trace element. */
-    public toString(): string {
+    public override toString(): string {
         return this.line;
     }
 }

@@ -65,7 +65,7 @@ export class LinkedList<T> extends AbstractList<T> implements Serializable, Clon
     }
 
     /** @returns a shallow copy of this LinkedList. */
-    public clone(): LinkedList<T> {
+    public override clone(): LinkedList<T> {
         return this.createClone(LinkedList) as LinkedList<T>;
     }
 
@@ -206,10 +206,10 @@ export class LinkedList<T> extends AbstractList<T> implements Serializable, Clon
         this.addFirst(e);
     }
 
-    public remove(): T;
-    public remove(index: number): T;
-    public remove(element: T): boolean;
-    public remove(...args: unknown[]): boolean | T {
+    public override remove(): T;
+    public override remove(index: number): T;
+    public override remove(element: T): boolean;
+    public override remove(...args: unknown[]): boolean | T {
         if (args.length === 0) {
             return super.remove(0);
         } else if (typeof args[0] === "number") {

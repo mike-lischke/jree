@@ -28,7 +28,7 @@ export class Consumer<T> {
      */
     public static create<T>(accept: (t: T) => void): Consumer<T> {
         return new class extends Consumer<T> {
-            public accept = (t: T) => { accept(t); };
+            public override accept = (t: T) => { accept(t); };
         }();
     }
 

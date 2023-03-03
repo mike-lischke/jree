@@ -36,5 +36,5 @@ export interface Principal {
     /**
      * @returns a string representation of this principal.
      */
-    toString(): string;
+    toString(): JavaString;
 }

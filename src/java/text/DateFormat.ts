@@ -53,7 +53,7 @@ export abstract class DateFormat extends Format {
     /** Useful constant for TIMEZONE field alignment. */
     public static readonly TIMEZONE_FIELD = 17;
 
-    public static Field = class Field extends Format.Field {
+    public static override Field = class Field extends Format.Field {
         /**Constant identifying the AM_PM field. */
         public static AM_PM: Field;
         /**Constant identifying the DATE field. */

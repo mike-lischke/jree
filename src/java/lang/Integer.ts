@@ -376,7 +376,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      * @param i The number to convert.
      * @param radix The radix of the result string.
      */
-    public static toString(i: number, radix?: number): JavaString {
+    public static override toString(i: number, radix?: number): JavaString {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -389,9 +389,9 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      * Returns an Integer object holding the value given or extracted from the specified String when parsed with the
      * radix given by the second argument.
      */
-    public static valueOf(i: number): Integer;
-    public static valueOf(s: JavaString, radix?: number): Integer;
-    public static valueOf(value: number | JavaString, radix?: number): Integer {
+    public static override valueOf(i: number): Integer;
+    public static override valueOf(s: JavaString, radix?: number): Integer;
+    public static override valueOf(value: number | JavaString, radix?: number): Integer {
         if (!radix || typeof value === "number") {
             return new Integer(value);
         }
@@ -409,7 +409,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
     }
 
     /** @returns the value of this Integer as a byte. */
-    public byteValue(): number {
+    public override byteValue(): number {
         Integer.byte[0] = this.value; // Signed integer "casting".
 
         return Integer.byte[0];
@@ -439,7 +439,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      * @returns True if obj is an instance of Integer and both represent the same numerical value,
      *          otherwise false.
      */
-    public equals(obj?: unknown): boolean {
+    public override equals(obj?: unknown): boolean {
         if (obj instanceof Integer) {
             return this.value === obj.value;
         }
@@ -453,7 +453,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
     }
 
     /** @returns a hash code for this Integer. */
-    public hashCode(): number {
+    public override hashCode(): number {
         let hash = MurmurHash.initialize(11);
         hash = MurmurHash.update(hash, this.value);
         hash = MurmurHash.finish(hash, 1);
@@ -472,18 +472,18 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
     }
 
     /** @returns the value of this Integer as a short. */
-    public shortValue(): number {
+    public override shortValue(): number {
         Integer.short[0] = this.value;
 
         return Integer.short[0];
     }
 
     // Returns a String object representing this Integer's value.
-    public toString(): string {
+    public override toString(): string {
         return `${this.value}`;
     }
 
-    public valueOf(): number {
+    public override valueOf(): number {
         return this.value;
     }
 

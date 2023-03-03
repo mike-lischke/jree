@@ -26,23 +26,23 @@ export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implemen
         }
     }
 
-    public add(_e: unknown): boolean {
+    public override add(_e: unknown): boolean {
         throw new UnsupportedOperationException();
     }
 
-    public addAll(_c: unknown): boolean {
+    public override addAll(_c: unknown): boolean {
         throw new UnsupportedOperationException();
     }
 
-    public clear(): void {
+    public override clear(): void {
         this.sharedBackend.backend = this.sharedBackend.backend.clear();
     }
 
-    public contains(o: JavaMap.Entry<K, V>): boolean {
+    public override contains(o: JavaMap.Entry<K, V>): boolean {
         return this.sharedBackend.backend.has(o.getKey());
     }
 
-    public containsAll(c: Collection<JavaMap.Entry<K, V>>): boolean {
+    public override containsAll(c: Collection<JavaMap.Entry<K, V>>): boolean {
         for (const entry of c) {
             if (!this.sharedBackend.backend.has(entry.getKey())) {
                 return false;
@@ -52,7 +52,7 @@ export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implemen
         return true;
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (o === this) {
             return true;
         }
@@ -64,23 +64,23 @@ export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implemen
         return this.sharedBackend.backend.equals(o.sharedBackend.backend);
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.sharedBackend.backend.hashCode();
     }
 
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.sharedBackend.backend.isEmpty();
     }
 
-    public iterator(): JavaIterator<JavaMap.Entry<K, V>> {
+    public override iterator(): JavaIterator<JavaMap.Entry<K, V>> {
         return new JavaMapEntryIterator(this.sharedBackend.backend.entries());
     }
 
-    public remove(o: K): boolean {
+    public override remove(o: K): boolean {
         return this.sharedBackend.backend.remove(o) !== null;
     }
 
-    public removeAll(c: Collection<JavaMap.Entry<K, V>>): boolean {
+    public override removeAll(c: Collection<JavaMap.Entry<K, V>>): boolean {
         const m = this.sharedBackend.backend.deleteAll(c.toArray().map((e: JavaMap.Entry<K, V>) => {
             return e.getKey();
         }));
@@ -94,7 +94,7 @@ export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implemen
         return false;
     }
 
-    public retainAll(c: Collection<JavaMap.Entry<K, V>>): boolean {
+    public override retainAll(c: Collection<JavaMap.Entry<K, V>>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {
@@ -117,13 +117,13 @@ export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implemen
         return false;
     }
 
-    public size(): number {
+    public override size(): number {
         return this.sharedBackend.backend.count();
     }
 
-    public toArray(): Array<JavaMap.Entry<K, V>>;
-    public toArray<U extends JavaMap.Entry<K, V>>(a: U[]): U[];
-    public toArray<U extends JavaMap.Entry<K, V>>(a?: U[]): Array<JavaMap.Entry<K, V>> | U[] {
+    public override toArray(): Array<JavaMap.Entry<K, V>>;
+    public override toArray<U extends JavaMap.Entry<K, V>>(a: U[]): U[];
+    public override toArray<U extends JavaMap.Entry<K, V>>(a?: U[]): Array<JavaMap.Entry<K, V>> | U[] {
         const result = [...this.sharedBackend.backend.entries()].map((pair) => {
             return new HashMapEntry(pair[0], pair[1]);
         });

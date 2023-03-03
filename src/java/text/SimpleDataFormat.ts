@@ -68,7 +68,7 @@ export class SimpleDateFormat extends DateFormat {
      *
      * @returns true if the objects are equal; false otherwise.
      */
-    public equals(obj: unknown): boolean {
+    public override equals(obj: unknown): boolean {
         if (obj instanceof SimpleDateFormat) {
             return this.#pattern === obj.#pattern;
         }
@@ -92,7 +92,7 @@ export class SimpleDateFormat extends DateFormat {
         throw new NotImplementedError();
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         throw new NotImplementedError();
     }
 

@@ -595,7 +595,7 @@ export class BitSet extends JavaObject implements Serializable, Cloneable<BitSet
         }
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return MurmurHash.hashCode(this.data, 22);
     }
 
@@ -614,7 +614,7 @@ export class BitSet extends JavaObject implements Serializable, Cloneable<BitSet
      *
      * @returns tbd
      */
-    public equals(obj: unknown): boolean {
+    public override equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
         } else if (!(obj instanceof BitSet)) {
@@ -694,7 +694,7 @@ export class BitSet extends JavaObject implements Serializable, Cloneable<BitSet
      *
      * Now `drPepper.toString()` returns `"{2, 4, 10}"`.
      */
-    public toString(): string {
+    public override toString(): string {
         let result = "{";
 
         let first = true;
@@ -766,7 +766,7 @@ export class BitSet extends JavaObject implements Serializable, Cloneable<BitSet
         }
     }
 
-    public clone(): BitSet {
+    public override clone(): BitSet {
         return new BitSet(this);
     }
 

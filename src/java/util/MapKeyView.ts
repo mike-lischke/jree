@@ -22,23 +22,23 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         yield* this.sharedBackend.backend.keys();
     }
 
-    public add(_e: unknown): boolean {
+    public override add(_e: unknown): boolean {
         throw new java.lang.UnsupportedOperationException();
     }
 
-    public addAll(_c: unknown): boolean {
+    public override addAll(_c: unknown): boolean {
         throw new java.lang.UnsupportedOperationException();
     }
 
-    public clear(): void {
+    public override clear(): void {
         this.sharedBackend.backend = this.sharedBackend.backend.clear();
     }
 
-    public contains(o: K): boolean {
+    public override contains(o: K): boolean {
         return this.sharedBackend.backend.has(o);
     }
 
-    public containsAll(c: java.util.Collection<K>): boolean {
+    public override containsAll(c: java.util.Collection<K>): boolean {
         for (const entry of c) {
             if (!this.sharedBackend.backend.has(entry)) {
                 return false;
@@ -48,7 +48,7 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return true;
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (o === this) {
             return true;
         }
@@ -60,19 +60,19 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return this.sharedBackend.backend.equals(o.sharedBackend.backend);
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.sharedBackend.backend.hashCode();
     }
 
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.sharedBackend.backend.isEmpty();
     }
 
-    public iterator(): JavaIterator<K> {
+    public override iterator(): JavaIterator<K> {
         return new IteratorWrapper(this.sharedBackend.backend.keys());
     }
 
-    public remove(o: K): boolean {
+    public override remove(o: K): boolean {
         const m = this.sharedBackend.backend.remove(o);
         if (m !== this.sharedBackend.backend) {
             this.sharedBackend.backend = m;
@@ -83,7 +83,7 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return false;
     }
 
-    public removeAll(c: java.util.Collection<K>): boolean {
+    public override removeAll(c: java.util.Collection<K>): boolean {
         const m = this.sharedBackend.backend.deleteAll(c);
 
         if (m !== this.sharedBackend.backend) {
@@ -95,7 +95,7 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return false;
     }
 
-    public retainAll(c: java.util.Collection<K>): boolean {
+    public override retainAll(c: java.util.Collection<K>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {
@@ -118,13 +118,13 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return false;
     }
 
-    public size(): number {
+    public override size(): number {
         return this.sharedBackend.backend.count();
     }
 
-    public toArray(): K[];
-    public toArray<U extends K>(a: U[]): U[];
-    public toArray<U extends K>(a?: U[]): K[] | U[] {
+    public override toArray(): K[];
+    public override toArray<U extends K>(a: U[]): U[];
+    public override toArray<U extends K>(a?: U[]): K[] | U[] {
         const result = [...this.sharedBackend.backend.keys()];
 
         return a ? result as U[] : result;

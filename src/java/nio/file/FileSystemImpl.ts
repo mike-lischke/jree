@@ -77,7 +77,7 @@ export class FileSystemImpl extends JavaFileSystem {
                 return list[Symbol.iterator]();
             }
 
-            public iterator(): JavaIterator<Path> {
+            public override iterator(): JavaIterator<Path> {
                 return new class implements JavaIterator<Path> {
                     private index = 0;
 

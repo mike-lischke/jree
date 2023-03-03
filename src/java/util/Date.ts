@@ -130,7 +130,7 @@ export class JavaDate extends JavaObject implements Serializable, Cloneable<Java
     }
 
     /** @returns a copy of this object. */
-    public clone(): JavaDate {
+    public override clone(): JavaDate {
         return new JavaDate(this.#value);
     }
 
@@ -152,7 +152,7 @@ export class JavaDate extends JavaObject implements Serializable, Cloneable<Java
      *
      * @returns tbd
      */
-    public equals(obj: unknown): boolean {
+    public override equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
         }
@@ -261,7 +261,7 @@ export class JavaDate extends JavaObject implements Serializable, Cloneable<Java
     }
 
     /** @returns a hash code value for this object. */
-    public hashCode(): number {
+    public override hashCode(): number {
         return new Long(this.#value).hashCode();
     }
 
@@ -371,7 +371,7 @@ export class JavaDate extends JavaObject implements Serializable, Cloneable<Java
      *
      * @deprecated
      */
-    public toLocaleString(): string {
+    public override toLocaleString(): string {
         return `${this.#d.toLocaleDateString()}`;
     }
 
@@ -380,7 +380,7 @@ export class JavaDate extends JavaObject implements Serializable, Cloneable<Java
      *
      * @returns tbd
      */
-    public toString(): string {
+    public override toString(): string {
         return `${this.#d.toString()}`;
     }
 

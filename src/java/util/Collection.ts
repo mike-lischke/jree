@@ -8,6 +8,7 @@
 import { NotImplementedError } from "../../NotImplementedError";
 import { JavaIterable } from "../lang/Iterable";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
 import { Predicate } from "./function/Predicate";
 import { JavaIterator } from "./Iterator";
 import { Spliterator } from "./Spliterator";
@@ -89,7 +90,7 @@ export interface Collection<T> extends JavaIterable<T> {
      *
      * @returns a string representation of this collection
      */
-    toString(): string;
+    toString(): JavaString;
 
     /**
      * Returns an array containing all of the elements in this collection.
@@ -142,4 +143,7 @@ export class Collection<T> extends JavaObject {
         throw new NotImplementedError();
     }*/
 
+    public override toString(): JavaString {
+        return new JavaString(super.toString());
+    }
 }

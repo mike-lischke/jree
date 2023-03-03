@@ -7,7 +7,8 @@
 
 import { MurmurHash } from "../../MurmurHash";
 import { Comparable } from "../lang/Comparable";
-import { TypedArray, TypedArrayConstructor } from "../util";
+import { JavaString } from "../lang/String";
+import { TypedArray, TypedArrayConstructor } from "../util/Arrays";
 import { JavaBuffer } from "./Buffer";
 import { ByteOrder } from "./ByteOrder";
 
@@ -15,7 +16,8 @@ import { ByteOrder } from "./ByteOrder";
 type BufferConstructor<B> = new (...args: any[]) => B;
 
 /** Implements common functionality of the various Java buffers. */
-export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extends JavaBuffer<T> implements Comparable<C> {
+export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extends JavaBuffer<T>
+    implements Comparable<C> {
     #array: T;
     #readOnly = false;
     #byteOrder: ByteOrder;
@@ -148,7 +150,7 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
      *
      * @returns tbd
      */
-    public equals(ob: unknown): boolean {
+    public override equals(ob: unknown): boolean {
         if (this === ob) {
             return true;
         }
@@ -183,7 +185,7 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
     }
 
     /** @returns the current hash code of this buffer. */
-    public hashCode(): number {
+    public override hashCode(): number {
         let hash = MurmurHash.initialize();
         hash = MurmurHash.update(hash, this.#array.subarray(this.currentPosition, this.currentLimit));
         hash = MurmurHash.finish(hash, 1);
@@ -236,8 +238,9 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
     }
 
     /** @returns a string summarizing the state of this buffer. */
-    public toString(): string {
-        return `${this.constructor.name}[pos=${this.position()} lim=${this.limit()} cap=${this.capacity()}]`;
+    public override toString(): JavaString {
+        return new JavaString(
+            `${this.constructor.name}[pos=${this.position()} lim=${this.limit()} cap=${this.capacity()}]`);
     }
 
 }

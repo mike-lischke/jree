@@ -10,7 +10,7 @@ import { OrderedMap } from "immutable";
 import { HashMap, IHashMapViewBackend } from "./HashMap";
 
 export class LinkedHashMap<K, V> extends HashMap<K, V> {
-    protected createBackend(): IHashMapViewBackend<K, V> {
+    protected override createBackend(): IHashMapViewBackend<K, V> {
         return { backend: OrderedMap<K, V>() };
     }
 }

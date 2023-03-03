@@ -169,7 +169,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         throw new NotImplementedError();
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         let result = 0;
         for (const entry of this.entrySet()) {
             result += entry.hashCode();
@@ -178,7 +178,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         return result;
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (!(o instanceof WeakHashMap)) {
             return false;
         }
@@ -199,7 +199,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         return true;
     }
 
-    public toString(): string {
+    public override toString(): string {
         const entries: string[] = [];
         for (const [key, value] of this) {
             entries.push(`${key}=${value}`);

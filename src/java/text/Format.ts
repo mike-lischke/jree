@@ -5,8 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
-
 import { JavaString } from "./../lang/String";
 import { JavaObject } from "../lang/Object";
 import { AttributedCharacterIterator } from "./AttributedCharacterIterator";
@@ -64,7 +62,7 @@ export abstract class Format extends JavaObject implements Serializable, Cloneab
      *
      * @returns tbd
      */
-    public abstract clone(): Format;
+    public abstract override clone(): Format;
 
     /** Formats an object to produce a string. */
     public abstract format(obj: unknown): JavaString;

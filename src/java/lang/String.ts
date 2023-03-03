@@ -193,7 +193,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      * @returns the string representation of the argument.
      *
      */
-    public static valueOf(v: unknown): JavaString {
+    public static override valueOf(v: unknown): JavaString {
         if (v instanceof Uint16Array) {
             return new JavaString(v);
         }
@@ -283,7 +283,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns `true` if the given object represents a `String` equivalent to this string, `false` otherwise.
      */
-    public equals(obj: unknown): boolean {
+    public override equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
         }
@@ -296,7 +296,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     }
 
     /** @returns a hash code for this string. */
-    public hashCode(): number {
+    public override hashCode(): number {
         return MurmurHash.hashCode(this.#value, 17);
     }
 
@@ -492,11 +492,11 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the primitive string value of this instance.
      */
-    public valueOf(): string {
+    public override valueOf(): string {
         return this.#value;
     }
 
-    public toString(): string {
-        return this.valueOf();
+    public override toString(): JavaString {
+        return this;
     }
 }

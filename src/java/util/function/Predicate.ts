@@ -51,7 +51,7 @@ export class Predicate<T> {
      */
     public static create<T>(test: (t: T) => boolean): Predicate<T> {
         return new class extends Predicate<T> {
-            public test = (t: T): boolean => { return test(t); };
+            public override test = (t: T): boolean => { return test(t); };
         }();
     }
 

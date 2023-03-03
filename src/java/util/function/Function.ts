@@ -30,7 +30,7 @@ export class Function<T, R> {
      */
     public static create<T, R>(apply: (t: T) => R): Function<T, R> {
         return new class extends Function<T, R> {
-            public apply = (t: T): R => { return apply(t); };
+            public override apply = (t: T): R => { return apply(t); };
         }();
     }
 

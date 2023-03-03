@@ -7,8 +7,8 @@
 
 import { StringDecoder } from "string_decoder";
 
-import { JavaString, S } from "../..";
 import { char } from "../lang";
+import { JavaString } from "../lang/String";
 import { CharBuffer } from "../nio/CharBuffer";
 import { Charset } from "../nio/charset/Charset";
 import { InputStream } from "./InputStream";
@@ -46,7 +46,7 @@ export class InputStreamReader extends Reader {
         if (Buffer.isEncoding(encoding)) {
             this.decoder = new StringDecoder(encoding);
         } else {
-            throw new UnsupportedEncodingException(S`Invalid charset specified`);
+            throw new UnsupportedEncodingException(new JavaString("Invalid charset specified"));
         }
     }
 
@@ -61,11 +61,11 @@ export class InputStreamReader extends Reader {
     }
 
     /** Reads a single character. */
-    public read(): char;
-    public read(chars: Uint16Array | CharBuffer): number;
+    public override read(): char;
+    public override read(chars: Uint16Array | CharBuffer): number;
     /** Reads characters into a portion of an array. */
-    public read(chars: Uint16Array, offset: number, length: number): number;
-    public read(chars?: Uint16Array | CharBuffer, offset?: number, length?: number): char | number {
+    public override read(chars: Uint16Array, offset: number, length: number): number;
+    public override read(chars?: Uint16Array | CharBuffer, offset?: number, length?: number): char | number {
         if (!this.ready()) {
             return -1;
         }
@@ -141,7 +141,7 @@ export class InputStreamReader extends Reader {
      *
      * @returns true if the next read() is guaranteed not to block for input, false otherwise.
      */
-    public ready(): boolean {
+    public override ready(): boolean {
         return this.currentText.length > 0 || this.input.available() > 0;
     }
 

@@ -22,23 +22,23 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         yield* this.sharedBackend.backend.values();
     }
 
-    public add(_e: unknown): boolean {
+    public override add(_e: unknown): boolean {
         throw new java.lang.UnsupportedOperationException();
     }
 
-    public addAll(_c: unknown): boolean {
+    public override addAll(_c: unknown): boolean {
         throw new java.lang.UnsupportedOperationException();
     }
 
-    public clear(): void {
+    public override clear(): void {
         this.sharedBackend.backend = this.sharedBackend.backend.clear();
     }
 
-    public contains(o: V): boolean {
+    public override contains(o: V): boolean {
         return this.sharedBackend.backend.includes(o);
     }
 
-    public containsAll(c: java.util.Collection<V>): boolean {
+    public override containsAll(c: java.util.Collection<V>): boolean {
         for (const entry of c) {
             if (!this.sharedBackend.backend.includes(entry)) {
                 return false;
@@ -48,7 +48,7 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return true;
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (o === this) {
             return true;
         }
@@ -60,19 +60,19 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return this.sharedBackend.backend.equals(o.sharedBackend.backend);
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.sharedBackend.backend.hashCode();
     }
 
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.sharedBackend.backend.isEmpty();
     }
 
-    public iterator(): JavaIterator<V> {
+    public override iterator(): JavaIterator<V> {
         return new IteratorWrapper(this.sharedBackend.backend.values());
     }
 
-    public remove(o: V): boolean {
+    public override remove(o: V): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {
@@ -95,7 +95,7 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return false;
     }
 
-    public removeAll(c: java.util.Collection<V>): boolean {
+    public override removeAll(c: java.util.Collection<V>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {
@@ -118,7 +118,7 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return false;
     }
 
-    public retainAll(c: java.util.Collection<V>): boolean {
+    public override retainAll(c: java.util.Collection<V>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {
@@ -141,13 +141,13 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return false;
     }
 
-    public size(): number {
+    public override size(): number {
         return this.sharedBackend.backend.count();
     }
 
-    public toArray(): V[];
-    public toArray<U extends V>(a: U[]): U[];
-    public toArray<U extends V>(a?: U[]): V[] | U[] {
+    public override toArray(): V[];
+    public override toArray<U extends V>(a: U[]): U[];
+    public override toArray<U extends V>(a?: U[]): V[] | U[] {
         const result = [...this.sharedBackend.backend.values()];
 
         return a ? result as U[] : result;

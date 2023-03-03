@@ -217,13 +217,13 @@ export interface Path extends Comparable<Path>, JavaIterable<Path>, Watchable {
     // toRealPath(options: LinkOption[]): Path;
 
     /** @returns the string representation of this path. */
-    toString(): string;
+    toString(): JavaString;
 
     /** @returns a URI to represent this path. */
     toUri(): URI;
 }
 
-export class Path extends JavaObject {
+export class Path extends JavaObject implements Path {
     /**
      * Returns a Path by converting a URI.
      * The exact form of the URI is highly implementation dependent and therefore unspecified.
@@ -324,4 +324,7 @@ export class Path extends JavaObject {
         return new JavaFile(new JavaString(this.toString()));
     }
 
+    public override toString(): JavaString {
+        return new JavaString(super.toString());
+    }
 }

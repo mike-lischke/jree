@@ -49,7 +49,7 @@ export class FileInputStream extends InputStream implements AutoCloseable {
     }
 
     /** Closes this file input stream and releases any system resources associated with the stream. */
-    public close(): void {
+    public override close(): void {
         this.#channel.close();
     }
 

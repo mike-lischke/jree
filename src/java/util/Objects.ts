@@ -5,13 +5,17 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
 
 import { isArrayLike, isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
-import { S } from "../../templates";
 import { Arrays } from "./Arrays";
+import { JavaString } from "../lang/String";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { Comparator } from "./Comparator";
+import { Supplier } from "./function/Supplier";
+import { NullPointerException } from "../lang/NullPointerException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 
 export class Objects extends JavaObject {
     /**
@@ -24,7 +28,7 @@ export class Objects extends JavaObject {
      */
     public static checkFromToIndex(fromIndex: number, toIndex: number, length: number): void {
         if (fromIndex < 0 || fromIndex > toIndex || toIndex > length || length < 0) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
     }
 
@@ -38,7 +42,7 @@ export class Objects extends JavaObject {
      */
     public static checkFromIndex(fromIndex: number, size: number, length: number): void {
         if (fromIndex < 0 || fromIndex > length || length < 0 || length - fromIndex < size) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
     }
 
@@ -50,7 +54,7 @@ export class Objects extends JavaObject {
      */
     public static checkIndex(index: number, length: number): void {
         if (index < 0 || index >= length) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
     }
 
@@ -64,7 +68,7 @@ export class Objects extends JavaObject {
      *
      * @returns 0 if the arguments are identical and c.compare(a, b) otherwise.
      */
-    public static compare<T>(a: T, b: T, c: java.util.Comparator<T>): number {
+    public static compare<T>(a: T, b: T, c: Comparator<T>): number {
         if (a === b) {
             return 0;
         }
@@ -189,7 +193,7 @@ export class Objects extends JavaObject {
      *
      * @param obj the object reference to check for nullity.
      *
-     * @throws java.lang.NullPointerException if {@code obj} is {@code null}.
+     * @throws NullPointerException if {@code obj} is {@code null}.
      *
      * @returns the non-null reference that was validated.
      */
@@ -208,23 +212,23 @@ export class Objects extends JavaObject {
      * @param obj the object reference to check for nullity.
      * @param message the detail message to be used in the event that a {@code NullPointerException} is thrown.
      *
-     * @throws java.lang.NullPointerException if {@code obj} is {@code null}.
+     * @throws NullPointerException if {@code obj} is {@code null}.
      *
      * @returns the non-null reference that was validated.
      */
-    public static requireNonNull<T>(obj: T | null, message: java.lang.String): T;
+    public static requireNonNull<T>(obj: T | null, message: JavaString): T;
     /**
      * Checks that the specified object reference is not null and throws a customized NullPointerException if it is.
      * Unlike the method requireNonNull(Object, String), this method accepts a Supplier<String> instead of a String.
      * This allows the message to be lazily evaluated, which can be useful in situations where the message is
      * expensive to compute.
      */
-    public static requireNonNull<T>(obj: T | null, messageSupplier: java.util.function.Supplier<java.lang.String>): T;
+    public static requireNonNull<T>(obj: T | null, messageSupplier: Supplier<JavaString>): T;
     public static requireNonNull<T>(...args: unknown[]): T {
         switch (args.length) {
             case 1: {
                 if (args[0] === null) {
-                    throw new java.lang.NullPointerException();
+                    throw new NullPointerException();
                 }
 
                 return args[0] as T;
@@ -232,19 +236,19 @@ export class Objects extends JavaObject {
 
             case 2: {
                 if (args[0] === null) {
-                    if (args[1] instanceof java.lang.String) {
-                        throw new java.lang.NullPointerException(args[1]);
+                    if (args[1] instanceof JavaString) {
+                        throw new NullPointerException(args[1]);
                     }
 
-                    const supplier = args[1] as java.util.function.Supplier<java.lang.String>;
-                    throw new java.lang.NullPointerException(supplier.get());
+                    const supplier = args[1] as Supplier<JavaString>;
+                    throw new NullPointerException(supplier.get());
                 }
 
                 return args[0] as T;
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
         }
     }
@@ -256,7 +260,7 @@ export class Objects extends JavaObject {
      *
      * @returns the result of calling toString() on the first argument if it is not null; "null" otherwise.
      */
-    public static toString(o: unknown): java.lang.String;
+    public static override toString(o: unknown): JavaString;
     /**
      * Returns the result of calling toString() on the first argument if the first argument is not null and returns
      * the second argument otherwise.
@@ -270,12 +274,12 @@ export class Objects extends JavaObject {
      *
      * @returns the result of calling toString() on the first argument if it is not null; the second argument otherwise.
      */
-    public static toString(o: unknown, nullDefault: java.lang.String): java.lang.String;
-    public static toString(o: unknown, nullDefault?: java.lang.String): java.lang.String {
+    public static override toString(o: unknown, nullDefault: JavaString): JavaString;
+    public static override toString(o: unknown, nullDefault?: JavaString): JavaString {
         if (o == null) {
-            return nullDefault ?? S`null`;
+            return nullDefault ?? new JavaString("null");
         }
 
-        return java.lang.String.valueOf(o);
+        return JavaString.valueOf(o);
     }
 }

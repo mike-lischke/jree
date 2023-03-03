@@ -385,7 +385,7 @@ export class Character extends JavaObject {
             Character.MIN_LOW_SURROGATE;
     }
 
-    public static toString(c: char): JavaString {
+    public static override toString(c: char): JavaString {
         return JavaString.fromCodePoint(c);
     }
 

@@ -107,7 +107,9 @@ export class PosixFilePermissions extends JavaObject {
      *
      * @returns the string representation of the permissions
      */
-    public static toString(permissions: PosixFilePermissionSet): string {
+    public static override toString(permissions: PosixFilePermissionSet): string;
+    public static override toString(permissions: PosixFilePermissionSet): JavaString;
+    public static override toString(permissions: PosixFilePermissionSet): JavaString | string {
         const result = new StringBuilder(9);
         result.append(permissions.contains(PosixFilePermission.OWNER_READ) ? "r" : "-");
         result.append(permissions.contains(PosixFilePermission.OWNER_WRITE) ? "w" : "-");

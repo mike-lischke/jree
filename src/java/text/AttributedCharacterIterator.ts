@@ -79,7 +79,7 @@ export namespace AttributedCharacterIterator {
          *
          * @returns tbd
          */
-        public equals(obj: unknown): boolean {
+        public override equals(obj: unknown): boolean {
             if (this === obj) {
                 return true;
             }
@@ -88,12 +88,12 @@ export namespace AttributedCharacterIterator {
         }
 
         /** @returns a hash code value for the object.*/
-        public hashCode(): number {
+        public override hashCode(): number {
             return super.hashCode();
         }
 
         /** @returns a string representation of the object.*/
-        public toString(): string {
+        public override toString(): string {
             return `${this.constructor.name}(${this.#name})`;
         }
 
@@ -107,7 +107,7 @@ export namespace AttributedCharacterIterator {
             throw new NotImplementedError();
         }
 
-        public clone(): JavaObject {
+        public override clone(): JavaObject {
             return super.clone();
         }
 

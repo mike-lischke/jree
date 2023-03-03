@@ -19,11 +19,11 @@ class Test extends JavaObject {
         super();
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         return this.a;
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (this === o) {
             return true;
         }

@@ -350,7 +350,7 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
      * @param i The number to convert.
      * @param radix The radix of the result string.
      */
-    public static toString(i: bigint, radix?: number): JavaString {
+    public static override toString(i: bigint, radix?: number): JavaString {
         return new JavaString(i.toString(radix));
 
     }
@@ -359,9 +359,9 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
      * Returns an Integer object holding the value given or extracted from the specified String when parsed with the
      * radix given by the second argument.
      */
-    public static valueOf(i: bigint): Long;
-    public static valueOf(s: string | JavaString, radix?: number): Long;
-    public static valueOf(value: bigint | string | JavaString, radix?: number): Long {
+    public static override valueOf(i: bigint): Long;
+    public static override valueOf(s: string | JavaString, radix?: number): Long;
+    public static override valueOf(value: bigint | string | JavaString, radix?: number): Long {
         if (typeof value === "bigint") {
             return new Long(value);
         }
@@ -417,7 +417,7 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
      * @returns True if obj is an instance of Integer and both represent the same numerical value,
      *          otherwise false.
      */
-    public equals(obj?: unknown): boolean {
+    public override equals(obj?: unknown): boolean {
         if (obj instanceof Long) {
             return this.value === obj.value;
         }
@@ -431,7 +431,7 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
     }
 
     /** @returns a hash code for this Long. */
-    public hashCode(): number {
+    public override hashCode(): number {
         let hash = MurmurHash.initialize(11);
         hash = MurmurHash.update(hash, Number((this.value & 0xFFFFFFFF00000000n) >> 32n));
         hash = MurmurHash.update(hash, Number(this.value & 0xFFFFFFFFn));
@@ -456,11 +456,11 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
     }
 
     // Returns a String object representing this Integer's value.
-    public toString(): string {
+    public override toString(): string {
         return `${this.value}`;
     }
 
-    public valueOf(): bigint {
+    public override valueOf(): bigint {
         return this.value;
     }
 

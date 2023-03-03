@@ -5,6 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { JavaString } from "../../lang/String";
 import { JavaObject } from "../../lang/Object";
 import { BufferOverflowException } from "../BufferOverflowException";
 import { BufferUnderflowException } from "../BufferUnderflowException";
@@ -143,7 +144,7 @@ export class CoderResult extends JavaObject {
         }
     }
 
-    public toString(): string {
-        return this.#name;
+    public override toString(): JavaString {
+        return new JavaString(this.#name);
     }
 }

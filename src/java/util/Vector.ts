@@ -94,7 +94,7 @@ export class Vector<T> extends AbstractList<T>
      *
      * @returns a clone of this Vector
      */
-    public clone(): Vector<T> {
+    public override clone(): Vector<T> {
         return this.createClone(Vector) as Vector<T>;
     }
 

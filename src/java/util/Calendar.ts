@@ -176,7 +176,7 @@ export class Calendar extends JavaObject {
             throw new NotImplementedError();
         }
 
-        public clone(): JavaObject {
+        public override clone(): JavaObject {
             return super.clone();
         }
 

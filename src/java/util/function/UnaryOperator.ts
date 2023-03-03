@@ -24,9 +24,9 @@ export class UnaryOperator<T> extends Function<T, T> {
      *
      * @returns a {@code Unary} that performs the given operation on the given argument
      */
-    public static create<T>(apply: (t: T) => T): UnaryOperator<T> {
+    public static override create<T>(apply: (t: T) => T): UnaryOperator<T> {
         return new class extends UnaryOperator<T> {
-            public apply = (t: T): T => { return apply(t); };
+            public override apply = (t: T): T => { return apply(t); };
         }();
     }
 

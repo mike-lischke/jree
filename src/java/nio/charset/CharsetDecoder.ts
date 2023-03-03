@@ -5,7 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../../templates";
 import { JavaObject } from "../../lang/Object";
 import { JavaString } from "../../lang/String";
 import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
@@ -86,14 +85,14 @@ export class CharsetDecoder extends JavaObject {
             const buffer = Buffer.from(input.array());
             const text = buffer.toString(this.#cs.name().valueOf() as BufferEncoding);
 
-            return CharBuffer.wrap(S`${text}`);
+            return CharBuffer.wrap(new JavaString(text));
 
         } else {
             const [input, output, _] = [args[0] as ByteBuffer, args[1] as CharBuffer, args[2] as boolean];
             const buffer = Buffer.from(input.array());
             const text = buffer.toString(this.#cs.name().valueOf() as BufferEncoding);
 
-            output.put(text);
+            output.put(new JavaString(text));
 
             return CoderResult.success();
         }

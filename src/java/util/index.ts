@@ -8,7 +8,7 @@
 export * from "./Arrays";
 export * from "./ArrayList";
 export * from "./List";
-export * as Iterator from "./Iterator";
+export { type JavaIterator as Iterator } from "./Iterator";
 export * from "./ListIterator";
 export * from "./Collection";
 export * from "./Collections";
@@ -30,7 +30,7 @@ export * from "./Objects";
 export * from "./Comparator";
 export * from "./Queue";
 export * from "./Deque";
-export * as Date from "./Date";
+export { JavaDate as Date } from "./Date";
 export * from "./TimeZone";
 export * from "./Calendar";
 export * from "./Enumeration";

@@ -7,8 +7,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../..";
 import { char } from "../lang";
+import { JavaString } from "../lang/String";
 
 import { Appendable } from "../lang/Appendable";
 import { CharSequence } from "../lang/CharSequence";
@@ -41,9 +41,9 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
                     backBuffer = args[0].buffer;
                 } else {
                     const s = (args[0] as CharSequence).toString();
-                    backBuffer = new Uint16Array(s.length);
-                    for (let i = 0; i < s.length; ++i) {
-                        backBuffer[i] = s.charCodeAt(i);
+                    backBuffer = new Uint16Array(s.length());
+                    for (let i = 0; i < s.length(); ++i) {
+                        backBuffer[i] = s.charAt(i);
                     }
                 }
                 break;
@@ -55,9 +55,9 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
                     backBuffer = input.buffer;
                 } else {
                     const s = (args[0] as CharSequence).toString();
-                    backBuffer = new Uint16Array(s.length);
-                    for (let i = 0; i < s.length; ++i) {
-                        backBuffer[i] = s.charCodeAt(i);
+                    backBuffer = new Uint16Array(s.length());
+                    for (let i = 0; i < s.length(); ++i) {
+                        backBuffer[i] = s.charAt(i);
                     }
                 }
 
@@ -67,7 +67,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
             }
 
             default: {
-                throw new IllegalArgumentException(S`Invalid arguments`);
+                throw new IllegalArgumentException(new JavaString("Invalid arguments"));
             }
         }
 
@@ -124,7 +124,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
             }
 
             default: {
-                throw new IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
             }
         }
     }
@@ -191,8 +191,8 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
      *
      * @returns < 0 if this buffer is less than the given buffer, 0 for equality and > 0 if larger.
      */
-    public compareTo(that: CharBuffer): number {
-        return this.toString().localeCompare(that.toString());
+    public override compareTo(that: CharBuffer): number {
+        return this.toString().valueOf().localeCompare(that.toString().valueOf());
     }
 
     /** @returns the length of this character buffer. */
@@ -240,9 +240,9 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
     public put(src: Uint16Array, offset: number, length: number): this;
     public put(src: CharBuffer): this;
     public put(index: number, c: char): this;
-    public put(src: string): this;
-    public put(src: string, start: number, end: number): this;
-    public put(cOrSrcOrIndex: char | Uint16Array | CharBuffer | number | string,
+    public put(src: JavaString): this;
+    public put(src: JavaString, start: number, end: number): this;
+    public put(cOrSrcOrIndex: char | Uint16Array | CharBuffer | number | JavaString,
         offsetOrCOrStart?: number | char, lengthOrEnd?: number): this {
 
         if (this.isReadOnly()) {
@@ -293,19 +293,19 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
             this.currentPosition += length;
         } else {
             // A string.
-            const src = cOrSrcOrIndex as string;
+            const src = cOrSrcOrIndex as JavaString;
             const offset = offsetOrCOrStart ?? 0;
-            const end = lengthOrEnd ?? src.length;
+            const end = lengthOrEnd ?? src.length();
             if (this.currentPosition + end > this.currentLimit) {
                 throw new BufferOverflowException();
             }
 
-            if (offset < 0 || offset > src.length) {
+            if (offset < 0 || offset > src.length()) {
                 throw new IndexOutOfBoundsException();
             }
 
             for (let i = offset; i < end; ++i) {
-                this.array()[this.currentPosition++] = src.charCodeAt(i);
+                this.array()[this.currentPosition++] = src.charAt(i);
             }
         }
 
@@ -353,8 +353,8 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
     }
 
     /** @returns a string containing the characters in this buffer. */
-    public toString(): string {
-        return String.fromCharCode(...this.array().subarray(this.currentPosition, this.currentLimit));
+    public override toString(): JavaString {
+        return new JavaString(String.fromCharCode(...this.array().subarray(this.currentPosition, this.currentLimit)));
     }
 
 }

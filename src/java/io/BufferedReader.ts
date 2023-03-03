@@ -71,7 +71,7 @@ export class BufferedReader extends Reader {
      *
      * @param readAheadLimit tbd
      */
-    public mark(readAheadLimit: number): void {
+    public override mark(readAheadLimit: number): void {
         if (readAheadLimit < 0) {
             throw new IllegalArgumentException(S`Read-ahead limit < 0`);
         }
@@ -87,13 +87,13 @@ export class BufferedReader extends Reader {
      *
      * @returns true
      */
-    public markSupported(): boolean {
+    public override markSupported(): boolean {
         return true;
     }
 
-    public read(target?: Uint16Array | CharBuffer): char;
-    public read(target: Uint16Array, offset: number, length: number): number;
-    public read(target: Uint16Array, offset?: number, length?: number): number {
+    public override read(target?: Uint16Array | CharBuffer): char;
+    public override read(target: Uint16Array, offset: number, length: number): number;
+    public override read(target: Uint16Array, offset?: number, length?: number): number {
         this.ensureOpen();
 
         if (target === undefined) {
@@ -239,7 +239,7 @@ export class BufferedReader extends Reader {
      *
      * @returns true if the next read() is guaranteed not to block for input, false otherwise.
      */
-    public ready(): boolean {
+    public override ready(): boolean {
         this.ensureOpen();
 
         /*
@@ -267,7 +267,7 @@ export class BufferedReader extends Reader {
     }
 
     /** Resets the stream to the most recent mark. */
-    public reset(): void {
+    public override reset(): void {
         this.ensureOpen();
         if (this.markedChar < 0) {
             throw new IOException((this.markedChar === BufferedReader.INVALIDATED)
@@ -286,7 +286,7 @@ export class BufferedReader extends Reader {
      *
      * @returns the number of characters actually skipped
      */
-    public skip(n: number): number {
+    public override skip(n: number): number {
         if (n < 0) {
             throw new IllegalArgumentException(S`skip value is negative`);
         }

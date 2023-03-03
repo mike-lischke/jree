@@ -5,6 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { JavaString } from "../../lang/String";
 import { JavaObject } from "../../lang/Object";
 
 /** A typesafe enumeration for coding-error actions. */
@@ -27,7 +28,7 @@ export class CodingErrorAction extends JavaObject {
      */
     public static readonly REPORT = new CodingErrorAction("REPORT");
 
-    #name: string;
+    #name: string; // Need TS string here to avoid circular dependency on JavaString.
 
     private constructor(name: string) {
         super();
@@ -35,7 +36,7 @@ export class CodingErrorAction extends JavaObject {
         this.#name = name;
     }
 
-    public toString(): string {
-        return this.#name;
+    public override toString(): JavaString {
+        return new JavaString(this.#name);
     }
 }

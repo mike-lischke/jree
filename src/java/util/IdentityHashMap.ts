@@ -39,7 +39,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements Cloneable<Ident
         this.backingStore.clear();
     }
 
-    public clone(): IdentityHashMap<K, V> {
+    public override clone(): IdentityHashMap<K, V> {
         return new IdentityHashMap<K, V>(this);
     }
 
@@ -104,7 +104,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements Cloneable<Ident
         return this.backingStore.size;
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         let sum = 0;
         for (const entry of this.backingStore) {
             sum += (entry[0] === null ? 0 : MurmurHash.hashCode(entry[0]))
@@ -114,7 +114,7 @@ export class IdentityHashMap<K, V> extends JavaObject implements Cloneable<Ident
         return sum;
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (!(o instanceof IdentityHashMap<K, V>)) {
             return false;
         }

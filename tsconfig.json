@@ -12,6 +12,7 @@
         "moduleResolution": "Node",
         "strict": true,
         "noImplicitAny": true,
+        "noImplicitOverride": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "removeComments": false,

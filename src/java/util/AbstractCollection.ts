@@ -5,6 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { JavaString } from "../lang";
 import { JavaObject } from "../lang/Object";
 import { Collection } from "./Collection";
 import { Consumer } from "./function/Consumer";
@@ -28,9 +29,9 @@ export abstract class AbstractCollection<T> extends JavaObject implements Collec
     public abstract clear(): void;
     public abstract contains(o: T): boolean;
     public abstract containsAll(c: Collection<T>): boolean;
-    public abstract equals(other: unknown): boolean;
+    public abstract override equals(other: unknown): boolean;
     public abstract forEach(action: Consumer<T>): void;
-    public abstract hashCode(): number;
+    public abstract override hashCode(): number;
     public abstract isEmpty(): boolean;
     public abstract iterator(): JavaIterator<T>;
     public abstract remove(o: unknown): boolean;
@@ -39,7 +40,8 @@ export abstract class AbstractCollection<T> extends JavaObject implements Collec
     public abstract retainAll(c: Collection<T>): boolean;
     public abstract size(): number;
     public abstract spliterator(): Spliterator<T>;
-    public abstract toString(): string;
+    // @ts-ignore
+    public abstract toString(): JavaString;
     public abstract toArray(): T[];
     public abstract toArray<U>(a: U[]): U[];
 }

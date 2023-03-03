@@ -14,7 +14,7 @@ export class Locale extends JavaObject implements java.lang.Cloneable<Locale> {
         return new Locale();
     }
 
-    public clone(): Locale {
+    public override clone(): Locale {
         return this;
     }
 }
