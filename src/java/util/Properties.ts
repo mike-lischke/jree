@@ -324,6 +324,10 @@ export class Properties extends HashMap<JavaString, JavaString> {
         return result;
     }
 
+    public override toString(): JavaString {
+        return new JavaString(super.toString());
+    }
+
     /**
      * Writes a string to the given output stream. If that stream is not encoding aware then the text is first
      * converted to Latin1, with every character beyond the Latin1 being converted to a unicode character escape

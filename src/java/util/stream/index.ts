@@ -6,3 +6,4 @@
  */
 
 export * from "./BaseStream";
+export * from "./IntStream";

@@ -32,7 +32,7 @@ export * from "./Iterable";
 export * from "./AutoCloseable";
 
 export * from "./Throwable";
-export * from "./Error";
+export { JavaError as Error } from "./Error";
 export * from "./Exception";
 export * from "./RuntimeException";
 export * from "./IndexOutOfBoundsException";

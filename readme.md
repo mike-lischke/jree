@@ -2,7 +2,7 @@
 
 # Java Runtime Environment Emulation
 
-This module contains a subset of JRE classes ported to Typescript and serves as runtime for Typescript and Javascript code that need JRE classes.
+This module contains a subset of JRE classes ported to Typescript and serves as runtime for Typescript and Javascript code that need JRE classes. It's a [clean room](https://en.wikipedia.org/wiki/Clean_room_design) implementation, which means no Java code was used for the implementation. Everything was written from scratch, but the Java API was used as a reference. This allows to release the code under a permissive license (MIT) and to use it in any (including commercial) projects, in opposition to the GPL license of the original JRE.
 
 ## Installation and Use
 
@@ -21,9 +21,7 @@ const builder = new java.lang.StringBuilder();
 builder.append(123);
 ```
 
-You can also import a class directly from full path, but I recommend to stay with fully qualified identifiers, especially in cases where Typescript classes with the same name exist (String, Number, Object).
-
-In addition to the JRE classes there's' some support code that might come in handy. See the [support readme](doc/support.md) for more details.
+You can also import a class directly from full path, but I recommend to stay with fully qualified identifiers. In addition to the JRE classes there's' some support code that might come in handy. See the [support readme](doc/support.md) for more details.
 
 ## Supported Java Classes
 

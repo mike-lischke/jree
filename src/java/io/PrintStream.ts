@@ -11,6 +11,7 @@ import { NotImplementedError } from "../../NotImplementedError";
 import { char } from "../lang";
 import { CharSequence } from "../lang/CharSequence";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
 import { System } from "../lang/System";
 import { Locale } from "../util/Locale";
@@ -139,7 +140,7 @@ export class PrintStream extends FilterOutputStream {
         return this;
     }
 
-    public print(v: boolean | char | number | Object | JavaString | null): void {
+    public print(v: boolean | char | number | JavaObject | JavaString | null): void {
         if (v === null) {
             this.append(new JavaString("null"));
         } else {
@@ -161,7 +162,7 @@ export class PrintStream extends FilterOutputStream {
     }
 
     // Terminates the current line by writing the line separator string.
-    public println(v?: boolean | char | number | Object | JavaString | null): void {
+    public println(v?: boolean | char | number | JavaObject | JavaString | null): void {
         if (v !== undefined) {
             this.print(v);
         }

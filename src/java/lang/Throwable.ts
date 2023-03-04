@@ -30,7 +30,7 @@ export class Throwable extends JavaObject {
     /** Constructs a new throwable with null as its detail message. */
     public constructor();
     /** Constructs a new throwable with the specified detail message. */
-    public constructor(message: JavaString);
+    public constructor(message: JavaString | null);
     /** Constructs a new throwable with the specified detail message and cause. */
     public constructor(message: JavaString, cause: Throwable | null);
     /**

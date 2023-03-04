@@ -48,4 +48,4 @@ export * from "./regex/regex";
 export * from "./concurrent/concurrent";
 export * from "./function/$function";
 
-export * from "./stream";
+export * from "./stream/$stream";
