@@ -1,6 +1,6 @@
 {
     "name": "jree",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Java Runtime Environment Emulation",
     "homepage": "https://soft-gems.net/",
     "repository": {
