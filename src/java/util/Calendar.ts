@@ -79,7 +79,7 @@ export class Calendar extends JavaObject {
          * @param field the field to set
          * @param value the value to set the field to
          */
-        public set(field: number, value: number): this {
+        public set(field: number, value: number): Calendar {
             throw new NotImplementedError();
         }
 
@@ -88,7 +88,7 @@ export class Calendar extends JavaObject {
          *
          * @param type the calendar type to set
          */
-        public setCalendarType(type: JavaString): this {
+        public setCalendarType(type: JavaString): Calendar {
             throw new NotImplementedError();
         }
 
@@ -99,7 +99,7 @@ export class Calendar extends JavaObject {
          * @param month the month to set
          * @param dayOfMonth the day of month to set
          */
-        public setDate(year: number, month: number, dayOfMonth: number): this {
+        public setDate(year: number, month: number, dayOfMonth: number): Calendar {
             throw new NotImplementedError();
         }
 
@@ -108,7 +108,7 @@ export class Calendar extends JavaObject {
          *
          * @param fieldValuePairs the field-value pairs to set
          */
-        public setFields(...fieldValuePairs: number[]): this {
+        public setFields(...fieldValuePairs: number[]): Calendar {
             throw new NotImplementedError();
         }
 
@@ -117,14 +117,14 @@ export class Calendar extends JavaObject {
          *
          * @param instant the instant to set
          */
-        public setInstant(instant: number): this;
+        public setInstant(instant: number): Calendar;
         /**
          * Sets the instant parameter to the instant value given by a Date.
          *
          * @param date the Date to set
          */
-        public setInstant(date: JavaDate): this;
-        public setInstant(instantOrDate: number | JavaDate): this {
+        public setInstant(date: JavaDate): Calendar;
+        public setInstant(instantOrDate: number | JavaDate): Calendar {
             throw new NotImplementedError();
         }
 
@@ -133,7 +133,7 @@ export class Calendar extends JavaObject {
          *
          * @param lenient the lenient mode to set
          */
-        public setLenient(lenient: boolean): this {
+        public setLenient(lenient: boolean): Calendar {
             throw new NotImplementedError();
         }
 
@@ -142,7 +142,7 @@ export class Calendar extends JavaObject {
          *
          * @param locale the locale to set
          */
-        public setLocale(locale: JavaString): this {
+        public setLocale(locale: JavaString): Calendar {
             throw new NotImplementedError();
         }
 
@@ -153,7 +153,7 @@ export class Calendar extends JavaObject {
          * @param minute the minute to set
          * @param second the second to set
          */
-        public setTimeOfDay(hourOfDay: number, minute: number, second: number): this;
+        public setTimeOfDay(hourOfDay: number, minute: number, second: number): Calendar;
         /**
          * Sets the time of day field parameters to the values given by hourOfDay, minute, second, and millis.
          *
@@ -162,8 +162,8 @@ export class Calendar extends JavaObject {
          * @param second the second to set
          * @param millis the millisecond to set
          */
-        public setTimeOfDay(hourOfDay: number, minute: number, second: number, millis: number): this;
-        public setTimeOfDay(hourOfDay: number, minute: number, second: number, millis?: number): this {
+        public setTimeOfDay(hourOfDay: number, minute: number, second: number, millis: number): Calendar;
+        public setTimeOfDay(hourOfDay: number, minute: number, second: number, millis?: number): Calendar {
             throw new NotImplementedError();
         }
 
@@ -172,7 +172,7 @@ export class Calendar extends JavaObject {
          *
          * @param zone the time zone to set
          */
-        public setTimeZone(zone: TimeZone): this {
+        public setTimeZone(zone: TimeZone): Calendar {
             throw new NotImplementedError();
         }
 

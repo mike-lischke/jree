@@ -61,9 +61,9 @@ export interface AttributedCharacterIterator extends CharacterIterator {
 
 export namespace AttributedCharacterIterator {
     export class Attribute extends JavaObject implements Serializable {
-        public static INPUT_METHOD_SEGMENT: Attribute;
-        public static LANGUAGE: Attribute;
-        public static READING: Attribute;
+        public static INPUT_METHOD_SEGMENT = new Attribute(new JavaString("input_method_segment"));
+        public static LANGUAGE = new Attribute(new JavaString("language"));
+        public static READING = new Attribute(new JavaString("reading"));
 
         #name: JavaString;
 
@@ -113,14 +113,6 @@ export namespace AttributedCharacterIterator {
 
         public [Symbol.toPrimitive](_hint: string): string {
             return `${this.toString()}`;
-        }
-
-        static {
-            setTimeout(() => {
-                this.INPUT_METHOD_SEGMENT = new Attribute(new JavaString("input_method_segment"));
-                this.LANGUAGE = new Attribute(new JavaString("language"));
-                this.READING = new Attribute(new JavaString("reading"));
-            }, 0);
         }
     }
 }

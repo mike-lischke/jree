@@ -185,20 +185,13 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
 
         return this.value ? "true" : "false";
     }
-
-    static {
-        // Defer initializing the TYPE field, to ensure the Class class is loaded before using it.
-        setTimeout(() => {
-            /* @ts-expect-error */
-            JavaBoolean.TRUE = new JavaBoolean(true);
-
-            /* @ts-expect-error */
-            JavaBoolean.FALSE = new JavaBoolean(false);
-
-            /* @ts-expect-error */
-            JavaBoolean.TYPE = Class.fromConstructor(JavaBoolean);
-            Object.freeze(JavaBoolean);
-        }, 0);
-    }
-
 }
+
+// @ts-expect-error, because the field is readonly.
+JavaBoolean.TRUE = new JavaBoolean(true);
+
+// @ts-expect-error, because the field is readonly.
+JavaBoolean.FALSE = new JavaBoolean(false);
+
+// @ts-expect-error, because the field is readonly.
+JavaBoolean.TYPE = Class.fromConstructor(JavaBoolean);

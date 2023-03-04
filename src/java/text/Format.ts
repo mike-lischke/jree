@@ -22,7 +22,7 @@ export abstract class Format extends JavaObject implements Serializable, Cloneab
      * field identifiers in FieldPosition.
      */
     public static Field = class Field extends AttributedCharacterIterator.Attribute {
-        public constructor(name: JavaString, dummy = 0) {
+        public constructor(name: JavaString) {
             super(name);
         }
     };

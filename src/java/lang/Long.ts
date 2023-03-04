@@ -20,7 +20,9 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
     public static readonly MAX_VALUE = 0x7FFFFFFFFFFFFFFFn;
     public static readonly MIN_VALUE = -0x8000000000000000n;
     public static readonly SIZE = 64;
-    public static readonly TYPE: Class<Long>;
+
+    // @ts-expect-error, as the constructors are incompatible. Need to investigate.
+    public static readonly TYPE = Class.fromConstructor(Long);
 
     private value: bigint;
 
@@ -471,14 +473,4 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
 
         return this.value;
     }
-
-    static {
-        // Defer initializing the TYPE field, to ensure the Class class is loaded before using it.
-        setTimeout(() => {
-            /* @ts-expect-error */
-            Long.TYPE = Class.fromConstructor(Long);
-            Object.freeze(Long);
-        }, 0);
-    }
-
 }

@@ -21,7 +21,9 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
     public static readonly MAX_VALUE = 2147483647;
     public static readonly MIN_VALUE = -2147483648;
     public static readonly SIZE = 32;
-    public static readonly TYPE: Class<Integer>;
+
+    // @ts-expect-error, as the constructors are incompatible. Need to investigate.
+    public static readonly TYPE = Class.fromConstructor(Integer);
 
     // All number types are signed in Java.
     private static byte = new Int8Array(1);
@@ -494,14 +496,4 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
 
         return this.value;
     }
-
-    static {
-        // Defer initializing the TYPE field, to ensure the Class class is loaded before using it.
-        setTimeout(() => {
-            /* @ts-expect-error */
-            Integer.TYPE = Class.fromConstructor(Integer);
-            Object.freeze(Integer);
-        }, 0);
-    }
-
 }

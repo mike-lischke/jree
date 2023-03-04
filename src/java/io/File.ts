@@ -9,10 +9,9 @@ import path from "path";
 import fs from "fs";
 
 import { JavaObject } from "../lang/Object";
-import { S } from "../../templates";
+import { JavaString } from "../lang/String";
 import { Comparable } from "../lang/Comparable";
 import { Serializable } from "./Serializable";
-import { JavaString } from "../..";
 import { Path } from "../nio/file/Path";
 import { URI } from "../net/URI";
 import { FileSystems } from "../nio/file/FileSystems";
@@ -22,13 +21,13 @@ import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 /** An abstract representation of file and directory pathnames. */
 export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serializable {
     /** The system-dependent path-separator character, represented as a string for convenience. */
-    public static readonly pathSeparator: JavaString;
+    public static readonly pathSeparator = new JavaString(`${path.sep}`);
 
     /** The system-dependent path-separator character. */
     public static readonly pathSeparatorChar = path.sep.charCodeAt(0);
 
     /** The system-dependent default name-separator character, represented as a string for convenience. */
-    public static readonly separator: JavaString;
+    public static readonly separator = new JavaString(`${path.delimiter}`);
 
     /** The system-dependent name-separator character. */
     public static readonly separatorChar = path.delimiter.charCodeAt(0);
@@ -96,7 +95,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
             }
 
             default: {
-                throw new IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
             }
         }
     }
@@ -137,7 +136,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      *          pathname does not name a parent
      */
     public getParentFile(): JavaFile {
-        return new JavaFile(S`${path.dirname(`${this.#path}`)}`);
+        return new JavaFile(new JavaString(`${path.dirname(`${this.#path}`)}`));
     }
 
     /**
@@ -181,12 +180,4 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
         return this.#path;
     }
 
-    static {
-        setTimeout(() => {
-            // @ts-ignore
-            JavaFile.pathSeparator = S`${path.sep}`;
-            // @ts-ignore
-            JavaFile.separator = S`{path.delimiter}`;
-        }, 0);
-    }
 }

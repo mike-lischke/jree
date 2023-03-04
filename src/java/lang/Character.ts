@@ -257,7 +257,7 @@ export class Character extends JavaObject {
         };
     };
 
-    private static readonly CategoryMapper = new Map<string, number>();
+    private static readonly categoryMapper = new Map<string, number>();
 
     public constructor() {
         super();
@@ -276,7 +276,7 @@ export class Character extends JavaObject {
     public static getType(c: char | number): number {
         const category = unicode.getCategory(c);
 
-        return Character.CategoryMapper.get(category) ?? Character.UNASSIGNED;
+        return Character.categoryMapper.get(category) ?? Character.UNASSIGNED;
     }
 
     public static isDigit(c: char): boolean {
@@ -387,41 +387,38 @@ export class Character extends JavaObject {
         return new JavaString(s.valueOf().toLowerCase());
     }
 
-    static {
-        setTimeout(() => {
-            // @ts-ignore
-            this.CategoryMapper = new Map<string, number>([
-                ["Cc", Character.CONTROL],
-                ["Cf", Character.FORMAT],
-                ["Cn", Character.UNASSIGNED],
-                ["Co", Character.PRIVATE_USE],
-                ["Cs", Character.SURROGATE],
-                ["Ll", Character.LOWERCASE_LETTER],
-                ["Lm", Character.MODIFIER_LETTER],
-                ["Lo", Character.OTHER_LETTER],
-                ["Lt", Character.TITLECASE_LETTER],
-                ["Lu", Character.UPPERCASE_LETTER],
-                ["Mc", Character.COMBINING_SPACING_MARK],
-                ["Me", Character.ENCLOSING_MARK],
-                ["Mn", Character.NON_SPACING_MARK],
-                ["Nd", Character.DECIMAL_DIGIT_NUMBER],
-                ["Nl", Character.LETTER_NUMBER],
-                ["No", Character.OTHER_NUMBER],
-                ["Pc", Character.CONNECTOR_PUNCTUATION],
-                ["Pd", Character.DASH_PUNCTUATION],
-                ["Pe", Character.END_PUNCTUATION],
-                ["Pf", Character.FINAL_QUOTE_PUNCTUATION],
-                ["Pi", Character.INITIAL_QUOTE_PUNCTUATION],
-                ["Po", Character.OTHER_PUNCTUATION],
-                ["Ps", Character.START_PUNCTUATION],
-                ["Sc", Character.CURRENCY_SYMBOL],
-                ["Sk", Character.MODIFIER_SYMBOL],
-                ["Sm", Character.MATH_SYMBOL],
-                ["So", Character.OTHER_SYMBOL],
-                ["Zl", Character.LINE_SEPARATOR],
-                ["Zp", Character.PARAGRAPH_SEPARATOR],
-                ["Zs", Character.SPACE_SEPARATOR],
-            ]);
-        }, 0);
-    }
 }
+
+// @ts-ignore, because the field is readonly.
+Character.CategoryMapper = new Map<string, number>([
+    ["Cc", Character.CONTROL],
+    ["Cf", Character.FORMAT],
+    ["Cn", Character.UNASSIGNED],
+    ["Co", Character.PRIVATE_USE],
+    ["Cs", Character.SURROGATE],
+    ["Ll", Character.LOWERCASE_LETTER],
+    ["Lm", Character.MODIFIER_LETTER],
+    ["Lo", Character.OTHER_LETTER],
+    ["Lt", Character.TITLECASE_LETTER],
+    ["Lu", Character.UPPERCASE_LETTER],
+    ["Mc", Character.COMBINING_SPACING_MARK],
+    ["Me", Character.ENCLOSING_MARK],
+    ["Mn", Character.NON_SPACING_MARK],
+    ["Nd", Character.DECIMAL_DIGIT_NUMBER],
+    ["Nl", Character.LETTER_NUMBER],
+    ["No", Character.OTHER_NUMBER],
+    ["Pc", Character.CONNECTOR_PUNCTUATION],
+    ["Pd", Character.DASH_PUNCTUATION],
+    ["Pe", Character.END_PUNCTUATION],
+    ["Pf", Character.FINAL_QUOTE_PUNCTUATION],
+    ["Pi", Character.INITIAL_QUOTE_PUNCTUATION],
+    ["Po", Character.OTHER_PUNCTUATION],
+    ["Ps", Character.START_PUNCTUATION],
+    ["Sc", Character.CURRENCY_SYMBOL],
+    ["Sk", Character.MODIFIER_SYMBOL],
+    ["Sm", Character.MATH_SYMBOL],
+    ["So", Character.OTHER_SYMBOL],
+    ["Zl", Character.LINE_SEPARATOR],
+    ["Zp", Character.PARAGRAPH_SEPARATOR],
+    ["Zs", Character.SPACE_SEPARATOR],
+]);

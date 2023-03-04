@@ -15,7 +15,6 @@ export interface UnaryOperator<T> extends Function<T, T> {
     apply: (t: T) => T;
 }
 
-// @ts-expect-error, because of different type parameters in the factory method.
 export class UnaryOperator<T> extends Function<T, T> {
     /**
      * Returns a {@code Unary} that wraps the given operation.
@@ -24,6 +23,7 @@ export class UnaryOperator<T> extends Function<T, T> {
      *
      * @returns a {@code Unary} that performs the given operation on the given argument
      */
+    public static override create<T, R>(apply: (t: T) => R): Function<T, R>;
     public static override create<T>(apply: (t: T) => T): UnaryOperator<T> {
         return new class extends UnaryOperator<T> {
             public override apply = (t: T): T => { return apply(t); };
@@ -34,7 +34,7 @@ export class UnaryOperator<T> extends Function<T, T> {
      * @returns a {@code Unary} that always returns its input argument
      */
     public static identity<T>(): UnaryOperator<T> {
-        return UnaryOperator.create<T>((t: T) => { return t; });
+        return UnaryOperator.create<T, T>((t: T) => { return t; });
     }
 
 }
