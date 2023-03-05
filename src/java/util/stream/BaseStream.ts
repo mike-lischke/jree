@@ -6,6 +6,7 @@
  */
 
 import { AutoCloseable } from "../../lang/AutoCloseable";
+import { Spliterator } from "../Spliterator";
 
 /**
  * Base interface for streams, which are sequences of elements supporting sequential and parallel aggregate operations.
@@ -29,7 +30,7 @@ export interface BaseStream<T, S extends BaseStream<T, S>> extends AutoCloseable
     /** @returns an equivalent stream that is sequential. */
     sequential(): S;
 
-    // spliterator(): Spliterator<T>;
+    spliterator(): Spliterator<T>;
 
     /** @returns an equivalent stream that is unordered. */
     unordered(): S;

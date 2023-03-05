@@ -1,7 +1,11 @@
 # Ported Types of java.lang
 
-This page lists the java.lang types that are currently in this Node package. The notation describes the current status of a package or type. The symbol 🅵 means the type is fully converted (excluding functionality which cannot be implemented in Typescript, like synchronization), while Ⓟ indicates a partial conversion. Additionally, the symbol 𝑺 describes a type that is a stub, i.e. a type that is not yet implemented and exists solely to satisfy another type.
+This page lists the java.lang types that are currently in this Node package.
 
+## Status Notation:
+- 🅵 means the type is fully converted (excluding functionality which cannot be implemented in Typescript, like synchronization).
+- 🅿 indicates a partial conversion, which means that the type is not fully converted, but it is usable.
+- 🅂 describes a type that is a stub, i.e. a type that is not yet implemented and exists solely to satisfy another type.
 
 ## Interface Summary
 
@@ -21,7 +25,7 @@ This page lists the java.lang types that are currently in this Node package. The
 |---|---|---|
 |🅵|[Boolean](https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html)|The Boolean class wraps a value of the primitive type boolean in an object.|
 |🅵|[Character](https://docs.oracle.com/javase/8/docs/api/java/lang/Character.html)|The Character class wraps a value of the primitive type char in an object.|
-|Ⓟ|[Class](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html)|Instances of the class Class represent classes and interfaces in a running Java application.|
+|🅿|[Class](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html)|Instances of the class Class represent classes and interfaces in a running Java application.|
 |🅵|[Integer](https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html)|The Integer class wraps a value of the primitive type int in an object.|
 |🅵|[Long](https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html)|The Long class wraps a value of the primitive type long in an object.|
 |🅵|[Number](https://docs.oracle.com/javase/8/docs/api/java/lang/Number.html)|The abstract class Number is the superclass of platform classes representing numeric values that are convertible to the primitive types byte, double, float, int, long, and short.|
@@ -30,7 +34,7 @@ This page lists the java.lang types that are currently in this Node package. The
 |🅵|[String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)|The String class represents character strings..|
 |🅵|[StringBuffer](https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuffer.html)|A thread-safe, mutable sequence of characters.|
 |🅵|[StringBuilder](https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html)|A mutable sequence of characters.|
-|Ⓟ|[System](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html)|The class System contains several useful class fields and methods.|
+|🅿|[System](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html)|The class System contains several useful class fields and methods.|
 
 ## Enum Summary
 

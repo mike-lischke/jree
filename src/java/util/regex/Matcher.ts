@@ -13,20 +13,7 @@ import { Pattern } from "./Pattern";
 import { StringBuffer } from "../../lang/StringBuffer";
 import { IllegalStateException } from "../../lang/IllegalStateException";
 import { IndexOutOfBoundsException } from "../../lang/IndexOutOfBoundsException";
-
-export interface MatchResult {
-    // Returns the offset after the last character of the subsequence captured by the given group during this match.
-    end(group?: number): number;
-
-    // Returns the input subsequence captured by the given group during the previous match operation.
-    group(group?: number): JavaString;
-
-    // Returns the number of capturing groups in this match result's pattern.
-    groupCount(): number;
-
-    // Returns the start index of the subsequence captured by the given group during this match.
-    start(group?: number): number;
-}
+import { MatchResult } from "./MatchResult";
 
 export class Matcher extends JavaObject implements MatchResult {
 
@@ -80,13 +67,9 @@ export class Matcher extends JavaObject implements MatchResult {
         return sb;
     };
 
-    /**
-     * @returns the offset after the last character of the subsequence captured by the given group
-     * during the previous match operation.
-     *
-     * @param group tbd
-     */
-    public end = (group?: number): number => {
+    public end(): number;
+    public end(group: number): number;
+    public end(group?: number): number {
         // group === 0 is the same as no group.
         if (!group || this.regexResults === null) {
             return this.regex.lastIndex;
@@ -101,7 +84,7 @@ export class Matcher extends JavaObject implements MatchResult {
         }
 
         throw new NotImplementedError();
-    };
+    }
 
     /**
      * Resets this matcher and then attempts to find the next subsequence of the input sequence that matches

@@ -1,6 +1,11 @@
 # Ported Types of java.io
 
-This page lists the java.io types that are currently in this Node package. The notation describes the current status of a package or type. The symbol 🅵 means the type is fully converted (excluding functionality which cannot be implemented in Typescript, like synchronization), while Ⓟ indicates a partial conversion. Additionally, the symbol 𝑺 describes a type that is a stub, i.e. a type that is not yet implemented and exists solely to satisfy another type.
+This page lists the java.io types that are currently in this Node package. The notation used for the current status is as follows:
+
+## Status Notation:
+- 🅵 means the type is fully converted (excluding functionality which cannot be implemented in Typescript, like synchronization).
+- 🅿 indicates a partial conversion, which means that the type is not fully converted, but it is usable.
+- 🅂 describes a type that is a stub, i.e. a type that is not yet implemented and exists solely to satisfy another type.
 
 ## Interface Summary
 
@@ -17,7 +22,7 @@ This page lists the java.io types that are currently in this Node package. The n
 |🅵|[BufferedOutputStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedOutputStream.html)|The class implements a buffered output stream.|
 |🅵|[BufferedReader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedReader.html)|Reads text from a character-input stream, buffering characters so as to provide for the efficient reading of characters, arrays, and lines.|
 |🅵|[BufferedWriter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedWriter.html)|Writes text to a character-output stream, buffering characters so as to provide for the efficient writing of single characters, arrays, and strings.|
-|𝑺|[Console](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Console.html)|Methods to access the character-based console device, if any, associated with the current Java virtual machine.|
+|🅂|[Console](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Console.html)|Methods to access the character-based console device, if any, associated with the current Java virtual machine.|
 |🅵|[File](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html)|An abstract representation of file and directory path names.|
 |🅵|[FileDescriptor](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileDescriptor.html)|Instances of the FileDescriptor class serve as an opaque handle to the underlying machine-specific structure representing an open file, an open socket, or another source or sink of bytes.|
 |🅵|[FileInputStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileInputStream.html)|FileInputStream obtains input bytes from a file in a file system.|
