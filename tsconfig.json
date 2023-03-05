@@ -23,6 +23,7 @@
     "include": [
         "src/**/*.ts",
         "test/**/*.ts",
+        "examples/**/*.ts"
     ],
     "exclude": [
         "node_modules/**/*.*",

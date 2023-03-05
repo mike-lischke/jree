@@ -22,5 +22,20 @@
             "smartStep": true,
             "trace": false
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run current example",
+            "runtimeExecutable": "ts-node",
+            "runtimeArgs": [
+                "./src/runner.ts",
+                "${file}"
+            ],
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "smartStep": true,
+            "trace": false
+        },
     ]
 }

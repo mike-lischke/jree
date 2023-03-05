@@ -24,7 +24,6 @@ import { OutputStream } from "./OutputStream";
 /** A print stream is an output stream that prints representations of various data values conveniently. */
 export class PrintStream extends FilterOutputStream {
 
-    // TODO: need a way to get all individual values from the BufferEncoding union type.
     private static supportedEncodings = new Set<string>([
         "ascii",   // alias to latin1
         "utf8",
@@ -35,8 +34,10 @@ export class PrintStream extends FilterOutputStream {
         "latin1",
         "binary",  // alias to latin11
     ]);
-    private autoFlush = false;
 
+    private static lineSeparator: JavaString | null;
+
+    private autoFlush = false;
     private encoding: BufferEncoding = "utf-8";
 
     /** Creates a new print stream, without automatic line flushing, with the specified file and charset. */
@@ -65,6 +66,10 @@ export class PrintStream extends FilterOutputStream {
             }
 
             this.encoding = charset as BufferEncoding;
+        }
+
+        if (!PrintStream.lineSeparator) {
+            PrintStream.lineSeparator = System.getProperty(new JavaString("line.separator"));
         }
     }
 
@@ -167,7 +172,7 @@ export class PrintStream extends FilterOutputStream {
             this.print(v);
         }
 
-        this.print(System.getProperty(new JavaString("line.separator")));
+        this.print(PrintStream.lineSeparator);
 
         if (this.autoFlush) {
             this.flush();

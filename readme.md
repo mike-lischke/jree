@@ -2,7 +2,7 @@
 
 # Java Runtime Environment Emulation
 
-This module contains a subset of JRE classes ported to Typescript and serves as runtime for Typescript and Javascript code that need JRE classes. It's a [clean room](https://en.wikipedia.org/wiki/Clean_room_design) implementation, which means no Java code was used for the implementation. Everything was written from scratch, but the Java API was used as a reference. This allows to release the code under a permissive license (MIT) and to use it in any (including commercial) projects, in opposition to the GPL license of the original JRE.
+This module contains a subset of JRE classes ported to Typescript and serves as runtime for Typescript and Javascript code that need JRE classes. It's a [clean room](https://en.wikipedia.org/wiki/Clean_room_design) implementation, which means no Java code was used for the implementation. Everything was written from scratch, but the Java API documentation was used as a reference. This allows to release the code under a permissive license (MIT) and to use it in any (including commercial) projects, in opposition to the GPL license of the original JRE.
 
 ## Installation and Use
 
@@ -22,6 +22,40 @@ builder.append(123);
 ```
 
 You can also import a class directly from full path, but I recommend to stay with fully qualified identifiers. In addition to the JRE classes there's' some support code that might come in handy. See the [support readme](doc/support.md) for more details.
+
+## Testing and Examples
+
+### Unit Tests
+
+The project comes with a number of unit tests. Currently the test coverage is pretty low, but it's a start. They can be executed with `npm run test-coverage`. For debugging a test open the JREE project in VS Code, open one of the spec files you want to debug, select the "Run current Jest test" launch config in the debugger view and start debugging. You can set breakpoints in the test code and in the JREE code.
+
+### Examples
+
+Additionally, there are some examples in the `examples` folder. These are not meant to be complete programs, but rather to show how to use the JREE in different scenarios, in a way that should look familiar to a Java developer. The are modelled after common Java sample programs.
+
+To run an example in a terminal you have to install `ts-node` globally:
+
+```bash
+npm i -g ts-node
+```
+
+Then you can run the example with
+
+```bash
+ts-node src/runner examples/HelloWorld
+```
+
+The HelloWorld is also executable using the NPM script "hello-world":
+
+```bash
+npm run hello-world
+```
+
+Because of the way Typescript (Javascript) works and how the JRE is organized, there's no need to set a CLASSPATH or to compile anything. The JREE is a self-contained module that can be used in any project. The examples are just Typescript files that import the JREE and use it.
+
+The runner script is a simple wrapper to load the given example (which must contain exactly one class with the typical `main()` method, and execute it. It can serve as a starting point for your own programs.
+
+The examples do not require that the jree is installed, but work directly against the source code in this project. However, it's easy to see how they would work with the installed module.
 
 ## Supported Java Classes
 

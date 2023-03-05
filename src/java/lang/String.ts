@@ -97,7 +97,8 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             }
 
             case 1: {
-                const input = args[0];
+                const input = args[0] as
+                    JavaString | string | Uint8Array | Uint16Array | Uint32Array | StringBuffer | StringBuilder;
                 if (input instanceof Uint8Array) {
                     const charset = Charset.defaultCharset();
                     this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;

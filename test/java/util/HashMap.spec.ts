@@ -38,16 +38,16 @@ describe("HashMap Tests", () => {
     it("Basic Map Operations", () => {
         const m = new java.util.HashMap<string, number>();
         expect(m.size()).toBe(0);
-        expect(m.isEmpty()).toBeTruthy();
-        expect(m.containsKey("")).toBeFalsy();
-        expect(m.containsKey("mike")).toBeFalsy();
+        expect(m.isEmpty()).toBe(true);
+        expect(m.containsKey("")).toBe(false);
+        expect(m.containsKey("mike")).toBe(false);
 
         expect(m.put("mike", 42)).toBeNull();
         expect(m.get("mike")).toBe(42);
 
-        expect(m.isEmpty()).toBeFalsy();
+        expect(m.isEmpty()).toBe(false);
 
-        expect(m.containsKey("mike")).toBeTruthy();
+        expect(m.containsKey("mike")).toBe(true);
         expect(m.put("mike", 43)).toBe(42);
         expect(m.get("mike")).toBe(43);
 
@@ -61,7 +61,7 @@ describe("HashMap Tests", () => {
 
         m.clear();
         expect(m.size()).toBe(0);
-        expect(m.isEmpty()).toBeTruthy();
+        expect(m.isEmpty()).toBe(true);
     });
 
     it("Hash Code and Equality", () => {
@@ -86,10 +86,10 @@ describe("HashMap Tests", () => {
         expect(m.equals(m2)).toBe(true);
 
         const m3 = m2.clone();
-        expect(m.equals(m3)).toBeTruthy();
+        expect(m.equals(m3)).toBe(true);
 
         m2.put("Some", "more");
-        expect(m.equals(m2)).toBeFalsy();
+        expect(m.equals(m2)).toBe(false);
     });
 
     it("Load Test", () => {
@@ -102,7 +102,7 @@ describe("HashMap Tests", () => {
         expect(m.hashCode()).toBe(-131496254);
 
         const test = new Test<number, number>();
-        expect(m.equals(test)).toBeFalsy();
+        expect(m.equals(test)).toBe(false);
         m.putAll(test);
     });
 
@@ -136,12 +136,12 @@ describe("HashMap Tests", () => {
 
         const keys = m.keySet();
         expect(keys.size()).toBe(5);
-        expect(keys.contains("ipsum")).toBeTruthy();
-        expect(keys.contains("mike")).toBeFalsy();
+        expect(keys.contains("ipsum")).toBe(true);
+        expect(keys.contains("mike")).toBe(false);
 
         const values = m.values();
         expect(values.size()).toBe(5);
-        expect(values.contains(null)).toBeTruthy();
+        expect(values.contains(null)).toBe(true);
 
         values.remove(null);
         expect(values.size()).toBe(3);

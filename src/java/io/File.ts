@@ -101,6 +101,40 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
     }
 
     /**
+     * Tests whether the application can execute the file denoted by this abstract pathname.
+     *
+     * @returns true if and only if the abstract pathname exists and the application is allowed to execute the file
+     */
+    public canExecute(): boolean {
+        const stat = fs.statSync(`${this.#path}`);
+
+        return (stat.mode & 0o111) !== 0;
+    }
+
+    /**
+     * Tests whether the application can read the file denoted by this abstract pathname.
+     *
+     * @returns true if and only if the file specified by this abstract pathname exists and can be read
+     */
+    public canRead(): boolean {
+        const stat = fs.statSync(`${this.#path}`);
+
+        return (stat.mode & 0o444) !== 0;
+    }
+
+    /**
+     * Tests whether the application can modify the file denoted by this abstract pathname.
+     *
+     * @returns true if and only if the file system actually contains a file denoted by this abstract pathname and the
+     *          application is allowed to write to the file
+     */
+    public canWrite(): boolean {
+        const stat = fs.statSync(`${this.#path}`);
+
+        return (stat.mode & 0o222) !== 0;
+    }
+
+    /**
      * Compares two abstract pathnames lexicographically.
      *
      * @param other The abstract pathname to be compared to this abstract pathname
@@ -111,6 +145,27 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      */
     public compareTo(other: JavaFile): number {
         return this.#path.compareTo(other.#path);
+    }
+
+    /**
+     * Tests whether the file or directory denoted by this abstract pathname exists.
+     *
+     * @returns true if and only if the file or directory denoted by this abstract pathname exists; false otherwise
+     */
+    public exists(): boolean {
+        if (fs.existsSync(`${this.#path}`)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @returns the name of the file or directory denoted by this abstract pathname. This is just the last name in the
+     * pathname's name sequence.
+     */
+    public getName(): JavaString {
+        return new JavaString(path.basename(`${this.#path}`));
     }
 
     /**
@@ -128,7 +183,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      * @returns The absolute pathname string denoting the same file or directory as this abstract pathname
      */
     public getAbsolutePath(): JavaString {
-        return new JavaString(this.#path.toString());
+        return new JavaString(this.#path.toAbsolutePath().toString());
     }
 
     /**

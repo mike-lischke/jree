@@ -198,4 +198,8 @@ export class PathImpl extends Path {
     public override toUri(): URI {
         return new URI(S`file://${this.#path}`);
     }
+
+    protected [Symbol.toPrimitive](_hint: string): string {
+        return this.#path;
+    }
 }

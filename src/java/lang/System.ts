@@ -5,6 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import * as os from "os";
+import * as path from "path";
+import * as process from "process";
+
 import { SystemOutputStream } from "../io/SystemOutputStream";
 import { JavaObject } from "./Object";
 import { JavaConsole } from "../io/Console";
@@ -84,7 +88,7 @@ export class System extends JavaObject {
     }
 
     public static lineSeparator(): JavaString {
-        return this.getProperty(new JavaString("line.separator"), new JavaString("/"));
+        return this.getProperty(new JavaString("line.separator"), new JavaString("\n"));
     }
 
     public static getProperty(key: JavaString): JavaString | null;
@@ -167,35 +171,29 @@ export class System extends JavaObject {
             this.properties.setProperty(new JavaString("os.name"),
                 new JavaString(`${navigator.platform}`)); // Operating system name
             this.properties.setProperty(new JavaString("line.separator"),
-                new JavaString("/")); // Line separator (new JavaString("\n" on UNIX)
+                new JavaString("\n")); // Line separator (new JavaString("\n" on UNIX)
             this.properties.setProperty(new JavaString("file.separator"),
-                new JavaString("")); // File separator (new JavaString("/" on UNIX)
+                new JavaString("/")); // File separator (new JavaString("/" on UNIX)
             this.properties.setProperty(new JavaString("path.separator"),
-                new JavaString("")); // Path separator (new JavaString(":" on UNIX)
+                new JavaString(":")); // Path separator (new JavaString(":" on UNIX)
             this.properties.setProperty(new JavaString("user.name"), new JavaString("")); // User's account name
             this.properties.setProperty(new JavaString("user.home"), new JavaString("")); // User's home directory
             this.properties.setProperty(new JavaString("user.dir"),
                 new JavaString("")); // User's current working directory
         } else {
             // Must be Node JS then.
-            void import("os").then((os) => {
-                this.properties.setProperty(new JavaString("tmpdir"), new JavaString(`${os.tmpdir()}`));
-                this.properties.setProperty(new JavaString("os.name"), new JavaString(`${os.type()}`));
-                this.properties.setProperty(new JavaString("os.arch"), new JavaString(`${os.arch()}`));
-                this.properties.setProperty(new JavaString("os.version"), new JavaString(`${os.version()}`));
-                this.properties.setProperty(new JavaString("line.separator"), new JavaString(`${os.EOL}`));
-            });
+            this.properties.setProperty(new JavaString("tmpdir"), new JavaString(`${os.tmpdir()}`));
+            this.properties.setProperty(new JavaString("os.name"), new JavaString(`${os.type()}`));
+            this.properties.setProperty(new JavaString("os.arch"), new JavaString(`${os.arch()}`));
+            this.properties.setProperty(new JavaString("os.version"), new JavaString(`${os.version()}`));
+            this.properties.setProperty(new JavaString("line.separator"), new JavaString(`${os.EOL}`));
 
-            void import("path").then((path) => {
-                this.properties.setProperty(new JavaString("file.separator"), new JavaString(`${path.sep}`));
-                this.properties.setProperty(new JavaString("path.separator"), new JavaString(`${path.delimiter}`));
-            });
+            this.properties.setProperty(new JavaString("file.separator"), new JavaString(`${path.sep}`));
+            this.properties.setProperty(new JavaString("path.separator"), new JavaString(`${path.delimiter}`));
 
-            void import("process").then((process) => {
-                this.properties.setProperty(new JavaString("user.name"), new JavaString(`${process.env.USER ?? ""}`));
-                this.properties.setProperty(new JavaString("user.home"), new JavaString(`${process.env.HOME ?? ""}`));
-                this.properties.setProperty(new JavaString("user.dir"), new JavaString(`${process.cwd()}`));
-            });
+            this.properties.setProperty(new JavaString("user.name"), new JavaString(`${process.env.USER ?? ""}`));
+            this.properties.setProperty(new JavaString("user.home"), new JavaString(`${process.env.HOME ?? ""}`));
+            this.properties.setProperty(new JavaString("user.dir"), new JavaString(`${process.cwd()}`));
         }
     }
 }

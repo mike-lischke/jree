@@ -4,6 +4,7 @@
         "ANTLR",
         "Appendable",
         "Charsets",
+        "CLASSPATH",
         "Cloneable",
         "closeables",
         "Declarators",
