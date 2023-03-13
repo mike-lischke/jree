@@ -6,9 +6,9 @@
  */
 
 import { S } from "../../templates";
+import { char } from "../../types";
 
 import { JavaString } from "../lang/String";
-import { char } from "../lang";
 import { CharSequence } from "../lang/CharSequence";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
@@ -68,8 +68,8 @@ export class BufferedWriter extends Writer {
      * @param c
      * @throws     IOException  If an I/O error occurs
      */
-    public write(c: char): void;
-    public write(buffer: Uint16Array): void;
+    public override write(c: char): void;
+    public override write(buffer: Uint16Array): void;
     /**
      * Writes a portion of an array of characters.
      *
@@ -93,8 +93,8 @@ export class BufferedWriter extends Writer {
      *
      * @throws  IOException  If an I/O error occurs
      */
-    public write(buffer: Uint16Array, offset: number, length: number): void;
-    public write(s: JavaString): void;
+    public override write(buffer: Uint16Array, offset: number, length: number): void;
+    public override write(s: JavaString): void;
     /**
      * Writes a portion of a String.
      *
@@ -109,8 +109,8 @@ export class BufferedWriter extends Writer {
      *
      * @throws  IOException  If an I/O error occurs
      */
-    public write(s: JavaString, offset: number, length: number): void;
-    public write(cOrBufferOrS: char | Uint16Array | JavaString, offset?: number,
+    public override write(s: JavaString, offset: number, length: number): void;
+    public override write(cOrBufferOrS: char | Uint16Array | JavaString, offset?: number,
         length?: number): void {
         this.ensureOpen();
         if (typeof cOrBufferOrS === "number") {
@@ -176,10 +176,10 @@ export class BufferedWriter extends Writer {
         }
     }
 
-    public append(c: char): this;
-    public append(csq: CharSequence): this;
-    public append(csq: CharSequence, start: number, end: number): this;
-    public append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
+    public override append(c: char): this;
+    public override append(csq: CharSequence): this;
+    public override append(csq: CharSequence, start: number, end: number): this;
+    public override append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
         if (typeof cOrCsq === "number") {
             this.write(cOrCsq);
         } else {

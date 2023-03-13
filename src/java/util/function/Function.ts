@@ -9,7 +9,7 @@
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or
  * method reference.
  */
-export interface Function<T, R> {
+export interface JavaFunction<T, R> {
     /**
      * Applies this function to the given argument.
      *
@@ -20,7 +20,7 @@ export interface Function<T, R> {
     apply: (t: T) => R;
 }
 
-export class Function<T, R> {
+export class JavaFunction<T, R> {
     /**
      * Returns a {@code Function} that wraps the given operation
      *
@@ -28,8 +28,8 @@ export class Function<T, R> {
      *
      * @returns a {@code Function} that performs the given operation on the given argument
      */
-    public static create<T, R>(apply: (t: T) => R): Function<T, R> {
-        return new class extends Function<T, R> {
+    public static create<T, R>(apply: (t: T) => R): JavaFunction<T, R> {
+        return new class extends JavaFunction<T, R> {
             public override apply = (t: T): R => { return apply(t); };
         }();
     }
@@ -45,8 +45,8 @@ export class Function<T, R> {
      *
      * Implementation note: this implements the default method of the {@link Consumer} interface.
      */
-    public andThen<V>(after: Function<R, V>): Function<T, V> {
-        return Function.create<T, V>((t: T) => {
+    public andThen<V>(after: JavaFunction<R, V>): JavaFunction<T, V> {
+        return JavaFunction.create<T, V>((t: T) => {
             return after.apply(this.apply(t));
         });
     }
@@ -60,8 +60,8 @@ export class Function<T, R> {
      * @returns a composed {@code Function} that first applies the {@code before} function and then applies this
      *          function
      */
-    public compose<V>(before: Function<V, T>): Function<V, R> {
-        return Function.create<V, R>((v: V) => {
+    public compose<V>(before: JavaFunction<V, T>): JavaFunction<V, R> {
+        return JavaFunction.create<V, R>((v: V) => {
             return this.apply(before.apply(v));
         });
     }

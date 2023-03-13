@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { char } from ".";
+import { char } from "../../types";
 import { JavaString } from "../lang/String";
 
 export interface CharSequence {

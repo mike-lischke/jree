@@ -9,7 +9,6 @@ import * as fs from "fs/promises";
 import { writeSync } from "fs";
 
 import { OutputStream } from "./OutputStream";
-import { S } from "../../templates";
 import { FileDescriptor } from "./FileDescriptor";
 import { JavaFile } from "./File";
 import { JavaString } from "../lang/String";
@@ -47,12 +46,12 @@ export class FileOutputStream extends OutputStream {
                 this.open(append ?? false);
             }
         } catch (error) {
-            throw new FileNotFoundException(S`Create open or create file`, Throwable.fromError(error));
+            throw new FileNotFoundException(new JavaString("Create open or create file"), Throwable.fromError(error));
         }
     }
 
     /** Closes this output stream and releases any system resources associated with this stream. */
-    public close(): void {
+    public override close(): void {
         if (this.closed) {
             return;
         }
@@ -68,24 +67,24 @@ export class FileOutputStream extends OutputStream {
     }
 
     /** Flushes this output stream and forces any buffered output bytes to be written out. */
-    public flush(): void {
+    public override flush(): void {
         this.fd.sync();
     }
 
     /** Writes b.length bytes from the specified byte array to this output stream. */
-    public write(b: Uint8Array): void;
+    public override write(b: Int8Array): void;
     /** Writes len bytes from the specified byte array starting at offset off to this output stream. */
-    public write(b: Uint8Array, offset: number, length: number): void;
+    public override write(b: Int8Array, offset: number, length: number): void;
     /** Writes the specified byte to this output stream. */
-    public write(b: number): void;
-    public write(b: Uint8Array | number, offset?: number, length?: number): void {
+    public override write(b: number): void;
+    public override write(b: Int8Array | number, offset?: number, length?: number): void {
         if (!this.fd.valid()) {
-            throw new IOException(S`Cannot write data because the file handle is invalid.`);
+            throw new IOException(new JavaString("Cannot write data because the file handle is invalid."));
         }
 
         try {
             if (typeof b === "number") {
-                const buffer = new Uint8Array(1);
+                const buffer = new Int8Array(1);
                 buffer[0] = b;
                 writeSync(this.fd.handle!.fd, buffer, 0, 1);
             } else {
@@ -98,7 +97,7 @@ export class FileOutputStream extends OutputStream {
                 writeSync(this.fd.handle!.fd, b, offset, length);
             }
         } catch (error) {
-            throw new IOException(S`Cannot write data to file`, Throwable.fromError(error));
+            throw new IOException(new JavaString("`Cannot write data to file"), Throwable.fromError(error));
         }
     }
 
@@ -112,7 +111,7 @@ export class FileOutputStream extends OutputStream {
                 this.fd.handle = handle;
                 this.closed = false;
             }).catch((reason) => {
-                throw new IOException(S`Cannot open file`, Throwable.fromError(reason));
+                throw new IOException(new JavaString("Cannot open file"), Throwable.fromError(reason));
             });
         }
     }

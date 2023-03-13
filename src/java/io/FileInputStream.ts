@@ -59,12 +59,12 @@ export class FileInputStream extends InputStream implements AutoCloseable {
     }
 
     /** Reads the next byte of data from the input stream. */
-    public read(): number;
+    public override read(): number;
     /** Reads some number of bytes from the input stream and stores them into the buffer array b. */
-    public read(b: Uint8Array): number;
+    public override read(b: Int8Array): number;
     /** Reads up to len bytes of data from the input stream into an array of bytes. */
-    public read(b: Uint8Array, offset: number, length: number): number;
-    public read(b?: Uint8Array, offset?: number, length?: number): number {
+    public override read(b: Int8Array, offset: number, length: number): number;
+    public override read(b?: Int8Array, offset?: number, length?: number): number {
         if (!b) {
             const buffer = ByteBuffer.allocate(1);
             const read = this.#channel.read(buffer);
@@ -85,7 +85,6 @@ export class FileInputStream extends InputStream implements AutoCloseable {
 
         const buffer = ByteBuffer.wrap(b, offset, length);
         const read = this.#channel.read([buffer], offset, length);
-        //const read = readSync(this.#fd.handle!.fd, b, offset ?? 0, length ?? b.length, null);
         if (read === 0n) {
             return - 1;
         }

@@ -6,11 +6,12 @@
  */
 
 import unicode from "unicode-properties";
-import { char, JavaString } from ".";
 
 import { final } from "../../Decorators";
+import { char } from "../../types";
 
 import { Class, JavaObject } from "./Object";
+import { JavaString } from "./String";
 
 /**
  * The Character class wraps a value of the primitive type char in an object. An object of type Character contains a
@@ -270,7 +271,7 @@ export class Character extends JavaObject {
      *
      * @returns The character's general category.
      *
-     * Note: In typescript we cannot differentiate between char and number (java.lang.char is a type alias for number).
+     * Note: In typescript we cannot differentiate between char and number (char is a type alias for number).
      *       That means there's only one method for the two Java getType methods.
      */
     public static getType(c: char | number): number {

@@ -5,11 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { JavaObject } from "../lang/Object";
-
 import { isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
-import { JavaString } from "../..";
+
+import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
 import { ArrayList } from "./ArrayList";
 import { List } from "./List";
 

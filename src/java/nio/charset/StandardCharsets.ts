@@ -5,30 +5,45 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../../templates";
 import { JavaObject } from "../../lang/Object";
+import { JavaString } from "../../lang/String";
 import { Charset } from "./Charset";
 
 export class StandardCharsets extends JavaObject {
     /** ISO Latin Alphabet No. */
-    public static readonly ISO_8859_1 = Charset.forName(S`ISO-8859-1`)!;
+    public static readonly ISO_8859_1: Charset;
 
     /** Seven-bit ASCII, a.k.a. */
-    public static readonly US_ASCII = Charset.forName(S`US-ASCII`)!;
+    public static readonly US_ASCII: Charset;
 
     /** Sixteen-bit UCS Transformation Format, byte order identified by an optional byte-order mark */
-    public static readonly UTF_16 = Charset.forName(S`UTF-16`)!;
+    public static readonly UTF_16: Charset;
 
     /** Sixteen-bit UCS Transformation Format, big-endian byte order */
-    //public static readonly UTF_16BE = Charset.forName(S`UTF-16B`");
+    //public static readonly UTF_16BE: Charset;
 
     /** Sixteen-bit UCS Transformation Format, little-endian byte order */
-    public static readonly UTF_16LE = Charset.forName(S`UTF-16LE`)!;
+    public static readonly UTF_16LE: Charset;
 
     /** Eight-bit UCS Transformation Format */
-    public static readonly UTF_8 = Charset.forName(S`UTF-8`)!;
+    public static readonly UTF_8: Charset;
 
     private constructor() {
         super();
+    }
+
+    static {
+        setTimeout(() => {
+            // @ts-ignore
+            StandardCharsets.ISO_8859_1 = Charset.forName(new JavaString("ISO-8859-1"))!;
+            // @ts-ignore
+            StandardCharsets.US_ASCII = Charset.forName(new JavaString("US-ASCII"))!;
+            // @ts-ignore
+            StandardCharsets.UTF_16 = Charset.forName(new JavaString("UTF-16"))!;
+            // @ts-ignore
+            StandardCharsets.UTF_16LE = Charset.forName(new JavaString("UTF-16LE"))!;
+            // @ts-ignore
+            StandardCharsets.UTF_8 = Charset.forName(new JavaString("UTF-8"))!;
+        }, 0);
     }
 }

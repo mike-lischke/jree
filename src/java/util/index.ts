@@ -40,6 +40,7 @@ export * from "./Stack";
 export * from "./RandomAccess";
 export * from "./ArrayDeque";
 export * from "./AbstractList";
+export * from "./Optional";
 
 export * from "./NoSuchElementException";
 export * from "./EmptyStackException";

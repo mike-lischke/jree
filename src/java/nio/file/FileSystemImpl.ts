@@ -8,8 +8,6 @@
 import path from "path";
 import minimatch from "minimatch";
 
-import { S } from "../../../templates";
-
 import { JavaFileSystem } from "./FileSystem";
 import { PathImpl } from "./PathImpl";
 import { FileStore } from "./FileStore";
@@ -29,8 +27,8 @@ import { UserPrincipalLookupService } from "./attribute/UserPrincipalLookupServi
  * This is the default implementation of the FileSystem interface. It uses Node.js' file system API.
  */
 export class FileSystemImpl extends JavaFileSystem {
-    #globSyntax = S`glob`;
-    #regexSyntax = S`regex`;
+    #globSyntax = new JavaString("glob");
+    #regexSyntax = new JavaString("regex");
 
     public constructor() {
         super();
@@ -49,7 +47,7 @@ export class FileSystemImpl extends JavaFileSystem {
     }
 
     public getPathMatcher(syntaxAndPattern: JavaString): PathMatcher {
-        const [syntax, pattern] = syntaxAndPattern.split(":", 2);
+        const [syntax, pattern] = syntaxAndPattern.split(new JavaString(":"), 2);
 
         if (syntax.equals(this.#globSyntax)) {
             return new class implements PathMatcher {
@@ -65,12 +63,12 @@ export class FileSystemImpl extends JavaFileSystem {
             }();
         }
 
-        throw new PatternSyntaxException(S`Invalid syntax: ${syntax}`, syntaxAndPattern, -1);
+        throw new PatternSyntaxException(new JavaString(`Invalid syntax: ${syntax}`), syntaxAndPattern, -1);
     }
 
     public getRootDirectories(): JavaIterable<Path> {
         const root = path.parse(process.cwd()).root;
-        const list = [new PathImpl(this, S`${root}`)];
+        const list = [new PathImpl(this, new JavaString(`${root}`))];
 
         return new class extends JavaIterable<Path> {
             public [Symbol.iterator](): IterableIterator<Path> {
@@ -117,7 +115,7 @@ export class FileSystemImpl extends JavaFileSystem {
         throw new NotImplementedError();
     }
 
-    // public  provider(): spi.FileSystemProvider;
+    // public  provider(): FileSystemProvider;
 
     public supportedFileAttributeViews(): JavaIterable<JavaString> {
         throw new NotImplementedError();

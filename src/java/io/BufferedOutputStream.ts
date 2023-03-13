@@ -12,7 +12,7 @@ import { OutputStream } from "./OutputStream";
 
 export class BufferedOutputStream extends FilterOutputStream {
 
-    protected buf: Uint8Array;
+    protected buf: Int8Array;
     protected count = 0;
 
     public constructor(out: OutputStream, size = 0xFFFF) {
@@ -22,13 +22,13 @@ export class BufferedOutputStream extends FilterOutputStream {
             throw new IllegalArgumentException();
         }
 
-        this.buf = new Uint8Array(size);
+        this.buf = new Int8Array(size);
     }
 
-    public write(b: Uint8Array): void;
-    public write(b: Uint8Array, off: number, len: number): void;
-    public write(b: number): void;
-    public write(b: Uint8Array | number, off?: number, len?: number): void {
+    public override write(b: Int8Array): void;
+    public override write(b: Int8Array, off: number, len: number): void;
+    public override write(b: number): void;
+    public override write(b: Int8Array | number, off?: number, len?: number): void {
         if (typeof b === "number") {
             this.buf[this.count++] = b & 0xFF;
             if (this.count === this.buf.length) {
@@ -56,14 +56,14 @@ export class BufferedOutputStream extends FilterOutputStream {
         }
     }
 
-    public flush(): void {
+    public override flush(): void {
         if (this.count > 0) {
             this.out.write(this.buf, 0, this.count);
             this.count = 0;
         }
     }
 
-    public close(): void {
+    public override close(): void {
         this.out.close();
     }
 }

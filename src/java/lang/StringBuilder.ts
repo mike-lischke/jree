@@ -12,7 +12,10 @@ import { CharSequence } from "./CharSequence";
 import { NegativeArraySizeException } from "./NegativeArraySizeException";
 import { Appendable } from "./Appendable";
 import { CharBuffer } from "../nio/CharBuffer";
-import { char } from ".";
+import { char } from "../../types";
+import {
+    codePointBeforeFromUTF16, codePointFromUTF16, convertStringToUTF16, convertUTF16ToString,
+} from "../../string-helpers";
 
 export type SourceDataType =
     null | undefined | boolean | number | string | bigint | Uint16Array | CharSequence | JavaObject;
@@ -20,12 +23,10 @@ export type SourceDataType =
 type SourceData = SourceDataType[];
 
 export class StringBuilder extends JavaObject implements CharSequence, Appendable {
-    private static readonly surrogateOffset = 0x10000 - (0xD800 << 10) - 0xDC00;
-
-    private data: Uint16Array;
+    #data: Uint16Array;
 
     // The used length in data (which might be larger, due to removed parts).
-    private currentLength = 0;
+    #currentLength = 0;
 
     public constructor(capacity?: number);
     public constructor(content: string | CharSequence);
@@ -37,9 +38,9 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
                 throw new NegativeArraySizeException();
             }
 
-            this.data = new Uint16Array(capacityOrContent);
+            this.#data = new Uint16Array(capacityOrContent);
         } else {
-            this.data = new Uint16Array();
+            this.#data = new Uint16Array();
             if (capacityOrContent !== undefined) {
                 this.append(capacityOrContent);
             }
@@ -55,9 +56,9 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
     public append(valueOrStrOrS: SourceDataType, offsetOrStart?: number, lenOrEnd?: number): this {
         if (valueOrStrOrS instanceof Uint16Array || Array.isArray(valueOrStrOrS)
             || this.isCharSequence(valueOrStrOrS)) {
-            this.insertListData(this.currentLength, valueOrStrOrS, offsetOrStart, lenOrEnd);
+            this.insertListData(this.#currentLength, valueOrStrOrS, offsetOrStart, lenOrEnd);
         } else {
-            this.insertData(this.currentLength, valueOrStrOrS);
+            this.insertData(this.#currentLength, valueOrStrOrS);
         }
 
         return this;
@@ -78,7 +79,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
 
     /** @returns the current capacity. */
     public capacity(): number {
-        return this.data.length;
+        return this.#data.length;
     }
 
     /**
@@ -87,11 +88,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param index The index of the value to be returned.
      */
     public charAt(index: number): char {
-        if (index < 0 || index >= this.currentLength) {
+        if (index < 0 || index >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        return this.data.at(index)!;
+        return this.#data.at(index)!;
     }
 
     /**
@@ -101,8 +102,8 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @returns this
      */
     public clear(): this {
-        this.data = new Uint16Array();
-        this.currentLength = 0;
+        this.#data = new Uint16Array();
+        this.#currentLength = 0;
 
         return this;
     }
@@ -113,28 +114,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param index The position of the requested code point.
      */
     public codePointAt(index: number): number {
-        if (index < 0 || index >= this.currentLength) {
+        if (index < 0 || index >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        const code = this.data.at(index)!;
-        if (code >= 0xD800 && code <= 0xDBFF) {
-            // Got a high surrogate value. See if there's a low one and compute the actual code point from that.
-            if (index === this.data.length) {
-                // Not enough data. Return just the high surrogate.
-                return code;
-            }
-
-            const lowSurrogate = this.data[index + 1];
-            if (lowSurrogate < 0xDC00 || lowSurrogate > 0xDFFF) {
-                // Invalid low surrogate.
-                return code;
-            }
-
-            return (code << 10) + lowSurrogate + StringBuilder.surrogateOffset;
-        }
-
-        return code;
+        return codePointFromUTF16(this.#data, index);
     }
 
     /**
@@ -143,22 +127,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param index The position of the requested code point.
      */
     public codePointBefore(index: number): number {
-        if (index < 1 || index >= this.currentLength) {
+        if (index < 1 || index >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        const code = this.data.at(index - 1)!;
-        if (code >= 0xDC00 && code <= 0xDFFF) {
-            // Found a low surrogate. Can we create a full code point from that?
-            if (index - 2 >= 0) {
-                const highSurrogate = this.data.at(index - 2)!;
-                if (highSurrogate >= 0xD800 && highSurrogate <= 0xDBFF) {
-                    return (highSurrogate << 10) + code + StringBuilder.surrogateOffset;
-                }
-            }
-        }
-
-        return code;
+        return codePointBeforeFromUTF16(this.#data, index);
     }
 
     /**
@@ -168,11 +141,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param endIndex the index after the last char of the text range.
      */
     public codePointCount(beginIndex: number, endIndex: number): number {
-        if (beginIndex < 0 || beginIndex >= this.currentLength) {
+        if (beginIndex < 0 || beginIndex >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        if (endIndex < 0 || endIndex >= this.currentLength) {
+        if (endIndex < 0 || endIndex >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -183,11 +156,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
         let count = 0;
         let index = beginIndex;
         while (index < endIndex) {
-            let code = this.data.at(index++)!;
+            let code = this.#data.at(index++)!;
             ++count;
 
             if (code >= 0xD800 && code <= 0xDBFF && index < endIndex) {
-                code = this.data.at(index)!;
+                code = this.#data.at(index)!;
                 if (code >= 0xDC00 && code <= 0xDFFF) {
                     // Full surrogate pair, jump over the low surrogate.
                     ++index;
@@ -207,11 +180,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @returns this.
      */
     public delete(start: number, end: number): this {
-        if (start < 0 || start >= this.currentLength) {
+        if (start < 0 || start >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        if (end < 0 || end > this.currentLength) {
+        if (end < 0 || end > this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -219,8 +192,8 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
             throw new IndexOutOfBoundsException();
         }
 
-        this.data.copyWithin(start, end);
-        this.currentLength -= end - start;
+        this.#data.copyWithin(start, end);
+        this.#currentLength -= end - start;
 
         return this;
     }
@@ -244,10 +217,10 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param minimumCapacity The required capacity.
      */
     public ensureCapacity(minimumCapacity: number): void {
-        if (minimumCapacity > this.data.length) {
+        if (minimumCapacity > this.#data.length) {
             const newData = new Uint16Array(minimumCapacity);
-            newData.set(this.data);
-            this.data = newData;
+            newData.set(this.#data);
+            this.#data = newData;
 
             // The current length doesn't change.
         }
@@ -266,7 +239,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
             throw new IndexOutOfBoundsException();
         }
 
-        if (srcBegin > srcEnd || srcEnd > this.currentLength) {
+        if (srcBegin > srcEnd || srcEnd > this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -274,7 +247,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
             throw new IndexOutOfBoundsException();
         }
 
-        dst.set(this.data.subarray(srcBegin, srcEnd), dstBegin);
+        dst.set(this.#data.subarray(srcBegin, srcEnd), dstBegin);
     }
 
     /**
@@ -322,7 +295,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
 
     /** @returns the length (character count). */
     public length(): number {
-        return this.currentLength;
+        return this.#currentLength;
     }
 
     /**
@@ -332,15 +305,15 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param codePointOffset the offset in code points
      */
     public offsetByCodePoints(index: number, codePointOffset: number): number {
-        if (index < 0 || index >= this.currentLength) {
+        if (index < 0 || index >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
         if (codePointOffset >= 0) {
             let offset: number;
-            for (offset = 0; index < this.currentLength && offset < codePointOffset; ++offset) {
-                if (this.isHighSurrogate(this.data.at(index++)) && index < this.currentLength &&
-                    this.isLowSurrogate(this.data.at(index))) {
+            for (offset = 0; index < this.#currentLength && offset < codePointOffset; ++offset) {
+                if (this.isHighSurrogate(this.#data.at(index++)) && index < this.#currentLength &&
+                    this.isLowSurrogate(this.#data.at(index))) {
                     ++index;
                 }
             }
@@ -351,8 +324,8 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
         } else {
             let offset: number;
             for (offset = codePointOffset; index > 0 && offset < 0; ++offset) {
-                if (this.isLowSurrogate(this.data.at(--index)) && index > 0 &&
-                    this.isHighSurrogate(this.data.at(index - 1))) {
+                if (this.isLowSurrogate(this.#data.at(--index)) && index > 0 &&
+                    this.isHighSurrogate(this.#data.at(index - 1))) {
                     --index;
                 }
             }
@@ -386,7 +359,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @returns this
      */
     public reverse(): this {
-        this.data.reverse();
+        this.#data.reverse();
 
         return this;
     }
@@ -398,11 +371,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param ch tbd
      */
     public setCharAt(index: number, ch: char): void {
-        if (index < 0 || index >= this.currentLength) {
+        if (index < 0 || index >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        this.data.set([ch & 0xFFFF], index);
+        this.#data.set([ch & 0xFFFF], index);
     }
 
     /**
@@ -411,23 +384,23 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param newLength The new length.
      */
     public setLength(newLength: number): void {
-        if (newLength === this.currentLength) {
+        if (newLength === this.#currentLength) {
             return;
         }
 
-        if (newLength < this.currentLength) {
-            this.currentLength = newLength;
-        } else if (newLength > this.currentLength && newLength < this.data.length) {
+        if (newLength < this.#currentLength) {
+            this.#currentLength = newLength;
+        } else if (newLength > this.#currentLength && newLength < this.#data.length) {
             // No need to copy anything if we still have enough room.
-            this.currentLength = newLength;
+            this.#currentLength = newLength;
         } else {
             // New length is larger than the current data size. Create a new array and copy the existing content.
             // Any further entry is initialized to zero.
             const newData = new Uint16Array(newLength).fill(0);
-            this.currentLength = newLength;
-            newData.set(this.data, 0);
+            this.#currentLength = newLength;
+            newData.set(this.#data, 0);
 
-            this.data = newData;
+            this.#data = newData;
         }
     }
 
@@ -439,7 +412,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      */
     public subSequence(start: number, end: number): CharSequence {
         const buffer = CharBuffer.wrap(new Uint16Array());
-        buffer.put(this.data, start, end);
+        buffer.put(this.#data, start, end);
 
         return buffer;
     }
@@ -451,39 +424,39 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param end tbd
      */
     public substring(start: number, end?: number): JavaString {
-        end ??= this.currentLength;
-        if (start < 0 || end >= this.currentLength) {
+        end ??= this.#currentLength;
+        if (start < 0 || end >= this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
-        if (start === 0 && (end === undefined || end === this.currentLength)) {
-            return new JavaString(this.data);
+        if (start === 0 && (end === undefined || end === this.#currentLength)) {
+            return new JavaString(this.#data);
         }
 
-        return new JavaString(String.fromCharCode(...this.data.subarray(start, end)));
+        return new JavaString(convertUTF16ToString(this.#data.subarray(start, end)));
     }
 
     /** @returns a string representing of the data in this sequence. */
     public override toString(): JavaString {
-        return new JavaString(String.fromCharCode(...this.data.subarray(0, this.currentLength)));
+        return new JavaString(convertUTF16ToString(this.#data.subarray(0, this.#currentLength)));
     }
 
     public array(): Uint16Array {
-        return this.data.subarray(0, this.currentLength);
+        return this.#data.subarray(0, this.#currentLength);
     }
 
     /** Attempts to reduce storage used for the character sequence. */
     public trimToSize(): void {
-        if (this.currentLength < this.data.length) {
-            const newData = new Uint16Array(this.currentLength);
-            newData.set(this.data.subarray(0, this.currentLength), 0);
+        if (this.#currentLength < this.#data.length) {
+            const newData = new Uint16Array(this.#currentLength);
+            newData.set(this.#data.subarray(0, this.#currentLength), 0);
 
-            this.data = newData;
+            this.#data = newData;
         }
     }
 
     protected [Symbol.toPrimitive](_hint: string): string {
-        return String.fromCharCode(...this.data.subarray(0, this.currentLength));
+        return convertUTF16ToString(this.#data.subarray(0, this.#currentLength));
     }
 
     private insertData(position: number, ...newContent: SourceData): void {
@@ -491,57 +464,45 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
         let additionalSize = 0;
         newContent.forEach((entry) => {
             if (entry instanceof StringBuilder) {
-                if (entry.currentLength > 0) {
-                    list.push(entry.data.subarray(0, entry.currentLength));
-                    additionalSize += entry.currentLength;
+                if (entry.#currentLength > 0) {
+                    list.push(entry.#data.subarray(0, entry.#currentLength));
+                    additionalSize += entry.#currentLength;
                 }
             } else if (typeof entry === "string") {
                 if (entry.length > 0) {
-                    const chars: char[] = [];
-
-                    for (let i = 0; i < entry.length; ++i) {
-                        chars.push(entry.charCodeAt(i));
-                    }
-
-                    const array = Uint16Array.from(chars);
+                    const array = convertStringToUTF16(entry);
                     additionalSize += array.length;
                     list.push(array);
                 }
             } else {
                 const text = entry ? `${entry.toString()}` : "null";
                 if (text.length > 0) {
-                    const chars: char[] = [];
-
-                    for (let i = 0; i < text.length; ++i) {
-                        chars.push(text.charCodeAt(i));
-                    }
-
-                    const array = Uint16Array.from(chars);
+                    const array = convertStringToUTF16(text);
                     additionalSize += array.length;
                     list.push(array);
                 }
             }
         });
 
-        const requiredSize = this.currentLength + additionalSize;
-        if (requiredSize <= this.data.length) {
+        const requiredSize = this.#currentLength + additionalSize;
+        if (requiredSize <= this.#data.length) {
             // No need to re-allocate. There's still room for the new data.
-            if (position < this.currentLength) {
-                this.data.copyWithin(position + additionalSize, position, this.currentLength);
+            if (position < this.#currentLength) {
+                this.#data.copyWithin(position + additionalSize, position, this.#currentLength);
             }
 
             list.forEach((data) => {
-                this.data.set(data, position);
+                this.#data.set(data, position);
                 position += data.length;
             });
 
-            this.currentLength = requiredSize;
+            this.#currentLength = requiredSize;
         } else {
             // Reallocate at least by half of the current buffer size.
-            const newData = new Uint16Array(Math.max(requiredSize, this.data.length * 1.5));
+            const newData = new Uint16Array(Math.max(requiredSize, this.#data.length * 1.5));
             if (position > 0) {
                 // Copy what's before the target position.
-                newData.set(this.data.subarray(0, position), 0);
+                newData.set(this.#data.subarray(0, position), 0);
             }
 
             // Add the new data.
@@ -551,13 +512,13 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
                 offset += data.length;
             });
 
-            if (position < this.currentLength) {
+            if (position < this.#currentLength) {
                 // Copy the rest from the original data.
-                newData.set(this.data.subarray(position, this.currentLength), offset);
+                newData.set(this.#data.subarray(position, this.#currentLength), offset);
             }
 
-            this.data = newData;
-            this.currentLength = requiredSize;
+            this.#data = newData;
+            this.#currentLength = requiredSize;
         }
     }
 
@@ -595,32 +556,32 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
             }
         }
 
-        const requiredSize = this.currentLength + additionalSize;
-        if (requiredSize <= this.data.length) {
+        const requiredSize = this.#currentLength + additionalSize;
+        if (requiredSize <= this.#data.length) {
             // No need to re-allocate. There's still room for the new data.
-            if (position < this.currentLength) {
-                this.data.copyWithin(additionalSize, position, this.currentLength);
+            if (position < this.#currentLength) {
+                this.#data.copyWithin(additionalSize, position, this.#currentLength);
             }
 
-            this.data.set(array, position);
-            this.currentLength = requiredSize;
+            this.#data.set(array, position);
+            this.#currentLength = requiredSize;
         } else {
-            const newData = new Uint16Array(Math.max(requiredSize, this.data.length * 1.5));
+            const newData = new Uint16Array(Math.max(requiredSize, this.#data.length * 1.5));
             if (position > 0) {
                 // Copy what's before the target position.
-                newData.set(this.data.subarray(0, position), 0);
+                newData.set(this.#data.subarray(0, position), 0);
             }
 
             // Add the new data.
             newData.set(array, position);
 
-            if (position < this.currentLength) {
+            if (position < this.#currentLength) {
                 // Copy the rest from the original data.
-                newData.set(this.data.subarray(position, this.currentLength), position + additionalSize);
+                newData.set(this.#data.subarray(position, this.#currentLength), position + additionalSize);
             }
 
-            this.data = newData;
-            this.currentLength = requiredSize;
+            this.#data = newData;
+            this.#currentLength = requiredSize;
         }
     }
 

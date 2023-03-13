@@ -5,15 +5,16 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { char } from "../../types";
+import { CharSequence } from "./CharSequence";
 
 export interface Appendable {
     /** Appends the specified character to this Appendable. */
-    append(c: java.lang.char): this;
+    append(c: char): this;
 
     /** Appends the specified character sequence to this Appendable. */
-    append(csq: java.lang.CharSequence): this;
+    append(csq: CharSequence): this;
 
     /** Appends a subsequence of the specified character sequence to this Appendable. */
-    append(csq: java.lang.CharSequence, start: number, end: number): this;
+    append(csq: CharSequence, start: number, end: number): this;
 }

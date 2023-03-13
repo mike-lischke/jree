@@ -7,15 +7,20 @@
 
 import printf from "printf";
 
-import { char } from ".";
-
 import { MurmurHash } from "../../MurmurHash";
-import { charCodesToString, codePointsToString } from "../../utilities";
+import { NotImplementedError } from "../../NotImplementedError";
+import {
+    codePointFromUTF16, convertStringToUTF16, convertUF32ToUTF16, convertUTF16ToString, indexOfSubArray,
+    lastIndexOfSubArray,
+} from "../../string-helpers";
+import { char } from "../../types";
+
 import { Serializable } from "../io/Serializable";
 import { UnsupportedEncodingException } from "../io/UnsupportedEncodingException";
 import { ByteBuffer } from "../nio/ByteBuffer";
 import { Charset } from "../nio/charset/Charset";
 import { Locale } from "../util/Locale";
+import { IntStream } from "../util/stream/IntStream";
 import { CharSequence } from "./CharSequence";
 import { Comparable } from "./Comparable";
 import { IllegalArgumentException } from "./IllegalArgumentException";
@@ -36,30 +41,30 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
 
     static #whitespaceRegExEnd = /[\p{Zs}\p{Zi}\p{Zp}\x09\x0A\x0B\x0C\x0D\x1C\x1D\x1E\x1F]+$/;
 
-    #value: string;
+    #value: Uint16Array;
 
     /** Initializes a newly created String object so that it represents an empty character sequence. */
     public constructor();
     /** Constructs a new String by decoding the specified array of bytes using the platform's default charset. */
-    public constructor(bytes: Uint8Array);
+    public constructor(bytes: Int8Array);
     /** Constructs a new String by decoding the specified array of bytes using the specified charset. */
-    public constructor(bytes: Uint8Array, charset: Charset);
+    public constructor(bytes: Int8Array, charset: Charset);
     /**
      * This method does not properly convert bytes into characters. As of JDK 1.1, the preferred way to do this is via
      * the String constructors that take a Charset, charset name, or that use the platform's default charset.
      * Constructs a new String by decoding the specified subarray of bytes using the platform's default charset.
      */
-    public constructor(bytes: Uint8Array, offset: number, length: number);
+    public constructor(bytes: Int8Array, offset: number, length: number);
     /** Constructs a new String by decoding the specified subarray of bytes using the specified charset. */
-    public constructor(bytes: Uint8Array, offset: number, length: number, charset: Charset);
+    public constructor(bytes: Int8Array, offset: number, length: number, charset: Charset);
     /**
      * This method does not properly convert bytes into characters. As of JDK 1.1, the preferred way to do this is
      * via the String constructors that take a Charset, charset name, or that use the platform's default charset.
      * Constructs a new String by decoding the specified subarray of bytes using the specified charset.
      */
-    public constructor(bytes: Uint8Array, offset: number, length: number, charsetName: JavaString);
+    public constructor(bytes: Int8Array, offset: number, length: number, charsetName: JavaString);
     /** Constructs a new String by decoding the specified array of bytes using the specified charset. */
-    public constructor(bytes: Uint8Array, charsetName: JavaString);
+    public constructor(bytes: Int8Array, charsetName: JavaString);
     /**
      * Allocates a new String so that it represents the sequence of characters currently contained in the character
      * array argument.
@@ -68,7 +73,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     /** Allocates a new String that contains characters from a subarray of the character array argument. */
     public constructor(value: Uint16Array, offset: number, count: number);
     /** Allocates a new String that contains characters from a subarray of the Unicode code point array argument. */
-    public constructor(codePoints: Uint32Array, offset: number, count: number);
+    public constructor(codePoints: Int32Array, offset: number, count: number);
     /**
      * Initializes a newly created String object so that it represents the same sequence of characters as the argument;
      * in other words, the newly created string is a copy of the argument string.
@@ -91,23 +96,23 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
 
         switch (args.length) {
             case 0: {
-                this.#value = "";
+                this.#value = new Uint16Array(0);
 
                 break;
             }
 
             case 1: {
                 const input = args[0] as
-                    JavaString | string | Uint8Array | Uint16Array | Uint32Array | StringBuffer | StringBuilder;
-                if (input instanceof Uint8Array) {
+                    JavaString | string | Int8Array | Uint16Array | Int32Array | StringBuffer | StringBuilder;
+                if (input instanceof Int8Array) {
                     const charset = Charset.defaultCharset();
-                    this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;
+                    this.#value = charset.decode(ByteBuffer.wrap(input)).array();
                 } else if (input instanceof Uint16Array) {
-                    this.#value = charCodesToString(input);
-                } else if (input instanceof Uint32Array) {
-                    this.#value = codePointsToString(input);
+                    this.#value = input;
+                } else if (input instanceof Int32Array) {
+                    this.#value = convertUF32ToUTF16(input);
                 } else {
-                    this.#value = `${input}`;
+                    this.#value = convertStringToUTF16(`${input}`);
                 }
 
                 break;
@@ -115,60 +120,60 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
 
             case 2: {
                 if (args[1] instanceof Charset) {
-                    const [input, charset] = args as [Uint8Array, Charset];
-                    this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;
+                    const [input, charset] = args as [Int8Array, Charset];
+                    this.#value = charset.decode(ByteBuffer.wrap(input)).array();
                 } else {
-                    const [input, charsetName] = args as [Uint8Array, JavaString];
+                    const [input, charsetName] = args as [Int8Array, JavaString];
                     const charset = Charset.forName(charsetName);
                     if (charset === null) {
                         throw new UnsupportedEncodingException(charsetName);
                     }
 
-                    this.#value = `${charset.decode(ByteBuffer.wrap(input))}`;
+                    this.#value = charset.decode(ByteBuffer.wrap(input)).array();
                 }
 
                 break;
             }
 
             case 3: {
-                const [input, offset, length] = args[0] as [Uint8Array | Uint16Array | Uint32Array, number, number];
+                const [input, offset, length] = args[0] as [Int8Array | Uint16Array | Int32Array, number, number];
                 if (offset < 0 || length < 0 || offset + length > input.length) {
                     throw new IndexOutOfBoundsException();
                 }
 
-                if (input instanceof Uint8Array) {
-                    this.#value = `${Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length))}`;
+                if (input instanceof Int8Array) {
+                    this.#value = Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length)).array();
                 } else if (input instanceof Uint16Array) {
-                    this.#value = charCodesToString(input.slice(offset, length));
+                    this.#value = input.slice(offset, length);
                 } else {
-                    this.#value = codePointsToString(input.slice(offset, length));
+                    this.#value = convertUF32ToUTF16(input.slice(offset, length));
                 }
 
                 break;
             }
 
             case 4: {
-                const [input, offset, length, cs] = args as [Uint8Array, number, number, Charset | JavaString];
+                const [input, offset, length, cs] = args as [Int8Array, number, number, Charset | JavaString];
                 if (offset < 0 || length < 0 || offset + length > input.length) {
                     throw new IndexOutOfBoundsException();
                 }
 
                 if (cs instanceof Charset) {
-                    this.#value = `${cs.decode(ByteBuffer.wrap(input, offset, length))}`;
+                    this.#value = cs.decode(ByteBuffer.wrap(input, offset, length)).array();
                 } else {
                     const charset = Charset.forName(cs);
                     if (charset === null) {
                         throw new UnsupportedEncodingException(cs);
                     }
 
-                    this.#value = `${Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length))}`;
+                    this.#value = Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length)).array();
                 }
 
                 break;
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString(`Invalid number of arguments: ${args.length}`));
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
             }
         }
     }
@@ -226,6 +231,15 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     }
 
     public [Symbol.toPrimitive](hint: string): string {
+        return convertUTF16ToString(this.#value);
+    }
+
+    /**
+     * Not part of the Java API. Returns the internal UTF-16 array.
+     *
+     * @returns the internal UTF-16 array.
+     */
+    public array(): Uint16Array {
         return this.#value;
     }
 
@@ -239,7 +253,14 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             throw new IndexOutOfBoundsException();
         }
 
-        return this.#value.charCodeAt(index);
+        return this.#value[index];
+    }
+
+    /**
+     * Returns a stream of int zero-extending the char values from this sequence.
+     */
+    public chars(): IntStream {
+        throw new NotImplementedError();
     }
 
     /**
@@ -252,7 +273,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             throw new IndexOutOfBoundsException();
         }
 
-        return this.#value.codePointAt(index)!;
+        return codePointFromUTF16(this.#value, index);
     }
 
     /**
@@ -260,10 +281,15 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @param anotherString the string to be compared.
      *
-     * @returns the value `0` if the argument string is equal to this string; a value less than `0` if this string
+     * @returns the value 0 if the argument string is equal to this string; a value less than 0 if this string is
+     *          lexicographically less than the string argument; and a value greater than 0 if this string is
+     *          lexicographically greater than the string argument.
      */
     public compareTo(anotherString: JavaString): number {
-        return this.#value.localeCompare(anotherString.#value, undefined, { sensitivity: "accent" });
+        const source = convertUTF16ToString(this.#value);
+        const target = convertUTF16ToString(anotherString.#value);
+
+        return source.localeCompare(target, undefined, { sensitivity: "accent" });
     }
 
     /**
@@ -271,10 +297,14 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @param anotherString the string to be compared.
      *
-     * @returns the value `0` if the argument string is equal to this string; a value less than `0` if this string
+     * @returns a negative integer, zero, or a positive integer as the specified String is greater than, equal to, or
+     *          less than this String, ignoring case considerations.
      */
     public compareToIgnoreCase(anotherString: JavaString): number {
-        return this.#value.localeCompare(anotherString.#value, undefined, { sensitivity: "case" });
+        const source = convertUTF16ToString(this.#value);
+        const target = convertUTF16ToString(anotherString.#value);
+
+        return source.localeCompare(target, undefined, { sensitivity: "case" });
     }
 
     /**
@@ -293,7 +323,17 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             return false;
         }
 
-        return this.#value === obj.#value;
+        if (this.#value.length !== obj.#value.length) {
+            return false;
+        }
+
+        for (let i = 0; i < this.#value.length; ++i) {
+            if (this.#value[i] !== obj.#value[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** @returns a hash code for this string. */
@@ -317,10 +357,10 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     public indexOf(searchString: JavaString, fromIndex: number): number;
     public indexOf(chOrSearchString: char | JavaString, fromIndex?: number): number {
         if (typeof chOrSearchString === "number") {
-            return this.#value.indexOf(window.String.fromCharCode(chOrSearchString), fromIndex);
+            return this.#value.indexOf(chOrSearchString, fromIndex);
         }
 
-        return this.#value.indexOf(chOrSearchString.#value, fromIndex);
+        return indexOfSubArray(this.#value, chOrSearchString.#value, fromIndex);
     }
 
     /** @returns `true` if, and only if, length() is `0`. */
@@ -345,22 +385,46 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     public lastIndexOf(chOrSearchString: char | JavaString, fromIndex?: number): number {
         if (typeof chOrSearchString === "number") {
             if (fromIndex === undefined) {
-                return this.#value.lastIndexOf(window.String.fromCharCode(chOrSearchString));
+                return this.#value.lastIndexOf(chOrSearchString);
             }
 
-            return this.#value.lastIndexOf(window.String.fromCharCode(chOrSearchString), fromIndex);
+            return this.#value.lastIndexOf(chOrSearchString, fromIndex);
         }
 
-        if (fromIndex === undefined) {
-            return this.#value.lastIndexOf(chOrSearchString.#value);
-        }
-
-        return this.#value.lastIndexOf(chOrSearchString.#value, fromIndex);
+        return lastIndexOfSubArray(this.#value, chOrSearchString.#value, fromIndex);
     }
 
     /** @returns the the length of this string. */
     public length(): number {
         return this.#value.length;
+    }
+
+    /**
+     * Returns a string whose value is the concatenation of this string repeated count times.
+     *
+     * @param count the number of times to repeat the string.
+     *
+     * @returns a string whose value is the concatenation of this string repeated count times.
+     */
+    public repeat(count: number): JavaString {
+        if (count < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (count === 0) {
+            return new JavaString("");
+        }
+
+        if (count === 1) {
+            return this;
+        }
+
+        const builder = new StringBuilder();
+        for (let i = 0; i < count; i++) {
+            builder.append(this);
+        }
+
+        return builder.toString();
     }
 
     /**
@@ -377,28 +441,69 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      * @param target the sequence of char values to be replaced.
      * @param replacement the replacement sequence of char values.
      *
-     * @returns a string resulting from replacing all occurrences of `oldChar` in this string with `newChar`.
+     * @returns a string resulting from replacing all occurrences of `target` in this string with `replacement`.
      */
     public replace(target: CharSequence, replacement: CharSequence): JavaString;
-    public replace(targetOrOldChar: CharSequence | char,
-        replacementOrNewChar: CharSequence | char): JavaString {
-        let searchValue;
-        let replacement;
-        if (typeof targetOrOldChar === "number") {
-            searchValue = window.String.fromCharCode(targetOrOldChar);
-            replacement = window.String.fromCharCode(replacementOrNewChar as number);
-        } else {
-            searchValue = targetOrOldChar.toString().valueOf();
-            replacement = replacementOrNewChar.toString().valueOf();
+    public replace(...args: unknown[]): JavaString {
+        if (typeof args[0] === "number") {
+            const [oldChar, newChar] = args as [char, char];
+
+            const array = new Uint16Array(this.#value.length);
+            this.#value.forEach((char, index) => {
+                array[index] = char === oldChar ? newChar : char;
+            });
+
+            return new JavaString(array);
         }
 
-        if (this.#value.includes(searchValue)) {
-            const s = this.#value.replaceAll(searchValue, replacement);
+        const [target, replacement] = args as [CharSequence, CharSequence];
+        const oldValue = target.toString().#value;
+        const newValue = replacement.toString().#value;
 
-            return new JavaString(s);
+        // Determine all span lengths of unmatched characters.
+        const spanLengths = new Array<number>();
+        let index = 0;
+        while (index < this.#value.length) {
+            const spanLength = indexOfSubArray(this.#value, oldValue, index) - index;
+            if (spanLength < 0) {
+                break;
+            }
+
+            spanLengths.push(spanLength);
+            index += spanLength + oldValue.length;
         }
 
-        return this;
+        if (index < this.#value.length) {
+            spanLengths.push(this.#value.length - index);
+        }
+
+        if (spanLengths.length === 1) {
+            return this;
+        }
+
+        // Determine the length of the new string.
+        const newLength = spanLengths.reduce((length, spanLength) => {
+            return length + spanLength;
+        }, 0) + (spanLengths.length - 1) * newValue.length;
+
+        // Create the new string.
+        const array = new Uint16Array(newLength);
+        let sourceIndex = 0;
+        let targetIndex = 0;
+        for (let i = 0; i < spanLengths.length; i++) {
+            const spanLength = spanLengths[i];
+            if (spanLength > 0) {
+                array.set(this.#value.subarray(sourceIndex, sourceIndex + spanLength), targetIndex);
+                sourceIndex += spanLength + oldValue.length;
+            }
+
+            if (i < spanLengths.length - 1) {
+                array.set(newValue, targetIndex);
+                targetIndex += newValue.length;
+            }
+        }
+
+        return new JavaString(array);
     }
 
     /**
@@ -409,8 +514,11 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the array of strings computed by splitting this string around matches of the given regular expression.
      */
-    public split(regex: JavaString | string, limit?: number): JavaString[] {
-        const parts = this.#value.split(`${regex}`, limit);
+    public split(regex: JavaString, limit?: number): JavaString[] {
+        const source = convertUTF16ToString(this.#value);
+        const re = convertUTF16ToString(regex.#value);
+
+        const parts = source.split(re, limit);
 
         return parts.map((value) => {
             return new JavaString(value);
@@ -424,22 +532,24 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
 
     /** @returns a string whose value is this string, with all leading white space removed. */
     public stripLeading(): JavaString {
-        const match = this.#value.match(JavaString.#whitespaceRegExBegin);
+        const source = convertUTF16ToString(this.#value);
+        const match = source.match(JavaString.#whitespaceRegExBegin);
         if (!match) {
             return this;
         }
 
-        return new JavaString(this.#value.substring(match[0].length));
+        return new JavaString(source.substring(match[0].length));
     }
 
     /** @returns a string whose value is this string, with all trailing white space removed. */
     public stripTrailing(): JavaString {
-        const match = this.#value.match(JavaString.#whitespaceRegExEnd);
+        const source = convertUTF16ToString(this.#value);
+        const match = source.match(JavaString.#whitespaceRegExEnd);
         if (!match) {
             return this;
         }
 
-        return new JavaString(this.#value.substring(0, this.#value.length - match[0].length));
+        return new JavaString(source.substring(0, source.length - match[0].length));
     }
 
     /**
@@ -452,23 +562,16 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
         return this.substring(start, end);
     }
 
-    /**Returns a string that is a substring of this string.*/
-    public substring(beginIndex: number, endIndex?: number): JavaString {
-        return new JavaString(this.#value.substring(beginIndex, endIndex));
-    }
-
     /**
-     * Converts this string to a new character array.
+     * Returns a string that is a substring of this string.
      *
-     * @returns a newly allocated character array whose length is the length of this string and whose contents are
+     * @param beginIndex the beginning index, inclusive.
+     * @param endIndex the ending index, exclusive.
+     *
+     * @returns the specified substring.
      */
-    public toCharArray(): Uint16Array {
-        const result = new Uint16Array(this.#value.length);
-        for (let i = 0; i < this.#value.length; ++i) {
-            result[i] = this.#value.charCodeAt(i);
-        }
-
-        return result;
+    public substring(beginIndex: number, endIndex?: number): JavaString {
+        return new JavaString(this.#value.subarray(beginIndex, endIndex));
     }
 
     /**
@@ -476,8 +579,9 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *          as any character whose codepoint is less than or equal to 'U+0020'(the space character).
      */
     public trim(): JavaString {
-        const startMatch = this.#value.match(JavaString.#spaceRegExBegin);
-        const endMatch = this.#value.match(JavaString.#spaceRegExEnd);
+        const source = convertUTF16ToString(this.#value);
+        const startMatch = source.match(JavaString.#spaceRegExBegin);
+        const endMatch = source.match(JavaString.#spaceRegExEnd);
         if (!startMatch && !endMatch) {
             return this;
         }
@@ -485,7 +589,24 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
         const start = startMatch ? startMatch[0].length : 0;
         const end = this.#value.length - (endMatch ? endMatch[0].length : 0);
 
-        return new JavaString(this.#value.substring(start, end));
+        return new JavaString(this.#value.subarray(start, end));
+    }
+
+    /**
+     * Converts this string to a new character array.
+     *
+     * @returns a newly allocated character array whose length is the length of this string and whose contents are
+     *          initialized to contain the character sequence represented by this string.
+     */
+    public toCharArray(): Uint16Array {
+        const result = new Uint16Array(this.#value.length);
+        result.set(this.#value);
+
+        return result;
+    }
+
+    public override toString(): JavaString {
+        return this;
     }
 
     /**
@@ -494,10 +615,6 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      * @returns the primitive string value of this instance.
      */
     public override valueOf(): string {
-        return this.#value;
-    }
-
-    public override toString(): JavaString {
-        return this;
+        return convertUTF16ToString(this.#value);
     }
 }

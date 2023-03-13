@@ -7,6 +7,8 @@
 
 /* eslint-disable max-classes-per-file */
 
+import { int } from "../../types";
+
 // JavaObject and Class depend directly on each other, so we need to define them in the same file.
 
 /** Implements the Java Object semantics. */
@@ -43,7 +45,7 @@ export class JavaObject {
     }
 
     /** @returns a hash code value for the object. */
-    public hashCode(): number {
+    public hashCode(): int {
         return this.#id;
     }
 

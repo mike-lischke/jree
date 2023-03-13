@@ -5,120 +5,107 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { int } from "../../types";
+
 import { JavaString } from "../lang/String";
-import { CharSequence } from "../lang/CharSequence";
-import { char } from "../lang";
 import { Charset } from "../nio/charset/Charset";
 import { OutputStream } from "./OutputStream";
 import { Writer } from "./Writer";
+import { CharsetEncoder } from "../nio/charset/CharsetEncoder";
+import { CharBuffer } from "../nio/CharBuffer";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 
+/**
+ * An OutputStreamWriter is a bridge from character streams to byte streams: Characters written to it are encoded
+ * into bytes using a specified charset. The charset that it uses may be specified by name or may be given explicitly,
+ * or the platform's default charset may be accepted.
+ */
 export class OutputStreamWriter extends Writer {
-    // The size of the raw buffer used to keep input data.
-    private static readonly writeBufferSize = 8192;
+    #encoder: CharsetEncoder;
+    #out: OutputStream;
 
-    private encoding: BufferEncoding;
-    private buffer = Buffer.alloc(OutputStreamWriter.writeBufferSize);
-
-    public constructor(out: OutputStream, charsetName?: JavaString);
-    public constructor(out: OutputStream, cs?: Charset);
-    public constructor(private out: OutputStream,
-        charsetNameOrCs?: JavaString | Charset) {
+    /** Creates an OutputStreamWriter that uses the default character encoding. */
+    public constructor(out: OutputStream);
+    /** Creates an OutputStreamWriter that uses the named charset. */
+    public constructor(out: OutputStream, charsetName: JavaString);
+    /** Creates an OutputStreamWriter that uses the given charset. */
+    public constructor(out: OutputStream, cs: Charset);
+    /** Creates an OutputStreamWriter that uses the given charset encoder. */
+    public constructor(out: OutputStream, enc: CharsetEncoder);
+    public constructor(...args: unknown[]) {
+        const out = args[0] as OutputStream;
         super(out);
 
-        if (!charsetNameOrCs) {
-            this.encoding = "utf8";
-        } else if (charsetNameOrCs instanceof JavaString) {
-            this.encoding = charsetNameOrCs.valueOf() as BufferEncoding;
-        } else {
-            this.encoding = charsetNameOrCs.name().valueOf() as BufferEncoding;
-        }
-    }
-
-    /**
-     * Returns the name of the character encoding being used by this stream.
-     *
-     * <p> If the encoding has an historical name then that name is returned;
-     * otherwise the encoding's canonical name is returned.
-     *
-     * <p> If this instance was created with the {@link
-     * #OutputStreamWriter(OutputStream, String)} constructor then the returned
-     * name, being unique for the encoding, may differ from the name passed to
-     * the constructor.  This method may return {@code null} if the stream has
-     * been closed. </p>
-     *
-     * @returns The historical name of this encoding, or possibly
-     *         {@code null} if the stream has been closed
-     *
-     * @see Charset
-     */
-    public getEncoding(): JavaString {
-        return new JavaString(this.encoding);
-    }
-
-    /**
-     * Flushes the output buffer to the underlying byte stream, without flushing
-     * the byte stream itself.  This method is non-private only so that it may
-     * be invoked by PrintStream.
-     */
-    public flushBuffer(): void {
-        this.out.flush();
-    }
-
-    public write(c: char): void;
-    public write(array: Uint16Array): void;
-    public write(array: Uint16Array, offset: number, length: number): void;
-    public write(str: JavaString): void;
-    public write(str: JavaString, off: number, len: number): void;
-    public write(cOrArrayOrStr: char | Uint16Array | JavaString, offset?: number,
-        length?: number): void {
-        let data: string;
-        offset ??= 0;
-
-        if (typeof cOrArrayOrStr === "number") {
-            data = String.fromCodePoint(cOrArrayOrStr);
-            length = 1;
-        } else if (cOrArrayOrStr instanceof JavaString) {
-            data = cOrArrayOrStr.valueOf();
-            length ??= data.length;
-        } else {
-            data = cOrArrayOrStr.toString();
-            length ??= data.length;
-        }
-
-        const buffer = Buffer.alloc(6 * length);
-        buffer.write(data, offset, length, this.encoding);
-
-        this.out.write(buffer);
-    }
-
-    public append(c: char): this;
-    public append(csq: CharSequence): this;
-    public append(csq: CharSequence, start: number, end: number): this;
-    public append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
-        if (typeof cOrCsq === "number") {
-            this.write(cOrCsq);
-        } else {
-            if (start !== undefined && end !== undefined) {
-                this.write(new JavaString(cOrCsq.subSequence(start, end).toString()));
+        this.#out = out;
+        if (args.length === 1) {
+            const arg = args[1] as JavaString | Charset | CharsetEncoder;
+            if (arg instanceof JavaString) {
+                this.#encoder = Charset.forName(arg).newEncoder();
+            } else if (arg instanceof Charset) {
+                this.#encoder = arg.newEncoder();
             } else {
-                this.write(new JavaString(cOrCsq.toString()));
+                this.#encoder = arg;
+            }
+        } else {
+            this.#encoder = Charset.defaultCharset().newEncoder();
+        }
+    }
+
+    /** Closes the stream, flushing it first. */
+    public close(): void {
+        this.flush();
+        this.#out.close();
+    }
+
+    /** Flushes the stream. */
+    public flush(): void {
+        this.#out.flush();
+    }
+
+    /** @returns the name of the character encoding being used by this stream. */
+    public getEncoding(): JavaString {
+        return new JavaString("utf-8");
+        //return this.#encoder.charset().name();
+    }
+
+    public override write(buffer: Uint16Array): void;
+    public override write(buffer: Uint16Array, offset: int, length: int): void;
+    public override write(c: int): void;
+    public override write(str: JavaString): void;
+    public override write(str: JavaString, offset: int, length: int): void;
+    public override write(...args: unknown[]): void {
+        switch (args.length) {
+            case 1: {
+                let s;
+                if (typeof args[0] === "number") {
+                    s = JavaString.fromCodePoint(args[0]);
+                } else {
+                    s = args[0] as JavaString;
+                }
+
+                const bytes = this.#encoder.encode(CharBuffer.wrap(s));
+                this.#out.write(bytes.array());
+
+                break;
+            }
+
+            case 3: {
+                if (args[0] instanceof JavaString) {
+                    const [str, offset, length] = args as [JavaString, int, int];
+                    const bytes = this.#encoder.encode(CharBuffer.wrap(str, offset, offset + length));
+                    this.#out.write(bytes.array());
+                } else {
+                    const [buffer, offset, length] = args as [Uint16Array, int, int];
+                    const bytes = this.#encoder.encode(CharBuffer.wrap(buffer, offset, offset + length));
+                    this.#out.write(bytes.array());
+                }
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
             }
         }
-
-        return this;
     }
-
-    /**
-     * Flushes the stream.
-     *
-     * @throws     IOException  If an I/O error occurs
-     */
-    public flush(): void {
-        this.out.flush();
-    }
-
-    public close(): void {
-        this.out.close();
-    }
-
 }

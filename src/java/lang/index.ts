@@ -5,10 +5,6 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-/** The equivalent of Java's char type. Treat it as 16 bit integer! */
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export type char = number;
-
 export { JavaObject as Object, Class } from "./Object";
 export { JavaString as String } from "./String";
 export { JavaBoolean as Boolean } from "./Boolean";
@@ -30,6 +26,7 @@ export * from "./Comparable";
 export * from "./Readable";
 export * from "./Iterable";
 export * from "./AutoCloseable";
+export * from "./Runnable";
 
 export * from "./Throwable";
 export { JavaError as Error } from "./Error";

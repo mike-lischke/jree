@@ -63,6 +63,6 @@ class MyClass {
 ## Miscellaneous
 
 - `codePointsToString`: converts a list of Unicode code points (given as `Uint32Array`) to a Typescript `string`.
-- `charCodesToString`: converts a list of character codes (given as `Uint16Array`) to a Typescript `string`.
+- `charCodesToString`: converts a list of character codes (given as `Int16Array`) to a Typescript `string`.
 - `IEquatable`: an interface that defines the contract for equatable objects.
 - `IComparable`: an interface that defines the contract for comparable objects.

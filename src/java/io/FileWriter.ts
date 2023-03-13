@@ -6,40 +6,98 @@
  */
 
 import { JavaString } from "../..";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { Charset } from "../nio/charset/Charset";
 import { JavaFile } from "./File";
 import { FileDescriptor } from "./FileDescriptor";
 import { FileOutputStream } from "./FileOutputStream";
 import { OutputStreamWriter } from "./OutputStreamWriter";
 
+/**
+ * Writes text to character files using a default buffer size. Encoding from characters to bytes uses either a
+ * specified charset or the platform's default charset.
+ */
 export class FileWriter extends OutputStreamWriter {
-    public constructor(fileName: JavaString);
-    public constructor(fileName: JavaString, append: boolean);
+    /** Constructs a FileWriter given the File to write, using the platform's default charset */
     public constructor(file: JavaFile);
-    public constructor(file: JavaFile, append: boolean);
+    /** Constructs a FileWriter given a file descriptor, using the platform's default charset. */
     public constructor(fd: FileDescriptor);
-    public constructor(fileName: JavaString, charset: Charset);
-    public constructor(fileName: JavaString, charset: Charset, append: boolean);
+    /**
+     * Constructs a FileWriter given the File to write and a boolean indicating whether to append the data written,
+     * using the platform's default charset.
+     */
+    public constructor(file: JavaFile, append: boolean);
+    /** Constructs a FileWriter given the File to write and charset. */
     public constructor(file: JavaFile, charset: Charset);
+    /**
+     * Constructs a FileWriter given the File to write, charset and a boolean indicating whether to append the data
+     * written.
+     */
     public constructor(file: JavaFile, charset: Charset, append: boolean);
-    public constructor(fileNameOrFileOrFd: JavaString | JavaFile | FileDescriptor,
-        appendOrCharset?: boolean | Charset, append?: boolean) {
-        let doAppend = false;
-        let charset;
-        if (typeof appendOrCharset === "boolean") {
-            doAppend = appendOrCharset;
-        } else if (append !== undefined) {
-            doAppend = append;
-            charset = appendOrCharset;
-        }
+    /** Constructs a FileWriter given the file name, using the platform's default charset. */
+    public constructor(fileName: JavaString);
+    /**
+     * Constructs a FileWriter given the file name and a boolean indicating whether to append the data written,
+     * using the platform's default charset.
+     */
+    public constructor(fileName: JavaString, append: boolean);
+    /** Constructs a FileWriter given the file name and charset. */
+    public constructor(fileName: JavaString, charset: Charset);
+    /**
+     * Constructs a FileWriter given the file name, charset and a boolean indicating whether to append the data
+     * written.
+     */
+    public constructor(fileName: JavaString, charset: Charset, append: boolean);
+    public constructor(...args: unknown[]) {
+        let charset = Charset.defaultCharset();
+        let stream;
 
-        let stream: FileOutputStream;
-        if (fileNameOrFileOrFd instanceof JavaString) {
-            stream = new FileOutputStream(fileNameOrFileOrFd, doAppend);
-        } else if (fileNameOrFileOrFd instanceof JavaFile) {
-            stream = new FileOutputStream(fileNameOrFileOrFd, doAppend);
-        } else {
-            stream = new FileOutputStream(fileNameOrFileOrFd);
+        switch (args.length) {
+            case 1: {
+                const arg = args[0] as JavaFile | FileDescriptor | JavaString;
+                if (arg instanceof JavaFile) {
+                    stream = new FileOutputStream(arg);
+                } else if (arg instanceof FileDescriptor) {
+                    stream = new FileOutputStream(arg);
+                } else {
+                    stream = new FileOutputStream(arg);
+                }
+                break;
+            }
+
+            case 2: {
+                const [arg1, arg2] = args as [JavaFile | JavaString, boolean | Charset];
+                let append = false;
+                if (typeof arg2 === "boolean") {
+                    append = arg2;
+                } else {
+                    charset = arg2;
+                }
+
+                if (arg1 instanceof JavaFile) {
+                    stream = new FileOutputStream(arg1, append);
+                } else {
+                    stream = new FileOutputStream(arg1, append);
+                }
+
+                break;
+            }
+
+            case 3: {
+                const [arg1, arg2, arg3] = args as [JavaFile | JavaString, Charset, boolean];
+                charset = arg2;
+                if (arg1 instanceof JavaFile) {
+                    stream = new FileOutputStream(arg1, arg3);
+                } else {
+                    stream = new FileOutputStream(arg1, arg3);
+                }
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+            }
         }
 
         super(stream, charset);

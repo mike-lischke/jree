@@ -14,17 +14,17 @@ export class SystemOutputStream extends OutputStream {
         super();
     }
 
-    public close(): void {
+    public override close(): void {
         // no-op
     }
 
-    public flush(): void {
+    public override flush(): void {
         // The stream auto-flushes.
     }
 
-    public write(b: Uint8Array | number): void;
-    public write(b: Uint8Array, off: number, len: number): void;
-    public write(b: Uint8Array | number, off?: number, len?: number): void {
+    public override write(b: Int8Array | number): void;
+    public override write(b: Int8Array, off: number, len: number): void;
+    public override write(b: Int8Array | number, off?: number, len?: number): void {
         if (typeof b === "number") {
             const s = String.fromCodePoint(b);
             this.forErrors ? process.stderr.write(s) : process.stdout.write(s);
@@ -32,8 +32,8 @@ export class SystemOutputStream extends OutputStream {
             const offset = off ?? 0;
             const length = len ?? b.length;
             this.forErrors
-                ? process.stderr.write(b.subarray(offset, length))
-                : process.stdout.write(b.subarray(offset, length));
+                ? process.stderr.write(new Uint8Array(b.subarray(offset, length)))
+                : process.stdout.write(new Uint8Array(b.subarray(offset, length)));
         }
     }
 }

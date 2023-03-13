@@ -1,6 +1,6 @@
 # Ported Types of java.util.function
 
-Functional interfaces in Java are primarily defined by there ability to use a single method as a lambda expression. Since this is not possible in Typescript, it is usually necessary to call the otherwise implicit method explicitly.
+Functional interfaces in Java are primarily defined by their ability to use a single method as a lambda expression. Since this is not possible in Typescript, it is usually necessary to call the otherwise implicit method explicitly.
 
 This page lists the java.util.function types that are currently in this Node package. The notation used for the current status is as follows:
 
@@ -13,6 +13,7 @@ This page lists the java.util.function types that are currently in this Node pac
 
 |Status|Interface|Description|
 |---|---|---|
+|🅵|[BiConsumer\<T,U>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiConsumer.html)|Represents an operation that accepts two input arguments and returns no result.|
 |🅵|[Consumer\<T>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Consumer.html)|Represents an operation that accepts a single input argument and returns no result.|
 |🅵|[Function\<T, R>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html)|Represents a function that accepts one argument and produces a result.|
 |🅵|[Predicate\<T>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Predicate.html)|Represents a predicate (boolean-valued function) of one argument.|

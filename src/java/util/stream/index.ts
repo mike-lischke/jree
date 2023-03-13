@@ -7,3 +7,5 @@
 
 export * from "./BaseStream";
 export * from "./IntStream";
+export * from "./LongStream";
+export * from "./Stream";

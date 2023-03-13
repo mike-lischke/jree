@@ -8,12 +8,16 @@
 import printf from "printf";
 
 import { NotImplementedError } from "../../NotImplementedError";
-import { char } from "../lang";
+import { char, double, float, int, long } from "../../types";
+
 import { CharSequence } from "../lang/CharSequence";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
 import { System } from "../lang/System";
+import { CharBuffer } from "../nio/CharBuffer";
+import { Charset } from "../nio/charset/Charset";
+import { CharsetEncoder } from "../nio/charset/CharsetEncoder";
 import { Locale } from "../util/Locale";
 import { JavaFile } from "./File";
 import { FileOutputStream } from "./FileOutputStream";
@@ -23,77 +27,142 @@ import { OutputStream } from "./OutputStream";
 
 /** A print stream is an output stream that prints representations of various data values conveniently. */
 export class PrintStream extends FilterOutputStream {
+    static #lineSeparator: JavaString | null;
 
-    private static supportedEncodings = new Set<string>([
-        "ascii",   // alias to latin1
-        "utf8",
-        "utf-8",
-        "utf16le",
-        "ucs2",    // alias to utf16le
-        "ucs-2",   // alias to utf16le
-        "latin1",
-        "binary",  // alias to latin11
-    ]);
+    #autoFlush = false;
+    #encoder: CharsetEncoder;
+    #haveError = false;
 
-    private static lineSeparator: JavaString | null;
-
-    private autoFlush = false;
-    private encoding: BufferEncoding = "utf-8";
-
+    /** Creates a new print stream, without automatic line flushing, with the specified file. */
+    public constructor(file: JavaFile);
     /** Creates a new print stream, without automatic line flushing, with the specified file and charset. */
-    public constructor(file: JavaFile, csn?: JavaString);
-    public constructor(out: OutputStream, autoFlush?: boolean, encoding?: JavaString);
-    public constructor(fileName: JavaString, csn?: JavaString);
-    public constructor(fileOrOutOrFileName: JavaFile | OutputStream | JavaString,
-        csnOrAutoFlush?: JavaString | boolean, encoding?: JavaString) {
-        if (fileOrOutOrFileName instanceof JavaFile) {
-            /* @ts-expect-error, because the super call is not in the root block of the constructor. */
-            super(new FileOutputStream(fileOrOutOrFileName));
-        } else if (fileOrOutOrFileName instanceof OutputStream) {
-            super(fileOrOutOrFileName);
-        } else {
-            super(new FileOutputStream(fileOrOutOrFileName));
-        }
+    public constructor(file: JavaFile, csn: JavaString);
+    /** Creates a new print stream, without automatic line flushing, with the specified file and charset. */
+    public constructor(file: JavaFile, charset: Charset);
+    /** Creates a new print stream. */
+    public constructor(out: OutputStream);
+    /** Creates a new print stream. */
+    public constructor(out: OutputStream, autoFlush: boolean);
+    /** Creates a new print stream. */
+    public constructor(out: OutputStream, autoFlush: boolean, encoding: JavaString);
+    /** Creates a new print stream, with the specified OutputStream, automatic line flushing and charset. */
+    public constructor(out: OutputStream, autoFlush: boolean, charset: Charset);
+    /** Creates a new print stream, without automatic line flushing, with the specified file name. */
+    public constructor(fileName: JavaString);
+    /** Creates a new print stream, without automatic line flushing, with the specified file name and charset. */
+    public constructor(fileName: JavaString, csn: JavaString);
+    /** Creates a new print stream, without automatic line flushing, with the specified file name and charset. */
+    public constructor(fileName: JavaString, charset: Charset);
+    public constructor(...args: unknown[]) {
+        let output: OutputStream;
+        let autoFlush = false;
+        let charset: Charset;
 
-        if (typeof csnOrAutoFlush === "boolean") {
-            this.autoFlush = csnOrAutoFlush;
-        } else if (encoding || csnOrAutoFlush) {
-            let charset = encoding ?? csnOrAutoFlush ?? "utf-8";
+        switch (args.length) {
+            case 1: {
+                const arg = args[0] as OutputStream | JavaFile | JavaString;
+                if (arg instanceof JavaFile) {
+                    output = new FileOutputStream(arg);
+                } else if (arg instanceof OutputStream) {
+                    output = arg;
+                } else {
+                    output = new FileOutputStream(arg);
+                }
 
-            charset = charset.valueOf().toLowerCase();
-            if (!PrintStream.supportedEncodings.has(charset)) {
-                new IllegalArgumentException(new JavaString(`Invalid encoding specified: ${charset}`));
+                charset = Charset.defaultCharset();
+
+                break;
             }
 
-            this.encoding = charset as BufferEncoding;
+            case 2: {
+                if (args[0] instanceof OutputStream) {
+                    [output, autoFlush] = args as [OutputStream, boolean];
+                    charset = Charset.defaultCharset();
+                } else if (args[0] instanceof JavaFile) {
+                    const [file, arg2] = args as [JavaFile, JavaString | Charset];
+                    if (arg2 instanceof Charset) {
+                        charset = arg2;
+                    } else {
+                        const cs = Charset.forName(arg2);
+                        if (cs === null) {
+                            throw new IllegalArgumentException(new JavaString("Invalid charset name"));
+                        }
+
+                        charset = cs;
+                    }
+
+                    output = new FileOutputStream(file);
+                } else {
+                    const [fileName, arg2] = args as [JavaString, JavaString | Charset];
+                    if (arg2 instanceof Charset) {
+                        charset = arg2;
+                    } else {
+                        const cs = Charset.forName(arg2);
+                        if (cs === null) {
+                            throw new IllegalArgumentException(new JavaString("Invalid charset name"));
+                        }
+
+                        charset = cs;
+                    }
+
+                    output = new FileOutputStream(fileName);
+                }
+
+                break;
+            }
+
+            case 3: {
+                let arg2;
+                [output, autoFlush, arg2] = args as [OutputStream, boolean, JavaString | Charset];
+                if (arg2 instanceof Charset) {
+                    charset = arg2;
+                } else {
+                    const cs = Charset.forName(arg2);
+                    if (cs === null) {
+                        throw new IllegalArgumentException(new JavaString("Invalid charset name"));
+                    }
+
+                    charset = cs;
+                }
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+            }
         }
 
-        if (!PrintStream.lineSeparator) {
-            PrintStream.lineSeparator = System.getProperty(new JavaString("line.separator"));
+        super(output);
+        this.#autoFlush = autoFlush;
+        this.#encoder = charset.newEncoder();
+
+        // Initialize this static field here to avoid static initialization order issues.
+        if (!PrintStream.#lineSeparator) {
+            PrintStream.#lineSeparator = System.getProperty(new JavaString("line.separator"));
         }
     }
 
-    /**
-     * Appends the specified character ((sub) sequence) to this output stream.
-     * Because the JS string type does not implement CharSequence, a separate signature only for a string is added.
-     */
-    public append(c: char | JavaString | CharSequence): PrintStream;
+    /** Appends the specified character to this output stream. */
+    public append(c: char): PrintStream;
+    /** Appends the specified character sequence to this output stream. */
+    public append(csq: CharSequence): PrintStream;
+    /** Appends a subsequence of the specified character sequence to this output stream. */
     public append(csq: CharSequence, start: number, end: number): PrintStream;
-    public append(cOrSOrCsq: char | JavaString | CharSequence, start?: number,
-        end?: number): PrintStream {
-        let text: string;
-        if (cOrSOrCsq instanceof JavaString) {
-            text = cOrSOrCsq.valueOf();
-        } else if (typeof cOrSOrCsq === "number") {
-            text = String.fromCodePoint(cOrSOrCsq);
+    public append(...args: unknown[]): PrintStream {
+        if (args.length === 1) {
+            const arg = args[0] as char | CharSequence;
+            if (typeof arg === "number") {
+                this.write(arg);
+            } else {
+                const buffer = this.encode(arg);
+                this.write(buffer);
+            }
         } else {
-            start = start ?? 0;
-            end = end ?? cOrSOrCsq.length();
-            text = `${cOrSOrCsq.subSequence(start, end).toString()}`;
+            const [csq, start, end] = args as [CharSequence, number, number];
+            const buffer = this.encode(csq.subSequence(start, end));
+            this.write(buffer);
         }
-
-        const buffer = Buffer.from(text, this.encoding);
-        this.out.write(buffer.valueOf());
 
         return this;
     }
@@ -101,38 +170,33 @@ export class PrintStream extends FilterOutputStream {
     /**
      * Flushes the stream and checks its error state.
      *
-     * @returns tbd
+     * @returns `true` if the print stream has encountered an error, either on the underlying output stream or during
+     *           a format conversion.
      */
     public checkError(): boolean {
         try {
             this.out.flush();
-
-            return true;
         } catch (e) {
-            return false;
+            this.#haveError = true;
         }
+
+        return this.#haveError;
     }
 
     /** Closes the stream. */
-    public close(): void {
+    public override close(): void {
         this.out.close();
     }
 
     /** Flushes the stream. */
-    public flush(): void {
+    public override flush(): void {
         this.out.flush();
     }
 
-    /**
-     * Writes a formatted string to this output stream using the specified format string and arguments.
-     *
-     * @param format tbd
-     * @param args tbd
-     *
-     * @returns tbd
-     */
-    public format(l: Locale, format: JavaString, ...args: unknown[]): PrintStream;
+    /** Writes a formatted string to this output stream using the specified format string and arguments. */
     public format(format: JavaString, ...args: unknown[]): PrintStream;
+    /** Writes a formatted string to this output stream using the specified format string and arguments. */
+    public format(l: Locale, format: JavaString, ...args: unknown[]): PrintStream;
     public format(...args: unknown[]): PrintStream {
         let index = 0;
         if (args[0] instanceof Locale) {
@@ -145,9 +209,29 @@ export class PrintStream extends FilterOutputStream {
         return this;
     }
 
-    public print(v: boolean | char | number | JavaObject | JavaString | null): void {
+    /** Prints a boolean value. */
+    public print(b: boolean): void;
+    /** Prints a character. */
+    public print(c: char): void;
+    /** Prints an array of characters. */
+    public print(s: Uint16Array): void;
+    /** Prints a double-precision floating-point number. */
+    public print(d: double): void;
+    /** Prints a floating-point number. */
+    public print(f: float): void;
+    /** Prints an integer. */
+    public print(i: int): void;
+    /** Prints a long integer. */
+    public print(l: long): void;
+    /** Prints an object. */
+    public print(obj: JavaObject | null): void;
+    /** Prints a string. */
+    public print(str: JavaString | null): void;
+    public print(v: unknown): void {
         if (v === null) {
             this.append(new JavaString("null"));
+        } else if (v instanceof JavaString) {
+            this.append(v);
         } else {
             this.append(new JavaString(`${v}`));
         }
@@ -166,37 +250,66 @@ export class PrintStream extends FilterOutputStream {
         return this.format(format, args);
     }
 
-    // Terminates the current line by writing the line separator string.
-    public println(v?: boolean | char | number | JavaObject | JavaString | null): void {
+    /** Terminates the current line by writing the line separator string. */
+    public println(): void;
+    /** Prints a boolean and then terminate the line. */
+    public println(b: boolean): void;
+    /** Prints a character and then terminate the line. */
+    public println(c: char): void;
+    /** Prints an array of characters and then terminate the line. */
+    public println(s: Uint16Array): void;
+    /** Prints a double and then terminate the line. */
+    public println(d: double): void;
+    /** Prints a float and then terminate the line. */
+    public println(f: float): void;
+    /** Prints an integer and then terminate the line. */
+    public println(i: int): void;
+    /** Prints a long and then terminate the line. */
+    public println(l: long): void;
+    /** Prints an object and then terminate the line. */
+    public println(obj: JavaObject | null): void;
+    /** Prints a string and then terminate the line. */
+    public println(str: JavaString | null): void;
+    public println(v?: unknown): void {
         if (v !== undefined) {
-            this.print(v);
+            if (v === null) {
+                const buffer = this.encode(new JavaString("null"));
+                this.write(buffer);
+            } else if (v instanceof JavaString) {
+                const buffer = this.encode(v);
+                this.write(buffer);
+            } else {
+                const buffer = this.encode(new JavaString(`${v}`));
+                this.write(buffer);
+            }
         }
 
-        this.print(PrintStream.lineSeparator);
-
-        if (this.autoFlush) {
+        this.print(PrintStream.#lineSeparator);
+        if (this.#autoFlush) {
             this.flush();
         }
     }
 
-    /** Writes len bytes from the specified byte array starting at offset off to this stream. */
-    public write(b: Uint8Array): void;
-    public write(b: Uint8Array, off: number, len: number): void;
-    /** Writes the specified byte to this output stream. */
-    public write(b: number): void;
-    public write(b: Uint8Array | number, off?: number, len?: number): void {
-        if (typeof b === "number") {
-            this.out.write(b);
-        } else if (off === undefined || len === undefined) {
-            this.out.write(b);
+    public override write(b: Int8Array): void;
+    public override write(b: Int8Array, off: number, len: number): void;
+    public override write(b: int): void;
+    public override write(...args: unknown[]): void {
+        if (args.length === 1) {
+            const b = args[0] as Int8Array | number;
+            if (b instanceof Int8Array) {
+                this.out.write(b, 0, b.length);
+            } else {
+                this.out.write(b);
+            }
         } else {
-            this.out.write(b, off, len);
+            const [b, off, len] = args as [Int8Array, number, number];
+            this.out.write(b.subarray(off, off + len));
         }
     }
 
     /** Clears the internal error state of this stream. */
     protected clearError(): void {
-        throw new NotImplementedError();
+        this.#haveError = false;
     }
 
     /** Sets the error state of the stream to true. */
@@ -204,4 +317,16 @@ export class PrintStream extends FilterOutputStream {
         throw new NotImplementedError();
     }
 
+    /**
+     * Converts a character sequence to a byte array.
+     *
+     * @param s The character sequence to convert.
+     *
+     * @returns A byte array containing the encoded string.
+     */
+    private encode(s: CharSequence): Int8Array {
+        const buffer = this.#encoder.encode(CharBuffer.wrap(s));
+
+        return buffer.array();
+    }
 }

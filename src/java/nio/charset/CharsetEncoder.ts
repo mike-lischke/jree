@@ -6,7 +6,8 @@
  */
 
 import { NotImplementedError } from "../../../NotImplementedError";
-import { char } from "../../lang";
+import { char } from "../../../types";
+
 import { CharSequence } from "../../lang/CharSequence";
 import { JavaObject } from "../../lang/Object";
 import { ByteBuffer } from "../ByteBuffer";
@@ -16,29 +17,34 @@ import { CoderResult } from "./CoderResult";
 import { CodingErrorAction } from "./CodingErrorAction";
 
 export class CharsetEncoder extends JavaObject {
-    #cs: Charset;
+    #charset: Charset;
+    #encoder: TextEncoder;
+
     #averageBytesPerChar: number;
     #maxBytesPerChar: number;
 
     #malformedInputAction = CodingErrorAction.REPORT;
     #unmappableCharacterAction = CodingErrorAction.REPORT;
 
-    #replacement: Uint8Array = new Uint8Array(0);
+    #replacement: Int8Array = new Int8Array(0);
 
     /** Initializes a new encoder. */
     protected constructor(cs: Charset, averageBytesPerChar: number, maxBytesPerChar: number);
     /** Initializes a new encoder. */
-    protected constructor(cs: Charset, averageBytesPerChar: number, maxBytesPerChar: number, replacement: Uint8Array);
+    protected constructor(cs: Charset, averageBytesPerChar: number, maxBytesPerChar: number, replacement: Int8Array);
     protected constructor(...args: unknown[]) {
         super();
 
         const [cs, averageBytesPerChar, maxBytesPerChar] = args as [Charset, number, number];
-        this.#cs = cs;
+        this.#charset = cs;
+
+        // Only UTF-8 is supported for now.
+        this.#encoder = new TextEncoder();
         this.#averageBytesPerChar = averageBytesPerChar;
         this.#maxBytesPerChar = maxBytesPerChar;
 
         if (args.length > 3) {
-            this.#replacement = args[3] as Uint8Array;
+            this.#replacement = args[3] as Int8Array;
         }
     }
 
@@ -63,12 +69,12 @@ export class CharsetEncoder extends JavaObject {
     /** Tells whether or not this encoder can encode the given character sequence. */
     public canEncode(c: CharSequence): boolean;
     public canEncode(c: char | CharSequence): boolean {
-        throw new NotImplementedError();
+        return true;
     }
 
     /** @returns the charset that created this encoder. */
     public charset(): Charset {
-        return this.#cs;
+        return this.#charset;
     }
 
     /**
@@ -84,14 +90,13 @@ export class CharsetEncoder extends JavaObject {
     public encode(...args: unknown[]): ByteBuffer | CoderResult {
         if (args.length === 1) {
             const input = args[0] as CharBuffer;
-            const buffer = Buffer.from(input, this.#cs.name().valueOf() as BufferEncoding);
+            const buffer = this.#encoder.encode(input.toString().valueOf());
 
-            return ByteBuffer.wrap(buffer);
-
+            return ByteBuffer.wrap(new Int8Array(buffer));
         } else {
             const [input, output, _] = [args[0] as CharBuffer, args[1] as ByteBuffer, args[2] as boolean];
-            const buffer = Buffer.from(input, this.#cs.name().valueOf() as BufferEncoding);
-            output.put(buffer);
+            const buffer = this.#encoder.encode(input.toString().valueOf());
+            output.put(new Int8Array(buffer));
 
             return CoderResult.success();
         }
@@ -101,9 +106,12 @@ export class CharsetEncoder extends JavaObject {
      * Flushes this encoder.
      *
      * @param out The output buffer.
+     *
+     * @returns A coder-result object describing the reason for termination.
      */
     public flush(out: ByteBuffer): CoderResult {
-        throw new NotImplementedError();
+        // Nothing to do here.
+        return CoderResult.success();
     }
 
     /**
@@ -111,7 +119,7 @@ export class CharsetEncoder extends JavaObject {
      *
      * @param replacement The replacement value to test.
      */
-    public isLegalReplacement(replacement: Uint8Array): boolean {
+    public isLegalReplacement(replacement: Int8Array): boolean {
         throw new NotImplementedError();
     }
 
@@ -152,7 +160,7 @@ export class CharsetEncoder extends JavaObject {
     }
 
     /** @returns this encoder's current replacement value. */
-    public replacement(): Uint8Array {
+    public replacement(): Int8Array {
         return this.#replacement;
     }
 
@@ -163,7 +171,7 @@ export class CharsetEncoder extends JavaObject {
      *
      * @returns This encoder.
      */
-    public replaceWith(newReplacement: Uint8Array): CharsetEncoder {
+    public replaceWith(newReplacement: Int8Array): CharsetEncoder {
         this.#replacement = newReplacement;
 
         return this;

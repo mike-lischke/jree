@@ -18,6 +18,7 @@ This page lists the java.lang types that are currently in this Node package.
 |🅵|[Comparable\<T>](https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html)|This interface imposes a total ordering on the objects of each class that implements it.|
 |🅵|[Iterable\<T>](https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html)|Implementing this interface allows an object to be the target of the enhanced for statement (sometimes called the "for-each loop" statement).|
 |🅵|[Readable](https://docs.oracle.com/javase/8/docs/api/java/lang/Readable.html)|A readable source of characters.|
+|🅵|[Runnable](https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html)|A task that can be run.|
 
 ## Class Summary
 

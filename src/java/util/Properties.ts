@@ -67,7 +67,7 @@ export class Properties extends HashMap<JavaString, JavaString> {
     public load(input: InputStream | Reader): void {
         let text = "";
         if (input instanceof InputStream) {
-            const buffer = new Uint8Array(input.available());
+            const buffer = new Int8Array(input.available());
             input.read(buffer);
 
             // Convert all escape sequences to their code point.
@@ -338,7 +338,7 @@ export class Properties extends HashMap<JavaString, JavaString> {
      */
     private writeString(out: OutputStream | Writer, text: JavaString) {
         if (out instanceof OutputStream) {
-            const buffer = new Uint8Array(text.length() * 6); // Maximum possible target length.
+            const buffer = new Int8Array(text.length() * 6); // Maximum possible target length.
             let offset = 0;
             for (const c of text.valueOf()) {
                 const codePoint = c.codePointAt(0)!;

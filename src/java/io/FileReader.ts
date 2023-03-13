@@ -6,6 +6,7 @@
  */
 
 import { JavaString } from "../..";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { Charset } from "../nio/charset/Charset";
 import { JavaFile } from "./File";
 import { FileDescriptor } from "./FileDescriptor";
@@ -13,71 +14,48 @@ import { FileInputStream } from "./FileInputStream";
 import { InputStreamReader } from "./InputStreamReader";
 
 export class FileReader extends InputStreamReader {
-    /**
-     * Creates a new {@code FileReader}, given the name of the file to read,
-     * using the {@link Charset#defaultCharset() default charset}.
-     *
-     * @param      fileName the name of the file to read
-     * @throws     FileNotFoundException  if the named file does not exist,
-     *             is a directory rather than a regular file,
-     *             or for some other reason cannot be opened for
-     *             reading.
-     * @see        Charset#defaultCharset()
-     */
-    public constructor(fileName: JavaString);
-    /**
-     * Creates a new {@code FileReader}, given the {@code File} to read,
-     * using the {@link Charset#defaultCharset() default charset}.
-     *
-     * @param      file the {@code File} to read
-     * @throws     FileNotFoundException  if the file does not exist,
-     *             is a directory rather than a regular file,
-     *             or for some other reason cannot be opened for
-     *             reading.
-     * @see        Charset#defaultCharset()
-     */
+
+    /** Creates a new FileReader, given the File to read, using the platform's default charset. */
     public constructor(file: JavaFile);
-    /**
-     * Creates a new {@link FileReader}, given the {@link FileDescriptor} to read,
-     * using the {@link Charset#defaultCharset() default charset}.
-     *
-     * @param fd the {@link FileDescriptor} to read
-     * @see Charset#defaultCharset()
-     */
+    /** Creates a new FileReader, given the FileDescriptor to read, using the platform's default charset. */
     public constructor(fd: FileDescriptor);
-    /**
-     * Creates a new {@code FileReader}, given the name of the file to read
-     * and the {@link Charset charset}.
-     *
-     * @param      fileName the name of the file to read
-     * @param      charset the {@link Charset}
-     * @throws     IOException  if the named file does not exist,
-     *             is a directory rather than a regular file,
-     *             or for some other reason cannot be opened for
-     *             reading.
-     */
-    public constructor(fileName: JavaString, charset: Charset);
-    /**
-     * Creates a new {@code FileReader}, given the {@link JavaFile} to read and
-     * the {@link Charset}.
-     *
-     * @param      file the {@code File} to read
-     * @param      charset the {@link Charset charset}
-     * @throws     IOException  if the file does not exist,
-     *             is a directory rather than a regular file,
-     *             or for some other reason cannot be opened for
-     *             reading.
-     */
+    /** Creates a new FileReader, given the File to read and the charset. */
     public constructor(file: JavaFile, charset: Charset);
-    public constructor(fileNameOrFileOrFd: JavaString | JavaFile | FileDescriptor,
-        charset?: Charset) {
-        if (fileNameOrFileOrFd instanceof JavaString) {
-            super(new FileInputStream(fileNameOrFileOrFd), charset);
-        } else if (fileNameOrFileOrFd instanceof JavaFile) {
-            super(new FileInputStream(fileNameOrFileOrFd), charset);
-        } else {
-            super(new FileInputStream(fileNameOrFileOrFd), charset);
+    /** Creates a new FileReader, given the name of the file to read, using the platform's default charset. */
+    public constructor(fileName: JavaString);
+    /** Creates a new FileReader, given the name of the file to read and the charset. */
+    public constructor(fileName: JavaString, charset: Charset);
+    public constructor(...args: unknown[]) {
+        switch (args.length) {
+            case 1: {
+                const arg = args[0] as JavaFile | FileDescriptor | JavaString;
+                if (arg instanceof JavaFile) {
+                    super(new FileInputStream(arg));
+                } else if (arg instanceof FileDescriptor) {
+                    super(new FileInputStream(arg));
+                } else {
+                    super(new FileInputStream(arg));
+                }
+
+                break;
+            }
+
+            case 2: {
+                const [arg1, charset] = args as [JavaFile | FileDescriptor | JavaString, Charset];
+                if (arg1 instanceof JavaFile) {
+                    super(new FileInputStream(arg1), charset);
+                } else if (arg1 instanceof FileDescriptor) {
+                    super(new FileInputStream(arg1), charset);
+                } else {
+                    super(new FileInputStream(arg1), charset);
+                }
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+            }
         }
     }
-
 }

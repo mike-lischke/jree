@@ -38,7 +38,7 @@ describe("Tests", () => {
         b.append("-");
         b.append(b2);   // Other StringBuilder
         b.append("-");
-        b.append(b2.array()); // Uint16Array
+        b.append(b2.array()); // Int16Array
         b.append("-");
         b.append(i);   // JavaObject
 
@@ -84,7 +84,7 @@ describe("Tests", () => {
         expect(`${b.toString()}`).toBe("1String Builder-2123\n3true-4Another string-5");
 
         b.insert(0, "-");
-        b.insert(0, b2.array()); // Uint16Array
+        b.insert(0, b2.array()); // Int16Array
         expect(`${b.toString()}`).toBe("String Builder-1String Builder-2123\n3true-4Another string-5");
 
         b.ensureCapacity(10000);

@@ -5,19 +5,27 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { char, int } from "../../types";
+import { CharSequence } from "../lang/CharSequence";
+import { JavaString } from "../lang/String";
+import { Appendable } from "../lang/Appendable";
 import { JavaObject } from "../lang/Object";
+import { Closeable } from "./Closeable";
+import { Flushable } from "./Flushable";
+import { IllegalArgumentException } from "../lang";
+import { NotImplementedError } from "../../NotImplementedError";
 
-export abstract class Writer extends JavaObject implements java.io.Closeable, java.io.Flushable, java.lang.Appendable {
+/**
+ * Abstract class for writing to character streams. The only methods that a subclass must implement are
+ * `write(char[], int, int)`, `flush()`, and `close()`. Most subclasses, however, will override some of the methods
+ * defined here in order to provide higher efficiency, additional functionality, or both.
+ */
+export abstract class Writer extends JavaObject implements Closeable, Flushable, Appendable {
     /**
-     * The object used to synchronize operations on this stream.  For
-     * efficiency, a character-stream object may use an object other than
-     * itself to protect critical sections.  A subclass should therefore use
-     * the object in this field rather than {@code this} or a synchronized
-     * method.
+     * The object used to synchronize operations on this stream.
      * Note: this is not used in TS to synchronize anything, because there's only a single thread.
      */
-    protected lock: unknown;
+    protected lock: JavaObject;
 
     /**
      * Creates a new character-stream writer whose critical sections will
@@ -25,131 +33,112 @@ export abstract class Writer extends JavaObject implements java.io.Closeable, ja
      *
      * @param  lock Object to synchronize on (not used in the TS implementation).
      */
-    protected constructor(lock?: unknown) {
+    protected constructor(lock?: JavaObject) {
         super();
 
         this.lock = lock ?? this;
     }
 
-    /**
-     * Writes a single character.  The character to be written is contained in
-     * the 16 low-order bits of the given integer value; the 16 high-order bits
-     * are ignored.
-     *
-     * <p> Subclasses that intend to support efficient single-character output
-     * should override this method.
-     *
-     * @param  c
-     *         int specifying a character to be written
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
-     */
-    public abstract write(c: java.lang.char): void;
+    /** @returns a new Writer which discards all characters. */
+    public static nullWriter(): Writer {
+        return new class extends Writer {
+            public override close(): void {
+                // Do nothing.
+            }
+
+            public override flush(): void {
+                // Do nothing.
+            }
+
+            public override write(c: Uint16Array): void;
+            public override write(c: Uint16Array, offset: int, length: int): void;
+            public override write(c: int): void;
+            public override write(c: JavaString): void;
+            public override write(c: JavaString, offset: int, length: int): void;
+            public override write(...args: unknown[]): void {
+                // Do nothing.
+            }
+        }();
+    }
 
     /**
-     * Writes an array of characters.
-     *
-     * @param  array
-     *         Array of characters to be written
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
+      Appends the specified character to this writer.
      */
-    public abstract write(array: Uint16Array): void;
+    public append(c: char): this;
+    /** Appends the specified character sequence to this writer. */
+    public append(csq: CharSequence): this;
+    /** Appends a subsequence of the specified character sequence to this writer. */
+    public append(csq: CharSequence, start: int, end: int): this;
+    public append(...args: unknown[]): this {
+        if (typeof args[0] === "number") {
+            this.write(args[0]);
+        } else {
+            const [csq, start, end] = args as [CharSequence, int, int];
+            this.write(csq.toString(), start, end);
+        }
 
-    /**
-     * Writes a portion of an array of characters.
-     *
-     * @param  array
-     *         Array of characters
-     *
-     * @param  off
-     *         Offset from which to start writing characters
-     *
-     * @param  len
-     *         Number of characters to write
-     *
-     * @throws  IndexOutOfBoundsException
-     *          Implementations should throw this exception
-     *          if {@code off} is negative, or {@code len} is negative,
-     *          or {@code off + len} is negative or greater than the length
-     *          of the given array
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
-     */
-    public abstract write(array: Uint16Array, off: number, len: number): void;
+        return this;
+    }
 
-    /**
-     * Writes a string.
-     *
-     * @param  str
-     *         String to be written
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
-     */
-    public abstract write(str: java.lang.String): void;
+    /** Writes an array of characters. */
+    public write(buffer: Uint16Array): void;
+    /** Writes a portion of an array of characters. */
+    public /* abstract */write(buffer: Uint16Array, offset: int, length: int): void;
+    /** Writes a single character. */
+    public write(c: int): void;
+    /** Writes a string. */
+    public write(str: JavaString): void;
+    /** Writes a portion of a string. */
+    public write(str: JavaString, offset: int, length: int): void;
+    public write(...args: unknown[]): void {
+        switch (args.length) {
+            case 1: {
+                let array;
+                if (args[0] instanceof Uint16Array) {
+                    array = args[0];
+                } else if (args[0] instanceof JavaString) {
+                    array = args[0].array();
+                } else {
+                    array = new Uint16Array(1);
+                    array[0] = (args[0] as int) & 0xFFFF;
 
-    /**
-     * Writes a portion of a string.
-     *
-     * The implementation in this class throws an
-     * {@code IndexOutOfBoundsException} for the indicated conditions;
-     * overriding methods may choose to do otherwise.
-     *
-     * @param  str
-     *         A String
-     *
-     * @param  off
-     *         Offset from which to start writing characters
-     *
-     * @param  len
-     *         Number of characters to write
-     *
-     * @throws  IndexOutOfBoundsException
-     *          Implementations should throw this exception
-     *          if {@code off} is negative, or {@code len} is negative,
-     *          or {@code off + len} is negative or greater than the length
-     *          of the given string
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
-     */
-    public abstract write(str: java.lang.String, off: number, len: number): void;
+                    break;
+                }
 
-    public abstract append(c: java.lang.char): this;
+                this.write(array, 0, array.length);
+                break;
+            }
 
-    public abstract append(csq: java.lang.CharSequence): this;
+            case 3: {
+                if (args[0] instanceof JavaString) {
+                    const [c, offset, length] = args as [JavaString, int, int];
+                    this.write(c.array(), offset, length);
+                } else {
+                    throw new NotImplementedError("abstract");
+                }
 
-    public abstract append(csq: java.lang.CharSequence, start: number, end: number): this;
+                break;
+            }
 
-    /**
-     * Flushes the stream.  If the stream has saved any characters from the
-     * various write() methods in a buffer, write them immediately to their
-     * intended destination.  Then, if that destination is another character or
-     * byte stream, flush it.  Thus one flush() invocation will flush all the
-     * buffers in a chain of Writers and OutputStreams.
-     *
-     * <p> If the intended destination of this stream is an abstraction provided
-     * by the underlying operating system, for example a file, then flushing the
-     * stream guarantees only that bytes previously written to the stream are
-     * passed to the operating system for writing; it does not guarantee that
-     * they are actually written to a physical device such as a disk drive.
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
-     */
-    public abstract flush(): void;
+            default: {
+                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+            }
+        }
 
-    /**
-     * Closes the stream, flushing it first. Once the stream has been closed,
-     * further write() or flush() invocations will cause an IOException to be
-     * thrown. Closing a previously closed stream has no effect.
-     *
-     * @throws  IOException
-     *          If an I/O error occurs
-     */
+        if (args.length === 1) {
+            this.write(args[0] as Uint16Array);
+        } else if (args.length === 3) {
+            const [c, offset, length] = args as [Uint16Array, int, int];
+            this.write(c, offset, length);
+        } else {
+            const [c, offset, length] = args as [JavaString, int, int];
+            this.write(c.toString(), offset, length);
+        }
+    }
+
+    /** Closes the stream, flushing it first. */
     public abstract close(): void;
+
+    /** Flushes the stream. */
+    public abstract flush(): void;
 }

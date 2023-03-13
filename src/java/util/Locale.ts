@@ -5,11 +5,19 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { final } from "../..";
+import { Serializable } from "../io/Serializable";
+import { Cloneable } from "../lang/Cloneable";
 import { JavaObject } from "../lang/Object";
 
-/** This class has no meaningful implementation and exist only to satisfy call signatures. */
-export class Locale extends JavaObject implements java.lang.Cloneable<Locale> {
+/** A Locale object represents a specific geographical, political, or cultural region. */
+@final
+export class Locale extends JavaObject implements Cloneable<Locale>, Serializable {
+    /**
+     * Gets the current value of the default locale for this instance of the Java Virtual Machine.
+     *
+     * @returns The current default locale.
+     */
     public static getDefault(): Locale {
         return new Locale();
     }

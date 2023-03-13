@@ -19,9 +19,8 @@ export * from "./IteratorWrapper";
 export * from "./JavaMapEntryIterator";
 export * from "./MurmurHash";
 export * from "./NotImplementedError";
-export * from "./utilities";
 export * from "./templates";
-export * from "./helpers";
+export * from "./resource-helpers";
 export * from "./types";
 
 export { type SourceDataType } from "./java/lang/StringBuilder";

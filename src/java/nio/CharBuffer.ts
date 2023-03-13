@@ -7,7 +7,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { char } from "../lang";
+import { char } from "../../types";
+import { convertStringToUTF16, convertUTF16ToString } from "../../string-helpers";
+
 import { JavaString } from "../lang/String";
 
 import { Appendable } from "../lang/Appendable";
@@ -41,10 +43,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
                     backBuffer = args[0].buffer;
                 } else {
                     const s = (args[0] as CharSequence).toString();
-                    backBuffer = new Uint16Array(s.length());
-                    for (let i = 0; i < s.length(); ++i) {
-                        backBuffer[i] = s.charAt(i);
-                    }
+                    backBuffer = convertStringToUTF16(s.valueOf());
                 }
                 break;
             }
@@ -54,11 +53,8 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
                 if (input instanceof Uint16Array) {
                     backBuffer = input.buffer;
                 } else {
-                    const s = (args[0] as CharSequence).toString();
-                    backBuffer = new Uint16Array(s.length());
-                    for (let i = 0; i < s.length(); ++i) {
-                        backBuffer[i] = s.charAt(i);
-                    }
+                    const s = input.toString();
+                    backBuffer = convertStringToUTF16(s.valueOf());
                 }
 
                 offset = o;
@@ -354,7 +350,7 @@ export class CharBuffer extends BufferImpl<Uint16Array, CharBuffer> implements A
 
     /** @returns a string containing the characters in this buffer. */
     public override toString(): JavaString {
-        return new JavaString(String.fromCharCode(...this.array().subarray(this.currentPosition, this.currentLimit)));
+        return new JavaString(convertUTF16ToString(this.array().subarray(this.currentPosition, this.currentLimit)));
     }
 
 }

@@ -5,7 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { char } from "../lang";
+import { char } from "../../types";
+
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { BufferImpl } from "./BufferImpl";
 import { BufferOverflowException } from "./BufferOverflowException";
@@ -32,15 +33,15 @@ import { IllegalArgumentException } from "../lang/IllegalArgumentException";
  * Byte buffers can be created either by allocation, which allocates space for the buffer's content, or by wrapping an
  * existing byte array into a buffer.
  */
-export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
+export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
     // Another view on the raw data for primitive value manipulation.
     #buffer: DataView;
 
     /** @deprecated Use {@link ByteBuffer.allocate} */
     public constructor(capacity: number);
     /** @deprecated Use {@link ByteBuffer.wrap} */
-    public constructor(buffer: Uint8Array, offset?: number, length?: number);
-    public constructor(capacityOrBuffer: number | Uint8Array, offset?: number, length?: number) {
+    public constructor(buffer: Int8Array, offset?: number, length?: number);
+    public constructor(capacityOrBuffer: number | Int8Array, offset?: number, length?: number) {
         let backBuffer;
         if (typeof capacityOrBuffer === "number") {
             backBuffer = new ArrayBuffer(capacityOrBuffer);
@@ -48,7 +49,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
             backBuffer = capacityOrBuffer.buffer;
         }
 
-        super(backBuffer, Uint8Array, ByteBuffer, offset, length);
+        super(backBuffer, Int8Array, ByteBuffer, offset, length);
         this.#buffer = new DataView(backBuffer, offset, length);
     }
 
@@ -63,7 +64,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
         return new ByteBuffer(capacity);
     }
 
-    public static wrap(array: Uint8Array, offset?: number, length?: number): ByteBuffer {
+    public static wrap(array: Int8Array, offset?: number, length?: number): ByteBuffer {
         if (offset !== undefined && length !== undefined) {
             return new ByteBuffer(array, offset, offset + length);
         }
@@ -100,12 +101,12 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     // public asLongBuffer(): LongBuffer
 
     public get(): number;
-    public get(dst: Uint8Array): this;
-    public get(dst: Uint8Array, offset: number, length: number): this;
+    public get(dst: Int8Array): this;
+    public get(dst: Int8Array, offset: number, length: number): this;
     public get(index: number): number;
-    public get(index: number, dst: Uint8Array): this;
-    public get(index: number, dst: Uint8Array, offset: number, length: number): this;
-    public get(indexOrDst?: number | Uint8Array, offsetOrDst?: number | Uint8Array,
+    public get(index: number, dst: Int8Array): this;
+    public get(index: number, dst: Int8Array, offset: number, length: number): this;
+    public get(indexOrDst?: number | Int8Array, offsetOrDst?: number | Int8Array,
         lengthOrOffset?: number, length?: number): this | number {
         if (indexOrDst === undefined) {
             if (this.currentPosition >= this.currentLimit) {
@@ -122,7 +123,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
                 return this.#buffer.getUint8(indexOrDst);
             }
 
-            const dst = offsetOrDst as Uint8Array;
+            const dst = offsetOrDst as Int8Array;
             if (this.currentLimit - indexOrDst < dst.length) {
                 throw new IndexOutOfBoundsException();
             }
@@ -247,14 +248,14 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
     }
 
     public put(b: number): this;
-    public put(src: Uint8Array): this;
-    public put(src: Uint8Array, offset: number, length: number): this;
+    public put(src: Int8Array): this;
+    public put(src: Int8Array, offset: number, length: number): this;
     public put(index: number, b: number): this;
-    public put(index: number, src: Uint8Array): this;
-    public put(index: number, src: Uint8Array, offset: number, length: number): this;
+    public put(index: number, src: Int8Array): this;
+    public put(index: number, src: Int8Array, offset: number, length: number): this;
     public put(index: number, src: ByteBuffer, offset: number, length: number): this;
     public put(src: ByteBuffer): this;
-    public put(bOrSrcOrIndex: number | Uint8Array | ByteBuffer, offsetOrBOrSrc?: Uint8Array | ByteBuffer | number,
+    public put(bOrSrcOrIndex: number | Int8Array | ByteBuffer, offsetOrBOrSrc?: Int8Array | ByteBuffer | number,
         lengthOrOffset?: number, length?: number): this {
         if (this.isReadOnly()) {
             throw new ReadOnlyBufferException();
@@ -278,7 +279,7 @@ export class ByteBuffer extends BufferImpl<Uint8Array, ByteBuffer> {
                     throw new IllegalArgumentException();
                 }
 
-                const source = offsetOrBOrSrc instanceof Uint8Array ? offsetOrBOrSrc : offsetOrBOrSrc.array();
+                const source = offsetOrBOrSrc instanceof Int8Array ? offsetOrBOrSrc : offsetOrBOrSrc.array();
                 if (lengthOrOffset !== undefined && length !== undefined) {
                     this.array().set(source.subarray(lengthOrOffset, lengthOrOffset + length), bOrSrcOrIndex);
                 } else {

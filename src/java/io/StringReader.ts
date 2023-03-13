@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { java, long } from "../..";
 import { S } from "../../templates";
 import { Reader } from "./Reader";
 
@@ -128,16 +128,18 @@ export class StringReader extends Reader {
      *
      * @returns The number of characters actually skipped.
      */
-    public override skip(n: number): number {
+    public override skip(n: long): long {
         let count = 0;
+        const nn = Number(n);
+
         if (n < 0) {
-            count = -Math.min(this.#position, -n);
+            count = -Math.min(this.#position, -nn);
         } else {
-            count = Math.min(this.#content.length() - this.#position, n);
+            count = Math.min(this.#content.length() - this.#position, nn);
         }
         this.#position += count;
 
-        return count;
+        return BigInt(count);
     }
 
 }

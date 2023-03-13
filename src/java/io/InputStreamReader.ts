@@ -5,135 +5,114 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { StringDecoder } from "string_decoder";
+import { char, int } from "../../types";
+import { convertStringToUTF16 } from "../../string-helpers";
 
-import { char } from "../lang";
 import { JavaString } from "../lang/String";
-import { CharBuffer } from "../nio/CharBuffer";
 import { Charset } from "../nio/charset/Charset";
 import { InputStream } from "./InputStream";
 import { Reader } from "./Reader";
 import { UnsupportedEncodingException } from "./UnsupportedEncodingException";
+import { CharsetDecoder } from "../nio/charset/CharsetDecoder";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
+/**
+ * An InputStreamReader is a bridge from byte streams to character streams: It reads bytes and decodes them into
+ * characters using a specified charset. The charset that it uses may be specified by name or may be given explicitly,
+ * or the platform's default charset may be accepted.
+ */
 export class InputStreamReader extends Reader {
-    // The size of the raw buffer used to keep input data.
-    private static readonly readBufferSize = 8192;
-
-    private buffer = Buffer.alloc(InputStreamReader.readBufferSize);
-
-    private encoding: JavaString;
-    private decoder: StringDecoder;
-    private currentText = "";
-
     private eof = false;
 
-    public constructor(input: InputStream, charsetName?: JavaString);
-    public constructor(input: InputStream, cs?: Charset);
-    public constructor(private input: InputStream,
-        charsetNameOrCs?: JavaString | Charset) {
+    #decoder: TextDecoder;
+    #input: InputStream;
+
+    #currentContent = new Uint16Array(0);
+    #currentIndex = 0;
+
+    /** Creates an InputStreamReader that uses the default charset. */
+    public constructor(input: InputStream);
+    /** Creates an InputStreamReader that uses the named charset. */
+    public constructor(input: InputStream, charsetName: JavaString);
+    /** Creates an InputStreamReader that uses the given charset. */
+    public constructor(input: InputStream, cs: Charset);
+    /** Creates an InputStreamReader that uses the given charset decoder. */
+    public constructor(input: InputStream, dec: CharsetDecoder);
+    public constructor(...args: unknown[]) {
         super();
 
-        if (!charsetNameOrCs) {
-            this.encoding = Charset.defaultCharset().name();
-        } else if (charsetNameOrCs instanceof Charset) {
-            this.encoding = charsetNameOrCs.name();
+        this.#input = args[0] as InputStream;
+        if (args.length === 1) {
+            this.#decoder = new TextDecoder(Charset.defaultCharset().name().valueOf());
         } else {
-            this.encoding = charsetNameOrCs;
-        }
+            const arg = args[1] as CharsetDecoder | Charset | JavaString;
+            if (arg instanceof CharsetDecoder) {
+                this.#decoder = new TextDecoder(arg.charset().name().valueOf());
+            } else if (arg instanceof Charset) {
+                this.#decoder = new TextDecoder(arg.name().valueOf());
+            } else {
+                const cs = Charset.forName(arg);
+                if (!cs) {
+                    throw new UnsupportedEncodingException(arg);
+                }
 
-        const encoding = this.encoding.valueOf();
-        if (Buffer.isEncoding(encoding)) {
-            this.decoder = new StringDecoder(encoding);
-        } else {
-            throw new UnsupportedEncodingException(new JavaString("Invalid charset specified"));
+                this.#decoder = new TextDecoder(cs.name().valueOf());
+            }
         }
     }
 
-    /** Closes the stream and releases any system resources associated with it. */
-    public close(): void {
-        this.input.close();
+    public override close(): void {
+        this.#input.close();
     }
 
     /** @returns the name of the character encoding being used by this stream. */
     public getEncoding(): JavaString {
-        return this.encoding;
+        return new JavaString(this.#decoder.encoding);
     }
 
     /** Reads a single character. */
     public override read(): char;
-    public override read(chars: Uint16Array | CharBuffer): number;
     /** Reads characters into a portion of an array. */
-    public override read(chars: Uint16Array, offset: number, length: number): number;
-    public override read(chars?: Uint16Array | CharBuffer, offset?: number, length?: number): char | number {
+    public override read(chars: Uint16Array, offset: int, length: int): int;
+    public override read(...args: unknown[]): char | int {
         if (!this.ready()) {
             return -1;
         }
 
-        if (!chars) {
-            // Single character variant.
-            if (this.currentText.length === 0) {
-                this.currentText = this.readNextChunk();
+        if (args.length === 0) {
+            if (this.#currentIndex >= this.#currentContent.length) {
+                this.#currentContent = this.nextChunk();
+                this.#currentIndex = 0;
             }
 
-            if (this.currentText.length === 0) {
-                return -1;
-            }
-
-            const c = this.currentText.charCodeAt(0)!;
-            this.currentText = this.currentText.substring(1);
-
-            return c;
+            return this.#currentContent[this.#currentIndex++];
         }
 
-        offset ??= 0;
-        length ??= chars instanceof Uint16Array ? chars.length : chars.length();
-
-        const end = offset + length;
-        if (offset < 0 || length < 0 || end > chars.length) {
+        const [chars, offset, length] = args as [Uint16Array, int, int];
+        if (offset < 0 || length < 0 || offset + length > chars.length) {
             throw new IndexOutOfBoundsException();
         }
 
-        let processed = 0;
-        while (length > 0) {
-            if (length <= this.currentText.length) {
-                if (chars instanceof Uint16Array) {
-                    for (const c of this.currentText.substring(0, length)) {
-                        chars[offset++] = c.charCodeAt(0)! & 0xFFFF;
-                    }
-                } else {
-                    for (const c of this.currentText.substring(0, length)) {
-                        chars.put(offset++, c.charCodeAt(0)! & 0xFFFF);
-                    }
-                }
-
-                processed += length;
-                length = 0;
-            } else {
-                // Not enough data available. Write what we have and load the next chunk.
-                if (chars instanceof Uint16Array) {
-                    for (const c of this.currentText) {
-                        chars[offset++] = c.charCodeAt(0) & 0xFFFF;
-                    }
-                } else {
-                    for (const c of this.currentText) {
-                        chars.put(offset++, c.charCodeAt(0) & 0xFFFF);
-                    }
-                }
-
-                processed += this.currentText.length;
-                length -= this.currentText.length;
-
-                if (this.eof) {
-                    this.currentText = "";
-                    break;
-                }
-
-                this.currentText = this.readNextChunk();
-            }
+        let count = 0;
+        const remaining = this.#currentContent.length - this.#currentIndex;
+        if (remaining > 0) {
+            const toCopy = Math.min(remaining, length);
+            chars.set(this.#currentContent.subarray(this.#currentIndex, this.#currentIndex + toCopy), offset);
+            this.#currentIndex += toCopy;
+            count += toCopy;
         }
 
-        return processed;
+        while (count < length && !this.eof) {
+            this.#currentContent = this.nextChunk();
+            this.#currentIndex = 0;
+
+            const toCopy = Math.min(this.#currentContent.length, length - count);
+            chars.set(this.#currentContent.subarray(0, toCopy), offset + count);
+            this.#currentIndex += toCopy;
+            count += toCopy;
+        }
+
+        return count > 0 ? count : -1;
     }
 
     /**
@@ -142,18 +121,19 @@ export class InputStreamReader extends Reader {
      * @returns true if the next read() is guaranteed not to block for input, false otherwise.
      */
     public override ready(): boolean {
-        return this.currentText.length > 0 || this.input.available() > 0;
+        return this.#currentIndex < this.#currentContent.length || this.#input.available() > 0;
     }
 
     /** @returns as many characters as can be decoded with one buffer content. */
-    private readNextChunk(): string {
-        const count = this.input.read(this.buffer);
+    private nextChunk(): Uint16Array {
+        const buffer = new Int8Array(10000);
+        const count = this.#input.read(buffer);
         if (count === -1) {
             this.eof = true;
-
-            return this.decoder.end();
         }
 
-        return this.decoder.write(this.buffer.subarray(0, count));
+        const text = this.#decoder.decode(buffer, { stream: !this.eof });
+
+        return convertStringToUTF16(text);
     }
 }

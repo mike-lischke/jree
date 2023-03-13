@@ -13,6 +13,8 @@ This page lists the java.util.stream types that are currently in this Node packa
 |---|---|---|
 |🅵|[BaseStream<T, ​S extends BaseStream<T, ​S>>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/BaseStream.html)|Base interface for streams, which are sequences of elements supporting sequential and parallel aggregate operations.|
 |🅂|[IntStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/IntStream.html)|A sequence of primitive int-valued elements supporting sequential and parallel aggregate operations.|
+|🅂|[LongStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/LongStream.html)|A sequence of primitive long-valued elements supporting sequential and parallel aggregate operations.|
+|🅿|[Stream<T>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html)|A sequence of elements supporting sequential and parallel aggregate operations.|
 
 ## Class Summary
 

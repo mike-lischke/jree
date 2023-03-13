@@ -5,12 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
-import { java } from "../..";
 import { RuntimeException } from "./RuntimeException";
+import { JavaString } from "./String";
 
 export class NegativeArraySizeException extends RuntimeException {
-    public constructor(message?: java.lang.String) {
-        super(message ?? S`A negative array size is invalid.`);
+    public constructor(message?: JavaString) {
+        super(message ?? new JavaString("A negative array size is invalid."));
     }
 }

@@ -5,420 +5,215 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { S } from "../../templates";
-import { char } from "../lang";
+import { NotImplementedError } from "../../NotImplementedError";
+import { int, long } from "../../types";
+
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { JavaString } from "../lang/String";
-import { StringBuilder } from "../lang/StringBuilder";
-import { CharBuffer } from "../nio/CharBuffer";
+import { Stream } from "../util/stream/Stream";
 import { IOException } from "./IOException";
 import { Reader } from "./Reader";
 
+/**
+ * Reads text from a character-input stream, buffering characters so as to provide for the efficient reading of
+ * characters, arrays, and lines.
+ */
 export class BufferedReader extends Reader {
-    private static readonly INVALIDATED = -2;
-    private static readonly UNMARKED = -1;
+    static #bufferSize = 10000;
 
-    private static readonly defaultCharBufferSize = 8192;
-    private static readonly defaultExpectedLineLength = 80;
+    #buffer: Uint16Array;
+    #currentIndex: int = 0;
 
-    private cb: Uint16Array;
-    private nChars: char;
-    private nextChar: char;
+    #input: Reader;
 
-    private markedChar = BufferedReader.UNMARKED;
-    private readAheadLimit = 0; /* Valid only when markedChar > 0 */
-
-    /** If the next character is a line feed, skip it */
-    private skipLF = false;
-
-    /** The skipLF flag when the mark was set */
-    private markedSkipLF = false;
-
-    public constructor(private input?: Reader, size = BufferedReader.defaultCharBufferSize) {
+    /** Creates a buffering character-input stream that uses a default-sized input buffer. */
+    public constructor(input: Reader);
+    /** Creates a buffering character-input stream that uses an input buffer of the specified size. */
+    public constructor(input: Reader, sz: int);
+    public constructor(...args: unknown[]) {
         super();
 
-        if (size <= 0) {
-            throw new IllegalArgumentException(S`Buffer size <= 0`);
+        let size = BufferedReader.#bufferSize;
+        if (args.length === 2) {
+            size = args[1] as int;
         }
 
-        this.cb = new Uint16Array(size);
-        this.nextChar = this.nChars = 0;
+        if (size <= 0) {
+            throw new IllegalArgumentException(new JavaString("Buffer size <= 0"));
+        }
+
+        this.#buffer = new Uint16Array(size);
+        this.#input = args[0] as Reader;
     }
 
-    /**
-     * Closes the stream and releases any system resources associated with it.
-     *
-     * @returns true if the stream was closed, false if it was already closed.
-     */
-    public close(): boolean {
-        if (!this.input) {
-            return false;
-        }
+    public override close(): void {
+        this.#input.close();
+        this.#buffer = new Uint16Array(0);
+        this.#currentIndex = 0;
+    }
 
-        try {
-            this.input.close();
-        } finally {
-            this.input = undefined;
-            this.cb = new Uint16Array();
-        }
-
-        return true;
+    /** Returns a Stream, the elements of which are lines read from this BufferedReader. */
+    public lines(): Stream<JavaString> {
+        throw new NotImplementedError();
     }
 
     /**
      * Marks the present position in the stream.
      *
-     * @param readAheadLimit tbd
+     * @param readAheadLimit Limit on the number of characters that may be read while still preserving the mark. After
+     *                       reading this many characters, attempting to reset the stream may fail.
      */
-    public override mark(readAheadLimit: number): void {
-        if (readAheadLimit < 0) {
-            throw new IllegalArgumentException(S`Read-ahead limit < 0`);
-        }
+    public override mark(readAheadLimit: int): void {
+        this.checkOpen();
 
-        this.ensureOpen();
-        this.readAheadLimit = readAheadLimit;
-        this.markedChar = this.nextChar;
-        this.markedSkipLF = this.skipLF;
+        this.#input.mark(readAheadLimit);
     }
 
     /**
-     * Tells whether this stream supports the mark() operation, which it does.
+     *  Tells whether this stream supports the mark() operation, which it does.
      *
-     * @returns true
+     * @returns true if and only if this stream supports the mark operation.
      */
     public override markSupported(): boolean {
-        return true;
+        return this.#input.markSupported();
     }
 
-    public override read(target?: Uint16Array | CharBuffer): char;
-    public override read(target: Uint16Array, offset: number, length: number): number;
-    public override read(target: Uint16Array, offset?: number, length?: number): number {
-        this.ensureOpen();
+    /** Reads a single character. */
+    public override read(): int;
+    /** Reads characters into a portion of an array. */
+    public override read(buffer: Uint16Array, offset: int, count: int): int;
+    public override read(...args: unknown[]): int {
+        this.checkOpen();
 
-        if (target === undefined) {
-            while (true) {
-                if (this.nextChar >= this.nChars) {
-                    this.fill();
-                    if (this.nextChar >= this.nChars) {
-                        return -1;
-                    }
+        if (args.length === 0) {
+            // Read a single character.
+            if (this.#currentIndex >= this.#buffer.length) {
+                this.#currentIndex = 0;
+                const read = this.#input.read(this.#buffer);
+                if (read === -1) {
+                    return -1;
                 }
-
-                if (this.skipLF) {
-                    this.skipLF = false;
-                    if (this.cb[this.nextChar] === 0x13) {
-                        this.nextChar++;
-                        continue;
-                    }
-                }
-
-                return this.cb[this.nextChar++];
             }
+
+            return this.#buffer[this.#currentIndex++];
         } else {
-            if (target instanceof CharBuffer) {
-                return this.read(target);
-            }
-
-            offset ??= 0;
-            length ??= target.length;
-
-            if (offset < 0 || length < 0 || target.length > length - offset) {
+            // Read a (possibly large) amount of characters.
+            const [buffer, offset, count] = args as [Uint16Array, int, int];
+            if (offset < 0 || count < 0 || count + offset > buffer.length) {
                 throw new IndexOutOfBoundsException();
             }
 
-            if (length === 0) {
-                return 0;
+            // Check if we have enough data in the buffer.
+            const remaining = this.#buffer.length - this.#currentIndex;
+            if (count <= remaining) {
+                // If so, just copy it.
+                buffer.set(this.#buffer.subarray(this.#currentIndex, this.#currentIndex + count), offset);
+                this.#currentIndex += count;
+
+                return count;
             }
 
-            let n = this.read1(target, offset, length);
-            if (n <= 0) {
-                return n;
-            }
+            // Otherwise, copy what we have and read more.
+            buffer.set(this.#buffer.subarray(this.#currentIndex), offset);
 
-            while ((n < length) && this.input!.ready()) {
-                const n1 = this.read1(target, offset + n, length - n);
-                if (n1 <= 0) {
+            let read = remaining;
+            this.#currentIndex = 0;
+            while (read < count) {
+                if (!this.ready()) { // Do not block if no more data is available.
                     break;
                 }
 
-                n += n1;
-            }
-
-            return n;
-        }
-    }
-
-    /**
-     * Reads a line of text.
-     * A line is considered to be terminated by any one of a line feed ('\n'), a carriage return ('\r'), or a carriage
-     * return followed immediately by a linefeed.
-     *
-     * @param ignoreLF if true, the next '\n' will be skipped
-     * @param term if not undefined, the first element will be set to true if the line was terminated by a line feed or
-     * a carriage return
-     *
-     * @returns the contents of the line, not including any line-termination characters, or an empty string if the end
-     * of the stream has been reached
-     */
-    public readLine(ignoreLF = false, term?: boolean[]): JavaString {
-        const s = new StringBuilder();
-        let startChar: number;
-
-        this.ensureOpen();
-        let omitLF = ignoreLF || this.skipLF;
-
-        if (term) {
-            term[0] = false;
-        }
-
-        while (true) {
-            if (this.nextChar >= this.nChars) {
-                this.fill();
-            }
-
-            if (this.nextChar >= this.nChars) { /* EOF */
-                if (s != null && s.length() > 0) {
-                    return s.substring(0);
-                } else {
-                    return new JavaString();
+                const result = this.#input.read(this.#buffer);
+                if (result === -1) {
+                    return read === 0 ? -1 : read;
                 }
-            }
 
-            let eol = false;
-            let c = 0;
-            let i: number;
-
-            /* Skip a leftover '\n', if necessary */
-            if (omitLF && (this.cb[this.nextChar] === 0x13)) {
-                this.nextChar++;
-            }
-
-            this.skipLF = false;
-            omitLF = false;
-
-            for (i = this.nextChar; i < this.nChars; ++i) {
-                c = this.cb[i];
-                if ((c === 0x13) || (c === 0xA)) {
-                    if (term) {
-                        term[0] = true;
-                    }
-
-                    eol = true;
+                if (result > count - read) {
+                    // We got more data than we need. Copy what we need and save the rest for later.
+                    buffer.set(this.#buffer.subarray(0, count - read), offset + read);
+                    this.#currentIndex = count - read;
+                    read = count;
 
                     break;
                 }
+
+                buffer.set(this.#buffer.subarray(0, result), offset + read);
+                read += result;
             }
 
-            startChar = this.nextChar;
-            this.nextChar = i;
-
-            if (eol) {
-                let str: string;
-
-                if (s == null) {
-                    str = String.fromCodePoint(...this.cb.slice(startChar, i));
-                } else {
-                    s.append(this.cb, startChar, i - startChar);
-                    str = `${s.toString()}`;
-                }
-                this.nextChar++;
-                if (c === 0xA) {
-                    this.skipLF = true;
-                }
-
-                return new JavaString(str);
-            }
-
-            s.append(this.cb, startChar, i - startChar);
+            return read;
         }
     }
 
-    /**
-     * Tells whether this stream is ready to be read.
-     *
-     * @returns true if the next read() is guaranteed not to block for input, false otherwise.
-     */
+    /** Reads a line of text. */
+    public readLine(): JavaString | null {
+        throw new NotImplementedError();
+    }
+
     public override ready(): boolean {
-        this.ensureOpen();
-
-        /*
-         * If newline needs to be skipped and the next char to be read
-         * is a newline character, then just skip it right away.
-         */
-        if (this.skipLF) {
-            /* Note that in.ready() will return true if and only if the next
-             * read on the stream will not block.
-             */
-            if (this.nextChar >= this.nChars && this.input?.ready()) {
-                this.fill();
-            }
-
-            if (this.nextChar < this.nChars) {
-                if (this.cb[this.nextChar] === 0x13) {
-                    this.nextChar++;
-                }
-
-                this.skipLF = false;
-            }
-        }
-
-        return (this.nextChar < this.nChars) || this.input!.ready();
+        return this.#input.ready();
     }
 
     /** Resets the stream to the most recent mark. */
     public override reset(): void {
-        this.ensureOpen();
-        if (this.markedChar < 0) {
-            throw new IOException((this.markedChar === BufferedReader.INVALIDATED)
-                ? S`Mark invalid`
-                : S`Stream not marked`);
-        }
-
-        this.nextChar = this.markedChar;
-        this.skipLF = this.markedSkipLF;
+        this.#input.reset();
     }
 
     /**
      * Skips characters.
      *
-     * @param n the number of characters to skip
+     * @param n The number of characters to skip.
      *
-     * @returns the number of characters actually skipped
+     * @returns The number of characters actually skipped.
      */
-    public override skip(n: number): number {
-        if (n < 0) {
-            throw new IllegalArgumentException(S`skip value is negative`);
+    public override skip(n: long): long {
+        this.checkOpen();
+
+        if (n <= 0n) {
+            return 0n;
         }
 
-        this.ensureOpen();
-        let r = n;
+        // Check if we have enough data in the buffer.
+        const remaining = this.#buffer.length - this.#currentIndex;
+        if (n <= remaining) {
+            // If so, just skip it.
+            this.#currentIndex += Number(n);
 
-        while (r > 0) {
-            if (this.nextChar >= this.nChars) {
-                this.fill();
-            }
+            return n;
+        }
 
-            if (this.nextChar >= this.nChars) { /* EOF */
+        // Otherwise, skip what we have and read more.
+        let skipped = BigInt(remaining);
+        this.#currentIndex = 0;
+        while (skipped < n) {
+            if (!this.ready()) { // Do not block if no more data is available.
                 break;
             }
 
-            if (this.skipLF) {
-                this.skipLF = false;
-                if (this.cb[this.nextChar] === 0x13) {
-                    this.nextChar++;
-                }
+            const result = this.#input.read(this.#buffer);
+            if (result === -1) {
+                return skipped;
             }
 
-            const d = this.nChars - this.nextChar;
-            if (r <= d) {
-                this.nextChar += r;
-                r = 0;
+            if (result > n - skipped) {
+                // We got more data than we need. Skip what we need and save the rest for later.
+                this.#currentIndex = Number(n - skipped);
+                skipped = n;
+
                 break;
-            } else {
-                r -= d;
-                this.nextChar = this.nChars;
             }
+
+            skipped += BigInt(result);
         }
 
-        return n - r;
+        return skipped;
     }
 
-    /** Checks to make sure that the stream has not been closed */
-    private ensureOpen(): void {
-        if (!this.input) {
-            throw new IOException(S`Stream closed`);
+    /** @throws IOException if the underlying reader has been closed. */
+    private checkOpen(): void {
+        if (this.#buffer.length === 0) {
+            throw new IOException(new JavaString("Stream closed"));
         }
-    }
-
-    /** Fills the input buffer, taking the mark into account if it is valid. */
-    private fill(): void {
-        let dst: number;
-        if (this.markedChar <= BufferedReader.UNMARKED) {
-            /* No mark */
-            dst = 0;
-        } else {
-            /* Marked */
-            const delta = this.nextChar - this.markedChar;
-            if (delta >= this.readAheadLimit) {
-                /* Gone past read-ahead limit: Invalidate mark */
-                this.markedChar = BufferedReader.INVALIDATED;
-                this.readAheadLimit = 0;
-                dst = 0;
-            } else {
-                if (this.readAheadLimit <= this.cb.length) {
-                    /* Shuffle in the current buffer */
-                    this.cb.copyWithin(0, this.markedChar, this.markedChar + delta);
-                    this.markedChar = 0;
-                    dst = delta;
-                } else {
-                    /* Reallocate buffer to accommodate read-ahead limit */
-                    const ncb = new Uint16Array(this.readAheadLimit);
-                    ncb.set(this.cb.subarray(this.markedChar, this.markedChar + delta), 0);
-                    this.cb = ncb;
-                    this.markedChar = 0;
-                    dst = delta;
-                }
-                this.nextChar = this.nChars = delta;
-            }
-        }
-
-        let n: number;
-        do {
-            n = this.input!.read(this.cb, dst, this.cb.length - dst);
-        } while (n === 0);
-
-        if (n > 0) {
-            this.nChars = dst + n;
-            this.nextChar = dst;
-        }
-    }
-
-    /**
-     * Reads characters into a portion of an array, reading from the underlying
-     * stream if necessary.
-     *
-     * @param target tbd
-     * @param offset tbd
-     * @param length tbd
-     *
-     * @returns tbd
-     */
-    private read1(target: Uint16Array, offset: number, length: number): number {
-        if (this.nextChar >= this.nChars) {
-            /* If the requested length is at least as large as the buffer, and
-               if there is no mark/reset activity, and if line feeds are not
-               being skipped, do not bother to copy the characters into the
-               local buffer.  In this way buffered streams will cascade
-               harmlessly. */
-            if (length >= this.cb.length && this.markedChar <= BufferedReader.UNMARKED && !this.skipLF) {
-                return this.input!.read(target, offset, length);
-            }
-            this.fill();
-        }
-
-        if (this.nextChar >= this.nChars) {
-            return -1;
-        }
-
-        if (this.skipLF) {
-            this.skipLF = false;
-            if (this.cb[this.nextChar] === 0x13) {
-                this.nextChar++;
-                if (this.nextChar >= this.nChars) {
-                    this.fill();
-                }
-
-                if (this.nextChar >= this.nChars) {
-                    return -1;
-                }
-            }
-        }
-
-        const n = Math.min(length, this.nChars - this.nextChar);
-        target.set(this.cb.subarray(this.nextChar, this.nextChar + n), offset);
-        this.nextChar += n;
-
-        return n;
     }
 }

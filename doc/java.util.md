@@ -22,6 +22,7 @@ This page lists the java.util types that are currently in this Node package. The
 |🅵|[Map.Entry\<K,V>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.Entry.html)|A map entry (key-value pair).|
 |🅵|[Queue\<E>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Queue.html)|A collection designed for holding elements prior to processing.|
 |🅵|[RandomAccess](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/RandomAccess.html)|Marker interface used by List implementations to indicate that they support fast (generally constant time) random access.|
+|🅵|[SortedMap\<K,V>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/SortedMap.html)|A map whose keys are sorted.|
 |🅵|[Set\<E>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html)|A collection that contains no duplicate elements.|
 |🅵|[Spliterator\<T>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Spliterator.html)|An object for traversing and partitioning elements of a source..|
 
@@ -46,6 +47,7 @@ This page lists the java.util types that are currently in this Node package. The
 |🅵|[LinkedList\<E>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/LinkedList.html)|Doubly-linked list implementation of the `List` and `Deque` interfaces.|
 |🅂|[Locale](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Locale.html)|A `Locale` object represents a specific geographical, political, or cultural region.|
 |🅿|[Objects](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Objects.html)|This class consists of static utility methods for operating on objects, or checking certain conditions before operation.|
+|🅿|[Optional\<T>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html)|A container object which may or may not contain a non-null value.|
 |🅵|[Properties](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html)|The `Properties` class represents a persistent set of properties.|
 |🅵|[Stack\<E>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Stack.html)|The `Stack` class represents a last-in-first-out (LIFO) stack of objects.|
 |🅂|[TimeZone](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/TimeZone.html)|A `TimeZone` object represents a time zone offset, and also figures out daylight savings.|

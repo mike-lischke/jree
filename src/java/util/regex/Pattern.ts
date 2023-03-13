@@ -130,7 +130,7 @@ export class Pattern extends JavaObject {
      * @returns The array of strings computed by splitting the input around matches of this pattern
      */
     public split = (input: JavaString, limit?: number): JavaString[] => {
-        return input.split(this.#regex.toString(), limit);
+        return input.split(new JavaString(this.#regex.toString()), limit);
     };
 
     /** @returns the string representation of this pattern. */

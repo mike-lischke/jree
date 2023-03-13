@@ -16,6 +16,8 @@ import { CodingErrorAction } from "./CodingErrorAction";
 
 export class CharsetDecoder extends JavaObject {
     #cs: Charset;
+    #decoder: TextDecoder;
+
     #averageCharsPerByte: number;
     #maxCharsPerByte: number;
 
@@ -37,6 +39,8 @@ export class CharsetDecoder extends JavaObject {
         this.#cs = cs;
         this.#averageCharsPerByte = averageCharsPerByte;
         this.#maxCharsPerByte = maxCharsPerByte;
+
+        this.#decoder = new TextDecoder(this.#cs.name().valueOf());
     }
 
     /**
@@ -82,16 +86,12 @@ export class CharsetDecoder extends JavaObject {
     public decode(...args: unknown[]): CharBuffer | CoderResult {
         if (args.length === 1) {
             const input = args[0] as ByteBuffer;
-            const buffer = Buffer.from(input.array());
-            const text = buffer.toString(this.#cs.name().valueOf() as BufferEncoding);
+            const text = this.#decoder.decode(input.array());
 
             return CharBuffer.wrap(new JavaString(text));
-
         } else {
-            const [input, output, _] = [args[0] as ByteBuffer, args[1] as CharBuffer, args[2] as boolean];
-            const buffer = Buffer.from(input.array());
-            const text = buffer.toString(this.#cs.name().valueOf() as BufferEncoding);
-
+            const [input, output, endOfInput] = [args[0] as ByteBuffer, args[1] as CharBuffer, args[2] as boolean];
+            const text = this.#decoder.decode(input.array(), { stream: !endOfInput });
             output.put(new JavaString(text));
 
             return CoderResult.success();

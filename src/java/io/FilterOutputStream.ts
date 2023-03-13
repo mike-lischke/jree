@@ -9,7 +9,7 @@ import { OutputStream } from "./OutputStream";
 
 export abstract class FilterOutputStream extends OutputStream {
 
-    protected out: OutputStream;
+    protected readonly out: OutputStream;
 
     public constructor(output: OutputStream) {
         super();
