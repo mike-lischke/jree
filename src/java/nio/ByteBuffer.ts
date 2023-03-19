@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { char } from "../../types";
+import { byte, char, int } from "../../types";
 
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { BufferImpl } from "./BufferImpl";
@@ -33,24 +33,33 @@ import { IllegalArgumentException } from "../lang/IllegalArgumentException";
  * Byte buffers can be created either by allocation, which allocates space for the buffer's content, or by wrapping an
  * existing byte array into a buffer.
  */
-export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
-    // Another view on the raw data for primitive value manipulation.
+export class ByteBuffer extends BufferImpl<Int8Array> {
     #buffer: DataView;
 
-    /** @deprecated Use {@link ByteBuffer.allocate} */
-    public constructor(capacity: number);
-    /** @deprecated Use {@link ByteBuffer.wrap} */
-    public constructor(buffer: Int8Array, offset?: number, length?: number);
-    public constructor(capacityOrBuffer: number | Int8Array, offset?: number, length?: number) {
-        let backBuffer;
-        if (typeof capacityOrBuffer === "number") {
-            backBuffer = new ArrayBuffer(capacityOrBuffer);
+    protected constructor(capacity: number);
+    protected constructor(buffer: Int8Array);
+    protected constructor(buffer: Int8Array, offset: int, length: int);
+    protected constructor(...args: unknown[]) {
+        let array: Int8Array;
+        let offset = 0;
+        let length = 0;
+
+        if (args.length === 1) {
+            if (typeof args[0] === "number") {
+                array = new Int8Array(args[0]);
+            } else {
+                array = args[0] as Int8Array;
+            }
+            length = array.length;
+        } else if (args.length === 3) {
+            [array, offset, length] = args as [Int8Array, int, int];
         } else {
-            backBuffer = capacityOrBuffer.buffer;
+            throw new IllegalArgumentException("Invalid arguments");
         }
 
-        super(backBuffer, Int8Array, ByteBuffer, offset, length);
-        this.#buffer = new DataView(backBuffer, offset, length);
+        super(array, offset, length);
+
+        this.#buffer = new DataView(array.buffer);
     }
 
     /**
@@ -60,11 +69,22 @@ export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
      *
      * @returns The allocated char buffer.
      */
-    public static allocate(capacity: number): ByteBuffer {
+    public static allocate(capacity: int): ByteBuffer {
         return new ByteBuffer(capacity);
     }
 
-    public static wrap(array: Int8Array, offset?: number, length?: number): ByteBuffer {
+    /**
+     * Allocates a new direct byte buffer.
+     *
+     * @param capacity The new buffer capacity.
+     *
+     * @returns The allocated byte buffer.
+     */
+    public static allocateDirect(capacity: int): ByteBuffer {
+        return new ByteBuffer(capacity);
+    }
+
+    public static wrap(array: Int8Array, offset?: int, length?: int): ByteBuffer {
         if (offset !== undefined && length !== undefined) {
             return new ByteBuffer(array, offset, offset + length);
         }
@@ -78,7 +98,7 @@ export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
      * @returns A new char buffer.
      */
     public asCharBuffer(): CharBuffer {
-        return CharBuffer.wrap(new Uint16Array(this.backBuffer, this.#buffer.byteOffset, this.#buffer.byteLength));
+        return CharBuffer.wrap(new Uint16Array(this.#buffer.buffer));
     }
 
     /** Creates a view of this byte buffer as a double buffer. */
@@ -93,19 +113,34 @@ export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
      * @returns A new int buffer.
      */
     public asIntBuffer(): IntBuffer {
-        return new IntBuffer(new Int32Array(this.backBuffer, this.#buffer.byteOffset,
+        return IntBuffer.wrap(new Int32Array(this.#buffer.buffer, this.#buffer.byteOffset,
             this.#buffer.byteLength));
     }
 
     /** Creates a view of this byte buffer as a long buffer. */
     // public asLongBuffer(): LongBuffer
 
-    public get(): number;
+    /**
+     * Creates a new byte buffer that shares this buffer's content.
+     *
+     * @returns A new byte buffer that shares this buffer's content.
+     */
+    public override duplicate(): this {
+        const buffer = new ByteBuffer(this.array());
+        buffer.readOnly = this.readOnly;
+        buffer.currentPosition = this.currentPosition;
+        buffer.currentLimit = this.currentLimit;
+        buffer.currentMark = this.currentMark;
+
+        return buffer as this;
+    }
+
+    public get(): byte;
     public get(dst: Int8Array): this;
-    public get(dst: Int8Array, offset: number, length: number): this;
-    public get(index: number): number;
-    public get(index: number, dst: Int8Array): this;
-    public get(index: number, dst: Int8Array, offset: number, length: number): this;
+    public get(dst: Int8Array, offset: int, length: int): this;
+    public get(index: int): byte;
+    public get(index: int, dst: Int8Array): this;
+    public get(index: int, dst: Int8Array, offset: int, length: int): this;
     public get(indexOrDst?: number | Int8Array, offsetOrDst?: number | Int8Array,
         lengthOrOffset?: number, length?: number): this | number {
         if (indexOrDst === undefined) {
@@ -501,18 +536,9 @@ export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
         return this;
     }
 
-    /**
-     * Relative put method for writing a short value(optional operation).
-     *
-     * @param value
-     */
+    /** Relative put method for writing a short value(optional operation). */
     public putShort(value: number): ByteBuffer;
-    /**
-     * Absolute put method for writing a short value(optional operation).
-     *
-     * @param index
-     * @param value
-     */
+    /** Absolute put method for writing a short value(optional operation). */
     public putShort(index: number, value: number): ByteBuffer;
     public putShort(valueOrIndex: number, value?: number): ByteBuffer {
         if (this.isReadOnly()) {
@@ -537,5 +563,9 @@ export class ByteBuffer extends BufferImpl<Int8Array, ByteBuffer> {
         }
 
         return this;
+    }
+
+    public slice(): ByteBuffer {
+        return new ByteBuffer(this.array());
     }
 }

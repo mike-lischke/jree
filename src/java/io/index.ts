@@ -29,10 +29,14 @@ export * from "./InputStreamReader";
 export * from "./OutputStreamWriter";
 export * from "./BufferedReader";
 export * from "./BufferedWriter";
+export * from "./PrintWriter";
 
 export * from "./StringReader";
+export * from "./StringWriter";
 export * from "./FileReader";
 export * from "./FileWriter";
 export * from "./FileInputStream";
 export * from "./FileOutputStream";
 export * from "./FilterOutputStream";
+export * from "./CharArrayWriter";
+export * from "./ByteArrayOutputStream";

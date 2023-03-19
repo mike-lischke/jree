@@ -5,18 +5,20 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { char } from "../../types";
-import { JavaString } from "../lang/String";
+import { char, int } from "../../types";
 
-export interface CharSequence {
+import { JavaString } from "../lang/String";
+import { IReflection } from "./Object";
+
+export interface CharSequence extends IReflection {
     /** Returns the 16 bit char value at the specified index. */
-    charAt(index: number): char | null;
+    charAt(index: int): char | null;
 
     /** Returns the length of this character sequence. */
-    length(): number;
+    length(): int;
 
     /** Returns a new CharSequence that is a subsequence of this sequence. */
-    subSequence(start: number, end: number): CharSequence;
+    subSequence(start: int, end: int): CharSequence;
 
     /** Returns a string containing the characters in this sequence in the same order as this sequence. */
     toString(): JavaString;

@@ -5,10 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { Channel } from "./Channel";
 
 /** A channel that can be asynchronously closed and interrupted. */
-export interface InterruptibleChannel extends java.nio.channels.Channel {
+export interface InterruptibleChannel extends Channel {
     /** Closes this channel. */
     close(): void;
 }

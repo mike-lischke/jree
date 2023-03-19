@@ -24,21 +24,24 @@ export class Throwable extends JavaObject {
 
     #message: JavaString | null = null;
     #cause: Throwable | null = null;
+    #enableSuppression = true;
+    #writableStackTrace = false;
+
     #elements: StackTraceElement[] = [];
     #suppressed: Throwable[] = [];
 
     /** Constructs a new throwable with null as its detail message. */
     public constructor();
     /** Constructs a new throwable with the specified detail message. */
-    public constructor(message: JavaString | null);
+    public constructor(message: JavaString | string | null);
     /** Constructs a new throwable with the specified detail message and cause. */
-    public constructor(message: JavaString, cause: Throwable | null);
+    public constructor(message: JavaString | string, cause: Throwable | null);
     /**
      * Constructs a new throwable with the specified detail message, cause, suppression enabled or disabled, and
      * writable stack trace enabled or disabled.
      */
     // This constructor is protected in Java, but in TS we cannot mix different modifiers in overloading.
-    public constructor(message: JavaString, cause: Throwable | null, enableSuppression: boolean,
+    public constructor(message: JavaString | string, cause: Throwable | null, enableSuppression: boolean,
         writableStackTrace: boolean);
     /**
      * Constructs a new throwable with the specified cause and a detail message of
@@ -50,23 +53,44 @@ export class Throwable extends JavaObject {
 
         switch (args.length) {
             case 1: {
-                if (args[0] instanceof JavaString) {
-                    this.#message = args[0];
-                } else if (args[0] instanceof Throwable) {
-                    this.#cause = args[0];
+                const arg = args[0] as JavaString | string | Throwable | null;
+                if (arg instanceof JavaString) {
+                    this.#message = arg;
+                } else if (arg instanceof Throwable) {
+                    this.#cause = arg;
+                } else if (typeof arg === "string") {
+                    this.#message = new JavaString(arg);
                 }
+
                 break;
             }
 
             case 2: {
-                this.#message = args[0] as JavaString;
-                this.#cause = args[1] as Throwable;
+                const [message, cause] = args as [JavaString | string, Throwable | null];
+                if (message instanceof JavaString) {
+                    this.#message = message;
+                } else if (typeof message === "string") {
+                    this.#message = new JavaString(message);
+                }
+
+                this.#cause = cause;
                 break;
             }
 
             case 4: {
-                this.#message = args[0] as JavaString;
-                this.#cause = args[1] as Throwable;
+                const [message, cause, enableSuppression, writableStackTrace] =
+                    args as [JavaString | string, Throwable | null, boolean, boolean];
+
+                if (message instanceof JavaString) {
+                    this.#message = message;
+                } else if (typeof message === "string") {
+                    this.#message = new JavaString(message);
+                }
+
+                this.#cause = cause;
+                this.#enableSuppression = enableSuppression;
+                this.#writableStackTrace = writableStackTrace;
+
                 break;
             }
 

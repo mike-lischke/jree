@@ -5,10 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../../lang/Object";
 import { JavaString } from "../../lang/String";
 
 /** The result of a match operation. */
-export interface MatchResult {
+export interface MatchResult extends IReflection {
     /** Returns the offset after the last character matched. */
     end(): number;
 

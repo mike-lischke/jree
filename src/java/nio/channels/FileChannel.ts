@@ -7,7 +7,11 @@
 
 /* eslint-disable max-classes-per-file */
 
-import * as fs from "fs";
+import {
+    closeSync, fstatSync, fsyncSync, Mode, OpenMode, openSync, readSync, truncateSync, unlinkSync, writeSync,
+} from "fs";
+
+import { int, long } from "../../../types";
 
 import { NotImplementedError } from "../../../NotImplementedError";
 
@@ -26,8 +30,8 @@ import { SeekableByteChannel } from "./SeekableByteChannel";
 import { AbstractInterruptibleChannel } from "./spi/AbstractInterruptibleChannel";
 import { WritableByteChannel } from "./WritableByteChannel";
 import { StandardOpenOption } from "../file/StandardOpenOption";
-import { PosixFilePermission } from "../file/attribute/PosixFilePermission";
 import { PosixFilePermissions } from "../file/attribute/PosixFilePermissions";
+import { PosixFilePermission } from "../file/attribute/PosixFilePermission";
 import { ClosedChannelException } from "./ClosedChannelException";
 import { NonWritableChannelException } from "./NonWritableChannelException";
 import { NonReadableChannelException } from "./NonReadableChannelException";
@@ -49,37 +53,36 @@ export abstract class FileChannel extends AbstractInterruptibleChannel implement
     public static open(path: Path, options: JavaSet<OpenOption>,
         ...attrs: Array<FileAttribute<unknown>>): FileChannel;
     public static open(...args: unknown[]): FileChannel {
-        switch (args.length) {
-            case 2: {
-                const [path, options] = args as [Path, OpenOption[]];
-                const set = new HashSet<OpenOption>();
-                options.forEach((option) => { return set.add(option); });
+        if (args.length < 2) {
+            throw new IllegalArgumentException(new JavaString("Invalid int of arguments"));
+        }
 
-                // eslint-disable-next-line @typescript-eslint/no-use-before-define
-                return new FileChannelImpl(path, set, []);
-            }
+        if (args[1] instanceof JavaSet) {
+            const [path, options, ...attrs] = args as [Path, JavaSet<OpenOption>, Array<FileAttribute<unknown>>];
 
-            case 3: {
-                const [path, options, attrs] = args as [Path, JavaSet<OpenOption>,
-                    Array<FileAttribute<unknown>>];
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            return new FileChannelImpl(path, options, ...attrs);
+        } else {
+            const path = args.shift() as Path;
+            const [...rest] = args as OpenOption[];
 
-                // eslint-disable-next-line @typescript-eslint/no-use-before-define
-                return new FileChannelImpl(path, options, attrs);
-            }
+            const set = new HashSet<OpenOption>();
+            rest.forEach((option) => {
+                set.add(option);
+            });
 
-            default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
-            }
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            return new FileChannelImpl(path, set, []);
         }
     }
 
     /** Reads a sequence of bytes from this channel into the given buffer. */
-    public /** abstract */ read(dst: ByteBuffer): number;
+    public /** abstract */ read(dst: ByteBuffer): int;
     /** Reads a sequence of bytes from this channel into the given buffers. */
-    public read(dst: ByteBuffer[]): bigint;
+    public read(dst: ByteBuffer[]): long;
     /** Reads a sequence of bytes from this channel into a subsequence of the given buffers. */
-    public /** abstract */ read(dst: ByteBuffer[], offset: number, length: number): bigint;
-    public read(...args: unknown[]): bigint | number {
+    public /** abstract */ read(dst: ByteBuffer[], offset: int, length: int): long;
+    public read(...args: unknown[]): long | int {
         switch (args.length) {
             case 1: {
                 if (args[0] instanceof ByteBuffer) {
@@ -97,23 +100,23 @@ export abstract class FileChannel extends AbstractInterruptibleChannel implement
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+                throw new IllegalArgumentException(new JavaString("Invalid int of arguments"));
             }
         }
     }
 
     // public tryLock(): FileLock;
-    // public tryLock(position: number, size: number, shared: boolean): FileLock;
+    // public tryLock(position: int, size: int, shared: boolean): FileLock;
 
     /** Writes a sequence of bytes to this channel from the given buffer. */
-    public /** abstract */ write(src: ByteBuffer): number;
+    public /** abstract */ write(src: ByteBuffer): int;
     /** Writes a sequence of bytes to this channel from the given buffers. */
-    public write(src: ByteBuffer[]): bigint;
+    public write(src: ByteBuffer[]): long;
     /** Writes a sequence of bytes to this channel from a subsequence of the given buffers. */
-    public /** abstract */ write(src: ByteBuffer[], offset: number, length: number): bigint;
+    public /** abstract */ write(src: ByteBuffer[], offset: int, length: int): long;
     /** Writes a sequence of bytes to this channel from the given buffer, starting at the given file position. */
-    public /** abstract */ write(src: ByteBuffer, position: bigint): number;
-    public write(...args: unknown[]): bigint | number {
+    public /** abstract */ write(src: ByteBuffer, position: long): int;
+    public write(...args: unknown[]): long | int {
         switch (args.length) {
             case 1: {
                 if (args[0] instanceof ByteBuffer) {
@@ -130,7 +133,7 @@ export abstract class FileChannel extends AbstractInterruptibleChannel implement
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+                throw new IllegalArgumentException(new JavaString("Invalid int of arguments"));
             }
         }
     }
@@ -139,29 +142,29 @@ export abstract class FileChannel extends AbstractInterruptibleChannel implement
     public abstract force(metaData: boolean): void;
 
     // public lock(): FileLock;
-    // public abstract lock(position: number, size: number, shared: boolean): FileLock;
+    // public abstract lock(position: int, size: int, shared: boolean): FileLock;
 
     // public abstract map(mode: FileChannel.MapMode,
-    //   position: number, size: number): MappedByteBuffer;
+    //   position: int, size: int): MappedByteBuffer;
 
     /** Returns this channel's file position. */
-    public abstract position(): bigint;
+    public abstract position(): long;
     /** Sets this channel's file position. */
-    public abstract position(newPosition: bigint): FileChannel;
+    public abstract position(newPosition: long): FileChannel;
 
     /** Returns the current size of this channel's file. */
-    public abstract size(): bigint;
+    public abstract size(): long;
 
     /** Transfers bytes into this channel's file from the given readable byte channel. */
-    public abstract transferFrom(src: ReadableByteChannel, position: bigint,
-        count: bigint): bigint;
+    public abstract transferFrom(src: ReadableByteChannel, position: long,
+        count: long): long;
 
     /** Transfers bytes from this channel's file to the given writable byte channel. */
-    public abstract transferTo(position: bigint, count: bigint,
-        target: WritableByteChannel): bigint;
+    public abstract transferTo(position: long, count: long,
+        target: WritableByteChannel): long;
 
     /** Truncates the file to the given size. */
-    public abstract truncate(size: bigint): FileChannel;
+    public abstract truncate(size: long): FileChannel;
 }
 
 export class FileChannelImpl extends FileChannel {
@@ -244,40 +247,42 @@ export class FileChannelImpl extends FileChannel {
     }
 
     public force(metaData: boolean): void {
-        fs.fsyncSync(this.#fileHandle);
+        fsyncSync(this.#fileHandle);
     }
 
     // public lock(): FileLock;
-    // public lock(position: bigint, size: bigint, shared: boolean): FileLock;
+    // public lock(position: long, size: long, shared: boolean): FileLock;
 
-    // public map(mode: FileChannel.MapMode, position: bigint, size: bigint):
+    // public map(mode: FileChannel.MapMode, position: long, size: long):
     //   MappedByteBuffer
 
-    public position(): bigint;
-    public position(newPosition: bigint): FileChannel;
-    public position(...args: unknown[]): bigint | FileChannel {
+    public position(): long;
+    public position(newPosition: long): FileChannel;
+    public position(...args: unknown[]): long | FileChannel {
         if (args.length === 0) {
             return this.#currentPosition;
         } else {
-            this.#currentPosition = args[0] as bigint;
+            this.#currentPosition = args[0] as long;
 
             return this;
         }
     }
 
-    public override read(dst: ByteBuffer): number;
-    public override read(dst: ByteBuffer[]): bigint;
-    public override read(dst: ByteBuffer[], offset: number, length: number): bigint;
-    public override read(...args: unknown[]): bigint | number {
+    public override read(dst: ByteBuffer): int;
+    public override read(dst: ByteBuffer[]): long;
+    public override read(dst: ByteBuffer[], offset: int, length: int): long;
+    public override read(...args: unknown[]): long | int {
         let currentBuffer = 0;
-        let end: number;
+        let end: int;
         let targets: ByteBuffer[];
 
+        let returnInt = false;
         switch (args.length) {
             case 1: {
                 if (args[0] instanceof ByteBuffer) {
                     targets = [args[0]];
                     end = 1;
+                    returnInt = true;
                 } else {
                     targets = args[0] as ByteBuffer[];
                     end = targets.length;
@@ -288,14 +293,14 @@ export class FileChannelImpl extends FileChannel {
 
             case 3: {
                 targets = args[0] as ByteBuffer[];
-                currentBuffer = args[1] as number;
-                end = args[2] as number;
+                currentBuffer = args[1] as int;
+                end = args[2] as int;
 
                 break;
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+                throw new IllegalArgumentException(new JavaString("Invalid int of arguments"));
             }
         }
 
@@ -317,16 +322,16 @@ export class FileChannelImpl extends FileChannel {
             totalBytesRead += bytesRead;
         }
 
-        return totalBytesRead;
+        return returnInt ? Number(totalBytesRead) : totalBytesRead;
     }
 
-    public size(): bigint {
-        const stat = fs.fstatSync(this.#fileHandle, { bigint: true });
+    public size(): long {
+        const stat = fstatSync(this.#fileHandle, { bigint: true });
 
         return stat.size;
     }
 
-    public transferFrom(src: ReadableByteChannel, position: bigint, count: bigint): bigint {
+    public transferFrom(src: ReadableByteChannel, position: long, count: long): long {
         if (position < 0n) {
             throw new IllegalArgumentException(new JavaString("Position must be >= 0"));
         }
@@ -359,7 +364,7 @@ export class FileChannelImpl extends FileChannel {
         return totalBytesRead;
     }
 
-    public transferTo(position: bigint, count: bigint, target: WritableByteChannel): bigint {
+    public transferTo(position: long, count: long, target: WritableByteChannel): long {
         if (!target.isOpen() || !this.isOpen()) {
             throw new ClosedChannelException();
         }
@@ -388,22 +393,22 @@ export class FileChannelImpl extends FileChannel {
         return totalBytesRead;
     }
 
-    public truncate(size: bigint): FileChannel {
-        fs.truncateSync(this.#nativePath, Number(size));
+    public truncate(size: long): FileChannel {
+        truncateSync(this.#nativePath, Number(size));
 
         return this;
     }
 
     // public tryLock(): FileLock | null;
-    // public tryLock(position: bigint, size: bigint, shared: boolean): FileLock | null;
+    // public tryLock(position: long, size: long, shared: boolean): FileLock | null;
 
-    public override write(src: ByteBuffer): number;
-    public override write(src: ByteBuffer[]): bigint;
-    public override write(src: ByteBuffer[], offset: number, length: number): bigint;
-    public override write(src: ByteBuffer, position: bigint): number;
-    public override write(...args: unknown[]): bigint | number {
+    public override write(src: ByteBuffer): int;
+    public override write(src: ByteBuffer[]): long;
+    public override write(src: ByteBuffer[], offset: int, length: int): long;
+    public override write(src: ByteBuffer, position: long): int;
+    public override write(...args: unknown[]): long | int {
         let currentBuffer = 0;
-        let end: number;
+        let end: int;
         let targets: ByteBuffer[];
 
         switch (args.length) {
@@ -423,21 +428,21 @@ export class FileChannelImpl extends FileChannel {
                 targets = [args[0] as ByteBuffer];
                 end = 1;
 
-                this.#currentPosition = args[1] as bigint;
+                this.#currentPosition = args[1] as long;
 
                 break;
             }
 
             case 3: {
                 targets = args[0] as ByteBuffer[];
-                currentBuffer = args[1] as number;
-                end = args[2] as number;
+                currentBuffer = args[1] as int;
+                end = args[2] as int;
 
                 break;
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+                throw new IllegalArgumentException(new JavaString("Invalid int of arguments"));
             }
         }
 
@@ -463,11 +468,11 @@ export class FileChannelImpl extends FileChannel {
     }
 
     protected implCloseChannel(): void {
-        fs.closeSync(this.#fileHandle);
+        closeSync(this.#fileHandle);
         this.#fileHandle = -1;
 
         if (this.#deleteOnClose) {
-            fs.unlinkSync(this.#nativePath);
+            unlinkSync(this.#nativePath);
         }
     }
 
@@ -480,9 +485,9 @@ export class FileChannelImpl extends FileChannel {
      *
      * @throws IOException In case of an error.
      */
-    private open(path: string, flags: fs.OpenMode, mode: fs.Mode): void {
+    private open(path: string, flags: OpenMode, mode: Mode): void {
         try {
-            this.#fileHandle = fs.openSync(path, flags, mode);
+            this.#fileHandle = openSync(path, flags, mode);
         } catch (reason) {
             throw new IOException(new JavaString("Cannot open file"), Throwable.fromError(reason));
         }
@@ -492,13 +497,13 @@ export class FileChannelImpl extends FileChannel {
      * Low level file read method.
      *
      * @param target The buffer to read into.
-     * @param remaining The number of bytes to read.
+     * @param remaining The int of bytes to read.
      *
-     * @returns The number of bytes read.
+     * @returns The int of bytes read.
      */
-    private readBytes(target: ByteBuffer, remaining: number): bigint {
+    private readBytes(target: ByteBuffer, remaining: int): long {
         const buffer = target.array();
-        const bytesRead = fs.readSync(this.#fileHandle, buffer, target.position(), remaining, this.#currentPosition);
+        const bytesRead = readSync(this.#fileHandle, buffer, target.position(), remaining, this.#currentPosition);
         this.#currentPosition += BigInt(bytesRead);
         target.position(target.position() + bytesRead);
 
@@ -509,18 +514,17 @@ export class FileChannelImpl extends FileChannel {
      * Low level file write method.
      *
      * @param target The buffer to read from.
-     * @param remaining The number of bytes to read.
+     * @param remaining The int of bytes to read.
      *
-     * @returns The number of bytes read.
+     * @returns The int of bytes read.
      */
-    private writeBytes(target: ByteBuffer, remaining: number): bigint {
+    private writeBytes(target: ByteBuffer, remaining: int): long {
         const buffer = target.array();
-        const bytesWritten = fs.writeSync(this.#fileHandle, buffer, target.position(), remaining,
+        const bytesWritten = writeSync(this.#fileHandle, buffer, target.position(), remaining,
             Number(this.#currentPosition));
         this.#currentPosition += BigInt(bytesWritten);
         target.position(target.position() + bytesWritten);
 
         return BigInt(bytesWritten);
     }
-
 }

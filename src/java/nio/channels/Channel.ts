@@ -5,9 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { Closeable } from "../../io/Closeable";
 
-export interface Channel extends java.io.Closeable {
+export interface Channel extends Closeable {
     /** Closes this channel. */
     close(): void;
 

@@ -5,11 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../../lang/Object";
+
 /**
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or
  * method reference.
  */
-export interface JavaFunction<T, R> {
+export interface JavaFunction<T, R> extends IReflection {
     /**
      * Applies this function to the given argument.
      *

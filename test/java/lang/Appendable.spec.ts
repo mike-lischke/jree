@@ -5,10 +5,12 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { runTest } from "../../helpers";
+
 export { };
 
 describe("Tests", () => {
-    it("Base", () => {
-        //
+    it("Base", async () => {
+        await runTest("test/jdk/java/lang/Appendable/Basic.ts", "main");
     });
 });

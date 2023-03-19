@@ -1,0 +1,9 @@
+{
+    "name": "jree-jdk-tests",
+    "description": "jree JDK unit tests",
+    "type": "module",
+    "private": true,
+    "devDependencies": {
+        "jree": "1.1.1"
+    }
+}

@@ -5,11 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../..";
+import { UserPrincipal } from "./UserPrincipal";
 
 /**
  * A UserPrincipal representing a group identity, used to determine access rights to objects in a file system.
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GroupPrincipal extends java.nio.file.attribute.UserPrincipal {
+export interface GroupPrincipal extends UserPrincipal {
 }

@@ -5,6 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export interface Cloneable<T> {
+import { IReflection } from "./Object";
+
+export interface Cloneable<T> extends IReflection {
     clone(): T;
 }

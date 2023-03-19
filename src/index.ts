@@ -22,5 +22,3 @@ export * from "./NotImplementedError";
 export * from "./templates";
 export * from "./resource-helpers";
 export * from "./types";
-
-export { type SourceDataType } from "./java/lang/StringBuilder";

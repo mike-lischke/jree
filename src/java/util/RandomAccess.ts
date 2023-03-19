@@ -5,7 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../lang/Object";
+
 /** This interface is used to mark classes that support random access.  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface RandomAccess {
+export interface RandomAccess extends IReflection {
 }

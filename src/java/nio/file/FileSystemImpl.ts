@@ -22,6 +22,7 @@ import { PatternSyntaxException } from "../../util/regex/PatternSyntaxException"
 import { JavaIterator } from "../../util/Iterator";
 import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
 import { UserPrincipalLookupService } from "./attribute/UserPrincipalLookupService";
+import { JavaObject } from "../../lang/Object";
 
 /**
  * This is the default implementation of the FileSystem interface. It uses Node.js' file system API.
@@ -50,13 +51,13 @@ export class FileSystemImpl extends JavaFileSystem {
         const [syntax, pattern] = syntaxAndPattern.split(new JavaString(":"), 2);
 
         if (syntax.equals(this.#globSyntax)) {
-            return new class implements PathMatcher {
+            return new class extends JavaObject implements PathMatcher {
                 public matches(path: Path): boolean {
                     return minimatch(`${path}`, `${pattern}`);
                 }
             }();
         } else if (syntax.equals(this.#regexSyntax)) {
-            return new class implements PathMatcher {
+            return new class extends JavaObject implements PathMatcher {
                 public matches(path: Path): boolean {
                     return `${path}`.match(new RegExp(`${pattern}`)) !== null;
                 }
@@ -76,7 +77,7 @@ export class FileSystemImpl extends JavaFileSystem {
             }
 
             public override iterator(): JavaIterator<Path> {
-                return new class implements JavaIterator<Path> {
+                return new class extends JavaObject implements JavaIterator<Path> {
                     private index = 0;
 
                     public hasNext(): boolean {

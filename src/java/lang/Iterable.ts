@@ -9,7 +9,7 @@ import { NotImplementedError } from "../../NotImplementedError";
 import { Consumer } from "../util/function/Consumer";
 import { JavaIterator } from "../util/Iterator";
 import { Spliterator } from "../util/Spliterator";
-import { JavaObject } from "./Object";
+import { IReflection, JavaObject } from "./Object";
 import { JavaString } from "./String";
 
 /**
@@ -17,7 +17,7 @@ import { JavaString } from "./String";
  *
  * With this interface you get both the Java iterator and the Typescript iterator.
  */
-export interface JavaIterable<T> {
+export interface JavaIterable<T> extends IReflection {
     [Symbol.iterator](): IterableIterator<T>;
 
     /**

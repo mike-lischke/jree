@@ -9,10 +9,15 @@
 
 import { int } from "../../types";
 
+/** Helper interface to add the implicit reflection stuff to each translated interface. */
+export interface IReflection {
+    getClass<T extends JavaObject>(): Class<T>;
+}
+
 // JavaObject and Class depend directly on each other, so we need to define them in the same file.
 
 /** Implements the Java Object semantics. */
-export class JavaObject {
+export class JavaObject implements IReflection {
     static #nextId = 0;
 
     // Represents the default hash code of a Java object. Using a running number here.

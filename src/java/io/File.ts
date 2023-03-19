@@ -6,7 +6,8 @@
  */
 
 import path from "path";
-import fs from "fs";
+import os from "os";
+import crypto from "crypto";
 
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
@@ -17,6 +18,9 @@ import { URI } from "../net/URI";
 import { FileSystems } from "../nio/file/FileSystems";
 import { NullPointerException } from "../lang/NullPointerException";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { existsSync, mkdirSync, openSync, rmdirSync, statSync, unlinkSync } from "fs";
+
+const pendingFiles = new Set<JavaFile>();
 
 /** An abstract representation of file and directory pathnames. */
 export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serializable {
@@ -101,12 +105,43 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
     }
 
     /**
+     * Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate
+     * its name.
+     */
+    public static createTempFile(prefix: JavaString | string, suffix: JavaString | string | null): JavaFile;
+    /**
+     * Creates a new empty file in the specified directory, using the given prefix and suffix strings to generate its
+     * name.
+     */
+    public static createTempFile(prefix: JavaString | string, suffix: JavaString | string | null,
+        directory: JavaFile | null): JavaFile;
+    public static createTempFile(...args: unknown[]): JavaFile {
+        let folder;
+        let prefix;
+        let suffix;
+        if (args.length === 3) {
+            const [p, s, f] = args as [JavaString | string, JavaString | string | null, JavaFile];
+            suffix = s === null ? ".tmp" : s.valueOf();
+            prefix = p.valueOf();
+            folder = f.getPath().valueOf();
+        } else {
+            [prefix, suffix] = args as [JavaString | string, JavaString | string | null];
+            folder = os.tmpdir();
+        }
+
+        const name = path.join(folder, prefix + crypto.randomBytes(16).toString("hex") + suffix);
+        openSync(name, "ax+");
+
+        return new JavaFile(new JavaString(name));
+    }
+
+    /**
      * Tests whether the application can execute the file denoted by this abstract pathname.
      *
      * @returns true if and only if the abstract pathname exists and the application is allowed to execute the file
      */
     public canExecute(): boolean {
-        const stat = fs.statSync(`${this.#path}`);
+        const stat = statSync(`${this.#path}`);
 
         return (stat.mode & 0o111) !== 0;
     }
@@ -117,7 +152,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      * @returns true if and only if the file specified by this abstract pathname exists and can be read
      */
     public canRead(): boolean {
-        const stat = fs.statSync(`${this.#path}`);
+        const stat = statSync(`${this.#path}`);
 
         return (stat.mode & 0o444) !== 0;
     }
@@ -129,7 +164,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      *          application is allowed to write to the file
      */
     public canWrite(): boolean {
-        const stat = fs.statSync(`${this.#path}`);
+        const stat = statSync(`${this.#path}`);
 
         return (stat.mode & 0o222) !== 0;
     }
@@ -148,12 +183,39 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
     }
 
     /**
+     * Deletes the file or directory denoted by this abstract pathname.
+     *
+     * @returns true if and only if the file or directory is successfully deleted; false otherwise
+     */
+    public delete(): boolean {
+        try {
+            if (this.isDirectory()) {
+                rmdirSync(`${this.#path}`);
+            } else {
+                unlinkSync(`${this.#path}`);
+            }
+
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    /**
+     * Requests that the file or directory denoted by this abstract pathname be deleted when the virtual machine
+     * terminates.
+     */
+    public deleteOnExit(): void {
+        pendingFiles.add(this);
+    }
+
+    /**
      * Tests whether the file or directory denoted by this abstract pathname exists.
      *
      * @returns true if and only if the file or directory denoted by this abstract pathname exists; false otherwise
      */
     public exists(): boolean {
-        if (fs.existsSync(`${this.#path}`)) {
+        if (existsSync(`${this.#path}`)) {
             return true;
         }
 
@@ -204,10 +266,46 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
     }
 
     /**
+     * Tests whether the file denoted by this abstract pathname is a directory.
+     *
+     * @returns true if and only if the file denoted by this abstract pathname exists and is a directory; false
+     *          otherwise.
+     */
+    public isDirectory(): boolean {
+        const stat = statSync(`${this.#path}`);
+
+        return stat.isDirectory();
+    }
+
+    /**
+     * Tests whether the file denoted by this abstract pathname is a normal file.
+     *
+     * @returns true if and only if the file denoted by this abstract pathname exists and is a normal file; false
+     *          otherwise.
+     */
+    public isFile(): boolean {
+        const stat = statSync(`${this.#path}`);
+
+        return stat.isFile();
+    }
+
+    /**
+     * Tests whether the file named by this abstract pathname is a hidden file.
+     *
+     * @returns true if and only if the file denoted by this abstract pathname is hidden according to the conventions
+     *          of the underlying platform
+     *
+     * Note: This method is not supported on Windows platforms.
+     */
+    public isHidden(): boolean {
+        return this.#path.startsWith(new JavaString("."));
+    }
+
+    /**
      * @returns an array of strings naming the files and directories in the directory denoted by this abstract pathname.
      */
     public length(): bigint {
-        const stat = fs.statSync(`${this.#path}`, { bigint: true });
+        const stat = statSync(`${this.#path}`, { bigint: true });
 
         return stat.size;
     }
@@ -218,7 +316,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      * @returns true if and only if the directory was created; false otherwise
      */
     public mkdir(): boolean {
-        return fs.mkdirSync(`${this.#path}`, { recursive: false }) !== undefined;
+        return mkdirSync(`${this.#path}`, { recursive: false }) !== undefined;
     }
 
     /**
@@ -228,7 +326,7 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
      * @returns true if and only if the directory was created, along with all necessary parent directories; false
      */
     public mkdirs(): boolean {
-        return fs.mkdirSync(`${this.#path}`, { recursive: true }) !== undefined;
+        return mkdirSync(`${this.#path}`, { recursive: true }) !== undefined;
     }
 
     public toPath(): Path {
@@ -236,3 +334,14 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
     }
 
 }
+
+// Register a cleanup handler to delete any files that were created and marked with deleteOnExit.
+process.on("beforeExit", () => {
+    try {
+        pendingFiles.forEach((file) => {
+            file.delete();
+        });
+    } catch (e) {
+        // ignore
+    }
+});

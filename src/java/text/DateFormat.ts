@@ -55,42 +55,42 @@ export abstract class DateFormat extends Format {
 
     public static override Field = class Field extends Format.Field {
         /**Constant identifying the AM_PM field. */
-        public static readonly AM_PM = new Field(new JavaString("am pm"), Calendar.AM_PM);
+        public static readonly AM_PM = new DateFormat.Field(new JavaString("am pm"), Calendar.AM_PM);
         /**Constant identifying the DATE field. */
-        public static DATE = new Field(new JavaString("date"), Calendar.DATE);
+        public static DATE = new DateFormat.Field(new JavaString("date"), Calendar.DATE);
         /**Constant identifying the DAY_OF_WEEK field. */
-        public static DAY_OF_WEEK = new Field(new JavaString("day of week"), Calendar.DAY_OF_WEEK);
+        public static DAY_OF_WEEK = new DateFormat.Field(new JavaString("day of week"), Calendar.DAY_OF_WEEK);
         /**Constant identifying the DAY_OF_WEEK_IN_MONTH field. */
         public static DAY_OF_WEEK_IN_MONTH =
-            new Field(new JavaString("day of week in month"), Calendar.DAY_OF_WEEK_IN_MONTH);
+            new DateFormat.Field(new JavaString("day of week in month"), Calendar.DAY_OF_WEEK_IN_MONTH);
         /**Constant identifying the DAY_OF_YEAR field. */
-        public static DAY_OF_YEAR = new Field(new JavaString("day of year"), Calendar.DAY_OF_YEAR);
+        public static DAY_OF_YEAR = new DateFormat.Field(new JavaString("day of year"), Calendar.DAY_OF_YEAR);
         /**Constant identifying the ERA field. */
-        public static ERA = new Field(new JavaString("era"), Calendar.ERA);
+        public static ERA = new DateFormat.Field(new JavaString("era"), Calendar.ERA);
         /**Constant identifying the HOUR0 field. */
-        public static HOUR0 = new Field(new JavaString("hour0"), Calendar.HOUR);
+        public static HOUR0 = new DateFormat.Field(new JavaString("hour0"), Calendar.HOUR);
         /**Constant identifying the HOUR1 field. */
-        public static HOUR1 = new Field(new JavaString("hour1"), -1);
+        public static HOUR1 = new DateFormat.Field(new JavaString("hour1"), -1);
         /**Constant identifying the HOUR_OF_DAY0 field. */
-        public static HOUR_OF_DAY0 = new Field(new JavaString("hour of day"), Calendar.HOUR_OF_DAY);
+        public static HOUR_OF_DAY0 = new DateFormat.Field(new JavaString("hour of day"), Calendar.HOUR_OF_DAY);
         /**Constant identifying the HOUR_OF_DAY1 field. */
-        public static HOUR_OF_DAY1 = new Field(new JavaString("hour of day 1"), -1);
+        public static HOUR_OF_DAY1 = new DateFormat.Field(new JavaString("hour of day 1"), -1);
         /**Constant identifying the MILLISECOND field. */
-        public static MILLISECOND = new Field(new JavaString("millisecond"), Calendar.MILLISECOND);
+        public static MILLISECOND = new DateFormat.Field(new JavaString("millisecond"), Calendar.MILLISECOND);
         /**Constant identifying the MINUTE field. */
-        public static MINUTE = new Field(new JavaString("minute"), Calendar.MINUTE);
+        public static MINUTE = new DateFormat.Field(new JavaString("minute"), Calendar.MINUTE);
         /**Constant identifying the MONTH field. */
-        public static MONTH = new Field(new JavaString("month"), Calendar.MONTH);
+        public static MONTH = new DateFormat.Field(new JavaString("month"), Calendar.MONTH);
         /**Constant identifying the SECOND field. */
-        public static SECOND = new Field(new JavaString("second"), Calendar.SECOND);
+        public static SECOND = new DateFormat.Field(new JavaString("second"), Calendar.SECOND);
         /**Constant identifying the TIME_ZONE field. */
-        public static TIME_ZONE = new Field(new JavaString("time zone"), -1);
+        public static TIME_ZONE = new DateFormat.Field(new JavaString("time zone"), -1);
         /**Constant identifying the WEEK_OF_MONTH field. */
-        public static WEEK_OF_MONTH = new Field(new JavaString("week of month"), Calendar.WEEK_OF_MONTH);
+        public static WEEK_OF_MONTH = new DateFormat.Field(new JavaString("week of month"), Calendar.WEEK_OF_MONTH);
         /**Constant identifying the WEEK_OF_YEAR field. */
-        public static WEEK_OF_YEAR = new Field(new JavaString("week of year"), Calendar.WEEK_OF_YEAR);
+        public static WEEK_OF_YEAR = new DateFormat.Field(new JavaString("week of year"), Calendar.WEEK_OF_YEAR);
         /**Constant identifying the YEAR field. */
-        public static YEAR = new Field(new JavaString("year"), Calendar.YEAR);
+        public static YEAR = new DateFormat.Field(new JavaString("year"), Calendar.YEAR);
 
         #calendarField: number;
 

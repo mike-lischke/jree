@@ -5,6 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export interface Comparable<T> {
+import { IReflection } from "./Object";
+
+export interface Comparable<T> extends IReflection {
     compareTo(o: T): number;
 }

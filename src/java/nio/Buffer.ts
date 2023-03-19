@@ -10,11 +10,13 @@ import { JavaObject } from "../lang/Object";
 import { InvalidMarkException } from "./InvalidMarkException";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { JavaString } from "../lang/String";
+import { int } from "../../types";
 
+/**
+ * A container for data of a specific primitive type.
+ * A buffer is a linear, finite sequence of elements of a specific primitive type.
+ */
 export abstract class JavaBuffer<T> extends JavaObject {
-    // This is the raw memory storage for the buffer. Only a part might actually be used.
-    protected backBuffer: ArrayBuffer;
-
     // All the indexes are rather virtual values and not to be taken as index into the back buffer,
     // as their real position depends on the element size of the used array views.
 
@@ -22,18 +24,11 @@ export abstract class JavaBuffer<T> extends JavaObject {
     protected currentLimit = 0;
     protected currentMark = -1;
 
-    #capacity: number;
-
-    public constructor(buffer: ArrayBuffer, elementSize: number) {
+    protected constructor(offset: int, end: int) {
         super();
 
-        this.backBuffer = buffer;
-        this.#capacity = buffer.byteLength / elementSize;
-    }
-
-    /** @returns this buffer's capacity. */
-    public capacity(): number {
-        return this.#capacity;
+        this.currentPosition = offset;
+        this.currentLimit = end;
     }
 
     /**
@@ -74,18 +69,19 @@ export abstract class JavaBuffer<T> extends JavaObject {
     }
 
     /** Returns this buffer's limit. */
-    public limit(): number;
+    public limit(): int;
     /**
      * Sets this buffer's limit.
      *
      * @param newLimit The new limit.
      */
-    public limit(newLimit: number): void;
-    public limit(newLimit?: number): number | void {
-        if (newLimit === undefined) {
+    public limit(newLimit: int): this;
+    public limit(...args: unknown[]): int | this {
+        if (args.length === 0) {
             return this.currentLimit;
         }
 
+        const newLimit = args[0] as int;
         if (newLimit < 0 || newLimit > this.capacity()) {
             throw new IllegalArgumentException();
         }
@@ -98,6 +94,8 @@ export abstract class JavaBuffer<T> extends JavaObject {
         if (this.currentMark > newLimit) {
             this.currentMark = -1;
         }
+
+        return this;
     }
 
     /**
@@ -112,14 +110,14 @@ export abstract class JavaBuffer<T> extends JavaObject {
     }
 
     /** Returns this buffer's position. */
-    public position(): number;
+    public position(): int;
     /**
      * Sets this buffer's position.
      *
      * @param newPosition The new position;
      */
-    public position(newPosition: number): void;
-    public position(newPosition?: number): number | void {
+    public position(newPosition: int): void;
+    public position(newPosition?: int): int | void {
         if (newPosition === undefined) {
             return this.currentPosition;
         }
@@ -139,7 +137,7 @@ export abstract class JavaBuffer<T> extends JavaObject {
      *
      * @returns The number of elements remaining in this buffer.
      */
-    public remaining(): number {
+    public remaining(): int {
         const diff = this.currentLimit - this.currentPosition;
 
         return diff < 0 ? 0 : diff;
@@ -173,6 +171,10 @@ export abstract class JavaBuffer<T> extends JavaObject {
         return this;
     }
 
+    public override toString(): JavaString {
+        return new JavaString(super.toString());
+    }
+
     /** Returns the array that backs this buffer (optional operation). */
     public abstract array(): T;
 
@@ -180,6 +182,12 @@ export abstract class JavaBuffer<T> extends JavaObject {
      * Returns the offset within this buffer's backing array of the first element of the buffer (optional operation).
      */
     public abstract arrayOffset(): number;
+
+    /** @returns this buffer's capacity. */
+    public abstract capacity(): int;
+
+    /** Creates a new buffer that shares this buffer's content. */
+    public abstract duplicate(): this;
 
     /** Tells whether or not this buffer is backed by an accessible array. */
     public abstract hasArray(): boolean;
@@ -189,4 +197,7 @@ export abstract class JavaBuffer<T> extends JavaObject {
 
     /** Tells whether or not this buffer is read-only. */
     public abstract isReadOnly(): boolean;
+
+    /** Creates a new buffer whose content is a shared subsequence of this buffer's content. */
+    public abstract slice(): JavaBuffer<T>;
 }

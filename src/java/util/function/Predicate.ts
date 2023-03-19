@@ -5,13 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { IReflection } from "../../lang/Object";
+import { Objects } from "../Objects";
 
 /**
  * Represents a predicate (boolean-valued function) of one argument.
  * This is a functional interface whose functional method is {@link #test(Object)}.
  */
-export interface Predicate<T> {
+export interface Predicate<T> extends IReflection {
     test(t: T): boolean;
 }
 
@@ -25,7 +26,7 @@ export class Predicate<T> {
      */
     public static isEqual<T>(targetRef: T): Predicate<T> {
         return Predicate.create<T>((t: T) => {
-            return java.util.Objects.equals(t, targetRef);
+            return Objects.equals(t, targetRef);
         });
     }
 

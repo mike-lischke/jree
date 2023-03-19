@@ -9,6 +9,7 @@ export { JavaObject as Object, Class } from "./Object";
 export { JavaString as String } from "./String";
 export { JavaBoolean as Boolean } from "./Boolean";
 export { JavaNumber as Number } from "./Number";
+export { JavaMath as Math } from "./Math";
 
 export * from "./Enum";
 export * from "./StringBuilder";
@@ -46,6 +47,7 @@ export * from "./OutOfMemoryError";
 export * from "./NegativeArraySizeException";
 export * from "./CloneNotSupportedException";
 export * from "./ArrayIndexOutOfBoundsException";
+export * from "./ArithmeticException";
 
 export * from "./System";
 export * from "./StackTraceElement";

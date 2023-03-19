@@ -5,16 +5,19 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../lang/Object";
+import { JavaIterator } from "./Iterator";
+
 /**
  * An object that implements the Enumeration interface generates a series of elements, one at a time.
  * Successive calls to the nextElement method return successive elements of the series.
  */
-export interface Enumeration<T> {
+export interface Enumeration<T> extends IReflection {
     /**
      * Returns an Iterator that traverses the remaining elements covered by this enumeration.
      * Note: this is actually a default method in Java, but we cannot use that here.
      */
-    asIterator(): Iterator<T>;
+    asIterator(): JavaIterator<T>;
 
     /**
      * Tests if this enumeration contains more elements.

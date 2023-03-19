@@ -5,6 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../lang/Object";
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Serializable {
+export interface Serializable extends IReflection {
 }

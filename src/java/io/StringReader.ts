@@ -5,16 +5,26 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, long } from "../..";
 import { S } from "../../templates";
+import { int, long } from "../../types";
+
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { JavaString } from "../lang/String";
 import { Reader } from "./Reader";
 
+/** A character stream whose source is a string. */
 export class StringReader extends Reader {
-    #content: java.lang.String;
+    #content: JavaString;
     #mark = -1;
     #position = 0;
 
-    public constructor(s: java.lang.String) {
+    /**
+     * Creates a new string reader.
+     *
+     * @param s String providing the character stream.
+     */
+    public constructor(s: JavaString) {
         super();
         this.#content = s;
     }
@@ -33,9 +43,9 @@ export class StringReader extends Reader {
      *                       Because the stream's input comes from a string, there is no actual limit, so this
      *                       argument must not be negative, but is otherwise ignored.
      */
-    public override mark(readAheadLimit: number): void {
+    public override mark(readAheadLimit: int): void {
         if (readAheadLimit < 0) {
-            throw new java.lang.IllegalArgumentException(S`readAheadLimit < 0`);
+            throw new IllegalArgumentException(S`readAheadLimit < 0`);
         }
 
         this.#mark = this.#position;
@@ -50,7 +60,7 @@ export class StringReader extends Reader {
         return true;
     }
 
-    public override read(): number;
+    public override read(): int;
     /**
      * Reads characters into a portion of an array.
      *
@@ -62,8 +72,8 @@ export class StringReader extends Reader {
      *
      * @throws IndexOutOfBoundsException If offset or length are out of bounds.
      */
-    public override read(target: Uint16Array, offset: number, length: number): number;
-    public override read(...args: unknown[]): number {
+    public override read(target: Uint16Array, offset: int, length: int): int;
+    public override read(...args: unknown[]): int {
         switch (args.length) {
             case 0: {
                 if (this.#position >= this.#content.length()) {
@@ -77,7 +87,7 @@ export class StringReader extends Reader {
                 const [target, offset, length] = args as [Uint16Array, number, number];
 
                 if (offset < 0 || length < 0 || offset + length > target.length) {
-                    throw new java.lang.IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException();
                 }
 
                 if (this.#position >= this.#content.length()) {
@@ -95,7 +105,7 @@ export class StringReader extends Reader {
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }

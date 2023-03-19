@@ -9,6 +9,7 @@ import { OutputStream } from "./OutputStream";
 
 /** Internal class to provide print stream like access to stdout and stderr. */
 export class SystemOutputStream extends OutputStream {
+    #decoder = new TextDecoder("utf-8");
 
     public constructor(private forErrors: boolean) {
         super();
@@ -31,9 +32,10 @@ export class SystemOutputStream extends OutputStream {
         } else {
             const offset = off ?? 0;
             const length = len ?? b.length;
+            const s = this.#decoder.decode(b.subarray(offset, length));
             this.forErrors
-                ? process.stderr.write(new Uint8Array(b.subarray(offset, length)))
-                : process.stdout.write(new Uint8Array(b.subarray(offset, length)));
+                ? process.stderr.write(s)
+                : process.stdout.write(s);
         }
     }
 }

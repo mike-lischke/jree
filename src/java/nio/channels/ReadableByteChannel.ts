@@ -5,9 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { ByteBuffer } from "../ByteBuffer";
+import { Channel } from "./Channel";
 
-export interface ReadableByteChannel extends java.nio.channels.Channel {
+export interface ReadableByteChannel extends Channel {
     /** Reads a sequence of bytes from this channel into the given buffer. */
-    read(dst: java.nio.ByteBuffer): number;
+    read(dst: ByteBuffer): number;
 }

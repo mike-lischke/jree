@@ -12,6 +12,7 @@ import { char, double, float, int, long } from "../../types";
 
 import { CharSequence } from "../lang/CharSequence";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
 import { System } from "../lang/System";
@@ -129,7 +130,7 @@ export class PrintStream extends FilterOutputStream {
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+                throw new IllegalArgumentException(new JavaString("Invalid int of arguments"));
             }
         }
 
@@ -146,21 +147,32 @@ export class PrintStream extends FilterOutputStream {
     /** Appends the specified character to this output stream. */
     public append(c: char): PrintStream;
     /** Appends the specified character sequence to this output stream. */
-    public append(csq: CharSequence): PrintStream;
+    public append(csq: CharSequence | null): PrintStream;
     /** Appends a subsequence of the specified character sequence to this output stream. */
-    public append(csq: CharSequence, start: number, end: number): PrintStream;
+    public append(csq: CharSequence | null, start: int, end: int): PrintStream;
     public append(...args: unknown[]): PrintStream {
         if (args.length === 1) {
-            const arg = args[0] as char | CharSequence;
+            const arg = args[0] as char | CharSequence | null;
             if (typeof arg === "number") {
                 this.write(arg);
             } else {
-                const buffer = this.encode(arg);
-                this.write(buffer);
+                const s = arg ?? new JavaString("null");
+                const buffer = this.encode(s);
+                this.out.write(buffer);
             }
         } else {
-            const [csq, start, end] = args as [CharSequence, number, number];
-            const buffer = this.encode(csq.subSequence(start, end));
+            const [csq, start, end] = args as [CharSequence | null, int, int];
+            const s = csq ?? new JavaString("null");
+
+            if (start < 0 || end < 0 || start > end || end > (s.length() ?? 0)) {
+                throw new IndexOutOfBoundsException();
+            }
+
+            if (start === end) {
+                return this;
+            }
+
+            const buffer = this.encode(s.subSequence(start, end));
             this.write(buffer);
         }
 
@@ -215,9 +227,9 @@ export class PrintStream extends FilterOutputStream {
     public print(c: char): void;
     /** Prints an array of characters. */
     public print(s: Uint16Array): void;
-    /** Prints a double-precision floating-point number. */
+    /** Prints a double-precision floating-point int. */
     public print(d: double): void;
-    /** Prints a floating-point number. */
+    /** Prints a floating-point int. */
     public print(f: float): void;
     /** Prints an integer. */
     public print(i: int): void;
@@ -269,7 +281,7 @@ export class PrintStream extends FilterOutputStream {
     /** Prints an object and then terminate the line. */
     public println(obj: JavaObject | null): void;
     /** Prints a string and then terminate the line. */
-    public println(str: JavaString | null): void;
+    public println(str: JavaString | string): void;
     public println(v?: unknown): void {
         if (v !== undefined) {
             if (v === null) {
@@ -291,18 +303,18 @@ export class PrintStream extends FilterOutputStream {
     }
 
     public override write(b: Int8Array): void;
-    public override write(b: Int8Array, off: number, len: number): void;
+    public override write(b: Int8Array, off: int, len: int): void;
     public override write(b: int): void;
     public override write(...args: unknown[]): void {
         if (args.length === 1) {
-            const b = args[0] as Int8Array | number;
+            const b = args[0] as Int8Array | int;
             if (b instanceof Int8Array) {
                 this.out.write(b, 0, b.length);
             } else {
                 this.out.write(b);
             }
         } else {
-            const [b, off, len] = args as [Int8Array, number, number];
+            const [b, off, len] = args as [Int8Array, int, int];
             this.out.write(b.subarray(off, off + len));
         }
     }

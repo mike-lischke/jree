@@ -17,6 +17,7 @@ import { LongStream } from "./LongStream";
 import { Consumer } from "../function/Consumer";
 import { Comparator } from "../Comparator";
 import { Optional } from "../Optional";
+import { IReflection } from "../../lang/Object";
 
 export interface Stream<T> extends BaseStream<T, Stream<T>> {
     /** Returns whether all elements of this stream match the provided predicate. */
@@ -273,6 +274,18 @@ export class Stream<T> {
     // public static ofNullable<T>(t: T): Stream<T>;
 
     /**
+     * Returns, if this stream is ordered, a stream consisting of the remaining elements of this stream after dropping
+     * the longest prefix of elements that match the given predicate.
+     *
+     * @param predicate a non-interfering, stateless predicate to apply to elements to determine if they match
+     *
+     * @returns the new stream
+     */
+    public dropWhile(predicate: Predicate<T>): Stream<T> | null {
+        return null;
+    }
+
+    /**
      * Returns, if this stream is ordered, a stream consisting of the longest prefix of elements taken from this stream
      * that match the given predicate.
      *
@@ -291,7 +304,7 @@ export namespace Stream {
      * adding them to the Builder (without the copying overhead that comes from using an ArrayList as a temporary
      * buffer.)
      */
-    export interface Builder<T> {
+    export interface Builder<T> extends IReflection {
         /** Adds an element to the stream being built. */
         accept(t: T): void;
 

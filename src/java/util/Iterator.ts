@@ -5,7 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export interface JavaIterator<T> {
+import { IReflection } from "../lang/Object";
+
+export interface JavaIterator<T> extends IReflection {
     /** Returns true if the iteration has more elements. */
     hasNext(): boolean;
 

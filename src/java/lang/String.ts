@@ -514,9 +514,9 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the array of strings computed by splitting this string around matches of the given regular expression.
      */
-    public split(regex: JavaString, limit?: number): JavaString[] {
+    public split(regex: JavaString | string, limit?: number): JavaString[] {
         const source = convertUTF16ToString(this.#value);
-        const re = convertUTF16ToString(regex.#value);
+        const re = typeof regex === "string" ? regex : convertUTF16ToString(regex.#value);
 
         const parts = source.split(re, limit);
 

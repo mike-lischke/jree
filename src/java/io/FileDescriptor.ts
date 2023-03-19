@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import * as fs from "fs/promises";
+import { closeSync, fsyncSync } from "fs";
 
 import { final } from "../../Decorators";
 import { JavaObject } from "../lang/Object";
@@ -13,37 +13,56 @@ import { Throwable } from "../lang/Throwable";
 import { Closeable } from "./Closeable";
 import { IOException } from "./IOException";
 
+/**
+ * Instances of the file descriptor class serve as an opaque handle to the underlying machine-specific structure
+ * representing an open file, an open socket, or another source or sink of bytes. The main practical use for a
+ * file descriptor is to create a FileInputStream or FileOutputStream to contain it.
+ */
 @final
 export class FileDescriptor extends JavaObject {
     private parent?: Closeable;
     private otherParents: Closeable[] = [];
     private closed = false;
 
-    private fileHandle?: fs.FileHandle;
+    private fileHandle?: number;
 
-    public constructor(fd?: fs.FileHandle) {
+    /** Constructs an (invalid) FileDescriptor object. */
+    public constructor() {
         super();
-
-        this.fileHandle = fd;
     }
 
+    /**
+     * Force all system buffers to synchronize with the underlying device.
+     */
     public sync(): void {
-        void this.fileHandle?.sync();
+        if (!this.fileHandle) {
+            throw new IOException("File descriptor is not open");
+        }
+
+        fsyncSync(this.fileHandle);
     }
 
+    /**
+     * Tests if this file descriptor object is valid.
+     *
+     * @returns true if the file descriptor object represents a valid, open file, socket, or other active
+     * I/O connection; false otherwise.
+     */
     public valid(): boolean {
         return this.fileHandle !== undefined;
     }
 
     public close(): void {
-        void this.fileHandle?.close();
+        if (!this.closed && this.fileHandle !== undefined) {
+            closeSync(this.fileHandle);
+        }
     }
 
-    public get handle(): fs.FileHandle | undefined {
+    public get handle(): number | undefined {
         return this.fileHandle;
     }
 
-    public set handle(value: fs.FileHandle | undefined) {
+    public set handle(value: number | undefined) {
         this.fileHandle = value;
     }
 

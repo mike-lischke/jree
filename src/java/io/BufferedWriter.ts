@@ -6,26 +6,25 @@
  */
 
 import { S } from "../../templates";
-import { char } from "../../types";
+import { int } from "../../types";
 
 import { JavaString } from "../lang/String";
-import { CharSequence } from "../lang/CharSequence";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { System } from "../lang/System";
 import { IOException } from "./IOException";
 
 import { Writer } from "./Writer";
+import { convertStringToUTF16 } from "../../string-helpers";
 
+/**
+ * Writes text to a character-output stream, buffering characters so as to provide for the efficient writing of single
+ * characters, arrays, and strings.
+ */
 export class BufferedWriter extends Writer {
-
-    private static readonly defaultCharBufferSize = 8192;
-
-    private out?: Writer;
-
-    private cb: Uint16Array;
-    private nChars: char;
-    private nextChar: char;
+    #out: Writer | null;
+    #buffer: Uint16Array;
+    #currentPosition = 0;
 
     /**
      * Creates a new buffered character-output stream that uses an output
@@ -34,208 +33,130 @@ export class BufferedWriter extends Writer {
      * @param out A Writer
      * @param sz Output-buffer size, a positive integer
      */
-    public constructor(out: Writer, sz = BufferedWriter.defaultCharBufferSize) {
+    public constructor(out: Writer, sz = 10000) {
         super(out);
         if (sz <= 0) {
             throw new IllegalArgumentException(S`Buffer size <= 0`);
         }
 
-        this.cb = new Uint16Array(sz);
-        this.nChars = sz;
-        this.nextChar = 0;
-    }
-
-    /**
-     * Flushes the output buffer to the underlying character stream, without
-     * flushing the stream itself.  This method is non-private only so that it
-     * may be invoked by PrintStream.
-     */
-    public flushBuffer(): void {
-        // synchronized(lock) {
-        this.ensureOpen();
-        if (this.nextChar === 0) {
-            return;
-        }
-
-        this.out!.write(this.cb, 0, this.nextChar);
-        this.nextChar = 0;
-        // }
-    }
-
-    /**
-     * Writes a single character.
-     *
-     * @param c
-     * @throws     IOException  If an I/O error occurs
-     */
-    public override write(c: char): void;
-    public override write(buffer: Uint16Array): void;
-    /**
-     * Writes a portion of an array of characters.
-     *
-     * <p> Ordinarily this method stores characters from the given array into
-     * this stream's buffer, flushing the buffer to the underlying stream as
-     * needed.  If the requested length is at least as large as the buffer,
-     * however, then this method will flush the buffer and write the characters
-     * directly to the underlying stream.  Thus redundant
-     * {@code BufferedWriter}s will not copy data unnecessarily.
-     *
-     * @param  buffer  A character array
-     * @param  offset   Offset from which to start reading characters
-     * @param  len   Number of characters to write
-     *
-     * @param offset
-     * @param length
-     * @throws  IndexOutOfBoundsException
-     *          If {@code off} is negative, or {@code len} is negative,
-     *          or {@code offset + len} is negative or greater than the length
-     *          of the given array
-     *
-     * @throws  IOException  If an I/O error occurs
-     */
-    public override write(buffer: Uint16Array, offset: number, length: number): void;
-    public override write(s: JavaString): void;
-    /**
-     * Writes a portion of a String.
-     *
-     * @param  s     String to be written
-     * @param  offset   Offset from which to start reading characters
-     * @param  length   Number of characters to be written
-     *
-     * @throws  IndexOutOfBoundsException
-     *          If {@code offset} is negative,
-     *          or {@code offset + len} is greater than the length
-     *          of the given string
-     *
-     * @throws  IOException  If an I/O error occurs
-     */
-    public override write(s: JavaString, offset: number, length: number): void;
-    public override write(cOrBufferOrS: char | Uint16Array | JavaString, offset?: number,
-        length?: number): void {
-        this.ensureOpen();
-        if (typeof cOrBufferOrS === "number") {
-            if (this.nextChar >= this.nChars) {
-                this.flushBuffer();
-            }
-            this.cb[this.nextChar++] = cOrBufferOrS;
-        } else {
-            offset ??= 0;
-            if (cOrBufferOrS instanceof Uint16Array) {
-                length ??= cOrBufferOrS.length;
-
-                if ((offset < 0) || (length < 0) || (offset + length > cOrBufferOrS.length)) {
-                    throw new IndexOutOfBoundsException();
-                } else if (length === 0) {
-                    return;
-                }
-
-                if (length >= this.nChars) {
-                    /* If the request length exceeds the size of the output buffer,
-                       flush the buffer and then write the data directly.  In this
-                       way buffered streams will cascade harmlessly. */
-                    this.flushBuffer();
-                    this.out!.write(cOrBufferOrS, offset, length);
-
-                    return;
-                }
-
-                let b = offset;
-                const t = offset + length;
-                while (b < t) {
-                    const d = Math.min(this.nChars - this.nextChar, t - b);
-                    this.cb.set(cOrBufferOrS.subarray(b, b + d));
-                    b += d;
-                    this.nextChar += d;
-                    if (this.nextChar >= this.nChars) {
-                        this.flushBuffer();
-                    }
-                }
-            } else {
-                length ??= cOrBufferOrS.length();
-
-                if ((offset < 0) || (length < 0) || (offset + length > cOrBufferOrS.length())) {
-                    throw new IndexOutOfBoundsException();
-                } else if (length === 0) {
-                    return;
-                }
-
-                let b = offset;
-                const t = offset + length;
-                while (b < t) {
-                    const d = Math.min(this.nChars - this.nextChar, t - b);
-                    for (let i = 0; i < d; ++i) {
-                        this.cb[this.nextChar++] = cOrBufferOrS.charAt(i + b);
-                    }
-
-                    b += d;
-                    if (this.nextChar >= this.nChars) {
-                        this.flushBuffer();
-                    }
-                }
-            }
-        }
-    }
-
-    public override append(c: char): this;
-    public override append(csq: CharSequence): this;
-    public override append(csq: CharSequence, start: number, end: number): this;
-    public override append(cOrCsq: char | CharSequence, start?: number, end?: number): this {
-        if (typeof cOrCsq === "number") {
-            this.write(cOrCsq);
-        } else {
-            start ??= 0;
-            end ??= cOrCsq.length();
-
-            this.write(S`${cOrCsq.subSequence(start, end).toString()}`);
-        }
-
-        return this;
-    }
-
-    /**
-     * Writes a line separator.  The line separator string is defined by the
-     * system property {@code line.separator}, and is not necessarily a single
-     * newline ('\n') character.
-     *
-     * @throws     IOException  If an I/O error occurs
-     */
-    public newLine(): void {
-        this.write(System.lineSeparator());
-    }
-
-    /**
-     * Flushes the stream.
-     *
-     * @throws     IOException  If an I/O error occurs
-     */
-    public flush(): void {
-        // synchronized(lock) {
-        this.flushBuffer();
-        this.out?.flush();
-        // }
+        this.#out = out;
+        this.#buffer = new Uint16Array(sz);
+        this.#currentPosition = 0;
     }
 
     public close(): void {
-        // synchronized(lock) {
-        if (this.out === undefined) {
+        if (this.#out === null) {
             return;
         }
 
         try {
-            this.flushBuffer();
+            this.flush();
         } finally {
-            this.out.close();
-            this.out = undefined;
-            this.cb = new Uint16Array();
+            this.#out.close();
+            this.#out = null;
+            this.#buffer = new Uint16Array();
         }
-        // }
+    }
+
+    public flush(): void {
+        this.checkOpen();
+
+        if (this.#currentPosition > 0) {
+            this.#out?.write(this.#buffer, 0, this.#currentPosition);
+            this.#currentPosition = 0;
+        }
+
+        this.#out?.flush();
+    }
+
+    /** Writes a line separator. */
+    public newLine(): void {
+        this.write(System.lineSeparator());
+    }
+
+    /** Writes an array of characters. */
+    public override write(buffer: Uint16Array): void;
+    /** Writes a portion of an array of characters. */
+    public override write(buffer: Uint16Array, offset: int, length: int): void;
+    /** Writes a single character. */
+    public override write(c: int): void;
+    /** Writes a string. */
+    public override write(str: string | JavaString): void;
+    /** Writes a portion of a string. */
+    public override write(str: string | JavaString, offset: int, length: int): void;
+    public override write(...args: unknown[]): void {
+        switch (args.length) {
+            case 1: {
+                const source = args[0] as Uint16Array | int | string | JavaString;
+                if (typeof source === "number") {
+                    if (this.#currentPosition >= this.#buffer.length) {
+                        this.flush();
+                    }
+
+                    this.#buffer[this.#currentPosition++] = source;
+                } else {
+                    let data;
+                    if (typeof source === "string" || source instanceof JavaString) {
+                        data = convertStringToUTF16(source.valueOf());
+                    } else {
+                        data = source;
+                    }
+
+                    if (this.#currentPosition + data.length > this.#buffer.length) {
+                        this.flush();
+                    }
+
+                    if (data.length >= this.#buffer.length) {
+                        this.#out?.write(data);
+                    } else {
+                        this.#buffer.set(data, this.#currentPosition);
+                    }
+                }
+
+                break;
+            }
+
+            case 3: {
+                const [source, offset, length] = args as [Uint16Array | string | JavaString, int, int];
+
+                let data;
+                if (typeof source === "string" || source instanceof JavaString) {
+                    data = convertStringToUTF16(source.valueOf());
+                } else {
+                    data = source;
+                }
+
+                if ((offset < 0) || (length < 0) || ((offset + length) > data.length)) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                if (length > 0) {
+                    if (this.#currentPosition + length > this.#buffer.length) {
+                        this.flush();
+                    }
+
+                    if (length >= this.#buffer.length) {
+                        this.#out?.write(data, offset, length);
+                    } else {
+                        this.#buffer.set(data.subarray(offset, offset + length), this.#currentPosition);
+                    }
+
+                    this.#currentPosition += length;
+                }
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
+            }
+        }
     }
 
     /** Checks to make sure that the stream has not been closed */
-    private ensureOpen(): void {
-        if (this.out === undefined) {
+    private checkOpen(): void {
+        if (this.#out === null) {
             throw new IOException(S`Stream closed`);
         }
     }
-
 }

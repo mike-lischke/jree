@@ -20,10 +20,9 @@ import { Reader } from "./Reader";
  * characters, arrays, and lines.
  */
 export class BufferedReader extends Reader {
-    static #bufferSize = 10000;
-
     #buffer: Uint16Array;
     #currentIndex: int = 0;
+    #limit: int;
 
     #input: Reader;
 
@@ -34,7 +33,7 @@ export class BufferedReader extends Reader {
     public constructor(...args: unknown[]) {
         super();
 
-        let size = BufferedReader.#bufferSize;
+        let size = 10000;
         if (args.length === 2) {
             size = args[1] as int;
         }
@@ -45,12 +44,16 @@ export class BufferedReader extends Reader {
 
         this.#buffer = new Uint16Array(size);
         this.#input = args[0] as Reader;
+
+        const read = this.#input.read(this.#buffer);
+        this.#limit = read < 0 ? 0 : read;
     }
 
     public override close(): void {
         this.#input.close();
         this.#buffer = new Uint16Array(0);
         this.#currentIndex = 0;
+        this.#limit = 0;
     }
 
     /** Returns a Stream, the elements of which are lines read from this BufferedReader. */
@@ -88,10 +91,10 @@ export class BufferedReader extends Reader {
 
         if (args.length === 0) {
             // Read a single character.
-            if (this.#currentIndex >= this.#buffer.length) {
+            if (this.#currentIndex >= this.#limit) {
                 this.#currentIndex = 0;
-                const read = this.#input.read(this.#buffer);
-                if (read === -1) {
+                this.#limit = this.#input.read(this.#buffer);
+                if (this.#limit === -1) {
                     return -1;
                 }
             }
@@ -105,7 +108,7 @@ export class BufferedReader extends Reader {
             }
 
             // Check if we have enough data in the buffer.
-            const remaining = this.#buffer.length - this.#currentIndex;
+            const remaining = this.#limit - this.#currentIndex;
             if (count <= remaining) {
                 // If so, just copy it.
                 buffer.set(this.#buffer.subarray(this.#currentIndex, this.#currentIndex + count), offset);
@@ -115,10 +118,11 @@ export class BufferedReader extends Reader {
             }
 
             // Otherwise, copy what we have and read more.
-            buffer.set(this.#buffer.subarray(this.#currentIndex), offset);
+            buffer.set(this.#buffer.subarray(this.#currentIndex, this.#limit), offset);
+            this.#limit = 0;
+            this.#currentIndex = 0;
 
             let read = remaining;
-            this.#currentIndex = 0;
             while (read < count) {
                 if (!this.ready()) { // Do not block if no more data is available.
                     break;
@@ -133,6 +137,7 @@ export class BufferedReader extends Reader {
                     // We got more data than we need. Copy what we need and save the rest for later.
                     buffer.set(this.#buffer.subarray(0, count - read), offset + read);
                     this.#currentIndex = count - read;
+                    this.#limit = result;
                     read = count;
 
                     break;
@@ -146,9 +151,36 @@ export class BufferedReader extends Reader {
         }
     }
 
-    /** Reads a line of text. */
+    /**
+     * Reads a line of text.
+     *
+     * @returns A String containing the contents of the line, not including any line-termination characters, or null if
+     *          the end of the stream has been reached.
+     */
     public readLine(): JavaString | null {
-        throw new NotImplementedError();
+        if (this.#currentIndex === this.#limit) {
+            return null;
+        }
+
+        let run = this.#currentIndex;
+        while (run < this.#limit) {
+            if (this.#buffer[run] === 0xA || this.#buffer[run] === 0xD) {
+                const result = new JavaString(this.#buffer.subarray(this.#currentIndex, run));
+                this.#currentIndex = run + 1;
+                if (this.#buffer[run] === 0xD && this.#buffer[run + 1] === 0xA) {
+                    this.#currentIndex++;
+                }
+
+                return result;
+            }
+
+            run++;
+        }
+
+        const result = new JavaString(this.#buffer.subarray(this.#currentIndex, this.#limit));
+        this.#currentIndex = this.#limit;
+
+        return result;
     }
 
     public override ready(): boolean {

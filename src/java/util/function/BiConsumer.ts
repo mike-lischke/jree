@@ -5,11 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../../lang/Object";
+
 /**
  * Represents an operation that accepts two input arguments and returns no result. This is the two-arity specialization
  * of Consumer. Unlike most other functional interfaces, BiConsumer is expected to operate via side-effects.
  */
-export interface BiConsumer<T, U> {
+export interface BiConsumer<T, U> extends IReflection {
     accept(t: T, u: U): void;
 }
 

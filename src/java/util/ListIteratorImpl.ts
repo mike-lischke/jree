@@ -6,9 +6,12 @@
  */
 
 import { List } from "immutable";
+import { IllegalStateException } from "../lang/IllegalStateException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
-import { java } from "../..";
 import { JavaObject } from "../lang/Object";
+import { ListIterator } from "./ListIterator";
+import { NoSuchElementException } from "./NoSuchElementException";
 
 /**
  * This interface provides shared access to the backend of a list class.
@@ -31,7 +34,7 @@ export interface IListBackend<T> {
 }
 
 /** An implementation of the ListIterator interface. */
-export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIterator<T> {
+export class ListIteratorImpl<T> extends JavaObject implements ListIterator<T> {
 
     // Holds the direction we navigated last (either by calling next() or previous()).
     private movedForward: boolean | undefined;
@@ -51,7 +54,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
             || backend.start > backend.list.size
             || backend.end > backend.list.size
             || backend.start > backend.end) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         this.index = backend.start + (index ?? 0);
@@ -72,7 +75,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
 
     public next(): T {
         if (this.index >= this.#backend.end) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         this.movedForward = true;
@@ -86,7 +89,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
 
     public previous(): T {
         if (this.index <= this.#backend.start) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         this.movedForward = false;
@@ -100,7 +103,7 @@ export class ListIteratorImpl<T> extends JavaObject implements java.util.ListIte
 
     public remove(): void {
         if (this.movedForward === undefined) {
-            throw new java.lang.IllegalStateException();
+            throw new IllegalStateException();
         }
 
         if (this.movedForward) {

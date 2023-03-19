@@ -8,6 +8,7 @@
 import { NotImplementedError } from "../../NotImplementedError";
 import { int } from "../../types";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
 import { Closeable } from "./Closeable";
 import { Flushable } from "./Flushable";
 
@@ -27,14 +28,18 @@ export abstract class OutputStream extends JavaObject implements Closeable, Flus
         }();
     }
 
+    /** Flushes this output stream and forces any buffered output bytes to be written out. */
+    public flush(): void {
+        // Nothing to do here.
+    }
+
     /** Closes this output stream and releases any system resources associated with this stream. */
     public close(): void {
         // Nothing to do here.
     }
 
-    /** Flushes this output stream and forces any buffered output bytes to be written out. */
-    public flush(): void {
-        // Nothing to do here.
+    public override toString(): JavaString {
+        return new JavaString(super.toString());
     }
 
     /** Writes b.length bytes from the specified byte array to this output stream. */

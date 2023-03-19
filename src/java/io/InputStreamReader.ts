@@ -15,6 +15,7 @@ import { Reader } from "./Reader";
 import { UnsupportedEncodingException } from "./UnsupportedEncodingException";
 import { CharsetDecoder } from "../nio/charset/CharsetDecoder";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 
 /**
  * An InputStreamReader is a bridge from byte streams to character streams: It reads bytes and decodes them into
@@ -72,6 +73,8 @@ export class InputStreamReader extends Reader {
 
     /** Reads a single character. */
     public override read(): char;
+    /** Reads characters into an array. */
+    public override read(buffer: Uint16Array): int;
     /** Reads characters into a portion of an array. */
     public override read(chars: Uint16Array, offset: int, length: int): int;
     public override read(...args: unknown[]): char | int {
@@ -79,40 +82,54 @@ export class InputStreamReader extends Reader {
             return -1;
         }
 
-        if (args.length === 0) {
-            if (this.#currentIndex >= this.#currentContent.length) {
-                this.#currentContent = this.nextChunk();
-                this.#currentIndex = 0;
+        switch (args.length) {
+            case 0: {
+                if (this.#currentIndex >= this.#currentContent.length) {
+                    this.#currentContent = this.nextChunk();
+                    this.#currentIndex = 0;
+                }
+
+                return this.#currentContent[this.#currentIndex++];
             }
 
-            return this.#currentContent[this.#currentIndex++];
+            case 1: {
+                const [buffer] = args as [Uint16Array];
+
+                return this.read(buffer, 0, buffer.length);
+            }
+
+            case 3: {
+                const [chars, offset, length] = args as [Uint16Array, int, int];
+                if (offset < 0 || length < 0 || offset + length > chars.length) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                let count = 0;
+                const remaining = this.#currentContent.length - this.#currentIndex;
+                if (remaining > 0) {
+                    const toCopy = Math.min(remaining, length);
+                    chars.set(this.#currentContent.subarray(this.#currentIndex, this.#currentIndex + toCopy), offset);
+                    this.#currentIndex += toCopy;
+                    count += toCopy;
+                }
+
+                while (count < length && !this.eof) {
+                    this.#currentContent = this.nextChunk();
+                    this.#currentIndex = 0;
+
+                    const toCopy = Math.min(this.#currentContent.length, length - count);
+                    chars.set(this.#currentContent.subarray(0, toCopy), offset + count);
+                    this.#currentIndex += toCopy;
+                    count += toCopy;
+                }
+
+                return count > 0 ? count : -1;
+            }
+
+            default: {
+                throw new IllegalArgumentException("Wrong number of arguments");
+            }
         }
-
-        const [chars, offset, length] = args as [Uint16Array, int, int];
-        if (offset < 0 || length < 0 || offset + length > chars.length) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        let count = 0;
-        const remaining = this.#currentContent.length - this.#currentIndex;
-        if (remaining > 0) {
-            const toCopy = Math.min(remaining, length);
-            chars.set(this.#currentContent.subarray(this.#currentIndex, this.#currentIndex + toCopy), offset);
-            this.#currentIndex += toCopy;
-            count += toCopy;
-        }
-
-        while (count < length && !this.eof) {
-            this.#currentContent = this.nextChunk();
-            this.#currentIndex = 0;
-
-            const toCopy = Math.min(this.#currentContent.length, length - count);
-            chars.set(this.#currentContent.subarray(0, toCopy), offset + count);
-            this.#currentIndex += toCopy;
-            count += toCopy;
-        }
-
-        return count > 0 ? count : -1;
     }
 
     /**
@@ -128,11 +145,11 @@ export class InputStreamReader extends Reader {
     private nextChunk(): Uint16Array {
         const buffer = new Int8Array(10000);
         const count = this.#input.read(buffer);
-        if (count === -1) {
+        if (count < 10000) {
             this.eof = true;
         }
 
-        const text = this.#decoder.decode(buffer, { stream: !this.eof });
+        const text = this.#decoder.decode(buffer.subarray(0, count), { stream: !this.eof });
 
         return convertStringToUTF16(text);
     }

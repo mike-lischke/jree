@@ -5,13 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../..";
+import { IReflection } from "../../../lang/Object";
+import { JavaString } from "../../../lang/String";
 
 /**
  * An object that encapsulates the value of a file attribute that can be set atomically when creating a new file
  * or directory by invoking the createFile or createDirectory methods.
  */
-export interface FileAttribute<T> {
-    name(): java.lang.String;
+export interface FileAttribute<T> extends IReflection {
+    name(): JavaString;
     value(): T;
 }

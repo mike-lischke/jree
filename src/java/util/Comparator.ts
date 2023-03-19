@@ -5,9 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { JavaObject } from "../lang/Object";
+import { IReflection, JavaObject } from "../lang/Object";
 
-export interface Comparator<T> {
+export interface Comparator<T> extends IReflection {
     compare?: (o1: T, o2: T) => number;
     equals?: (obj: JavaObject) => boolean;
 }

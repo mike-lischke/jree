@@ -54,6 +54,8 @@
         "javax",
         "mkdirs",
         "nanos",
+        "rint",
+        "scalb",
         "spliterator",
         "strictfp",
         "stringbuilder",

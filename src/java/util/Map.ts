@@ -5,10 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../lang/Object";
 import { Collection } from "./Collection";
 import { JavaSet } from "./Set";
 
-export interface JavaMap<K, V> {
+export interface JavaMap<K, V> extends IReflection {
     /** Removes all of the mappings from this map (optional operation). */
     clear(): void;
 

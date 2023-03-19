@@ -22,6 +22,8 @@ This page lists the java.io types that are currently in this Node package. The n
 |🅵|[BufferedOutputStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedOutputStream.html)|The class implements a buffered output stream.|
 |🅵|[BufferedReader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedReader.html)|Reads text from a character-input stream, buffering characters so as to provide for the efficient reading of characters, arrays, and lines.|
 |🅵|[BufferedWriter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/BufferedWriter.html)|Writes text to a character-output stream, buffering characters so as to provide for the efficient writing of single characters, arrays, and strings.|
+|🅵|[ByteArrayOutputStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/ByteArrayOutputStream.html)|A byte array output stream.|
+|🅵|[CharArrayWriter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/CharArrayWriter.html)|A character stream that collects its output in a buffer, which can then be used as an input source.|
 |🅂|[Console](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Console.html)|Methods to access the character-based console device, if any, associated with the current Java virtual machine.|
 |🅵|[File](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html)|An abstract representation of file and directory path names.|
 |🅵|[FileDescriptor](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileDescriptor.html)|Instances of the FileDescriptor class serve as an opaque handle to the underlying machine-specific structure representing an open file, an open socket, or another source or sink of bytes.|
@@ -35,8 +37,10 @@ This page lists the java.io types that are currently in this Node package. The n
 |🅵|[OutputStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html)|This abstract class is the superclass of all classes representing an output stream of bytes.|
 |🅵|[OutputStreamWriter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStreamWriter.html)|An OutputStreamWriter is a bridge from character streams to byte streams: It writes characters and translates them into bytes using a specified charset.|
 |🅵|[PrintStream](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/PrintStream.html)|A PrintStream adds functionality to another output stream, namely the ability to print representations of various data values conveniently.|
+|🅵|[PrintWriter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/PrintWriter.html)|PrintWriter is a convenience class to write formatted representations of objects to a text-output stream.|
 |🅵|[Reader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Reader.html)|Abstract class for reading character streams.|
 |🅵|[StringReader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/StringReader.html)|A character stream whose source is a string.|
+|🅵|[StringWriter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/StringWriter.html)|A character stream that collects its output in a string buffer, which can then be used to construct a string.|
 |🅵|[Writer](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Writer.html)|Abstract class for writing character streams.|
 
 ## Exception Summary

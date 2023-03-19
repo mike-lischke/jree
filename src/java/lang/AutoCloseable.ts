@@ -5,7 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export interface AutoCloseable {
+import { IReflection } from "./Object";
+
+export interface AutoCloseable extends IReflection {
     /** Closes this resource, relinquishing any underlying resources. */
     close(): void;
 }

@@ -5,13 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { IReflection } from "../../lang/Object";
+import { Path } from "./Path";
 
 /**
  * An interface that is implemented by objects that perform match operations on paths.
  */
 // @FunctionalInterface
-export interface PathMatcher {
+export interface PathMatcher extends IReflection {
     /**
      * Tells if a given path matches this matcher's pattern.
      *
@@ -19,5 +20,5 @@ export interface PathMatcher {
      *
      * @returns true if, and only if, the path matches this matcher's pattern.
      */
-    matches(path: java.nio.file.Path): boolean;
+    matches(path: Path): boolean;
 }

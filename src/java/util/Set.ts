@@ -5,12 +5,11 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
 import { Collection } from "./Collection";
 
 // The set interface does not add any new method to the Collection interface.
 
-export interface JavaSet<T> extends java.util.Collection<T> {
+export interface JavaSet<T> extends Collection<T> {
     add(e: T): boolean;
 }
 

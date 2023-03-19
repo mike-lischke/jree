@@ -5,9 +5,10 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { ByteBuffer } from "../ByteBuffer";
+import { Channel } from "./Channel";
 
-export interface WritableByteChannel extends java.nio.channels.Channel {
+export interface WritableByteChannel extends Channel {
     /** Writes a sequence of bytes to this channel from the given buffer. */
-    write(src: java.nio.ByteBuffer): number;
+    write(src: ByteBuffer): number;
 }

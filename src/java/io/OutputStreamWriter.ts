@@ -27,7 +27,7 @@ export class OutputStreamWriter extends Writer {
     /** Creates an OutputStreamWriter that uses the default character encoding. */
     public constructor(out: OutputStream);
     /** Creates an OutputStreamWriter that uses the named charset. */
-    public constructor(out: OutputStream, charsetName: JavaString);
+    public constructor(out: OutputStream, charsetName: JavaString | string);
     /** Creates an OutputStreamWriter that uses the given charset. */
     public constructor(out: OutputStream, cs: Charset);
     /** Creates an OutputStreamWriter that uses the given charset encoder. */
@@ -37,9 +37,9 @@ export class OutputStreamWriter extends Writer {
         super(out);
 
         this.#out = out;
-        if (args.length === 1) {
-            const arg = args[1] as JavaString | Charset | CharsetEncoder;
-            if (arg instanceof JavaString) {
+        if (args.length > 1) {
+            const arg = args[1] as JavaString | string | Charset | CharsetEncoder;
+            if (arg instanceof JavaString || typeof arg === "string") {
                 this.#encoder = Charset.forName(arg).newEncoder();
             } else if (arg instanceof Charset) {
                 this.#encoder = arg.newEncoder();
@@ -71,8 +71,8 @@ export class OutputStreamWriter extends Writer {
     public override write(buffer: Uint16Array): void;
     public override write(buffer: Uint16Array, offset: int, length: int): void;
     public override write(c: int): void;
-    public override write(str: JavaString): void;
-    public override write(str: JavaString, offset: int, length: int): void;
+    public override write(str: JavaString | string): void;
+    public override write(str: JavaString | string, offset: int, length: int): void;
     public override write(...args: unknown[]): void {
         switch (args.length) {
             case 1: {
@@ -90,14 +90,19 @@ export class OutputStreamWriter extends Writer {
             }
 
             case 3: {
-                if (args[0] instanceof JavaString) {
-                    const [str, offset, length] = args as [JavaString, int, int];
-                    const bytes = this.#encoder.encode(CharBuffer.wrap(str, offset, offset + length));
-                    this.#out.write(bytes.array());
-                } else {
-                    const [buffer, offset, length] = args as [Uint16Array, int, int];
-                    const bytes = this.#encoder.encode(CharBuffer.wrap(buffer, offset, offset + length));
-                    this.#out.write(bytes.array());
+                const [str, offset, length] = args as [string | JavaString | Uint16Array, int, int];
+                if (length > 0) {
+                    if (typeof str === "string") {
+                        const bytes = this.#encoder.encode(
+                            CharBuffer.wrap(new JavaString(str), offset, offset + length));
+                        this.#out.write(bytes.array());
+                    } else if (str instanceof JavaString) {
+                        const bytes = this.#encoder.encode(CharBuffer.wrap(str, offset, offset + length));
+                        this.#out.write(bytes.array());
+                    } else {
+                        const bytes = this.#encoder.encode(CharBuffer.wrap(str, offset, length));
+                        this.#out.write(bytes.array());
+                    }
                 }
 
                 break;

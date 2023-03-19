@@ -5,7 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import * as path from "path";
+import path from "path";
+
 import { MurmurHash } from "../../../MurmurHash";
 import { NotImplementedError } from "../../../NotImplementedError";
 

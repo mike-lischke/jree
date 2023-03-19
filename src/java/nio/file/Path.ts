@@ -278,10 +278,11 @@ export class Path extends JavaObject implements Path {
      * @returns An iterator over the name elements of this path.
      */
     public iterator(): JavaIterator<Path> {
-        return new class implements JavaIterator<Path> {
+        return new class extends JavaObject implements JavaIterator<Path> {
             private index = 0;
 
             public constructor(private path: Path) {
+                super();
             }
 
             public hasNext(): boolean {

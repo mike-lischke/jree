@@ -5,24 +5,50 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../..";
+import { int } from "../../types";
+
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+
 import { BufferImpl } from "./BufferImpl";
+import { BufferOverflowException } from "./BufferOverflowException";
+import { BufferUnderflowException } from "./BufferUnderflowException";
+import { ReadOnlyBufferException } from "./ReadOnlyBufferException";
 
-export class IntBuffer extends BufferImpl<Int32Array, IntBuffer> {
-    /** @deprecated Use {@link ByteBuffer.allocate} */
-    public constructor(capacity: number);
-    /** @deprecated Use {@link ByteBuffer.wrap} */
-    public constructor(buffer: Int32Array, offset?: number, length?: number);
-    public constructor(capacityOrBuffer: number | Int32Array, offset?: number, length?: number) {
-        let backBuffer;
+export class IntBuffer extends BufferImpl<Int32Array> {
+    protected constructor(capacity: number);
+    protected constructor(buffer: Int32Array);
+    protected constructor(buffer: Int32Array, offset: int, length: int);
+    protected constructor(...args: unknown[]) {
+        let array: Int32Array;
+        let offset = 0;
+        let length = 0;
 
-        if (typeof capacityOrBuffer === "number") {
-            backBuffer = new ArrayBuffer(capacityOrBuffer);
-        } else {
-            backBuffer = capacityOrBuffer.buffer;
+        switch (args.length) {
+            case 1: {
+                if (typeof args[0] === "number") {
+                    array = new Int32Array(args[0]);
+                } else {
+                    array = args[0] as Int32Array;
+                }
+
+                length = array.length;
+
+                break;
+            }
+
+            case 3: {
+                [array, offset, length] = args as [Int32Array, int, int];
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException("Wrong number of arguments");
+            }
         }
 
-        super(backBuffer, Int32Array, IntBuffer, offset, length);
+        super(array, offset, length);
     }
 
     /**
@@ -44,19 +70,29 @@ export class IntBuffer extends BufferImpl<Int32Array, IntBuffer> {
         return new IntBuffer(array);
     }
 
+    public override duplicate(): this {
+        const buffer = new IntBuffer(this.array());
+        buffer.readOnly = this.readOnly;
+        buffer.currentPosition = this.currentPosition;
+        buffer.currentLimit = this.currentLimit;
+        buffer.currentMark = this.currentMark;
+
+        return buffer as this;
+    }
+
     public get(index?: number): number;
     public get(dst: Int32Array): this;
     public get(dst: Int32Array, offset: number, length: number): this;
     public get(indexOrDst?: number | Int32Array, offset?: number, length?: number): number | this {
         if (indexOrDst === undefined) {
             if (this.currentPosition >= this.currentLimit) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             return this.array()[this.currentPosition++];
         } else if (typeof indexOrDst === "number") {
             if (indexOrDst < 0 || indexOrDst >= this.currentLimit) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             return this.array()[indexOrDst];
@@ -65,11 +101,11 @@ export class IntBuffer extends BufferImpl<Int32Array, IntBuffer> {
             length ??= indexOrDst.length;
 
             if (length > this.remaining()) {
-                throw new java.nio.BufferUnderflowException();
+                throw new BufferUnderflowException();
             }
 
             if (offset < 0 || length < 0 || offset + length >= indexOrDst.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             indexOrDst.set(this.array().slice(this.currentPosition, this.currentPosition + length), offset);
@@ -86,31 +122,31 @@ export class IntBuffer extends BufferImpl<Int32Array, IntBuffer> {
     public put(src: Int32Array, offset: number, length: number): this;
     public put(valueOrSrcOrIndex: number | Int32Array | IntBuffer, valueOrOffset?: number, length?: number): this {
         if (this.isReadOnly()) {
-            throw new java.nio.ReadOnlyBufferException();
+            throw new ReadOnlyBufferException();
         }
 
         if (typeof valueOrSrcOrIndex === "number") {
             if (valueOrOffset === undefined) {
                 if (this.remaining() === 0) {
-                    throw new java.nio.BufferOverflowException();
+                    throw new BufferOverflowException();
                 }
 
                 this.array()[this.currentPosition++] = valueOrSrcOrIndex;
             } else {
                 if (valueOrOffset < 0 || valueOrOffset >= this.currentLimit) {
-                    throw new java.lang.IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException();
                 }
 
                 this.array()[valueOrSrcOrIndex] = valueOrOffset;
             }
         } else if (valueOrSrcOrIndex instanceof IntBuffer) {
             if (valueOrSrcOrIndex === this) {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
 
             const count = valueOrSrcOrIndex.remaining();
             if (this.remaining() < count) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array().set(valueOrSrcOrIndex.array().subarray(valueOrSrcOrIndex.currentPosition,
@@ -123,11 +159,11 @@ export class IntBuffer extends BufferImpl<Int32Array, IntBuffer> {
             const count = length ?? valueOrSrcOrIndex.length;
 
             if (offset < 0 || count < 0 || offset + count >= valueOrSrcOrIndex.length) {
-                throw new java.lang.IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
             }
 
             if (count > this.remaining()) {
-                throw new java.nio.BufferOverflowException();
+                throw new BufferOverflowException();
             }
 
             this.array().set(valueOrSrcOrIndex.subarray(offset, offset + count), this.currentPosition);
@@ -135,5 +171,9 @@ export class IntBuffer extends BufferImpl<Int32Array, IntBuffer> {
         }
 
         return this;
+    }
+
+    public slice(): IntBuffer {
+        return new IntBuffer(this.array());
     }
 }

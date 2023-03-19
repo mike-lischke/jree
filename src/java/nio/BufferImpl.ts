@@ -6,38 +6,25 @@
  */
 
 import { MurmurHash } from "../../MurmurHash";
-import { Comparable } from "../lang/Comparable";
+import { int } from "../../types";
+
+import type { Comparable } from "../lang/Comparable";
 import { JavaString } from "../lang/String";
-import { TypedArray, TypedArrayConstructor } from "../util/Arrays";
+import { Arrays, type TypedArray } from "../util/Arrays";
 import { JavaBuffer } from "./Buffer";
 import { ByteOrder } from "./ByteOrder";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BufferConstructor<B> = new (...args: any[]) => B;
+/** Implements common functionality of the various typed Java buffers. */
+export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> implements Comparable<BufferImpl<T>> {
+    protected readOnly = false;
 
-/** Implements common functionality of the various Java buffers. */
-export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extends JavaBuffer<T>
-    implements Comparable<C> {
     #array: T;
-    #readOnly = false;
     #byteOrder: ByteOrder;
 
-    protected constructor(buffer: ArrayBuffer,
-        private arrayConstructor: TypedArrayConstructor,
-        private bufferConstructor: BufferConstructor<C>,
-        offset?: number, length?: number) {
-        super(buffer, arrayConstructor.BYTES_PER_ELEMENT);
-        this.#array = new this.arrayConstructor(buffer, offset, length) as T;
+    protected constructor(array: T, offset: int, length: int) {
+        super(offset, offset + length);
+        this.#array = array;
         this.#byteOrder = ByteOrder.BIG_ENDIAN;
-        this.limit(this.#array.length);
-        this.position(0);
-
-        if (offset !== undefined && length !== undefined) {
-            this.limit(offset + length);
-        } else {
-            this.limit(this.#array.length);
-        }
-        this.position(offset ?? 0);
     }
 
     /** @returns the byte array that backs this buffer (optional operation). */
@@ -52,32 +39,25 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
         return this.#array.byteOffset;
     }
 
-    public isDirect(): boolean {
-        return false;
-    }
-
-    public isReadOnly(): boolean {
-        return this.#readOnly;
-    }
-
-    public get littleEndian(): boolean {
-        return this.#byteOrder === ByteOrder.LITTLE_ENDIAN;
-    }
-
     /**
      * Creates a new, read-only byte buffer that shares this buffer's content.
      *
      * @returns A read-only copy of this buffer.
      */
-    public asReadOnlyBuffer(): C {
+    public asReadOnlyBuffer(): this {
         const result = this.duplicate();
-        result.#readOnly = true;
+        result.readOnly = true;
 
         return result;
     }
 
     /** Creates a view of this byte buffer as a short buffer. */
     // public asShortBuffer(): ShortBuffer
+
+    /** @returns this buffer's capacity. */
+    public override capacity(): number {
+        return this.#array.length;
+    }
 
     /**
      * Compacts this buffer (optional operation).
@@ -102,8 +82,8 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
      *
      * @returns tbd
      */
-    public compareTo(that: C): number {
-        const other = that.array().subarray(that.currentPosition, that.currentLimit);
+    public compareTo(that: JavaBuffer<T>): number {
+        const other = that.array().subarray(that.position(), that.limit());
         const me = this.array().subarray(this.currentPosition, this.currentLimit);
 
         const count = Math.max(other.length, me.length);
@@ -129,21 +109,6 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
     }
 
     /**
-     * Creates a new byte buffer that shares this buffer's content.
-     *
-     * @returns tbd
-     */
-    public duplicate(): C {
-        const buffer = new this.bufferConstructor(this.#array);
-        buffer.#readOnly = this.#readOnly;
-        buffer.currentPosition = this.currentPosition;
-        buffer.currentLimit = this.currentLimit;
-        buffer.currentMark = this.currentMark;
-
-        return buffer;
-    }
-
-    /**
      * Tells whether or not this buffer is equal to another object.
      *
      * @param ob tbd
@@ -155,24 +120,25 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
             return true;
         }
 
-        if (ob instanceof this.bufferConstructor) {
-            const other = ob.array().subarray(ob.currentPosition, ob.currentLimit);
-            const me = this.array().subarray(this.currentPosition, this.currentLimit);
-
-            if (other.length !== me.length) {
-                return false;
-            }
-
-            for (let i = 0; i < other.length; ++i) {
-                if (other[i] !== me[i]) {
-                    return false;
-                }
-            }
-
-            return true;
+        if (!(ob instanceof JavaBuffer)) {
+            return false;
         }
 
-        return false;
+        const array = ob.array() as T;
+        const other = array.subarray(ob.position(), ob.limit());
+        const me = this.array().subarray(this.currentPosition, this.currentLimit);
+
+        if (other.length !== me.length) {
+            return false;
+        }
+
+        for (let i = 0; i < other.length; ++i) {
+            if (other[i] !== me[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -193,6 +159,19 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
         return hash;
     }
 
+    /** @returns false */
+    public isDirect(): boolean {
+        return false;
+    }
+
+    public isReadOnly(): boolean {
+        return this.readOnly;
+    }
+
+    public get littleEndian(): boolean {
+        return this.#byteOrder === ByteOrder.LITTLE_ENDIAN;
+    }
+
     /**
      * Finds and returns the relative index of the first mismatch between this buffer and a given buffer.
      *
@@ -200,20 +179,9 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
      *
      * @returns tbd
      */
-    public mismatch(that: C): number {
-        const left = this.#array.slice(this.currentPosition, this.currentLimit);
-        const right = that.#array.slice(that.currentPosition, that.currentLimit);
-        for (let i = 0; i < Math.min(left.length, right.length); ++i) {
-            if (left[i] !== right[i]) {
-                return i;
-            }
-        }
-
-        if (left.length !== right.length) {
-            return Math.min(left.length, right.length);
-        }
-
-        return -1;
+    public mismatch(that: JavaBuffer<T>): number {
+        return Arrays.mismatch(this.#array, this.currentPosition, this.currentLimit, that.array(),
+            that.position(), that.limit());
     }
 
     /** @returns this buffer's byte order. */
@@ -224,17 +192,6 @@ export class BufferImpl<T extends TypedArray, C extends BufferImpl<T, C>> extend
     /** Modifies this buffer's byte order. */
     public set order(bo: ByteOrder) {
         this.#byteOrder = bo;
-    }
-
-    /** Creates a new byte buffer whose content is a shared subsequence of this buffer's content. */
-    public slice(): C;
-    public slice(index: number, length: number): C;
-    public slice(index?: number, length?: number): C {
-        if (index !== undefined && length !== undefined) {
-            return new this.bufferConstructor(this.#array.slice(index, index + length));
-        }
-
-        return new this.bufferConstructor(this.#array);
     }
 
     /** @returns a string summarizing the state of this buffer. */

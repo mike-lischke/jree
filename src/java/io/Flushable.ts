@@ -5,7 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-export interface Flushable {
+import { IReflection } from "../lang/Object";
+
+export interface Flushable extends IReflection {
     /** Flushes this stream by writing any buffered output to the underlying stream. */
     flush(): void;
 }

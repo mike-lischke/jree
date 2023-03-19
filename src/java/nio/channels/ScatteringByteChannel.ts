@@ -5,12 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { ByteBuffer } from "../ByteBuffer";
+import { ReadableByteChannel } from "./ReadableByteChannel";
 
-export interface ScatteringByteChannel extends java.nio.channels.ReadableByteChannel {
-    read(target: java.nio.ByteBuffer): number;
+export interface ScatteringByteChannel extends ReadableByteChannel {
+    read(target: ByteBuffer): number;
     /** Reads a sequence of bytes from this channel into the given buffers. */
-    read(target: java.nio.ByteBuffer[]): bigint;
+    read(target: ByteBuffer[]): bigint;
     /** Reads a sequence of bytes from this channel into a subsequence of the given buffers. */
-    read(target: java.nio.ByteBuffer[], offset: number, length: number): bigint;
+    read(target: ByteBuffer[], offset: number, length: number): bigint;
 }

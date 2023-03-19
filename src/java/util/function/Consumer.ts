@@ -5,11 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../../lang/Object";
+
 /**
  * Represents an operation that accepts a single input argument and returns no result. Unlike most other functional
  * interfaces, {@code Consumer} is expected to operate via side-effects.
  */
-export interface Consumer<T> {
+export interface Consumer<T> extends IReflection {
     /**
      * Performs this operation on the given argument.
      *

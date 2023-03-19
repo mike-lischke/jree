@@ -5,8 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import * as fs from "fs/promises";
-import { writeSync } from "fs";
+import { openSync, writeSync } from "fs";
 
 import { OutputStream } from "./OutputStream";
 import { FileDescriptor } from "./FileDescriptor";
@@ -16,37 +15,79 @@ import { FileNotFoundException } from "./FileNotFoundException";
 import { Throwable } from "../lang/Throwable";
 import { IOException } from "./IOException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { AutoCloseable } from "../lang/AutoCloseable";
+import { JavaObject } from "../lang/Object";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 
+/**
+ * A file output stream is an output stream for writing data to a File or to a FileDescriptor. Whether or not a file
+ * is available or may be created depends upon the underlying platform. Some platforms, in particular, allow a file
+ * to be opened for writing by only one FileOutputStream (or other file-writing object) at a time. In such situations
+ * the constructors in this class will fail if the file involved is already open.
+ */
 export class FileOutputStream extends OutputStream {
 
     private fd: FileDescriptor;
     private path?: string;
     private closed = true;
 
-    /** Creates a file output stream to write to the file represented by the specified File object. */
-    public constructor(file: JavaFile, append?: boolean);
+    public constructor(file: JavaFile);
     /**
      * Creates a file output stream to write to the specified file descriptor, which represents an existing connection
      * to an actual file in the file system.
      */
     public constructor(fdObj: FileDescriptor);
+    /** Creates a file output stream to write to the file represented by the specified File object. */
+    public constructor(file: JavaFile, append: boolean);
+    public constructor(name: JavaString | string);
     /** Creates a file output stream to write to the file with the specified name. */
-    public constructor(name: JavaString, append?: boolean);
-    public constructor(fileOrFdObjOrName: JavaFile | FileDescriptor | JavaString, append?: boolean) {
+    public constructor(name: JavaString | string, append: boolean);
+    public constructor(...args: unknown[]) {
         super();
 
         try {
-            if (fileOrFdObjOrName instanceof FileDescriptor) {
-                this.fd = fileOrFdObjOrName;
-            } else {
-                this.path = fileOrFdObjOrName instanceof JavaFile
-                    ? fileOrFdObjOrName.getAbsolutePath().valueOf()
-                    : fileOrFdObjOrName.valueOf();
-                this.fd = new FileDescriptor();
-                this.open(append ?? false);
+            switch (args.length) {
+                case 1: {
+                    const arg = args[0] as JavaFile | FileDescriptor | JavaString | string;
+                    if (arg instanceof JavaFile) {
+                        this.path = arg.getAbsolutePath().valueOf();
+                        this.fd = new FileDescriptor();
+                        this.open(false);
+                    } else if (arg instanceof FileDescriptor) {
+                        this.fd = arg;
+                    } else {
+                        this.path = arg.valueOf();
+                        this.fd = new FileDescriptor();
+                        this.open(false);
+                    }
+
+                    break;
+                }
+
+                case 2: {
+                    const [fileOrFdObjOrName, append] =
+                        args as [JavaFile | FileDescriptor | JavaString | string, boolean];
+                    if (fileOrFdObjOrName instanceof JavaFile) {
+                        this.path = fileOrFdObjOrName.getAbsolutePath().valueOf();
+                        this.fd = new FileDescriptor();
+                        this.open(append);
+                    } else if (fileOrFdObjOrName instanceof FileDescriptor) {
+                        this.fd = fileOrFdObjOrName;
+                    } else {
+                        this.path = fileOrFdObjOrName.valueOf();
+                        this.fd = new FileDescriptor();
+                        this.open(append);
+                    }
+
+                    break;
+                }
+
+                default: {
+                    throw new IllegalArgumentException("Wrong number of arguments");
+                }
             }
         } catch (error) {
-            throw new FileNotFoundException(new JavaString("Create open or create file"), Throwable.fromError(error));
+            throw new FileNotFoundException(Throwable.fromError(error));
         }
     }
 
@@ -57,8 +98,10 @@ export class FileOutputStream extends OutputStream {
         }
 
         this.closed = true;
-        this.fd.closeAll(new class {
-            public constructor(private fd: FileDescriptor) { }
+        this.fd.closeAll(new class extends JavaObject implements AutoCloseable {
+            public constructor(private fd: FileDescriptor) {
+                super();
+            }
 
             public close(): void {
                 this.fd.close();
@@ -86,7 +129,7 @@ export class FileOutputStream extends OutputStream {
             if (typeof b === "number") {
                 const buffer = new Int8Array(1);
                 buffer[0] = b;
-                writeSync(this.fd.handle!.fd, buffer, 0, 1);
+                writeSync(this.fd.handle!, buffer, 0, 1);
             } else {
                 offset ??= 0;
                 length ??= b.length;
@@ -94,7 +137,7 @@ export class FileOutputStream extends OutputStream {
                     throw new IndexOutOfBoundsException();
                 }
 
-                writeSync(this.fd.handle!.fd, b, offset, length);
+                writeSync(this.fd.handle!, b, offset, length);
             }
         } catch (error) {
             throw new IOException(new JavaString("`Cannot write data to file"), Throwable.fromError(error));
@@ -107,12 +150,13 @@ export class FileOutputStream extends OutputStream {
 
     private open(append: boolean): void {
         if (this.path) {
-            fs.open(this.path, append ? "as" : "w", 0x400).then((handle) => {
+            try {
+                const handle = openSync(this.path, append ? "as" : "w", 0x400);
                 this.fd.handle = handle;
                 this.closed = false;
-            }).catch((reason) => {
-                throw new IOException(new JavaString("Cannot open file"), Throwable.fromError(reason));
-            });
+            } catch (error) {
+                throw new IOException(new JavaString("Cannot open file"), Throwable.fromError(error));
+            }
         }
     }
 }

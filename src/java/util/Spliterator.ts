@@ -5,11 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
+import { IReflection } from "../lang/Object";
+
 /**
  * An object for traversing and partitioning elements of a source. The source of elements covered by a Spliterator
  * could be, for example, an array, a Collection, an IO channel, or a generator function.
  */
-export interface Spliterator<T> {
+export interface Spliterator<T> extends IReflection {
     /**
      * Returns a set of characteristics of this Spliterator and its elements.
      */

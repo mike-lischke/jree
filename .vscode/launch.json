@@ -19,6 +19,10 @@
                 "${workspaceFolder}/output/**/*.js"
             ],
             "sourceMaps": true,
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+            ],
             "smartStep": true,
             "trace": false
         },

@@ -31,8 +31,6 @@ import { IllegalCharsetNameException } from "./IllegalCharsetNameException";
  *       It is not an abstract class as in Java, but implements the encoder/decoder methods directly.
  */
 export class Charset extends JavaObject implements Comparable<Charset> {
-    static readonly #default: Charset;
-
     // Encodings supported by the TextDecoder API.
     // From https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API/Encodings
     static readonly #encodingsMap: Map<string, string> = new Map([
@@ -251,23 +249,28 @@ export class Charset extends JavaObject implements Comparable<Charset> {
         ["x-user-defined", "x-user-defined"],
     ]);
 
-    #alternatives: JavaSet<JavaString>;
-    #canonicalName: JavaString;
+    static readonly #default: Charset = new Charset("utf-8");
 
-    protected constructor(canonicalName: JavaString) {
+    #alternatives: Set<string>;
+    #canonicalName: string;
+
+    protected constructor(canonicalName: JavaString | string) {
         super();
 
-        this.#canonicalName = canonicalName;
-        const name = canonicalName.valueOf();
+        if (typeof canonicalName === "string") {
+            this.#canonicalName = canonicalName;
+        } else {
+            this.#canonicalName = canonicalName.valueOf();
+        }
 
-        if (!Charset.#encodingsMap.has(name)) {
+        if (!Charset.#encodingsMap.has(this.#canonicalName)) {
             throw new IllegalCharsetNameException();
         }
 
-        this.#alternatives = new HashSet<JavaString>();
+        this.#alternatives = new Set<string>();
         Charset.#encodingsMap.forEach((value, key) => {
-            if (value === name) {
-                this.#alternatives.add(new JavaString(key));
+            if (value === this.#canonicalName) {
+                this.#alternatives.add(key);
             }
         });
     }
@@ -293,7 +296,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
      *
      * @throws IllegalCharsetNameException If the given charset name is illegal.
      */
-    public static forName(charsetName: JavaString): Charset {
+    public static forName(charsetName: JavaString | string): Charset {
         const name = charsetName.valueOf().toLowerCase();
         const canonicalName = Charset.#encodingsMap.get(name);
 
@@ -320,7 +323,12 @@ export class Charset extends JavaObject implements Comparable<Charset> {
      * @returns a set containing this charset's aliases.
      */
     public aliases(): JavaSet<JavaString> {
-        return this.#alternatives;
+        const result = new HashSet<JavaString>();
+        this.#alternatives.forEach((value) => {
+            result.add(new JavaString(value));
+        });
+
+        return result;
     }
 
     /**
@@ -340,7 +348,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
      * @returns A negative integer, zero, or a positive integer as this charset
      */
     public compareTo(that: Charset): number {
-        return this.#canonicalName.compareTo(that.#canonicalName);
+        return this.#canonicalName.localeCompare(that.#canonicalName);
     }
 
     /**
@@ -373,7 +381,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
     /** Returns this charset's human-readable name for the given locale. */
     public displayName(locale: Locale): JavaString;
     public displayName(...args: unknown[]): JavaString {
-        return this.#canonicalName;
+        return new JavaString(this.#canonicalName);
     }
 
     /** Convenience method that encodes a string into bytes in this charset. */
@@ -405,7 +413,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
             return false;
         }
 
-        return this.#canonicalName.equals(ob.#canonicalName);
+        return this.#canonicalName === ob.#canonicalName;
     }
 
     /**
@@ -435,7 +443,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
      * @returns  The canonical name of this charset
      */
     public name(): JavaString {
-        return this.#canonicalName;
+        return new JavaString(this.#canonicalName);
     }
 
     /**

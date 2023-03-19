@@ -5,12 +5,15 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../..";
+import { IReflection } from "../../lang/Object";
+import { List } from "../../util/List";
+import { Watchable } from "./Watchable";
+import { WatchEvent } from "./WatchEvent";
 
-export interface WatchKey {
+export interface WatchKey extends IReflection {
     cancel(): boolean;
     isValid(): boolean;
-    pollEvents(): java.util.List<java.nio.file.WatchEvent<unknown>>;
+    pollEvents(): List<WatchEvent<unknown>>;
     reset(): boolean;
-    watchable(): java.nio.file.Watchable;
+    watchable(): Watchable;
 }

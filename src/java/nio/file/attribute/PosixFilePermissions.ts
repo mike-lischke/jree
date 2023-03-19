@@ -25,12 +25,16 @@ export class PosixFilePermissions extends JavaObject {
      *
      * @returns a file attribute view of the permissions
      */
-    public static asFileAttribute(permissions: PosixFilePermissionSet)
-        : FileAttribute<PosixFilePermissionSet> {
-        return {
-            name: () => { return S`posix:permissions`; },
-            value: () => { return permissions; },
-        };
+    public static asFileAttribute(permissions: PosixFilePermissionSet): FileAttribute<PosixFilePermissionSet> {
+        return new class extends JavaObject {
+            public name(): JavaString {
+                return S`posix:permissions`;
+            }
+
+            public value(): PosixFilePermissionSet {
+                return permissions;
+            }
+        }();
     }
 
     /**

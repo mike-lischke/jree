@@ -14,6 +14,7 @@ import { Closeable } from "./Closeable";
 import { Flushable } from "./Flushable";
 import { IllegalArgumentException } from "../lang";
 import { NotImplementedError } from "../../NotImplementedError";
+import { convertStringToUTF16 } from "../../string-helpers";
 
 /**
  * Abstract class for writing to character streams. The only methods that a subclass must implement are
@@ -66,15 +67,16 @@ export abstract class Writer extends JavaObject implements Closeable, Flushable,
      */
     public append(c: char): this;
     /** Appends the specified character sequence to this writer. */
-    public append(csq: CharSequence): this;
+    public append(csq: CharSequence | null): this;
     /** Appends a subsequence of the specified character sequence to this writer. */
-    public append(csq: CharSequence, start: int, end: int): this;
+    public append(csq: CharSequence | null, start: int, end: int): this;
     public append(...args: unknown[]): this {
         if (typeof args[0] === "number") {
             this.write(args[0]);
         } else {
-            const [csq, start, end] = args as [CharSequence, int, int];
-            this.write(csq.toString(), start, end);
+            const [csq, start, end] = args as [CharSequence | null, int, int];
+            const s = csq === null ? "null" : csq.toString();
+            this.write(s, start, end - start);
         }
 
         return this;
@@ -87,20 +89,24 @@ export abstract class Writer extends JavaObject implements Closeable, Flushable,
     /** Writes a single character. */
     public write(c: int): void;
     /** Writes a string. */
-    public write(str: JavaString): void;
+    public write(str: JavaString | string): void;
     /** Writes a portion of a string. */
-    public write(str: JavaString, offset: int, length: int): void;
+    public write(str: JavaString | string, offset: int, length: int): void;
     public write(...args: unknown[]): void {
         switch (args.length) {
             case 1: {
+                const value = args[0] as int | Uint16Array | JavaString | string;
+
                 let array;
-                if (args[0] instanceof Uint16Array) {
-                    array = args[0];
-                } else if (args[0] instanceof JavaString) {
-                    array = args[0].array();
+                if (value instanceof Uint16Array) {
+                    array = value;
+                } else if (value instanceof JavaString) {
+                    array = value.array();
+                } else if (typeof value === "string") {
+                    array = convertStringToUTF16(value);
                 } else {
                     array = new Uint16Array(1);
-                    array[0] = (args[0] as int) & 0xFFFF;
+                    array[0] = value & 0xFFFF;
 
                     break;
                 }
@@ -110,9 +116,12 @@ export abstract class Writer extends JavaObject implements Closeable, Flushable,
             }
 
             case 3: {
-                if (args[0] instanceof JavaString) {
-                    const [c, offset, length] = args as [JavaString, int, int];
-                    this.write(c.array(), offset, length);
+                const [buffer, offset, length] = args as [Uint16Array | JavaString | string, int, int];
+                if (buffer instanceof JavaString) {
+                    this.write(buffer.array(), offset, length);
+                } else if (typeof buffer === "string") {
+                    const array = convertStringToUTF16(buffer);
+                    this.write(array, offset, length);
                 } else {
                     throw new NotImplementedError("abstract");
                 }

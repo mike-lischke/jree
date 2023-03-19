@@ -29,6 +29,7 @@ This page lists the java.lang types that are currently in this Node package.
 |🅿|[Class](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html)|Instances of the class Class represent classes and interfaces in a running Java application.|
 |🅵|[Integer](https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html)|The Integer class wraps a value of the primitive type int in an object.|
 |🅵|[Long](https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html)|The Long class wraps a value of the primitive type long in an object.|
+|🅵|[Math](https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html)|The class Math contains methods for performing basic numeric operations such as the elementary exponential, logarithm, square root, and trigonometric functions.|
 |🅵|[Number](https://docs.oracle.com/javase/8/docs/api/java/lang/Number.html)|The abstract class Number is the superclass of platform classes representing numeric values that are convertible to the primitive types byte, double, float, int, long, and short.|
 |🅵|[Object](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html)|The class Object is the root of the class hierarchy.|
 |🅵|[StackTraceElement](https://docs.oracle.com/javase/8/docs/api/java/lang/StackTraceElement.html)|A stack trace element (a stack frame).|
@@ -47,6 +48,7 @@ This page lists the java.lang types that are currently in this Node package.
 
 |Status|Exception|Description|
 |---|---|---|
+|🅵|[ArithmeticException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArithmeticException.html)|Thrown when an exceptional arithmetic condition has occurred.|
 |🅵|[ArrayIndexOutOfBoundsException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArrayIndexOutOfBoundsException.html)|Thrown to indicate that an array has been accessed with an illegal index.|
 |🅵|[CloneNotSupportedException](https://docs.oracle.com/javase/8/docs/api/java/lang/CloneNotSupportedException.html)|Thrown to indicate that the `clone` method in class Object has been called to clone an object, but that the object's class does not implement the Cloneable interface.|
 |🅵|[Error](https://docs.oracle.com/javase/8/docs/api/java/lang/Error.html)|An Error is a subclass of Throwable that indicates serious problems that a reasonable application should not try to catch.|

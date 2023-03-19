@@ -5,16 +5,18 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { char } from "../../types";
-import { CharSequence } from "./CharSequence";
+import type { char } from "../../types";
 
-export interface Appendable {
+import type { CharSequence } from "./CharSequence";
+import type { IReflection } from "./Object";
+
+export interface Appendable extends IReflection {
     /** Appends the specified character to this Appendable. */
     append(c: char): this;
 
     /** Appends the specified character sequence to this Appendable. */
-    append(csq: CharSequence): this;
+    append(csq: CharSequence | null): this;
 
     /** Appends a subsequence of the specified character sequence to this Appendable. */
-    append(csq: CharSequence, start: number, end: number): this;
+    append(csq: CharSequence | null, start: number, end: number): this;
 }

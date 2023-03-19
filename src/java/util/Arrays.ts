@@ -7,11 +7,13 @@
 
 import { isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
+import { int } from "../../types";
 
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
-import { ArrayList } from "./ArrayList";
-import { List } from "./List";
+import { Comparator } from "./Comparator";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =
@@ -35,20 +37,6 @@ export type TypedArrayConstructor =
 export class Arrays extends JavaObject {
     private constructor() {
         super();
-    }
-
-    /**
-     * Returns a list backed by the specified array. (Changes to the returned list "write through" to the array.)
-     * The returned list is serializable and implements RandomAccess.
-     * This method acts as bridge between array-based and collection-based APIs, in combination with
-     * Collection.toArray().
-     *
-     * @param list The array to be wrapped as a list.
-     *
-     * @returns A list view of the specified array.
-     */
-    public static asList<T>(list: T[]): List<T> {
-        return new ArrayList<T>(list);
     }
 
     public static sort<T>(list: T[]): void {
@@ -205,18 +193,148 @@ export class Arrays extends JavaObject {
         return -start - 1;
     }
 
-    public static hashCode(a: ArrayLike<unknown>): number {
+    public static hashCode(a: ArrayLike<unknown>): int {
         let hash = MurmurHash.initialize(17);
         hash = MurmurHash.updateFromArray(hash, a, false);
 
         return MurmurHash.finish(hash, 1);
     }
 
+    /**
+     * @returns A hash code based on the "deep contents" of the specified array.
+     *
+     * @param a The array to hash.
+     */
     public static deepHashCode(a: ArrayLike<unknown>): number {
         let hash = MurmurHash.initialize(17);
         hash = MurmurHash.updateFromArray(hash, a, true);
 
         return MurmurHash.finish(hash, 1);
+    }
+
+    /**
+     * Finds and returns the index of the first mismatch between two arrays, otherwise return -1 if no mismatch is
+     * found.
+     */
+    public static mismatch(a: ArrayLike<unknown>, b: ArrayLike<unknown>): int;
+    /**
+     * Finds and returns the relative index of the first mismatch between two int arrays over the specified ranges,
+     * otherwise return -1 if no mismatch is found.
+     */
+    public static mismatch(a: ArrayLike<unknown>, aFromIndex: int, aToIndex: int, b: ArrayLike<unknown>,
+        bFromIndex: int, bToIndex: int): int;
+    /**
+     * Finds and returns the index of the first mismatch between two Object arrays, otherwise return -1 if no mismatch
+     * is found.
+     */
+    public static mismatch<T>(a: ArrayLike<T>, b: ArrayLike<T>, cmp: Comparator<T>): int;
+    /**
+     * Finds and returns the relative index of the first mismatch between two Object arrays over the specified ranges,
+     * otherwise return -1 if no mismatch is found.
+     */
+    public static mismatch<T>(a: ArrayLike<T>, aFromIndex: int, aToIndex: int, b: ArrayLike<unknown>,
+        bFromIndex: int, bToIndex: int, cmp: Comparator<T>): int;
+    public static mismatch<T>(...args: unknown[]): int {
+        if (args.length === 7) {
+            const [a, aFromIndex, aToIndex, b, bFromIndex, bToIndex, cmp] =
+                args as [ArrayLike<T>, int, int, ArrayLike<T>, int, int, Comparator<T>];
+            if (aFromIndex < 0 || aToIndex > a.length || aFromIndex > aToIndex) {
+                throw new IndexOutOfBoundsException();
+            }
+
+            if (bFromIndex < 0 || bToIndex > b.length || bFromIndex > bToIndex) {
+                throw new IndexOutOfBoundsException();
+            }
+
+            const length = Math.max(a.length, b.length);
+            for (let i = 0; i < length; i++) {
+                if (i === a.length || i === b.length) {
+                    return i;
+                }
+
+                if (cmp.compare!(a[i], b[i]) !== 0) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        switch (args.length) {
+            case 2: {
+                const [a, b] = args as [ArrayLike<unknown>, ArrayLike<unknown>];
+                if (a.length === 0 && b.length === 0) {
+                    return -1;
+                }
+
+                if (a[0] instanceof JavaObject) {
+                    const length = Math.max(a.length, b.length);
+                    for (let i = 0; i < length; i++) {
+                        if (i === a.length || i === b.length) {
+                            return i;
+                        }
+
+                        if (!(a[i] as JavaObject).equals(b[i])) {
+                            return i;
+                        }
+                    }
+                } else {
+                    const length = Math.max(a.length, b.length);
+                    for (let i = 0; i < length; i++) {
+                        if (i === a.length || i === b.length) {
+                            return i;
+                        }
+
+                        if (a[i] !== b[i]) {
+                            return i;
+                        }
+                    }
+                }
+
+                return -1;
+            }
+
+            case 6: {
+                const [a, aFromIndex, aToIndex, b, bFromIndex, bToIndex] =
+                    args as [ArrayLike<unknown>, int, int, ArrayLike<unknown>, int, int];
+
+                const aLength = aToIndex - aFromIndex;
+                const bLength = bToIndex - bFromIndex;
+                if (aLength === 0 && bLength === 0) {
+                    return -1;
+                }
+
+                if (a[aFromIndex] instanceof JavaObject) {
+                    const length = Math.max(aLength, bLength);
+                    for (let i = 0; i < length; i++) {
+                        if (i === aLength || i === bLength) {
+                            return i;
+                        }
+
+                        if (!(a[aFromIndex + i] as JavaObject).equals(b[bFromIndex + i])) {
+                            return i;
+                        }
+                    }
+                } else {
+                    const length = Math.max(a.length, b.length);
+                    for (let i = 0; i < length; i++) {
+                        if (i === a.length || i === b.length) {
+                            return i;
+                        }
+
+                        if (a[aFromIndex + i] !== b[bFromIndex + i]) {
+                            return i;
+                        }
+                    }
+                }
+
+                return -1;
+            }
+
+            default: {
+                throw new IllegalArgumentException("Invalid number of arguments");
+            }
+        }
     }
 
     public static override toString(value: TypedArray | null): JavaString;

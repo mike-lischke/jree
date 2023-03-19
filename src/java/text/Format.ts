@@ -21,7 +21,8 @@ export abstract class Format extends JavaObject implements Serializable, Cloneab
      * AttributedCharacterIterator returned from Format.formatToCharacterIterator and as
      * field identifiers in FieldPosition.
      */
-    public static Field = class Field extends AttributedCharacterIterator.Attribute {
+    public static Field = class extends AttributedCharacterIterator.Attribute {
+
         public constructor(name: JavaString) {
             super(name);
         }
