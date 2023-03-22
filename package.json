@@ -42,41 +42,9 @@
         "prepublishOnly": "npm run build && npm run test",
         "hello-world": "ts-node src/runner ./examples/HelloWorld.ts",
         "build": "tsc",
-        "test": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --max-worker=1",
-        "test-ci": "jest --testMatch [ \"**/test/**/*.spec.ts\" ] --no-coverage --watchAll=false --silent",
-        "test-coverage": "jest  --testMatch [ \"**/test/**/*.spec.ts\" ] --coverage --silent",
+        "test": "jest --testMatch [ \"**/tests/**/*.spec.ts\" ] --no-coverage --watchAll=false --max-worker=1",
+        "test-ci": "jest --testMatch [ \"**/tests/**/*.spec.ts\" ] --no-coverage --watchAll=false --silent",
+        "test-coverage": "jest  --testMatch [ \"**/tests/**/*.spec.ts\" ] --coverage --silent",
         "lint": "eslint \"./src/**/*.ts\""
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "preset": "ts-jest",
-        "verbose": false,
-        "testPathIgnorePatterns": [
-            "node_modules"
-        ],
-        "moduleFileExtensions": [
-            "ts",
-            "js"
-        ],
-        "transformIgnorePatterns": [
-            "/output/.+\\.js"
-        ],
-        "collectCoverageFrom": [
-            "src/**/*.ts"
-        ],
-        "coverageReporters": [
-            "json",
-            "text",
-            "clover",
-            "html"
-        ],
-        "coverageThreshold": {
-            "global": {
-                "statements": 35,
-                "branch": 21,
-                "functions": 30,
-                "lines": 35
-            }
-        }
     }
 }

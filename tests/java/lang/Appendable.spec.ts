@@ -11,6 +11,6 @@ export { };
 
 describe("Tests", () => {
     it("Base", async () => {
-        await runTest("test/jdk/java/lang/Appendable/Basic.ts", "main");
+        await runTest("tests/jdk/java/lang/Appendable/Basic.ts", "main");
     });
 });

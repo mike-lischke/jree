@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import path from "path";
+import * as path from "path";
 
 /**
  * Loads the given file and runs the entry method.

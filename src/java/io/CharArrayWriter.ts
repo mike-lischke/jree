@@ -162,7 +162,8 @@ export class CharArrayWriter extends Writer {
 
             case 3: {
                 const [str, offset, length] = args as [Uint16Array | JavaString | string, int, int];
-                if (offset < 0 || offset > length || length > str.length) {
+                const sourceLength = str instanceof JavaString ? str.length() : str.length;
+                if (offset < 0 || offset > length || length > sourceLength) {
                     throw new IndexOutOfBoundsException();
                 }
 

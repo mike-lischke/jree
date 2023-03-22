@@ -11,7 +11,6 @@ import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
 import { CharSequence } from "./CharSequence";
 import { NegativeArraySizeException } from "./NegativeArraySizeException";
 import { Appendable } from "./Appendable";
-import { CharBuffer } from "../nio/CharBuffer";
 import { char, double, float, int, long } from "../../types";
 import {
     codePointBeforeFromUTF16, codePointFromUTF16, convertStringToUTF16, convertUTF16ToString, indexOfSubArray,
@@ -44,9 +43,9 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
                     throw new NegativeArraySizeException();
                 }
 
-                this.#data = new Uint16Array(arg);
+                this.#data = new Uint16Array(arg || 10);
             } else {
-                this.#data = new Uint16Array();
+                this.#data = new Uint16Array(10);
                 if (typeof arg === "string") {
                     this.append(arg);
                 } else {
@@ -54,7 +53,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
                 }
             }
         } else {
-            this.#data = new Uint16Array();
+            this.#data = new Uint16Array(10);
         }
     }
 
@@ -127,7 +126,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
 
     /** @returns the current capacity. */
     public capacity(): int {
-        return this.#data.length;
+        return this.#currentLength;
     }
 
     /**
@@ -371,18 +370,19 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
     /** Inserts the string representation of the StringBuffer argument into this sequence. */
     public insert(offset: int, sb: StringBuffer): this;
     public insert(...args: unknown[]): this {
-        const source = args[0];
+        const offset = args[0] as int;
+        const source = args[1];
         if (source instanceof Uint16Array || this.isCharSequence(source)) {
             let start = 0;
             let end = source instanceof Uint16Array ? source.length : source.length();
-            if (args.length === 3) {
-                start = args[1] as int;
-                end = args[2] as int;
+            if (args.length === 4) {
+                start = args[2] as int;
+                end = args[3] as int;
             }
 
-            this.insertListData(this.#currentLength, source, start, end);
+            this.insertListData(offset, source, start, end);
         } else {
-            this.insertData(this.#currentLength, args[0] as SimpleDataType);
+            this.insertData(offset, source as SimpleDataType);
         }
 
         return this;
@@ -524,14 +524,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param end the end index, exclusive.
      */
     public subSequence(start: int, end: int): CharSequence {
-        if (start < 0 || end > this.#currentLength || start > end) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        const buffer = CharBuffer.wrap(new Uint16Array(end - start));
-        buffer.put(this.#data, start, end - start);
-
-        return buffer;
+        return this.substring(start, end);
     }
 
     /**
@@ -556,7 +549,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
         }
 
         const end = args[1] as int;
-        if (start < 0 || end < 0 || start + end > this.#currentLength) {
+        if (start < 0 || end < 0 || end > this.#currentLength) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -598,34 +591,33 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
      * @param newContent the data to insert.
      */
     private insertData(position: int, newContent: SimpleDataType): void {
-        const list: Uint16Array[] = [];
-        let additionalSize = 0;
+        let data: Uint16Array | undefined;
         if (typeof newContent === "string") {
             if (newContent.length > 0) {
                 const array = convertStringToUTF16(newContent);
-                additionalSize += array.length;
-                list.push(array);
+                data = array;
             }
         } else {
             const text = JavaString.valueOf(newContent);
             if (text.length() > 0) {
                 const array = convertStringToUTF16(text.valueOf());
-                additionalSize += array.length;
-                list.push(array);
+                data = array;
             }
         }
 
-        const requiredSize = this.#currentLength + additionalSize;
+        if (!data) {
+            return;
+        }
+
+        const requiredSize = this.#currentLength + data.length;
         if (requiredSize <= this.#data.length) {
             // No need to re-allocate. There's still room for the new data.
             if (position < this.#currentLength) {
-                this.#data.copyWithin(position + additionalSize, position, this.#currentLength);
+                this.#data.copyWithin(position + data.length, position, this.#currentLength);
             }
 
-            list.forEach((data) => {
-                this.#data.set(data, position);
-                position += data.length;
-            });
+            this.#data.set(data, position);
+            position += data.length;
 
             this.#currentLength = requiredSize;
         } else {
@@ -637,15 +629,11 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
             }
 
             // Add the new data.
-            let offset = position;
-            list.forEach((data) => {
-                newData.set(data, offset);
-                offset += data.length;
-            });
+            newData.set(data, position);
 
             if (position < this.#currentLength) {
                 // Copy the rest from the original data.
-                newData.set(this.#data.subarray(position, this.#currentLength), offset);
+                newData.set(this.#data.subarray(position, this.#currentLength), position + data.length);
             }
 
             this.#data = newData;
@@ -680,7 +668,7 @@ export class StringBuilder extends JavaObject implements CharSequence, Appendabl
             } else if (data instanceof JavaString) {
                 array = data.array().subarray(start, end);
             } else {
-                array = data.toString().array();
+                array = data.subSequence(start, end).toString().array();
             }
         }
 

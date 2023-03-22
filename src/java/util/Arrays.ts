@@ -216,12 +216,12 @@ export class Arrays extends JavaObject {
      * Finds and returns the index of the first mismatch between two arrays, otherwise return -1 if no mismatch is
      * found.
      */
-    public static mismatch(a: ArrayLike<unknown>, b: ArrayLike<unknown>): int;
+    public static mismatch<T>(a: ArrayLike<T>, b: ArrayLike<T>): int;
     /**
      * Finds and returns the relative index of the first mismatch between two int arrays over the specified ranges,
      * otherwise return -1 if no mismatch is found.
      */
-    public static mismatch(a: ArrayLike<unknown>, aFromIndex: int, aToIndex: int, b: ArrayLike<unknown>,
+    public static mismatch<T>(a: ArrayLike<T>, aFromIndex: int, aToIndex: int, b: ArrayLike<T>,
         bFromIndex: int, bToIndex: int): int;
     /**
      * Finds and returns the index of the first mismatch between two Object arrays, otherwise return -1 if no mismatch
@@ -232,7 +232,7 @@ export class Arrays extends JavaObject {
      * Finds and returns the relative index of the first mismatch between two Object arrays over the specified ranges,
      * otherwise return -1 if no mismatch is found.
      */
-    public static mismatch<T>(a: ArrayLike<T>, aFromIndex: int, aToIndex: int, b: ArrayLike<unknown>,
+    public static mismatch<T>(a: ArrayLike<T>, aFromIndex: int, aToIndex: int, b: ArrayLike<T>,
         bFromIndex: int, bToIndex: int, cmp: Comparator<T>): int;
     public static mismatch<T>(...args: unknown[]): int {
         if (args.length === 7) {

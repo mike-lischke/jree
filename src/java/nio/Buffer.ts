@@ -17,9 +17,6 @@ import { int } from "../../types";
  * A buffer is a linear, finite sequence of elements of a specific primitive type.
  */
 export abstract class JavaBuffer<T> extends JavaObject {
-    // All the indexes are rather virtual values and not to be taken as index into the back buffer,
-    // as their real position depends on the element size of the used array views.
-
     protected currentPosition = 0;
     protected currentLimit = 0;
     protected currentMark = -1;

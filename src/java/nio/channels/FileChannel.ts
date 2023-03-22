@@ -497,13 +497,14 @@ export class FileChannelImpl extends FileChannel {
      * Low level file read method.
      *
      * @param target The buffer to read into.
-     * @param remaining The int of bytes to read.
+     * @param remaining The number of bytes to read.
      *
      * @returns The int of bytes read.
      */
     private readBytes(target: ByteBuffer, remaining: int): long {
         const buffer = target.array();
-        const bytesRead = readSync(this.#fileHandle, buffer, target.position(), remaining, this.#currentPosition);
+        const bytesRead = readSync(this.#fileHandle, buffer, 0, Math.min(buffer.length, remaining),
+            this.#currentPosition);
         this.#currentPosition += BigInt(bytesRead);
         target.position(target.position() + bytesRead);
 
@@ -514,13 +515,13 @@ export class FileChannelImpl extends FileChannel {
      * Low level file write method.
      *
      * @param target The buffer to read from.
-     * @param remaining The int of bytes to read.
+     * @param remaining The number of bytes to read.
      *
      * @returns The int of bytes read.
      */
     private writeBytes(target: ByteBuffer, remaining: int): long {
         const buffer = target.array();
-        const bytesWritten = writeSync(this.#fileHandle, buffer, target.position(), remaining,
+        const bytesWritten = writeSync(this.#fileHandle, buffer, 0, Math.min(buffer.length, remaining),
             Number(this.#currentPosition));
         this.#currentPosition += BigInt(bytesWritten);
         target.position(target.position() + bytesWritten);

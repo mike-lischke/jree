@@ -13,7 +13,7 @@ import {
     codePointFromUTF16, convertStringToUTF16, convertUF32ToUTF16, convertUTF16ToString, indexOfSubArray,
     lastIndexOfSubArray,
 } from "../../string-helpers";
-import { char } from "../../types";
+import { char, int } from "../../types";
 
 import { Serializable } from "../io/Serializable";
 import { UnsupportedEncodingException } from "../io/UnsupportedEncodingException";
@@ -71,9 +71,9 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      */
     public constructor(value: Uint16Array);
     /** Allocates a new String that contains characters from a subarray of the character array argument. */
-    public constructor(value: Uint16Array, offset: number, count: number);
+    public constructor(value: Uint16Array, offset: int, count: int);
     /** Allocates a new String that contains characters from a subarray of the Unicode code point array argument. */
-    public constructor(codePoints: Int32Array, offset: number, count: number);
+    public constructor(codePoints: Int32Array, offset: int, count: int);
     /**
      * Initializes a newly created String object so that it represents the same sequence of characters as the argument;
      * in other words, the newly created string is a copy of the argument string.
@@ -136,7 +136,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             }
 
             case 3: {
-                const [input, offset, length] = args[0] as [Int8Array | Uint16Array | Int32Array, number, number];
+                const [input, offset, length] = args as [Int8Array | Uint16Array | Int32Array, int, int];
                 if (offset < 0 || length < 0 || offset + length > input.length) {
                     throw new IndexOutOfBoundsException();
                 }
@@ -144,7 +144,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
                 if (input instanceof Int8Array) {
                     this.#value = Charset.defaultCharset().decode(ByteBuffer.wrap(input, offset, length)).array();
                 } else if (input instanceof Uint16Array) {
-                    this.#value = input.slice(offset, length);
+                    this.#value = input.slice(offset, offset + length);
                 } else {
                     this.#value = convertUF32ToUTF16(input.slice(offset, length));
                 }
@@ -153,7 +153,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             }
 
             case 4: {
-                const [input, offset, length, cs] = args as [Int8Array, number, number, Charset | JavaString];
+                const [input, offset, length, cs] = args as [Int8Array, int, int, Charset | JavaString];
                 if (offset < 0 || length < 0 || offset + length > input.length) {
                     throw new IndexOutOfBoundsException();
                 }
@@ -248,7 +248,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the char value at the specified index
      */
-    public charAt(index: number): char {
+    public charAt(index: int): char {
         if (index < 0 || index >= this.#value.length) {
             throw new IndexOutOfBoundsException();
         }
@@ -268,7 +268,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the character (Unicode code point) at the specified index.
      */
-    public codePointAt(index: number): number {
+    public codePointAt(index: int): int {
         if (index < 0 || index >= this.#value.length) {
             throw new IndexOutOfBoundsException();
         }
@@ -285,7 +285,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *          lexicographically less than the string argument; and a value greater than 0 if this string is
      *          lexicographically greater than the string argument.
      */
-    public compareTo(anotherString: JavaString): number {
+    public compareTo(anotherString: JavaString): int {
         const source = convertUTF16ToString(this.#value);
         const target = convertUTF16ToString(anotherString.#value);
 
@@ -300,7 +300,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      * @returns a negative integer, zero, or a positive integer as the specified String is greater than, equal to, or
      *          less than this String, ignoring case considerations.
      */
-    public compareToIgnoreCase(anotherString: JavaString): number {
+    public compareToIgnoreCase(anotherString: JavaString): int {
         const source = convertUTF16ToString(this.#value);
         const target = convertUTF16ToString(anotherString.#value);
 
@@ -327,35 +327,29 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
             return false;
         }
 
-        for (let i = 0; i < this.#value.length; ++i) {
-            if (this.#value[i] !== obj.#value[i]) {
-                return false;
-            }
-        }
-
-        return true;
+        return this.compareTo(obj) === 0;
     }
 
     /** @returns a hash code for this string. */
-    public override hashCode(): number {
+    public override hashCode(): int {
         return MurmurHash.hashCode(this.#value, 17);
     }
 
     /** Returns the index within this string of the first occurrence of the specified character. */
-    public indexOf(ch: char): number;
+    public indexOf(ch: char): int;
     /**
      * Returns the index within this string of the first occurrence of the specified character, starting the search
      * at the specified index.
      */
-    public indexOf(ch: char, fromIndex: number): number;
+    public indexOf(ch: char, fromIndex: int): int;
     /** Returns the index within this string of the first occurrence of the specified substring. */
-    public indexOf(searchString: JavaString): number;
+    public indexOf(searchString: JavaString): int;
     /**
      * Returns the index within this string of the first occurrence of the specified substring, starting at the
      * specified index.
      */
-    public indexOf(searchString: JavaString, fromIndex: number): number;
-    public indexOf(chOrSearchString: char | JavaString, fromIndex?: number): number {
+    public indexOf(searchString: JavaString, fromIndex: int): int;
+    public indexOf(chOrSearchString: char | JavaString, fromIndex?: int): int {
         if (typeof chOrSearchString === "number") {
             return this.#value.indexOf(chOrSearchString, fromIndex);
         }
@@ -369,20 +363,20 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     }
 
     /** Returns the index within this string of the last occurrence of the specified character. */
-    public lastIndexOf(ch: char): number;
+    public lastIndexOf(ch: char): int;
     /**
      * Returns the index within this string of the last occurrence of the specified character, searching backward
      * starting at the specified index.
      */
-    public lastIndexOf(ch: char, fromIndex: number): number;
+    public lastIndexOf(ch: char, fromIndex: int): int;
     /** Returns the index within this string of the last occurrence of the specified substring. */
-    public lastIndexOf(searchString: JavaString): number;
+    public lastIndexOf(searchString: JavaString): int;
     /**
      * Returns the index within this string of the last occurrence of the specified substring, searching backward
      * starting at the specified index.
      */
-    public lastIndexOf(searchString: JavaString, fromIndex: number): number;
-    public lastIndexOf(chOrSearchString: char | JavaString, fromIndex?: number): number {
+    public lastIndexOf(searchString: JavaString, fromIndex: int): int;
+    public lastIndexOf(chOrSearchString: char | JavaString, fromIndex?: int): int {
         if (typeof chOrSearchString === "number") {
             if (fromIndex === undefined) {
                 return this.#value.lastIndexOf(chOrSearchString);
@@ -395,7 +389,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     }
 
     /** @returns the the length of this string. */
-    public length(): number {
+    public length(): int {
         return this.#value.length;
     }
 
@@ -406,7 +400,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns a string whose value is the concatenation of this string repeated count times.
      */
-    public repeat(count: number): JavaString {
+    public repeat(count: int): JavaString {
         if (count < 0) {
             throw new IllegalArgumentException();
         }
@@ -514,7 +508,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the array of strings computed by splitting this string around matches of the given regular expression.
      */
-    public split(regex: JavaString | string, limit?: number): JavaString[] {
+    public split(regex: JavaString | string, limit?: int): JavaString[] {
         const source = convertUTF16ToString(this.#value);
         const re = typeof regex === "string" ? regex : convertUTF16ToString(regex.#value);
 
@@ -558,7 +552,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns a character sequence that is a subsequence of this sequence.
      */
-    public subSequence(start: number, end: number): CharSequence {
+    public subSequence(start: int, end: int): CharSequence {
         return this.substring(start, end);
     }
 
@@ -570,7 +564,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns the specified substring.
      */
-    public substring(beginIndex: number, endIndex?: number): JavaString {
+    public substring(beginIndex: int, endIndex?: int): JavaString {
         return new JavaString(this.#value.subarray(beginIndex, endIndex));
     }
 

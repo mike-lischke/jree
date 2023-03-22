@@ -27,13 +27,9 @@ import { BufferImpl } from "./BufferImpl";
 export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, CharSequence, Readable {
     public constructor(capacity: int);
     public constructor(buffer: Uint16Array);
-    public constructor(buffer: Uint16Array, offset: int, length: int);
     public constructor(csq: CharSequence);
-    public constructor(csq: CharSequence, offset: int, length: int);
     public constructor(...args: unknown[]) {
         let array: Uint16Array;
-        let offset: int | undefined;
-        let length: int | undefined;
 
         switch (args.length) {
             case 1: {
@@ -48,26 +44,12 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
                 break;
             }
 
-            case 3: {
-                const [input, o, l] = args as [Uint16Array | CharSequence, int, int];
-                if (input instanceof Uint16Array) {
-                    array = input;
-                } else {
-                    const s = input.toString();
-                    array = convertStringToUTF16(s.valueOf());
-                }
-
-                offset = o;
-                length = l;
-                break;
-            }
-
             default: {
                 throw new IllegalArgumentException(new JavaString("Invalid arguments"));
             }
         }
 
-        super(array, offset ?? 0, length ?? array.length);
+        super(array, 0, array.length);
     }
 
     /**
@@ -107,13 +89,13 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
                         throw new IndexOutOfBoundsException();
                     }
 
-                    return new CharBuffer(input, offset, endOrLength);
+                    return new CharBuffer(input.subarray(offset, endOrLength - offset));
                 } else {
                     if (offset < 0 || endOrLength < 0 || offset > endOrLength || endOrLength > input.length()) {
                         throw new IndexOutOfBoundsException();
                     }
 
-                    return new CharBuffer(input, offset, endOrLength - offset);
+                    return new CharBuffer(input.subSequence(offset, endOrLength));
                 }
             }
 
@@ -325,7 +307,8 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
                 const length = src instanceof Uint16Array ? lengthOrEnd : lengthOrEnd - offset;
                 if (length > 0) {
                     const end = src instanceof Uint16Array ? offset + lengthOrEnd : lengthOrEnd;
-                    if (offset < 0 || end < 0 || end > src.length) {
+                    const sourceLength = src instanceof JavaString ? src.length() : src.length;
+                    if (offset < 0 || end < 0 || end > sourceLength) {
                         throw new IndexOutOfBoundsException();
                     }
 
@@ -393,14 +376,14 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
             throw new IndexOutOfBoundsException();
         }
 
-        const buffer = new CharBuffer(this.array(), this.currentPosition + start, this.currentPosition + end);
+        const buffer = new CharBuffer(this.array().subarray(this.currentPosition + start, this.currentPosition + end));
 
         return this.isReadOnly() ? buffer.asReadOnlyBuffer() : buffer;
     }
 
     /** @returns a string containing the characters in this buffer. */
     public override toString(): JavaString {
-        return new JavaString(convertUTF16ToString(this.array().subarray(this.currentPosition, this.currentLimit)));
+        return new JavaString(convertUTF16ToString(this.array().subarray(this.currentPosition, this.limit())));
     }
 
     /*protected [Symbol.toPrimitive](hint: string): string {

@@ -7,17 +7,13 @@
             "name": "Run current Jest test",
             "runtimeExecutable": null,
             "runtimeArgs": [
-                "--inspect-brk",
-                "--nolazy",
                 "${workspaceRoot}/node_modules/.bin/jest",
-                "${fileBasenameNoExtension}.js",
+                "${fileBasenameNoExtension}.ts",
+                "--no-coverage",
+                "--runInBand"
             ],
             "console": "integratedTerminal",
             "stopOnEntry": false,
-            "preLaunchTask": "tsc: watch",
-            "outFiles": [
-                "${workspaceFolder}/output/**/*.js"
-            ],
             "sourceMaps": true,
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",

@@ -86,6 +86,13 @@ export class ByteArrayOutputStream extends OutputStream {
     public override write(b: int): void;
     public override write(...args: unknown[]): void {
         if (args.length === 1) {
+            const b = args[0] as int | Int8Array;
+            if (b instanceof Int8Array) {
+                this.write(b, 0, b.length);
+
+                return;
+            }
+
             this.expandBuffer(1);
             this.buf[this.count++] = args[0] as int;
         } else {

@@ -7,6 +7,7 @@
 
 import { MurmurHash } from "../../MurmurHash";
 import { int } from "../../types";
+import { IndexOutOfBoundsException } from "../lang";
 
 import type { Comparable } from "../lang/Comparable";
 import { JavaString } from "../lang/String";
@@ -22,6 +23,10 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
     #byteOrder: ByteOrder;
 
     protected constructor(array: T, offset: int, length: int) {
+        if (offset < 0 || length < 0 || offset + length > array.length) {
+            throw new IndexOutOfBoundsException("Invalid offset or length");
+        }
+
         super(offset, offset + length);
         this.#array = array;
         this.#byteOrder = ByteOrder.BIG_ENDIAN;
@@ -33,9 +38,9 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
     }
 
     /**
-     * @returns the offset within this buffer's backing array of the first element of the buffer  (optional operation).
+     * @returns the offset within this buffer's backing array of the first element of the buffer (optional operation).
      */
-    public arrayOffset(): number {
+    public arrayOffset(): int {
         return this.#array.byteOffset;
     }
 
@@ -55,7 +60,7 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
     // public asShortBuffer(): ShortBuffer
 
     /** @returns this buffer's capacity. */
-    public override capacity(): number {
+    public override capacity(): int {
         return this.#array.length;
     }
 
@@ -78,67 +83,39 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
     /**
      * Compares this buffer to another.
      *
-     * @param that tbd
+     * @param that The other buffer.
      *
-     * @returns tbd
+     * @returns A negative integer, zero, or a positive integer as this buffer is less than, equal to, or greater than
+     *          the specified buffer.
      */
-    public compareTo(that: JavaBuffer<T>): number {
-        const other = that.array().subarray(that.position(), that.limit());
-        const me = this.array().subarray(this.currentPosition, this.currentLimit);
+    public compareTo(that: BufferImpl<T>): int {
+        const index = this.mismatch(that);
 
-        const count = Math.max(other.length, me.length);
-        for (let i = 0; i < count; ++i) {
-            if (i === me.length) {
-                return -1;
-            }
-
-            if (i === other.length) {
-                return 1;
-            }
-
-            if (other[i] < me[i]) {
-                return -1;
-            }
-
-            if (other[i] > me[i]) {
-                return 1;
-            }
+        if (index === -1) {
+            return 0;
         }
 
-        return 0;
+        return this.array()[index] - that.array()[index];
     }
 
     /**
      * Tells whether or not this buffer is equal to another object.
      *
-     * @param ob tbd
+     * @param ob The other object.
      *
-     * @returns tbd
+     * @returns True if the other object is also a buffer, its content is the same as this buffer's, and both buffers
+     *          have the same position, limit, capacity, and mark.
      */
     public override equals(ob: unknown): boolean {
         if (this === ob) {
             return true;
         }
 
-        if (!(ob instanceof JavaBuffer)) {
+        if (!(ob instanceof JavaBuffer<T>)) {
             return false;
         }
 
-        const array = ob.array() as T;
-        const other = array.subarray(ob.position(), ob.limit());
-        const me = this.array().subarray(this.currentPosition, this.currentLimit);
-
-        if (other.length !== me.length) {
-            return false;
-        }
-
-        for (let i = 0; i < other.length; ++i) {
-            if (other[i] !== me[i]) {
-                return false;
-            }
-        }
-
-        return true;
+        return this.mismatch(ob as JavaBuffer<T>) === -1;
     }
 
     /**
@@ -148,6 +125,15 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
      */
     public hasArray(): boolean {
         return true;
+    }
+
+    /**
+     * Tells whether or not there are any elements between the current position and the limit.
+     *
+     * @returns True if there are any elements remaining in this buffer, false otherwise.
+     */
+    public override hasRemaining(): boolean {
+        return this.currentPosition < this.currentLimit;
     }
 
     /** @returns the current hash code of this buffer. */
@@ -175,9 +161,9 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
     /**
      * Finds and returns the relative index of the first mismatch between this buffer and a given buffer.
      *
-     * @param that tbd
+     * @param that The other buffer.
      *
-     * @returns tbd
+     * @returns The relative index of the first mismatch, or -1 if there is no mismatch.
      */
     public mismatch(that: JavaBuffer<T>): number {
         return Arrays.mismatch(this.#array, this.currentPosition, this.currentLimit, that.array(),
