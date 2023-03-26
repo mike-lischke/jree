@@ -307,7 +307,7 @@ export class Basic extends JavaObject {
 
         for (let i = 0; i < ca.length; i++) {
             const a = ca[i];
-            for (let j = 2; j < wa.length; j++) {
+            for (let j = 0; j < wa.length; j++) {
                 Basic.test(wa[j][0] as java.io.Writer, a, wa[j][1] as BasicRunnable);
             }
 
@@ -389,10 +389,6 @@ export class Basic extends JavaObject {
     }
 
     protected static ck(s: string, exp: java.lang.String, got: java.lang.String): void {
-        if (exp.valueOf() !== got.valueOf()) {
-            debugger;
-        }
-
         expect(got.valueOf()).toEqual(exp.valueOf());
         /*if (!exp.equals(got)) {
             Basic.fail(s, exp, got);
