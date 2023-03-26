@@ -1,18 +1,13 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-
-import { final } from "../../../Decorators";
 import { JavaString } from "../../lang/String";
 import { JavaObject } from "../../lang/Object";
 import { URI } from "../../net";
 import { FileSystems } from "./FileSystems";
 import { Path } from "./Path";
 
-@final
 export class Paths extends JavaObject {
     public static get(path: JavaString | URI): Path {
         if (path instanceof URI) {

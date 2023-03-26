@@ -1,15 +1,18 @@
 /*
- * Copyright (c) 2012-2017 The ANTLR Project. All rights reserved.
- * Use of this file is governed by the BSD 3-clause license that
- * can be found in the LICENSE.txt file in the project root.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java, JavaString } from "../..";
-
 import { Set } from "immutable";
+
 import { IteratorWrapper } from "../../IteratorWrapper";
 import { Collection } from "./Collection";
 import { JavaIterator } from "./Iterator";
+import { Cloneable } from "../lang/Cloneable";
+import { Serializable } from "../io/Serializable";
+import { JavaSet } from "./Set";
+import { JavaString } from "../lang/String";
+import { StringBuilder } from "../lang/StringBuilder";
 
 /**
  * This interface provides shared access to the backend of a HashSet instance for all currently active value
@@ -20,15 +23,15 @@ export interface IHashSetViewBackend<V> {
 }
 
 export class HashSet<T> extends Collection<T>
-    implements java.lang.Cloneable<HashSet<T>>, java.io.Serializable, java.util.Set<T> {
+    implements Cloneable<HashSet<T>>, Serializable, JavaSet<T> {
 
     #sharedBackend: IHashSetViewBackend<T> = {
         backend: Set<T>(),
     };
 
-    public constructor(c?: java.util.Collection<T>);
+    public constructor(c?: Collection<T>);
     public constructor(initialCapacity: number, loadFactor?: number);
-    public constructor(cOrInitialCapacity?: java.util.Collection<T> | number, _loadFactor?: number) {
+    public constructor(cOrInitialCapacity?: Collection<T> | number, _loadFactor?: number) {
         super();
 
         // The load factor is ignored in this implementation.
@@ -133,7 +136,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns true if this collection contains all of the elements in the specified collection.
      */
-    public override containsAll(collection: java.util.Collection<T>): boolean {
+    public override containsAll(collection: Collection<T>): boolean {
         if (collection instanceof HashSet) {
             let allFound = true;
             collection.#sharedBackend.backend.forEach((value) => {
@@ -158,7 +161,7 @@ export class HashSet<T> extends Collection<T>
         return true;
     }
 
-    public override addAll(c: java.util.Collection<T>): boolean {
+    public override addAll(c: Collection<T>): boolean {
         const s = this.#sharedBackend.backend.withMutations((set) => {
             if (c instanceof HashSet) {
                 c.#sharedBackend.backend.forEach((value) => {
@@ -187,7 +190,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns True if this set was changed by this method, otherwise false.
      */
-    public override retainAll(c: java.util.Collection<T>): boolean {
+    public override retainAll(c: Collection<T>): boolean {
         const s = this.#sharedBackend.backend.intersect(c);
         if (s !== this.#sharedBackend.backend) {
             this.#sharedBackend.backend = s;
@@ -205,7 +208,7 @@ export class HashSet<T> extends Collection<T>
      *
      * @returns True if this set was changed by this method, otherwise false.
      */
-    public override removeAll(c: java.util.Collection<T>): boolean {
+    public override removeAll(c: Collection<T>): boolean {
         const s = this.#sharedBackend.backend.withMutations((set) => {
             for (const o of c) {
                 set.delete(o);
@@ -238,7 +241,7 @@ export class HashSet<T> extends Collection<T>
             return new JavaString("{}");
         }
 
-        const buf = new java.lang.StringBuilder();
+        const buf = new StringBuilder();
         buf.append("{");
         let first = true;
         this.#sharedBackend.backend.forEach((value) => {

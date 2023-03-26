@@ -1,8 +1,6 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2022, 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
 export * as java from "./java/index";
@@ -12,7 +10,6 @@ export * from "./java/lang/String";
 export * from "./java/lang/Boolean";
 export * from "./java/lang/Number";
 
-export * from "./Decorators";
 export * from "./DefaultJavaEqualityComparator";
 export * from "./JavaEqualityComparator";
 export * from "./IteratorWrapper";

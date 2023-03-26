@@ -1,18 +1,14 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2022, 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
 import { JavaString } from "./String";
-import { final } from "../../Decorators";
 import { Serializable } from "../io/Serializable";
 import { Comparable } from "./Comparable";
 import { JavaObject, Class } from "./Object";
 import { System } from "./System";
 
-@final
 export class JavaBoolean extends JavaObject implements Serializable, Comparable<JavaBoolean> {
     public static readonly TRUE: JavaBoolean;
     public static readonly FALSE: JavaBoolean;

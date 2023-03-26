@@ -1,13 +1,9 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2021, 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-
 import unicode from "unicode-properties";
 
-import { final } from "../../Decorators";
 import { char } from "../../types";
 
 import { Class, JavaObject } from "./Object";
@@ -21,7 +17,6 @@ import { JavaString } from "./String";
  *
  * Character information is based on the Unicode Standard, version 12.0.0.
  */
-@final
 export class Character extends JavaObject {
     /** The number of bytes used to represent a char value in unsigned binary form. */
     public static readonly BYTES = 2;

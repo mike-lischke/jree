@@ -1,12 +1,11 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2022, 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
 import { Collection } from "./Collection";
 import { JavaMap } from "./Map";
 import { JavaSet } from "./Set";
@@ -188,7 +187,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         }
 
         // This class is intended primarily for use with key objects whose equals methods test for
-        // object identity using the == operator.
+        // object identity using the === operator (reference equality).
         for (const [key, value] of this) {
             const other = o.get(key);
             if (other === undefined || other !== value) {
@@ -199,12 +198,12 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         return true;
     }
 
-    public override toString(): string {
+    public override toString(): JavaString {
         const entries: string[] = [];
         for (const [key, value] of this) {
             entries.push(`${key}=${value}`);
         }
 
-        return `{${entries.join(", ")}}`;
+        return new JavaString(`{${entries.join(", ")}}`);
     }
 }

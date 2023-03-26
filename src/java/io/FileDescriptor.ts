@@ -1,13 +1,10 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2022, 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
 import { closeSync, fsyncSync } from "fs";
 
-import { final } from "../../Decorators";
 import { JavaObject } from "../lang/Object";
 import { Throwable } from "../lang/Throwable";
 import { Closeable } from "./Closeable";
@@ -18,7 +15,6 @@ import { IOException } from "./IOException";
  * representing an open file, an open socket, or another source or sink of bytes. The main practical use for a
  * file descriptor is to create a FileInputStream or FileOutputStream to contain it.
  */
-@final
 export class FileDescriptor extends JavaObject {
     private parent?: Closeable;
     private otherParents: Closeable[] = [];

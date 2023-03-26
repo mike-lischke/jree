@@ -7,17 +7,17 @@ Thumbs.db
 .DS_Store
 
 # Ignored files
-*.ts
-!*.d.ts
 test/
-output/test/*
 examples/
-output/examples/*
 tsconfig.json
 doc/
 *.tgz
 .vscode/
 .eslintrc.json
+.eslintignore
 .github/
 cspell.json
+jest.config.ts
 coverage/
+src/
+tests/

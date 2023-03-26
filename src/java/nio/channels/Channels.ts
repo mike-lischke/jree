@@ -1,11 +1,8 @@
 /*
- * This file is released under the MIT license.
- * Copyright (c) 2023, Mike Lischke
- *
- * See LICENSE-MIT.txt file for more info.
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { final } from "../../../Decorators";
 import { FileInputStream, InputStream, OutputStream } from "../../io";
 import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
 import { JavaObject } from "../../lang/Object";
@@ -15,7 +12,6 @@ import { ReadableByteChannel } from "./ReadableByteChannel";
 import { AbstractInterruptibleChannel } from "./spi/AbstractInterruptibleChannel";
 import { WritableByteChannel } from "./WritableByteChannel";
 
-@final
 export class Channels extends JavaObject {
     public static newChannel(input: InputStream): ReadableByteChannel;
     public static newChannel(output: OutputStream): WritableByteChannel;

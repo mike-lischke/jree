@@ -4,6 +4,11 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
+/*
+ * Parts added + modified: copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
 import { isEquatable } from "./type-guards";
 
 /**

@@ -1,32 +1,26 @@
 {
     "compilerOptions": {
+        "moduleResolution": "bundler",
         "target": "ES2022",
-        "module": "CommonJS",
-        "outDir": "./output",
+        "module": "ES2022",
+        "outDir": "./lib",
         "sourceMap": true,
         "declaration": true,
         "esModuleInterop": true,
         "isolatedModules": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "moduleResolution": "Node",
         "strict": true,
         "noImplicitAny": true,
         "noImplicitOverride": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
-        "removeComments": false,
-        "rootDirs": [
-            "src",
-        ]
+        "removeComments": false
     },
     "include": [
         "src/**/*.ts",
-        "tests/**/*.ts",
-        "examples/**/*.ts"
     ],
     "exclude": [
         "node_modules/**/*.*",
-        "output/**/*.*"
+        "lib/**/*.*",
+        "tests/**/*.*"
     ],
 }

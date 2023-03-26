@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "module": "ES2022",
+        "moduleResolution": "bundler",
+        "target": "ES2022",
+        "noEmit": true,
+        "removeComments": true,
+        "noImplicitAny": true,
+        "noImplicitOverride": false,
+        "sourceMap": true,
+        "inlineSources": true,
+        "isolatedModules": false,
+        "allowSyntheticDefaultImports": false,
+        "strictNullChecks": true
+    },
+    "include": [
+        "**/*.ts",
+    ],
+    "exclude": [
+        "node_modules",
+        "lib/**/*",
+        "src/**/*"
+    ]
+}
