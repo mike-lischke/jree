@@ -1,25 +1,21 @@
 {
     "compilerOptions": {
-        "declaration": true,
-        "module": "ES2022",
-        "moduleResolution": "bundler",
+        "moduleResolution": "node",
         "target": "ES2022",
+        "module": "node16",
         "noEmit": true,
-        "removeComments": true,
-        "noImplicitAny": true,
-        "noImplicitOverride": false,
+        "declaration": true,
         "sourceMap": true,
-        "inlineSources": true,
-        "isolatedModules": false,
-        "allowSyntheticDefaultImports": false,
-        "strictNullChecks": true
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "noImplicitAny": true,
+        "noImplicitOverride": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "removeComments": false
     },
     "include": [
         "**/*.ts",
     ],
-    "exclude": [
-        "node_modules",
-        "lib/**/*",
-        "src/**/*"
-    ]
+    "exclude": []
 }

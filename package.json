@@ -1,6 +1,6 @@
 {
     "name": "jree",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Java Runtime Environment Emulation",
     "homepage": "https://soft-gems.net/",
     "repository": {
@@ -13,7 +13,6 @@
         "JDK",
         "Java Runtime Environment"
     ],
-    "type": "module",
     "main": "./lib",
     "author": "Mike Lischke",
     "license": "MIT",
