@@ -4,6 +4,8 @@
 
 This module contains a subset of JRE classes ported to Typescript and serves as runtime for Typescript and Javascript code that need JRE classes. It's a [clean room](https://en.wikipedia.org/wiki/Clean_room_design) implementation, which means no Java code was used for the implementation. Everything was written from scratch, but the Java API documentation was used as a reference. This allows to release the code under a permissive license (MIT) and to use it in any (including commercial) projects, in opposition to the GPL license of the original JRE.
 
+It is not necessary to have Java installed, as the JREE runs purely in a Javascript interpreter (Node.js or a browser).
+
 ## Installation and Use
 
 Run
@@ -31,7 +33,7 @@ The project comes with a number of unit tests. Currently the test coverage is pr
 
 ### Examples
 
-Additionally, there are some examples in the `examples` folder. These are not meant to be complete programs, but rather to show how to use the JREE in different scenarios, in a way that should look familiar to a Java developer. The are modelled after common Java sample programs.
+Additionally, there are some examples in the `examples` folder. They are modelled after common Java sample programs.
 
 To run an example in a terminal you have to install `ts-node` globally:
 
@@ -45,23 +47,21 @@ Then you can run the example with
 ts-node src/runner examples/HelloWorld
 ```
 
-The HelloWorld is also executable using the NPM script "hello-world":
+The HelloWorld demo is also executable using the NPM script "hello-world":
 
 ```bash
 npm run hello-world
 ```
 
-Because of the way Typescript (Javascript) works and how the JRE is organized, there's no need to set a CLASSPATH or to compile anything. The JREE is a self-contained module that can be used in any project. The examples are just Typescript files that import the JREE and use it.
-
 The runner script is a simple wrapper to load the given example (which must contain exactly one class with the typical `main()` method, and execute it. It can serve as a starting point for your own programs.
 
-The examples do not require that the jree is installed, but work directly against the source code in this project. However, it's easy to see how they would work with the installed module.
+The examples do not use the the jree node package, but work directly with the source code in this project. However, it's easy to see how they would work with the installed module.
 
 ## Supported Java Classes
 
 The JRE emulation is still work-in-progress and contains a mix of either fully or partially converted Java classes. It's not planned to convert the entire JRE, but over time more and more classes may be added (pull requests welcome!).
 
-See the [Types List](doc/jre.md) for the currently implemented classes.
+See the [Types List](doc/jre.md) for the currently implemented classes and read the [features description](doc/features.md) for additional details for usage of the JREE node package.
 
 ## Environments
 
@@ -69,6 +69,6 @@ The JREE runs in both, Node.js and a browser. Certain classes use Node.js code c
 
 ## Development and Contribution
 
-The development process used in this repo is pretty simple. There are a number NPM scripts for building, linting and testing the classes. Run `npm run build` to have typescript create the `output` folder as it is used in the node module. Execute `npm run test-coverage` to run all unit tests and print some coverage info. Coverage is currently pretty low, so this is in area where some work needs to go into.
+The development process used in this repo is pretty simple. There are a number NPM scripts for building, linting and testing the classes. Run `npm run build` to have typescript create the `lib` folder as it is used in the node module. Execute `npm run test-coverage` to run all unit tests and print some coverage info.
 
 Adding new classes to this repository is described in more detail in [How To Add](doc/how-to-add.md).

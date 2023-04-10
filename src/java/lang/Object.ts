@@ -75,7 +75,8 @@ export class JavaObject implements IReflection {
 
     /** Creates and returns a copy of this object. */
     protected clone(): JavaObject {
-        throw new Error("Not implemented");
+        // Cannot throw the exception directly, as that would create a circular dependency.
+        throw new Error("CloneNotSupportedException");
     }
 
     protected [Symbol.toPrimitive](_hint: string): bigint | number | boolean | string | null {
