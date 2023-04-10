@@ -87,7 +87,7 @@ export class JavaObject implements IReflection {
 /** A partial implementation of Java's Class type. */
 export class Class<T> extends JavaObject {
 
-    private static classes = new Map<unknown, Class<unknown>>();
+    private static classes = new Map<typeof JavaObject, Class<JavaObject>>();
 
     private constructor(private c: typeof JavaObject) {
         super();

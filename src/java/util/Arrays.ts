@@ -12,6 +12,8 @@ import { JavaString } from "../lang/String";
 import { Comparator } from "./Comparator";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { List } from "./List";
+import { ArrayList } from "./ArrayList";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =
@@ -37,18 +39,13 @@ export class Arrays extends JavaObject {
         super();
     }
 
-    public static sort<T>(list: T[]): void {
-        list.sort((a, b) => {
-            if (a < b) {
-                return -1;
-            }
-
-            if (a > b) {
-                return 1;
-            }
-
-            return 0;
-        });
+    /**
+     * @param a the array by which the list will be backed
+     *
+     * @returns a fixed-size list backed by the specified array.
+     */
+    public static asList<T>(...a: T[]): List<T> {
+        return new ArrayList<T>(a);
     }
 
     /**
@@ -333,6 +330,25 @@ export class Arrays extends JavaObject {
                 throw new IllegalArgumentException("Invalid number of arguments");
             }
         }
+    }
+
+    /**
+     * Sorts the specified array into ascending order.
+     *
+     * @param list The array to sort.
+     */
+    public static sort<T>(list: T[]): void {
+        list.sort((a, b) => {
+            if (a < b) {
+                return -1;
+            }
+
+            if (a > b) {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 
     public static override toString(value: TypedArray | null): JavaString;

@@ -228,8 +228,20 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
         return new JavaString(text);
     }
 
-    public [Symbol.toPrimitive](hint: string): string {
-        return convertUTF16ToString(this.#value);
+    public getBytes(): Int8Array;
+    public getBytes(charset: Charset): Int8Array;
+    public getBytes(charsetName: JavaString): Int8Array;
+    public getBytes(...args: unknown[]): Int8Array {
+        let charset: Charset | undefined;
+        if (args.length === 0) {
+            charset = Charset.defaultCharset();
+        } else if (args[0] instanceof Charset) {
+            charset = args[0];
+        } else {
+            charset = Charset.forName(args[0] as JavaString);
+        }
+
+        return charset.encode(this).array();
     }
 
     /**
@@ -283,9 +295,9 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *          lexicographically less than the string argument; and a value greater than 0 if this string is
      *          lexicographically greater than the string argument.
      */
-    public compareTo(anotherString: JavaString): int {
+    public compareTo(anotherString: JavaString | string): int {
         const source = convertUTF16ToString(this.#value);
-        const target = convertUTF16ToString(anotherString.#value);
+        const target = typeof anotherString === "string" ? anotherString : convertUTF16ToString(anotherString.#value);
 
         return source.localeCompare(target, undefined, { sensitivity: "accent" });
     }
@@ -315,6 +327,10 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     public override equals(obj: unknown): boolean {
         if (obj === this) {
             return true;
+        }
+
+        if (typeof obj === "string") {
+            return this.compareTo(obj) === 0;
         }
 
         if (!(obj instanceof JavaString)) {
@@ -608,5 +624,9 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      */
     public override valueOf(): string {
         return convertUTF16ToString(this.#value);
+    }
+
+    public [Symbol.toPrimitive](hint: string): string {
+        return this.valueOf();
     }
 }
