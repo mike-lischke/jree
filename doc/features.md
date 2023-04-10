@@ -12,6 +12,7 @@
   - [Encoding and Decoding](#encoding-and-decoding)
 - [Boxing and Unboxing](#boxing-and-unboxing)
 - [Regular Expressions](#regular-expressions)
+- [Functional Interfaces](#functional-interfaces)
 - [Containers and Equality](#containers-and-equality)
 - [Buffers](#buffers)
 - [Reflection](#reflection)
@@ -113,6 +114,18 @@ which prints `1458`. Unfortunately, the typescript compiler issues an error for 
 If you use ESLint as your linter, you may want to disable two rules that get in the way with the described approach, which are [@typescript-eslint/restrict-template-expressions](https://typescript-eslint.io/rules/restrict-template-expressions) and [@typescript-eslint/restrict-plus-operands](https://typescript-eslint.io/rules/restrict-plus-operands).
 
 The missing auto boxing of TypeScript literals to Java like objects is probably what creates most problems in converted code. To help with that all Java APIs that expect `java.lang.String` also accept a string literal (and hence also a TypeScript string object) instead.
+
+## <a name="functional-interfaces">Functional Interfaces</a>
+
+Functional interfaces are a pretty special language construct with some implications. Such interfaces are annotated to denote their special type (`@FunctionalInterface`) and have only a single abstract method that is executed in a lambda expression (closure) without explicitly mentioning it. As this is not supported in TypeScript, you have to make the call explicit in your code, if you need such an interface. For example:
+
+```typescript
+    public forEach(action: Consumer<T>): void {
+        for (const item of this) {
+            action.accept(item);
+        }
+    }
+```
 
 ## <a name="regex">Regular Expressions</a>
 
