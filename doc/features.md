@@ -120,7 +120,7 @@ The missing auto boxing of TypeScript literals to Java like objects is probably 
 Functional interfaces are a pretty special language construct with some implications. Such interfaces are annotated to denote their special type (`@FunctionalInterface`) and have only a single abstract method that is executed in a lambda expression (closure) without explicitly mentioning it. As this is not supported in TypeScript, you have to make the call explicit in your code, if you need such an interface. For example:
 
 ```typescript
-    public forEach(action: Consumer<T>): void {
+    public forEach(action: java.util.function.Consumer<T>): void {
         for (const item of this) {
             action.accept(item);
         }
