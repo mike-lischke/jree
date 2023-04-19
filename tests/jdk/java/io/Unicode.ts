@@ -1,3 +1,5 @@
+/* java2ts: keep */
+
 /*
  * Copyright (c) 1999, 2005, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -71,7 +73,7 @@ export class Unicode extends JavaObject {
         Unicode.decode(enc, byteOrder, markExpected);
     };
 
-    protected static fail = (enc: java.lang.String, msg: string, e0: int, e1: int, b0: int, b1: int): void => {
+    protected static fail = (enc: string, msg: string, e0: int, e1: int, b0: int, b1: int): void => {
         throw new java.lang.Exception(enc + ": " + msg
             + ": Expected "
             + java.lang.Integer.toHexString(e0)
@@ -102,12 +104,10 @@ export class Unicode extends JavaObject {
             }
 
             if ((b0 !== e0) || (b1 !== e1)) {
-
-                Unicode.fail(enc, "Incorrect or missing byte-order mark",
-                    e0, e1, b0, b1);
+                Unicode.fail(enc.valueOf(), "Incorrect or missing byte-order mark", e0, e1, b0, b1);
             }
-
         }
+
         for (let j = 0; j < s.length(); j++) {
             const c = s.charAt(j);
             const b0 = b[i++] & 0xff;
@@ -125,11 +125,8 @@ export class Unicode extends JavaObject {
             }
 
             if ((b0 !== e0) || (b1 !== e1)) {
-
-                Unicode.fail(enc, "Incorrect content at index " + j,
-                    e0, e1, b0, b1);
+                Unicode.fail(enc.valueOf(), "Incorrect content at index " + j, e0, e1, b0, b1);
             }
-
         }
     };
 
@@ -149,6 +146,7 @@ export class Unicode extends JavaObject {
             }
 
         }
+
         for (let i = 0; i < s.length(); i++) {
             const c = s.charAt(i);
             if (byteOrder === Unicode.BIG) {
@@ -160,8 +158,8 @@ export class Unicode extends JavaObject {
                     bo.write(c >> 8);
                 }
             }
-
         }
+
         const b = bo.toByteArray();
         const s2 = new java.lang.String(b, enc);
         if (!s.equals(s2)) {

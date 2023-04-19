@@ -18,9 +18,12 @@ import { NotImplementedError } from "../../NotImplementedError";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { JavaMath } from "../lang/Math";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IOException } from ".";
 
 export class FileInputStream extends InputStream implements AutoCloseable {
     #channel: FileChannel;
+    #mark = -1n;
+    #remainingLimit = -1;
 
     /**
      * Creates a FileInputStream by opening a connection to an actual file, the file named by the File object
@@ -92,6 +95,7 @@ export class FileInputStream extends InputStream implements AutoCloseable {
                 if (read === 0) {
                     return -1;
                 }
+                this.countReadBytes(1);
 
                 return buffer.get(0);
             }
@@ -104,6 +108,8 @@ export class FileInputStream extends InputStream implements AutoCloseable {
                 if (read === 0) {
                     return -1;
                 }
+
+                this.countReadBytes(read);
 
                 return read;
             }
@@ -121,13 +127,33 @@ export class FileInputStream extends InputStream implements AutoCloseable {
                     return -1;
                 }
 
-                return Number(read);
+                const r = Number(read);
+                this.countReadBytes(r);
+
+                return Number(r);
             }
 
             default: {
                 throw new IllegalArgumentException("Invalid number of arguments");
             }
         }
+    }
+
+    public override mark(readLimit: number): void {
+        this.#mark = this.#channel.position();
+        this.#remainingLimit = readLimit;
+    }
+
+    public override markSupported(): boolean {
+        return true;
+    }
+
+    public override reset(): void {
+        if (this.#mark === -1n) {
+            throw new IOException("Mark not set");
+        }
+
+        this.#channel.position(this.#mark);
     }
 
     /**
@@ -146,4 +172,14 @@ export class FileInputStream extends InputStream implements AutoCloseable {
 
         return count;
     }
+
+    private countReadBytes(read: int): void {
+        if (this.#remainingLimit > 0) {
+            this.#remainingLimit - read;
+            if (this.#remainingLimit === 0) {
+                this.#mark = -1n;
+            }
+        }
+    }
+
 }

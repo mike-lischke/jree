@@ -9,6 +9,7 @@ import { int, long } from "../../types";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { JavaString } from "../lang/String";
+import { CharBuffer } from "../nio";
 import { Reader } from "./Reader";
 
 /** A character stream whose source is a string. */
@@ -22,9 +23,9 @@ export class StringReader extends Reader {
      *
      * @param s String providing the character stream.
      */
-    public constructor(s: JavaString) {
+    public constructor(s: JavaString | string) {
         super();
-        this.#content = s;
+        this.#content = typeof s === "string" ? new JavaString(s) : s;
     }
 
     /**
@@ -59,17 +60,8 @@ export class StringReader extends Reader {
     }
 
     public override read(): int;
-    /**
-     * Reads characters into a portion of an array.
-     *
-     * @param target The buffer to read characters into.
-     * @param offset The offset at which to start storing the characters read.
-     * @param length The maximum number of characters to read.
-     *
-     * @returns The number of characters read, or -1 if the end of the stream has been reached.
-     *
-     * @throws IndexOutOfBoundsException If offset or length are out of bounds.
-     */
+    public override read(target: CharBuffer): int;
+    public override read(target: Uint16Array): int;
     public override read(target: Uint16Array, offset: int, length: int): int;
     public override read(...args: unknown[]): int {
         switch (args.length) {
@@ -79,6 +71,14 @@ export class StringReader extends Reader {
                 }
 
                 return this.#content.codePointAt(this.#position++);
+            }
+
+            case 1: {
+                if (args[0] instanceof CharBuffer) {
+                    return super.read(args[0]);
+                } else {
+                    return super.read(args[0] as Uint16Array);
+                }
             }
 
             case 3: {

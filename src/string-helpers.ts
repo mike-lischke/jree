@@ -79,7 +79,7 @@ export const codePointBeforeFromUTF16 = (data: Uint16Array, index: number): numb
  *
  * @returns The UTF-16 char code array.
  */
-export const convertUF32ToUTF16 = (data: Int32Array): Uint16Array => {
+export const convertUTF32ToUTF16 = (data: Int32Array): Uint16Array => {
     const result = new Uint16Array(data.length * 2);
     let resultIndex = 0;
     for (const codePoint of data) {
@@ -93,6 +93,19 @@ export const convertUF32ToUTF16 = (data: Int32Array): Uint16Array => {
     }
 
     return result.subarray(0, resultIndex);
+};
+
+/**
+ * Converts a UTF-32 code point array to a Typescript string.
+ *
+ * @param data The UTF-32 code point array.
+ *
+ * @returns The Typescript string.
+ */
+export const convertUTF32ToString = (data: Int32Array): string => {
+    const decoder = new TextDecoder("utf-32");
+
+    return decoder.decode(data);
 };
 
 /**

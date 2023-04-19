@@ -22,6 +22,7 @@ import { Predicate } from "./function/Predicate";
 import { Spliterator } from "./Spliterator";
 import { NotImplementedError } from "../../NotImplementedError";
 import { JavaString } from "../lang";
+import { Stream } from "./stream";
 
 /**
  * This is the base class for all list implementations. It provides the core functionality and the
@@ -51,7 +52,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     }
 
     public *[Symbol.iterator](): IterableIterator<T> {
-        yield* this.#sharedBackend.list;
+        yield* this.#sharedBackend.list.slice(this.#sharedBackend.start, this.#sharedBackend.end);
     }
 
     /**
@@ -91,13 +92,6 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
                 }
 
                 const element = args[1] as T;
-                if (index === this.size()) {
-                    this.#sharedBackend.list = this.#sharedBackend.list.push(element);
-                    this.changeSize(1);
-
-                    return;
-                }
-
                 this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.start + index,
                     0, element);
                 this.changeSize(1);
@@ -220,6 +214,16 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         return true;
+    }
+
+    /**
+     * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number
+     * of elements specified by the minimum capacity argument.
+     *
+     * @param minCapacity The desired minimum capacity.
+     */
+    public ensureCapacity(minCapacity: number): void {
+        this.#sharedBackend.list = this.#sharedBackend.list.setSize(minCapacity);
     }
 
     /**
@@ -349,6 +353,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         const subList = this.#sharedBackend.list.slice(this.#sharedBackend.start, this.#sharedBackend.end);
 
         return new IteratorWrapper(subList[Symbol.iterator]());
+    }
+
+    public override parallelStream(): Stream<T> {
+        throw new NotImplementedError();
     }
 
     /**
@@ -569,6 +577,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     public size(): number {
         return this.#sharedBackend.end - this.#sharedBackend.start;
+    }
+
+    public override stream(): Stream<T> {
+        throw new NotImplementedError();
     }
 
     public spliterator(): Spliterator<T> {

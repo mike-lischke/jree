@@ -13,6 +13,7 @@ import { JavaConsole } from "../io/Console";
 import { PrintStream } from "../io/PrintStream";
 import { Properties } from "../util/Properties";
 import { JavaString } from "./String";
+import { IllegalArgumentException } from "./IllegalArgumentException";
 
 /** User agent client hints are still experimental and hence there's no type definition yet. */
 
@@ -89,22 +90,69 @@ export class System extends JavaObject {
         return this.getProperty(new JavaString("line.separator"), new JavaString("\n"));
     }
 
-    public static getProperty(key: JavaString): JavaString | null;
+    /** Gets the system property indicated by the specified key. */
+    public static getProperty(key: JavaString | string): JavaString | null;
+    /** Gets the system property indicated by the specified key. */
     public static getProperty(key: JavaString, def: JavaString): JavaString;
-    public static getProperty(key: JavaString, def?: JavaString): JavaString | null {
+    /** Gets the system property indicated by the specified key. */
+    public static getProperty(key: string, def: string): JavaString;
+    public static getProperty(...args: unknown[]): JavaString | null {
         if (!this.properties) {
             this.setDefaultProperties();
         }
 
-        if (def) {
-            return this.properties.getProperty(key, def);
-        }
+        switch (args.length) {
+            case 1: {
+                const key = args[0] as JavaString | string;
+                const value = this.properties.getProperty(key);
 
-        return this.properties.getProperty(key);
+                return value ? value : null;
+            }
+
+            case 2: {
+                const key = args[0] as JavaString;
+                const def = args[1] as JavaString;
+
+                return this.properties.getProperty(key, def);
+            }
+
+            default: {
+                throw new IllegalArgumentException("Invalid number of arguments");
+            }
+        }
     }
 
+    /** @returns the current value of the running Java Virtual Machine's high-resolution time source, in nanoseconds. */
     public static nanoTime(): number {
         return performance.now();
+    }
+
+    /**
+     * Sets the system properties to the Properties argument.
+     *
+     * @param properties The new properties.
+     */
+    public static setProperties(properties: Properties): void {
+        System.properties = properties;
+    }
+
+    /**
+     * Sets the system property indicated by the specified key.
+     *
+     * @param key The property key.
+     * @param value The property value.
+     *
+     * @returns The previous value of the property, or null if it did not have one.
+     */
+    public static setProperty(key: JavaString | string, value: JavaString | string): JavaString | null {
+        if (!this.properties) {
+            this.setDefaultProperties();
+        }
+
+        key = key instanceof JavaString ? key : new JavaString(key);
+        value = value instanceof JavaString ? value : new JavaString(value);
+
+        return this.properties.setProperty(key, value);
     }
 
     /**

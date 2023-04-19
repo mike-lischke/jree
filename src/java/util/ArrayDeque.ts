@@ -16,6 +16,7 @@ import { Predicate } from "./function/Predicate";
 import { JavaIterator } from "./Iterator";
 import { NoSuchElementException } from "./NoSuchElementException";
 import { Spliterator } from "./Spliterator";
+import { Stream } from "./stream";
 import { Vector } from "./Vector";
 
 /**
@@ -206,6 +207,10 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements Deque<T>, Se
      */
     public iterator(): JavaIterator<T> {
         return this.#backend.iterator();
+    }
+
+    public override parallelStream(): Stream<T> {
+        throw new NotImplementedError();
     }
 
     /**
@@ -452,6 +457,10 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements Deque<T>, Se
      */
     public size(): number {
         return this.#backend.size();
+    }
+
+    public override stream(): Stream<T> {
+        throw new NotImplementedError();
     }
 
     /**

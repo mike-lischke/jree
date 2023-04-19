@@ -135,16 +135,6 @@ export class Vector<T> extends AbstractList<T>
     }
 
     /**
-     * Increases the capacity of this Vector, if necessary, to ensure that it can hold at least the number of components
-     * specified by the minimum capacity argument.
-     *
-     * @param minCapacity the desired minimum capacity
-     */
-    public ensureCapacity(minCapacity: number): void {
-        // Nothing to do here.
-    }
-
-    /**
      * Returns the first component (the item at index 0) of this vector.
      *
      * @returns the first component of this vector

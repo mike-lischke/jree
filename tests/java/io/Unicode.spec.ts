@@ -4,7 +4,7 @@
  */
 
 import { S } from "../../../src";
-import { runTest } from "../../helpers";
+import { runTest } from "../../test-helpers";
 
 describe("Unicode Tests", () => {
     xit("Base", async () => {

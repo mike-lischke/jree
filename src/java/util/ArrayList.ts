@@ -35,8 +35,19 @@ export class ArrayList<T> extends AbstractList<T> implements Cloneable<ArrayList
             }
 
             case 1: {
-                const end = Array.isArray(args[0]) ? args[0].length : (args[0] as Collection<T>).size();
-                const input = args[0] as Collection<T> | T[];
+                let end;
+                let input: Collection<T> | T[];
+                if (typeof args[0] === "number") {
+                    end = 0;
+                    input = new Array<T>(args[0]);
+                } else if (Array.isArray(args[0])) {
+                    end = args[0].length;
+                    input = args[0];
+                } else {
+                    end = (args[0] as Collection<T>).size();
+                    input = args[0] as Collection<T>;
+                }
+
                 backend = {
                     list: List(input),
                     start: 0,

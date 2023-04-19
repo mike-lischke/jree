@@ -10,6 +10,7 @@ import { JavaString } from "../lang/String";
 import { Predicate } from "./function/Predicate";
 import { JavaIterator } from "./Iterator";
 import { Spliterator } from "./Spliterator";
+import { Stream } from "./stream";
 
 export interface Collection<T> extends JavaIterable<T> {
     /**
@@ -55,7 +56,8 @@ export interface Collection<T> extends JavaIterable<T> {
     /** Returns an iterator over the elements in this collection. */
     iterator(): JavaIterator<T>;
 
-    // parallelStream(): java.util.stream.Stream<T>;
+    /** Returns a sequential Stream with this collection as its source. */
+    parallelStream(): Stream<T>;
 
     /**
      * Removes a single instance of the specified element from this collection, if it is present.
@@ -77,7 +79,8 @@ export interface Collection<T> extends JavaIterable<T> {
      */
     size(): number;
 
-    // stream(): java.util.stream.Stream<T>;
+    /** Returns a sequential Stream with this collection as its source. */
+    stream(): Stream<T>;
 
     /**
      * Returns a string representation of this collection.

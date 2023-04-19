@@ -4,11 +4,14 @@
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
+
 import { int, long } from "../../types";
+import { OutOfMemoryError, StringBuilder } from "../lang";
 
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { JavaString } from "../lang/String";
+import { CharBuffer } from "../nio";
 import { Stream } from "../util/stream/Stream";
 import { IOException } from "./IOException";
 import { Reader } from "./Reader";
@@ -21,6 +24,7 @@ export class BufferedReader extends Reader {
     #buffer: Uint16Array;
     #currentIndex: int = 0;
     #limit: int;
+    #mark: int = -1;
 
     #input: Reader;
 
@@ -31,7 +35,7 @@ export class BufferedReader extends Reader {
     public constructor(...args: unknown[]) {
         super();
 
-        let size = 10000;
+        let size = 4096;
         if (args.length === 2) {
             size = args[1] as int;
         }
@@ -43,8 +47,7 @@ export class BufferedReader extends Reader {
         this.#buffer = new Uint16Array(size);
         this.#input = args[0] as Reader;
 
-        const read = this.#input.read(this.#buffer);
-        this.#limit = read < 0 ? 0 : read;
+        this.#limit = -1;
     }
 
     public override close(): void {
@@ -68,7 +71,23 @@ export class BufferedReader extends Reader {
     public override mark(readAheadLimit: int): void {
         this.checkOpen();
 
-        this.#input.mark(readAheadLimit);
+        if (readAheadLimit < 0) {
+            throw new IllegalArgumentException(new JavaString("Read-ahead limit < 0"));
+        }
+
+        // TS will happily allocate a MAX_INT sized buffer, but Java would throw an OutOfMemoryError.
+        // We have to simulate that here.
+        if (readAheadLimit > 1024 * 1024) {
+            throw new OutOfMemoryError("Read-ahead limit exceeds buffer size");
+        }
+
+        if (readAheadLimit > this.#buffer.length) {
+            const newBuffer = new Uint16Array(readAheadLimit);
+            newBuffer.set(this.#buffer);
+            this.#buffer = newBuffer;
+        }
+
+        this.#mark = this.#currentIndex;
     }
 
     /**
@@ -77,75 +96,99 @@ export class BufferedReader extends Reader {
      * @returns true if and only if this stream supports the mark operation.
      */
     public override markSupported(): boolean {
-        return this.#input.markSupported();
+        return true;
     }
 
-    /** Reads a single character. */
     public override read(): int;
-    /** Reads characters into a portion of an array. */
+    public override read(buffer: Uint16Array): int;
     public override read(buffer: Uint16Array, offset: int, count: int): int;
+    public override read(target: CharBuffer): int;
     public override read(...args: unknown[]): int {
         this.checkOpen();
 
-        if (args.length === 0) {
-            // Read a single character.
-            if (this.#currentIndex >= this.#limit) {
+        switch (args.length) {
+            case 0: {
+                // Read a single character.
+                if (this.#currentIndex >= this.#limit) {
+                    this.#currentIndex = 0;
+                    const count = this.#input.read(this.#buffer);
+                    if (count === -1) {
+                        return -1;
+                    }
+                    this.#limit = count;
+                }
+
+                return this.#buffer[this.#currentIndex++];
+            }
+
+            case 1: {
+                const target = args[0] as CharBuffer | Uint16Array;
+                if (target instanceof CharBuffer) {
+                    const buffer = new Uint16Array(target.remaining());
+                    const read = this.read(buffer);
+                    if (read > 0) {
+                        target.put(buffer.subarray(0, read));
+                    }
+
+                    return read;
+                }
+
+                return this.read(target, 0, target.length);
+            }
+
+            case 3: {
+                // Read a (possibly large) amount of characters.
+                const [buffer, offset, count] = args as [Uint16Array, int, int];
+                if (offset < 0 || count < 0 || count + offset > buffer.length) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                // Check if we have enough data in the buffer.
+                const remaining = this.#limit - this.#currentIndex;
+                if (count <= remaining) {
+                    // If so, just copy it.
+                    buffer.set(this.#buffer.subarray(this.#currentIndex, this.#currentIndex + count), offset);
+                    this.#currentIndex += count;
+
+                    return count;
+                }
+
+                // Otherwise, copy what we have and read more.
+                buffer.set(this.#buffer.subarray(this.#currentIndex, this.#limit), offset);
+                this.#limit = 0;
                 this.#currentIndex = 0;
-                this.#limit = this.#input.read(this.#buffer);
-                if (this.#limit === -1) {
-                    return -1;
-                }
-            }
 
-            return this.#buffer[this.#currentIndex++];
-        } else {
-            // Read a (possibly large) amount of characters.
-            const [buffer, offset, count] = args as [Uint16Array, int, int];
-            if (offset < 0 || count < 0 || count + offset > buffer.length) {
-                throw new IndexOutOfBoundsException();
-            }
+                let read = remaining;
+                while (read < count) {
+                    if (!this.ready()) { // Do not block if no more data is available.
+                        break;
+                    }
 
-            // Check if we have enough data in the buffer.
-            const remaining = this.#limit - this.#currentIndex;
-            if (count <= remaining) {
-                // If so, just copy it.
-                buffer.set(this.#buffer.subarray(this.#currentIndex, this.#currentIndex + count), offset);
-                this.#currentIndex += count;
+                    const result = this.#input.read(this.#buffer);
+                    if (result === -1) {
+                        return read === 0 ? -1 : read;
+                    }
 
-                return count;
-            }
+                    if (result > count - read) {
+                        // We got more data than we need. Copy what we need and save the rest for later.
+                        buffer.set(this.#buffer.subarray(0, count - read), offset + read);
+                        this.#currentIndex = count - read;
+                        this.#limit = result;
+                        read = count;
 
-            // Otherwise, copy what we have and read more.
-            buffer.set(this.#buffer.subarray(this.#currentIndex, this.#limit), offset);
-            this.#limit = 0;
-            this.#currentIndex = 0;
+                        break;
+                    }
 
-            let read = remaining;
-            while (read < count) {
-                if (!this.ready()) { // Do not block if no more data is available.
-                    break;
+                    buffer.set(this.#buffer.subarray(0, result), offset + read);
+                    read += result;
                 }
 
-                const result = this.#input.read(this.#buffer);
-                if (result === -1) {
-                    return read === 0 ? -1 : read;
-                }
-
-                if (result > count - read) {
-                    // We got more data than we need. Copy what we need and save the rest for later.
-                    buffer.set(this.#buffer.subarray(0, count - read), offset + read);
-                    this.#currentIndex = count - read;
-                    this.#limit = result;
-                    read = count;
-
-                    break;
-                }
-
-                buffer.set(this.#buffer.subarray(0, result), offset + read);
-                read += result;
+                return read;
             }
 
-            return read;
+            default: {
+                throw new IllegalArgumentException("Invalid number of arguments");
+            }
         }
     }
 
@@ -156,26 +199,47 @@ export class BufferedReader extends Reader {
      *          the end of the stream has been reached.
      */
     public readLine(): JavaString | null {
-        if (this.#currentIndex === this.#limit) {
-            return null;
+        if (this.#currentIndex >= this.#limit) {
+            this.fillBuffer();
+            if (this.#limit <= 0) {
+                return null;
+            }
         }
 
-        let run = this.#currentIndex;
-        while (run < this.#limit) {
-            if (this.#buffer[run] === 0xA || this.#buffer[run] === 0xD) {
-                const result = new JavaString(this.#buffer.subarray(this.#currentIndex, run));
-                this.#currentIndex = run + 1;
-                if (this.#buffer[run] === 0xD && this.#buffer[run + 1] === 0xA) {
-                    this.#currentIndex++;
+        const builder = new StringBuilder();
+        while (this.#limit > 0) {
+            let run = this.#currentIndex;
+            while (run < this.#limit) {
+                if (this.#buffer[run] === 0xA || this.#buffer[run] === 0xD) {
+                    builder.append(this.#buffer.subarray(this.#currentIndex, run));
+                    const result = builder.toString();
+
+                    const lineBreak = this.#buffer[run++];
+                    if (run === this.#limit) {
+                        // We have to read more data. Could be we are between \r and \n.
+                        this.fillBuffer();
+                        run = 0;
+                    }
+
+                    if (this.#limit > 0) {
+                        this.#currentIndex = run;
+                        if (lineBreak === 0xD && this.#buffer[run] === 0xA) {
+                            this.#currentIndex++;
+                        }
+                    }
+
+                    return result;
                 }
 
-                return result;
+                run++;
             }
 
-            run++;
+            // Input buffer exhausted. Read more.
+            builder.append(this.#buffer.subarray(this.#currentIndex, run));
+            this.fillBuffer();
         }
 
-        const result = new JavaString(this.#buffer.subarray(this.#currentIndex, this.#limit));
+        const result = builder.toString();
         this.#currentIndex = this.#limit;
 
         return result;
@@ -187,7 +251,15 @@ export class BufferedReader extends Reader {
 
     /** Resets the stream to the most recent mark. */
     public override reset(): void {
-        this.#input.reset();
+        if (!this.markSupported()) {
+            throw new IOException("Mark not supported");
+        }
+
+        if (this.#mark === -1) {
+            throw new IOException("Mark not set");
+        }
+
+        this.#currentIndex = this.#mark;
     }
 
     /**
@@ -238,6 +310,17 @@ export class BufferedReader extends Reader {
         }
 
         return skipped;
+    }
+
+    public fillBuffer(): void {
+        this.#currentIndex = 0;
+        if (!this.#input.ready()) {
+            this.#limit = -1;
+
+            return;
+        }
+
+        this.#limit = this.#input.read(this.#buffer);
     }
 
     /** @throws IOException if the underlying reader has been closed. */

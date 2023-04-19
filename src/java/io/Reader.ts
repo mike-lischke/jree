@@ -24,8 +24,7 @@ import { Writer } from "./Writer";
  */
 export abstract class Reader extends JavaObject implements Closeable, Readable {
 
-    // Skip buffer, null until allocated.
-    private skipBuffer?: Uint16Array;
+    #skipBuffer?: Uint16Array;
 
     public static nullReader(): Reader {
         return new class extends Reader {
@@ -154,13 +153,13 @@ export abstract class Reader extends JavaObject implements Closeable, Readable {
 
         const nn = n < 10000n ? n : 10000n;
 
-        if ((!this.skipBuffer) || (this.skipBuffer.length < nn)) {
-            this.skipBuffer = new Uint16Array(Number(nn));
+        if ((!this.#skipBuffer) || (this.#skipBuffer.length < nn)) {
+            this.#skipBuffer = new Uint16Array(Number(nn));
         }
 
         let r = n;
         while (r > 0) {
-            const nc = this.read(this.skipBuffer, 0, Number(r < nn ? r : nn));
+            const nc = this.read(this.#skipBuffer, 0, Number(r < nn ? r : nn));
             if (nc === -1) {
                 break;
             }

@@ -38,11 +38,11 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
     #isAbsolute: boolean;
 
     /** Creates a new File instance from a parent abstract pathname and a child pathname string. */
-    public constructor(parent: JavaFile | null, child: JavaString);
+    public constructor(parent: JavaFile | null, child: JavaString | string);
     /** Creates a new File instance by converting the given pathname string into an abstract pathname. */
-    public constructor(pathName: JavaString);
+    public constructor(pathName: JavaString | string);
     /** Creates a new File instance from a parent pathname string and a child pathname string. */
-    public constructor(parent: JavaString | null, child: JavaString);
+    public constructor(parent: JavaString | string | null, child: JavaString | string);
     /** Creates a new File instance by converting the given file: URI into an abstract pathname. */
     public constructor(uri: URI);
     public constructor(...args: unknown[]) {
@@ -51,7 +51,9 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
         switch (args.length) {
             case 1: {
                 let pathName;
-                if (args[0] instanceof JavaString) {
+                if (typeof args[0] === "string") {
+                    pathName = new JavaString(args[0]);
+                } else if (args[0] instanceof JavaString) {
                     pathName = args[0];
                 } else {
                     pathName = (args[0] as URI).getPath();
@@ -63,8 +65,8 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
             }
 
             case 2: {
-                const parent = args[0] as JavaFile | JavaString | URI | null;
-                const child = args[1] as JavaString;
+                const parent = args[0] as JavaFile | JavaString | string | null;
+                const child = args[1] as JavaString | string;
 
                 if (!parent && !child) {
                     throw new NullPointerException();
@@ -72,12 +74,10 @@ export class JavaFile extends JavaObject implements Comparable<JavaFile>, Serial
                     this.#path = FileSystems.getDefault().getPath(child);
                 } else {
                     let parentPath: Path;
-                    if (parent instanceof JavaString) {
+                    if (parent instanceof JavaString || typeof parent === "string") {
                         parentPath = FileSystems.getDefault().getPath(parent);
-                    } else if (parent instanceof JavaFile) {
-                        parentPath = parent.#path;
                     } else {
-                        parentPath = FileSystems.getDefault().getPath(parent.getPath());
+                        parentPath = parent.#path;
                     }
 
                     if (child) {

@@ -126,14 +126,14 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
             case 1: {
                 const c = args[0] as char | CharSequence | null;
                 if (typeof c === "number") {
-                    if (this.position() === this.limit()) {
+                    if (this.position() === this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
                     this.array()[this.currentPosition++] = c;
                 } else {
                     const s = c ?? new JavaString("null");
-                    if (this.currentPosition + s.length() >= this.limit()) {
+                    if (this.currentPosition + s.length() > this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
@@ -152,7 +152,7 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
                     throw new IndexOutOfBoundsException();
                 }
 
-                if (this.currentPosition + end - start >= this.limit()) {
+                if (this.currentPosition + end - start > this.currentLimit) {
                     throw new BufferOverflowException();
                 }
 
@@ -254,20 +254,20 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
             case 1: {
                 const cOrSrc = args[0] as char | Uint16Array | CharBuffer | JavaString | string;
                 if (typeof cOrSrc === "number") {
-                    if (this.currentPosition === this.limit()) {
+                    if (this.currentPosition === this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
                     this.array()[this.currentPosition++] = cOrSrc;
                 } else if (cOrSrc instanceof Uint16Array) {
-                    if (this.currentPosition + cOrSrc.length >= this.limit()) {
+                    if (this.currentPosition + cOrSrc.length > this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
                     this.array().set(cOrSrc, this.currentPosition);
                     this.currentPosition += cOrSrc.length;
                 } else if (cOrSrc instanceof CharBuffer) {
-                    if (this.currentPosition + cOrSrc.remaining() >= this.limit()) {
+                    if (this.currentPosition + cOrSrc.remaining() > this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
@@ -275,7 +275,7 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
                     this.currentPosition += cOrSrc.remaining();
                 } else {
                     const s = cOrSrc.toString().valueOf();
-                    if (this.currentPosition + s.length >= this.limit()) {
+                    if (this.currentPosition + s.length > this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
@@ -289,7 +289,7 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
 
             case 2: {
                 const [index, c] = args as [int, char];
-                if (index < 0 || index >= this.currentLimit) {
+                if (index < 0 || index > this.currentLimit) {
                     throw new IndexOutOfBoundsException();
                 }
 
@@ -308,7 +308,7 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
                         throw new IndexOutOfBoundsException();
                     }
 
-                    if (this.currentPosition + length > this.limit()) {
+                    if (this.currentPosition + length > this.currentLimit) {
                         throw new BufferOverflowException();
                     }
 
@@ -379,7 +379,7 @@ export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, C
 
     /** @returns a string containing the characters in this buffer. */
     public override toString(): JavaString {
-        return new JavaString(convertUTF16ToString(this.array().subarray(this.currentPosition, this.limit())));
+        return new JavaString(convertUTF16ToString(this.array().subarray(this.currentPosition, this.currentLimit)));
     }
 
     /*protected [Symbol.toPrimitive](hint: string): string {

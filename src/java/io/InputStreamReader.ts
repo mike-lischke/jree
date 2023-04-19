@@ -69,6 +69,14 @@ export class InputStreamReader extends Reader {
         return new JavaString(this.#decoder.encoding);
     }
 
+    public override mark(readAheadLimit: number): void {
+        this.#input.mark(readAheadLimit);
+    }
+
+    public override markSupported(): boolean {
+        return this.#input.markSupported();
+    }
+
     /** Reads a single character. */
     public override read(): char;
     /** Reads characters into an array. */
@@ -137,6 +145,12 @@ export class InputStreamReader extends Reader {
      */
     public override ready(): boolean {
         return this.#currentIndex < this.#currentContent.length || this.#input.available() > 0;
+    }
+
+    public override reset(): void {
+        this.#input.reset();
+        this.#currentContent = new Uint16Array(0);
+        this.#currentIndex = 0;
     }
 
     /** @returns as many characters as can be decoded with one buffer content. */

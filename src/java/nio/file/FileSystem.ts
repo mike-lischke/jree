@@ -36,7 +36,7 @@ export abstract class JavaFileSystem extends JavaObject {
      *
      * @returns the resulting Path.
      */
-    public abstract getPath(first: java.lang.String, ...more: java.lang.String[]): java.nio.file.Path;
+    public abstract getPath(first: java.lang.String | string, ...more: java.lang.String[]): java.nio.file.Path;
 
     /**
      * Returns a PathMatcher that performs match operations on the String representation of Path objects by interpreting
@@ -46,7 +46,7 @@ export abstract class JavaFileSystem extends JavaObject {
      *
      * @returns the path matcher.
      */
-    public abstract getPathMatcher(syntaxAndPattern: java.lang.String): java.nio.file.PathMatcher;
+    public abstract getPathMatcher(syntaxAndPattern: java.lang.String | string): java.nio.file.PathMatcher;
 
     /**
      * @returns an object to iterate over the root directories of the file system.

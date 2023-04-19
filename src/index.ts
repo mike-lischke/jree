@@ -18,4 +18,5 @@ export * from "./MurmurHash";
 export * from "./NotImplementedError";
 export * from "./templates";
 export * from "./resource-helpers";
+export * from "./string-helpers";
 export * from "./types";

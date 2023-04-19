@@ -10,6 +10,7 @@ import { Consumer } from "./function/Consumer";
 import { Predicate } from "./function/Predicate";
 import { JavaIterator } from "./Iterator";
 import { Spliterator } from "./Spliterator";
+import { Stream } from "./stream";
 
 /**
  * This is the base class for all collections in this library. It implements the common methods of the
@@ -32,14 +33,15 @@ export abstract class AbstractCollection<T> extends JavaObject implements Collec
     public abstract override hashCode(): number;
     public abstract isEmpty(): boolean;
     public abstract iterator(): JavaIterator<T>;
+    public abstract parallelStream(): Stream<T>;
     public abstract remove(o: unknown): boolean;
     public abstract removeAll(c: Collection<T>): boolean;
     public abstract removeIf(filter: Predicate<T>): boolean;
     public abstract retainAll(c: Collection<T>): boolean;
     public abstract size(): number;
+    public abstract stream(): Stream<T>;
     public abstract spliterator(): Spliterator<T>;
-    // @ts-ignore
-    public abstract toString(): JavaString;
+    public abstract override toString(): JavaString;
     public abstract toArray(): T[];
     public abstract toArray<U>(a: U[]): U[];
 }

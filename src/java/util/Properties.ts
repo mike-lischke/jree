@@ -33,9 +33,19 @@ export class Properties extends HashMap<JavaString, JavaString> {
      *
      * @returns the found value or the default value.
      */
-    public getProperty(key: JavaString): JavaString | null;
+    public getProperty(key: JavaString | string): JavaString | null;
     public getProperty(key: JavaString, defaultValue: JavaString): JavaString;
-    public getProperty(key: JavaString, defaultValue?: JavaString): JavaString | null {
+    public getProperty(key: string, defaultValue: string): JavaString;
+    public getProperty(...args: unknown[]): JavaString | null {
+        if (args.length === 1) {
+            const key = typeof args[0] === "string" ? new JavaString(args[0]) : args[0] as JavaString;
+
+            return this.get(key);
+        }
+
+        const key = typeof args[0] === "string" ? new JavaString(args[0]) : args[0] as JavaString;
+        const defaultValue = typeof args[1] === "string" ? new JavaString(args[1]) : args[1] as JavaString;
+
         let result = this.get(key);
         if (!result && this.defaults) {
             result = this.defaults.get(key);
@@ -242,7 +252,17 @@ export class Properties extends HashMap<JavaString, JavaString> {
      *
      * @returns The previous value that was set at the given key.
      */
-    public setProperty(key: JavaString, value: JavaString): JavaString | null {
+    public setProperty(key: JavaString, value: JavaString): JavaString | null;
+    public setProperty(key: string, value: string): JavaString | null;
+    public setProperty(key: JavaString | string, value: JavaString | string): JavaString | null {
+        if (typeof key === "string") {
+            key = new JavaString(key);
+        }
+
+        if (typeof value === "string") {
+            value = new JavaString(value);
+        }
+
         return this.put(key, value);
     }
 

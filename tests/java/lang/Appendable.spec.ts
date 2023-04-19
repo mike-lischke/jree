@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { runTest } from "../../helpers";
+import { runTest } from "../../test-helpers";
 
 describe("Tests", () => {
     it("Basic", async () => {

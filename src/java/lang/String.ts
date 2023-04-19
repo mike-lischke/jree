@@ -8,7 +8,7 @@ import printf from "printf";
 import { MurmurHash } from "../../MurmurHash";
 import { NotImplementedError } from "../../NotImplementedError";
 import {
-    codePointFromUTF16, convertStringToUTF16, convertUF32ToUTF16, convertUTF16ToString, indexOfSubArray,
+    codePointFromUTF16, convertStringToUTF16, convertUTF32ToUTF16, convertUTF16ToString, indexOfSubArray,
     lastIndexOfSubArray,
 } from "../../string-helpers";
 import { char, int } from "../../types";
@@ -108,7 +108,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
                 } else if (input instanceof Uint16Array) {
                     this.#value = input;
                 } else if (input instanceof Int32Array) {
-                    this.#value = convertUF32ToUTF16(input);
+                    this.#value = convertUTF32ToUTF16(input);
                 } else {
                     this.#value = convertStringToUTF16(`${input}`);
                 }
@@ -144,7 +144,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
                 } else if (input instanceof Uint16Array) {
                     this.#value = input.slice(offset, offset + length);
                 } else {
-                    this.#value = convertUF32ToUTF16(input.slice(offset, length));
+                    this.#value = convertUTF32ToUTF16(input.slice(offset, length));
                 }
 
                 break;
@@ -230,7 +230,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
 
     public getBytes(): Int8Array;
     public getBytes(charset: Charset): Int8Array;
-    public getBytes(charsetName: JavaString): Int8Array;
+    public getBytes(charsetName: JavaString | string): Int8Array;
     public getBytes(...args: unknown[]): Int8Array {
         let charset: Charset | undefined;
         if (args.length === 0) {
@@ -238,7 +238,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
         } else if (args[0] instanceof Charset) {
             charset = args[0];
         } else {
-            charset = Charset.forName(args[0] as JavaString);
+            charset = Charset.forName(args[0] as JavaString | string);
         }
 
         return charset.encode(this).array();
@@ -342,6 +342,25 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
         }
 
         return this.compareTo(obj) === 0;
+    }
+
+    /**
+     * Copies characters from this string into the destination character array.
+     *
+     * @param srcBegin index of the first character in the string to copy.
+     * @param srcEnd index after the last character in the string to copy.
+     * @param dst the destination array.
+     * @param dstBegin the start offset in the destination array.
+     */
+    public getChars(srcBegin: int, srcEnd: int, dst: Uint16Array, dstBegin: int): void {
+        if (srcBegin < 0 || srcBegin > srcEnd || srcEnd > this.#value.length || dstBegin < 0
+            || dstBegin + (srcEnd - srcBegin) > dst.length) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        for (let i = srcBegin; i < srcEnd; ++i) {
+            dst[dstBegin++] = this.#value[i];
+        }
     }
 
     /** @returns a hash code for this string. */
@@ -531,6 +550,14 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
         return parts.map((value) => {
             return new JavaString(value);
         });
+    }
+
+    /** Tests if this string starts with the specified prefix. */
+    public startsWith(prefix: JavaString): boolean;
+    /** Tests if the substring of this string beginning at the specified index starts with the specified prefix. */
+    public startsWith(prefix: JavaString, offset: int): boolean;
+    public startsWith(prefix: JavaString, offset?: int): boolean {
+        return indexOfSubArray(prefix.#value, this.#value, offset) === 0;
     }
 
     /** @returns a string whose value is this string, with all leading and trailing white space removed. */

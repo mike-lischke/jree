@@ -9,7 +9,7 @@ import { StackTraceElement } from "./StackTraceElement";
 
 // import { System } from "./System"; creates a circular dependency
 import { JavaString } from "./String";
-import { PrintStream } from "../io/PrintStream";
+import { PrintWriter, PrintStream } from "../io";
 
 /**
  * The Throwable class is the superclass of all errors and exceptions in the Java language.
@@ -208,16 +208,23 @@ export class Throwable extends JavaObject {
      * Remaining lines represent data previously recorded by the method Throwable.fillInStackTrace().
      * This data is an approximation of the actual stack trace.
      */
-    // public printStackTrace(): void;
+    public printStackTrace(): void;
     /**
      * This method prints a stack trace for this Throwable object on the specified print stream.
      *
      * @param s The print stream.
      */
     public printStackTrace(s: PrintStream): void;
-    //public printStackTrace(s: java.io.PrintWriter): void
-    public printStackTrace(s: PrintStream): void {
+    public printStackTrace(s: PrintWriter): void;
+    public printStackTrace(s?: PrintStream | PrintWriter): void {
         const headLine = this.toString();
+
+        if (!s) {
+            console.error(headLine);
+            console.error(this.stack);
+
+            return;
+        }
 
         s.println(headLine);
         s.println(new JavaString(`${this.stack}`));
