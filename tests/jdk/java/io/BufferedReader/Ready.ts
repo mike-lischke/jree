@@ -55,8 +55,8 @@ export class Ready extends JavaObject {
             content.getChars(0, this.limit, this.content, 0);
         }
 
-        public override  read(): int;
-        public override  read(buf: Uint16Array, offset: int, length: int): int;
+        public override read(): int;
+        public override read(buf: Uint16Array, offset: int, length: int): int;
         public override read(...args: unknown[]): int {
             switch (args.length) {
                 case 0: {
@@ -94,7 +94,7 @@ export class Ready extends JavaObject {
 
         public override close = (): void => { /* */ };
 
-        public override  ready = (): boolean => {
+        public override ready = (): boolean => {
             if (this.pos < this.limit) {
                 return true;
             } else {

@@ -26,6 +26,8 @@ export class BufferedReader extends Reader {
     #limit: int;
     #mark: int = -1;
 
+    #skipNextLineFeed = false;
+
     #input: Reader;
 
     /** Creates a buffering character-input stream that uses a default-sized input buffer. */
@@ -47,7 +49,7 @@ export class BufferedReader extends Reader {
         this.#buffer = new Uint16Array(size);
         this.#input = args[0] as Reader;
 
-        this.#limit = -1;
+        this.#limit = 0;
     }
 
     public override close(): void {
@@ -125,7 +127,7 @@ export class BufferedReader extends Reader {
                 const target = args[0] as CharBuffer | Uint16Array;
                 if (target instanceof CharBuffer) {
                     const buffer = new Uint16Array(target.remaining());
-                    const read = this.read(buffer);
+                    const read = this.read(buffer, 0, buffer.length);
                     if (read > 0) {
                         target.put(buffer.subarray(0, read));
                     }
@@ -201,7 +203,7 @@ export class BufferedReader extends Reader {
     public readLine(): JavaString | null {
         if (this.#currentIndex >= this.#limit) {
             this.fillBuffer();
-            if (this.#limit <= 0) {
+            if (this.#limit === 0) {
                 return null;
             }
         }
@@ -214,19 +216,17 @@ export class BufferedReader extends Reader {
                     builder.append(this.#buffer.subarray(this.#currentIndex, run));
                     const result = builder.toString();
 
-                    const lineBreak = this.#buffer[run++];
-                    if (run === this.#limit) {
-                        // We have to read more data. Could be we are between \r and \n.
-                        this.fillBuffer();
-                        run = 0;
-                    }
-
-                    if (this.#limit > 0) {
-                        this.#currentIndex = run;
-                        if (lineBreak === 0xD && this.#buffer[run] === 0xA) {
-                            this.#currentIndex++;
+                    // Since we have our line, we are done here. However, if the line break is a \r\n sequence, we
+                    // need to skip the \n on next buffer fill. We could do that instead by filling the buffer again
+                    // and read the next character, but that would be a waste of time.
+                    if (this.#buffer[run++] === 0xD) {
+                        if (run === this.#limit) {
+                            this.#skipNextLineFeed = true;
+                        } else if (this.#buffer[run] === 0xA) {
+                            run++;
                         }
                     }
+                    this.#currentIndex = run;
 
                     return result;
                 }
@@ -245,8 +245,24 @@ export class BufferedReader extends Reader {
         return result;
     }
 
+    /**
+     * Tells whether this stream is ready to be read. A buffered character stream is ready if the buffer is not empty,
+     * or if the underlying character stream is ready.
+     *
+     * @returns True if the next read() is guaranteed not to block for input, false otherwise. Note that returning
+     *          false does not guarantee that the next read will block.
+     */
     public override ready(): boolean {
-        return this.#input.ready();
+        if (this.#skipNextLineFeed) {
+            // We have to skip the next \n after a \r, which may require to read more data.
+            if (this.#currentIndex === this.#limit && this.#input.ready()) {
+                this.checkOpen();
+                this.fillBuffer(); // This will also skip the \n if it is the next character.
+            }
+        }
+
+        // Ready when we have data in the buffer or more data is available.
+        return this.#currentIndex < this.#limit || this.#input.ready();
     }
 
     /** Resets the stream to the most recent mark. */
@@ -314,13 +330,16 @@ export class BufferedReader extends Reader {
 
     public fillBuffer(): void {
         this.#currentIndex = 0;
-        if (!this.#input.ready()) {
-            this.#limit = -1;
+        const count = this.#input.read(this.#buffer);
+        this.#limit = count === -1 ? 0 : count;
 
-            return;
+        if (this.#skipNextLineFeed) {
+            if (this.#limit > 0 && this.#buffer[0] === 0xA) {
+                this.#currentIndex++;
+            }
+
+            this.#skipNextLineFeed = false;
         }
-
-        this.#limit = this.#input.read(this.#buffer);
     }
 
     /** @throws IOException if the underlying reader has been closed. */

@@ -43,9 +43,9 @@ export class ReadLine extends JavaObject {
 
     private static BoundedReader = class BoundedReader extends java.io.Reader {
 
-        public content: Uint16Array;
-        public limit: int;
-        public pos = 0;
+        private content: Uint16Array;
+        private limit: int;
+        private pos = 0;
 
         public constructor(c: string) {
             super();
