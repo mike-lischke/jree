@@ -3,12 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { List } from "immutable";
-
 import { java, NotImplementedError } from "../..";
 import { S } from "../../templates";
 import { AbstractList } from "./AbstractList";
-import { IListBackend } from "./ListIteratorImpl";
+import { ISubList } from "./ListIteratorImpl";
 
 /**
  * The Vector class implements a growable array of objects. Like an array, it contains components that can be
@@ -26,34 +24,47 @@ export class Vector<T> extends AbstractList<T>
     public constructor(initialCapacity: number, capacityIncrement: number);
     public constructor(c: java.util.Collection<T>);
     public constructor(...args: unknown[]) {
-        let backend: IListBackend<T> | undefined;
+        let backend: ISubList<T> | undefined;
         let increment = 0;
 
         switch (args.length) {
             case 0: {
-                // Use default.
+                backend = {
+                    data: [],
+                    start: 0,
+                    end: 0,
+                };
+
                 break;
             }
 
             case 1: {
                 if (typeof args[0] === "number") {
-                    // Use default.
+                    backend = {
+                        data: new Array(args[0]),
+                        start: 0,
+                        end: 0,
+                    };
                 } else {
                     const input = args[0] as java.util.Collection<T>;
                     backend = {
-                        list: List(input),
+                        data: input.toArray(),
                         start: 0,
                         end: input.size(),
-                        updateEnd: (delta: number) => {
-                            // Nothing to do here.
-                        },
                     };
                 }
+
                 break;
             }
 
             case 2: {
+                backend = {
+                    data: new Array(args[0] as number),
+                    start: 0,
+                    end: 0,
+                };
                 increment = args[1] as number;
+
                 break;
             }
 
@@ -113,7 +124,7 @@ export class Vector<T> extends AbstractList<T>
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        this.copyToArray(anArray, 0);
+        this.copyToArray(anArray);
     }
 
     /**

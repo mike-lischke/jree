@@ -98,40 +98,40 @@ describe("LinkedList Tests", () => {
         expect(() => { list.addAll(100, set); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
         list.addAll(2, set);
-        expect(list.toArray()).toEqual([S`Sit`, S`Alpha`, S`Alpha`, S`Beta`, S`Beta`]);
+        expect(list.toArray()).toEqual([S`Sit`, S`Alpha`, S`Alpha`, S`Beta`]);
         list.addFirst(S`Zulu`);
-        expect(list.toArray()).toEqual([S`Zulu`, S`Sit`, S`Alpha`, S`Alpha`, S`Beta`, S`Beta`]);
+        expect(list.toArray()).toEqual([S`Zulu`, S`Sit`, S`Alpha`, S`Alpha`, S`Beta`]);
         list.addLast(S`Zulu`);
-        expect(list.toArray()).toEqual([S`Zulu`, S`Sit`, S`Alpha`, S`Alpha`, S`Beta`, S`Beta`, S`Zulu`]);
+        expect(list.toArray()).toEqual([S`Zulu`, S`Sit`, S`Alpha`, S`Alpha`, S`Beta`, S`Zulu`]);
         list.pop();
         list.pop();
         list.pop();
-        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Beta`, S`Zulu`]);
+        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Zulu`]);
         list.push(S`Lorem Ipsum`);
-        expect(list.toArray()).toEqual([S`Lorem Ipsum`, S`Alpha`, S`Beta`, S`Beta`, S`Zulu`]);
+        expect(list.toArray()).toEqual([S`Lorem Ipsum`, S`Alpha`, S`Beta`, S`Zulu`]);
 
         list.remove();
-        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Beta`, S`Zulu`]);
+        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Zulu`]);
 
         expect(() => { list.remove(100); }).toThrowError(java.lang.IndexOutOfBoundsException);
-        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Beta`, S`Zulu`]);
+        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Zulu`]);
         expect(list.remove(1)).toBeDefined();
         expect(list.remove(1)).toBeDefined();
-        expect(list.toArray()).toEqual([S`Alpha`, S`Zulu`]);
+        expect(list.toArray()).toEqual([S`Alpha`]);
         expect(list.remove(S`Lorem`)).toBe(false);
         expect(list.remove(S`Alpha`)).toBe(true);
-        expect(list.toArray()).toEqual([S`Zulu`]);
+        expect(list.toArray()).toEqual([]);
 
         list.addAll(set);
         list.addAll(set);
-        expect(list.toArray()).toEqual([S`Zulu`, S`Alpha`, S`Beta`, S`Alpha`, S`Beta`]);
+        expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Alpha`, S`Beta`]);
         expect(list.removeFirstOccurrence(S`Beta`)).toBe(true);
         expect(list.removeFirstOccurrence(S`Lorem`)).toBe(false);
-        expect(list.toArray()).toEqual([S`Zulu`, S`Alpha`, S`Alpha`, S`Beta`]);
+        expect(list.toArray()).toEqual([S`Alpha`, S`Alpha`, S`Beta`]);
         list.addAll(set);
         expect(list.removeLastOccurrence(S`Lorem`)).toBe(false);
         expect(list.removeLastOccurrence(S`Alpha`)).toBe(true);
-        expect(list.toArray()).toEqual([S`Zulu`, S`Alpha`, S`Alpha`, S`Beta`, S`Beta`]);
+        expect(list.toArray()).toEqual([S`Alpha`, S`Alpha`, S`Beta`, S`Beta`]);
 
         list.clear();
         expect(list.isEmpty()).toBe(true);

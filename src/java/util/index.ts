@@ -42,6 +42,7 @@ export * from "./Optional";
 
 export * from "./NoSuchElementException";
 export * from "./EmptyStackException";
+export * from "./ConcurrentModificationException";
 
 export * from "./regex/regex";
 export * from "./concurrent/concurrent";

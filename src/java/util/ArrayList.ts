@@ -3,9 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { List } from "immutable";
-
-import { IListBackend } from "./ListIteratorImpl";
+import { ISubList } from "./ListIteratorImpl";
 import { AbstractList } from "./AbstractList";
 import { Cloneable } from "../lang/Cloneable";
 import { RandomAccess } from "./RandomAccess";
@@ -26,36 +24,40 @@ export class ArrayList<T> extends AbstractList<T> implements Cloneable<ArrayList
     /** This constructor is not part of the Java API, but helps creating lists from Typescript arrays. */
     public constructor(array: T[]);
     public constructor(...args: unknown[]) {
-        let backend: IListBackend<T> | undefined;
+        let backend: ISubList<T> | undefined;
 
         switch (args.length) {
             case 0: {
-                // Use default.
+                backend = {
+                    data: [],
+                    start: 0,
+                    end: 0,
+                };
+
                 break;
             }
 
             case 1: {
                 let end;
                 let input: Collection<T> | T[];
-                if (typeof args[0] === "number") {
+                const arg = args[0] as number | Collection<T> | T[];
+                if (typeof arg === "number") {
                     end = 0;
-                    input = new Array<T>(args[0]);
-                } else if (Array.isArray(args[0])) {
-                    end = args[0].length;
-                    input = args[0];
+                    input = new Array<T>(arg);
+                } else if (Array.isArray(arg)) {
+                    end = arg.length;
+                    input = arg;
                 } else {
-                    end = (args[0] as Collection<T>).size();
-                    input = args[0] as Collection<T>;
+                    end = arg.size();
+                    input = arg.toArray();
                 }
 
                 backend = {
-                    list: List(input),
+                    data: input,
                     start: 0,
                     end,
-                    updateEnd: (delta: number) => {
-                        // Nothing to do here.
-                    },
                 };
+
                 break;
             }
 

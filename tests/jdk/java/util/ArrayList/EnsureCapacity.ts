@@ -66,6 +66,7 @@ export class EnsureCapacity extends JavaObject {
 
         const cap = vector.capacity();
         vector.ensureCapacity(java.lang.Integer.MIN_VALUE);
-        EnsureCapacity.checkCapacity(cap, vector.capacity());
+
+        expect(cap).toEqual(vector.capacity());
     };
 }

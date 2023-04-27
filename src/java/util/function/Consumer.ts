@@ -18,7 +18,7 @@ export interface Consumer<T> extends IReflection {
     accept: (t: T) => void;
 }
 
-export class Consumer<T> {
+export class Consumer<T> implements Consumer<T> {
     /**
      * Returns a {@code Consumer} that wraps the given operation
      *

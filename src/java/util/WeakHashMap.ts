@@ -9,12 +9,23 @@ import { JavaString } from "../lang/String";
 import { Collection } from "./Collection";
 import { JavaMap } from "./Map";
 import { JavaSet } from "./Set";
+import { WeakMapEntryView } from "./WeakMapEntryView";
+import { WeakMapKeyView } from "./WeakMapKeyView";
+
+/**
+ * This interface provides shared access to the backend of a HashMap instance for all currently active key, value
+ * and entry views. This way each of them sees updates of the backend and can update it as well.
+ * I wish we had friend classes, which would make this unnecessary.
+ */
+export interface IWeakHashMapViewBackend<K extends object, V> {
+    backend: WeakMap<K, { value: V, ref: WeakRef<K>; }>;
+    refSet: Set<WeakRef<K>>;
+    finalizationGroup: FinalizationRegistry<{ set: Set<WeakRef<K>>; ref: WeakRef<K>; }>;
+}
 
 export class WeakHashMap<K extends object, V> extends JavaObject implements JavaMap<K, V> {
     // Implementation based on https://github.com/tc39/proposal-weakrefs#iterable-weakmaps.
-    #backend = new WeakMap<K, { value: V, ref: WeakRef<K>; }>();
-    #refSet = new Set<WeakRef<K>>();
-    #finalizationGroup = new FinalizationRegistry(WeakHashMap.#cleanup);
+    #sharedBackend: IWeakHashMapViewBackend<K, V>;
 
     /** Constructs a new, empty WeakHashMap with the given initial capacity and the given load factor. */
     public constructor(initialCapacity?: number, loadFactor?: number);
@@ -22,6 +33,12 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
     public constructor(m: JavaMap<K, V>);
     public constructor(initialCapacityOrM?: number | JavaMap<K, V>, _loadFactor?: number) {
         super();
+
+        this.#sharedBackend = {
+            backend: new WeakMap(),
+            refSet: new Set(),
+            finalizationGroup: new FinalizationRegistry(WeakHashMap.#cleanup),
+        };
 
         // Capacity and load factor are ignored.
         if (initialCapacityOrM && typeof initialCapacityOrM !== "number") {
@@ -36,21 +53,21 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
     };
 
     public *[Symbol.iterator](): IterableIterator<[K, V]> {
-        for (const ref of this.#refSet) {
+        for (const ref of this.#sharedBackend.refSet) {
             const key = ref.deref();
             if (!key) {
                 continue;
             }
 
-            const { value } = this.#backend.get(key)!;
+            const { value } = this.#sharedBackend.backend.get(key)!;
             yield [key, value];
         }
     }
 
     /** Removes all of the mappings from this map. */
     public clear(): void {
-        this.#backend = new WeakMap();
-        this.#refSet.clear();
+        this.#sharedBackend.backend = new WeakMap();
+        this.#sharedBackend.refSet.clear();
     }
 
     /**
@@ -61,7 +78,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      * @returns tbd
      */
     public containsKey(key: K): boolean {
-        return this.#backend.has(key);
+        return this.#sharedBackend.backend.has(key);
     }
 
     /**
@@ -79,9 +96,9 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         return false;
     }
 
-    /** returns a Set view of the mappings contained in this map. */
+    /** @returns a Set view of the mappings contained in this map. */
     public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
-        throw new NotImplementedError();
+        return new WeakMapEntryView(this.#sharedBackend);
     }
 
     /**
@@ -90,19 +107,19 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      * @returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
      */
     public get(key: K): V | null {
-        const entry = this.#backend.get(key);
+        const entry = this.#sharedBackend.backend.get(key);
 
         return entry?.value ?? null;
     }
 
     /** @returns true if this map contains no key - value mappings. */
     public isEmpty(): boolean {
-        return this.#refSet.size > 0;
+        return this.#sharedBackend.refSet.size > 0;
     }
 
-    /** Returns a Set view of the keys contained in this map. */
+    /** @returns a Set view of the keys contained in this map. */
     public keySet(): JavaSet<K> {
-        throw new NotImplementedError();
+        return new WeakMapKeyView(this.#sharedBackend);
     }
 
     /**
@@ -117,11 +134,11 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
     public put(key: K, value: V): V | null {
         const ref = new WeakRef(key);
 
-        const previous = this.#backend.get(key);
+        const previous = this.#sharedBackend.backend.get(key);
 
-        this.#backend.set(key, { value, ref });
-        this.#refSet.add(ref);
-        this.#finalizationGroup.register(key, { set: this.#refSet, ref }, ref);
+        this.#sharedBackend.backend.set(key, { value, ref });
+        this.#sharedBackend.refSet.add(ref);
+        this.#sharedBackend.finalizationGroup.register(key, { set: this.#sharedBackend.refSet, ref }, ref);
 
         return previous?.value ?? null;
     }
@@ -146,21 +163,21 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *          (A null return can also indicate that the map previously associated null with key.)
      */
     public remove(key: K): V | null {
-        const entry = this.#backend.get(key);
+        const entry = this.#sharedBackend.backend.get(key);
         if (!entry) {
             return null;
         }
 
-        this.#backend.delete(key);
-        this.#refSet.delete(entry.ref);
-        this.#finalizationGroup.unregister(entry.ref);
+        this.#sharedBackend.backend.delete(key);
+        this.#sharedBackend.refSet.delete(entry.ref);
+        this.#sharedBackend.finalizationGroup.unregister(entry.ref);
 
         return entry.value;
     }
 
     /** @returns the number of key - value mappings in this map. */
     public size(): number {
-        return this.#refSet.size;
+        return this.#sharedBackend.refSet.size;
     }
 
     /** Returns a Collection view of the values contained in this map. */
@@ -182,7 +199,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
             return false;
         }
 
-        if (this.#refSet.size !== o.#refSet.size) {
+        if (this.#sharedBackend.refSet.size !== o.#sharedBackend.refSet.size) {
             return false;
         }
 

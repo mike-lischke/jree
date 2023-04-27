@@ -122,7 +122,7 @@ export class Objects extends JavaObject {
      */
     public static equals(a: unknown, b: unknown): boolean {
         if (a === b) {
-            true;
+            return true;
         }
 
         if (a === undefined || b === undefined) {

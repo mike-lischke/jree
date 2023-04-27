@@ -3,8 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { List as ImmList } from "immutable";
-
 import { NotImplementedError } from "../../NotImplementedError";
 import { Serializable } from "../io/Serializable";
 import { Cloneable } from "../lang/Cloneable";
@@ -35,12 +33,9 @@ export class LinkedList<T> extends AbstractList<T> implements Serializable, Clon
     public constructor(c: Collection<T>);
     public constructor(c?: Collection<T>) {
         super({
-            list: ImmList(c),
+            data: c?.toArray() ?? [],
             start: 0,
             end: c?.size() ?? 0,
-            updateEnd: (delta: number) => {
-                // Nothing to do here.
-            },
         });
     }
 

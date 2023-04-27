@@ -3,25 +3,25 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { is, List as ImmList } from "immutable";
-
 import { IteratorWrapper } from "../../IteratorWrapper";
-import { IListBackend, ListIteratorImpl } from "./ListIteratorImpl";
-import { AbstractCollection } from "./AbstractCollection";
-import { List } from "./List";
-import { StringBuilder } from "../lang/StringBuilder";
-import { Collection } from "./Collection";
-import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { Consumer } from "./function/Consumer";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { MurmurHash } from "../../MurmurHash";
-import { JavaIterator } from "./Iterator";
-import { ListIterator } from "./ListIterator";
-import { Predicate } from "./function/Predicate";
-import { Spliterator } from "./Spliterator";
 import { NotImplementedError } from "../../NotImplementedError";
 import { JavaString } from "../lang";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { StringBuilder } from "../lang/StringBuilder";
+import { AbstractCollection } from "./AbstractCollection";
+import { Collection } from "./Collection";
+import { ConcurrentModificationException } from "./ConcurrentModificationException";
+import { JavaIterator } from "./Iterator";
+import { List } from "./List";
+import { ListIterator } from "./ListIterator";
+import { ISubList, ListIteratorImpl } from "./ListIteratorImpl";
+import { Objects } from "./Objects";
+import { Spliterator } from "./Spliterator";
+import { Consumer } from "./function/Consumer";
+import { Predicate } from "./function/Predicate";
 import { Stream } from "./stream";
 
 /**
@@ -36,23 +36,16 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
 
     protected modCount = 0;
 
-    #sharedBackend: IListBackend<T>;
+    #subListDetails: ISubList<T>;
 
-    protected constructor(list?: IListBackend<T>) {
+    protected constructor(list: ISubList<T>) {
         super();
 
-        this.#sharedBackend = list ?? {
-            list: ImmList(),
-            start: 0,
-            end: 0,
-            updateEnd: (delta: number) => {
-                // Nothing to do here.
-            },
-        };
+        this.#subListDetails = list;
     }
 
     public *[Symbol.iterator](): IterableIterator<T> {
-        yield* this.#sharedBackend.list.slice(this.#sharedBackend.start, this.#sharedBackend.end);
+        yield* this.#subListDetails.data.slice(this.#subListDetails.start, this.#subListDetails.end);
     }
 
     /**
@@ -77,10 +70,24 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     public add(index: number, element: T): void;
     public add(...args: unknown[]): void | boolean {
+        this.checkModCount();
+
         switch (args.length) {
             case 1: {
-                this.#sharedBackend.list = this.#sharedBackend.list.push(args[0] as T);
-                this.changeSize(1);
+                // If there's no parent (sub)list, we can work directly on the data.
+                if (this.#subListDetails.parentList === undefined) {
+                    if (this.#subListDetails.data.length === this.#subListDetails.end) {
+                        this.#subListDetails.data.push(args[0] as T);
+                    } else {
+                        this.#subListDetails.data[this.#subListDetails.end] = args[0] as T;
+                    }
+                } else {
+                    // Otherwise do the manipulation on the parent list (possibly recursively).
+                    this.#subListDetails.parentList.add(this.#subListDetails.end, args[0] as T);
+                }
+
+                ++this.#subListDetails.end;
+                ++this.modCount;
 
                 return true;
             }
@@ -92,9 +99,16 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
                 }
 
                 const element = args[1] as T;
-                this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.start + index,
-                    0, element);
-                this.changeSize(1);
+                if (this.#subListDetails.parentList === undefined) {
+                    this.ensureCapacity(this.#subListDetails.end + 1);
+                    this.#subListDetails.data.copyWithin(index + 1, index, this.#subListDetails.end);
+                    this.#subListDetails.data[index] = element;
+                } else {
+                    this.#subListDetails.parentList.add(this.#subListDetails.start + index, element);
+                }
+
+                ++this.#subListDetails.end;
+                ++this.modCount;
 
                 break;
             }
@@ -133,24 +147,46 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     public addAll(index: number, c: Collection<T>): boolean;
     public addAll(...args: unknown[]): boolean {
+        this.checkModCount();
+
         switch (args.length) {
             case 1: {
                 const c = args[0] as Collection<T>;
-                this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.end, 0, ...c);
-                this.changeSize(c.size());
+                if (this.#subListDetails.parentList === undefined) {
+                    this.ensureCapacity(this.size() + c.size());
+                    for (const element of c) {
+                        this.#subListDetails.data[this.#subListDetails.end++] = element;
+                    }
+                } else {
+                    this.#subListDetails.parentList.addAll(this.#subListDetails.end, c);
+                    this.#subListDetails.end += c.size();
+                }
+
+                ++this.modCount;
 
                 return true;
             }
 
             case 2: {
-                const index = this.#sharedBackend.start + (args[0] as number);
+                let index = args[0] as number;
                 if (index < 0 || index >= this.size()) {
                     throw new ArrayIndexOutOfBoundsException();
                 }
 
                 const c = args[1] as Collection<T>;
-                this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.start + index, 0, ...c);
-                this.changeSize(c.size());
+                if (this.#subListDetails.parentList === undefined) {
+                    // The start index must be 0 if there's no parent list.
+                    this.ensureCapacity(index + c.size());
+                    for (const element of c) {
+                        this.#subListDetails.data[index++] = element;
+                    }
+                } else {
+                    this.#subListDetails.parentList.addAll(this.#subListDetails.start + index, c);
+                    index += c.size();
+                }
+
+                ++this.modCount;
+                this.#subListDetails.end = Math.max(this.#subListDetails.end, index);
 
                 return true;
             }
@@ -166,35 +202,36 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * This method is equivalent to calling `removeRange(0, size())`.
      */
     public clear(): void {
-        const count = this.size();
-        if (this.#sharedBackend.start === 0 && this.#sharedBackend.end === undefined) {
-            // Fast path.
-            this.#sharedBackend.list = ImmList();
-            this.changeSize(-count);
-        } else {
-            this.removeRange(0, this.size());
-        }
+        this.removeRange(0, this.size());
     }
 
     /**
      * Returns true if this list contains the specified element.
      * More formally, returns true if and only if this list contains at least one element e such that
-     * `is(element, e)`.
+     * `Object.equals(element, e)`.
      *
      * @param element The element whose presence in this list is to be tested.
      *
      * @returns true if this list contains the specified element.
      */
     public contains(element: T): boolean {
-        const index = this.#sharedBackend.list.findIndex((value, i) => {
-            if (i < this.#sharedBackend.start || i >= this.#sharedBackend.end) {
-                return false;
+        this.checkModCount();
+
+        if (this.#subListDetails.parentList === undefined) {
+            for (let i = 0; i < this.#subListDetails.end; ++i) {
+                const entry = this.#subListDetails.data[i];
+                if (Objects.equals(entry, element)) {
+                    return true;
+                }
             }
+        } else {
+            const index = this.#subListDetails.parentList.indexOf(element) - this.#subListDetails.start;
+            if (index >= 0 && index < this.size()) {
+                return true;
+            }
+        }
 
-            return is(element, value);
-        });
-
-        return index > -1;
+        return false;
     }
 
     /**
@@ -207,6 +244,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list contains all of the elements of the specified collection.
      */
     public containsAll(c: Collection<T>): boolean {
+        this.checkModCount();
+
         for (const element of c) {
             if (!this.contains(element)) {
                 return false;
@@ -223,7 +262,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @param minCapacity The desired minimum capacity.
      */
     public ensureCapacity(minCapacity: number): void {
-        this.#sharedBackend.list = this.#sharedBackend.list.setSize(minCapacity);
+        this.checkModCount();
+
+        this.#subListDetails.data.length = Math.max(this.#subListDetails.data.length, minCapacity);
     }
 
     /**
@@ -239,6 +280,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if the specified object is equal to this list.
      */
     public equals(other: unknown): boolean {
+        this.checkModCount();
+
         if (this === other) {
             return true;
         }
@@ -252,10 +295,17 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         const size = this.size();
-        for (let i = 0; i < size; ++i) {
-            if (!is(this.#sharedBackend.list.get(this.#sharedBackend.start + i),
-                other.#sharedBackend.list.get(other.#sharedBackend.start + i))) {
-                return false;
+        if (other.#subListDetails.parentList === undefined) {
+            for (let i = 0; i < size; ++i) {
+                if (!Objects.equals(this.get(i), other.#subListDetails.data[i])) {
+                    return false;
+                }
+            }
+        } else {
+            for (let i = 0; i < size; ++i) {
+                if (!Objects.equals(this.get(i), other.#subListDetails.parentList.get(i))) {
+                    return false;
+                }
             }
         }
 
@@ -263,8 +313,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     }
 
     public forEach(action: Consumer<T>): void {
-        for (let i = this.#sharedBackend.start; i < this.#sharedBackend.end; ++i) {
-            action.accept(this.#sharedBackend.list.get(i)!);
+        this.checkModCount();
+
+        for (let i = 0; i < this.size(); ++i) {
+            action.accept(this.get(i));
         }
     }
 
@@ -278,11 +330,17 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
     public get(index: number): T {
+        this.checkModCount();
+
         if (index < 0 || index >= this.size()) {
             throw new IndexOutOfBoundsException();
         }
 
-        return this.#sharedBackend.list.get(this.#sharedBackend.start + index)!;
+        if (this.#subListDetails.parentList === undefined) {
+            return this.#subListDetails.data[index];
+        } else {
+            return this.#subListDetails.parentList.get(this.#subListDetails.start + index);
+        }
     }
 
     /**
@@ -291,18 +349,13 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns The hash code value for this list.
      */
     public hashCode(): number {
-        if (this.#sharedBackend.start === 0 && this.#sharedBackend.end === this.#sharedBackend.list.count()) {
-            // Fast path
-            return this.#sharedBackend.list.hashCode();
+        this.checkModCount();
+
+        if (this.#subListDetails.parentList === undefined) {
+            return MurmurHash.hashCode(this.#subListDetails.data);
         }
 
-        let hashCode = 1;
-        for (let i = this.#sharedBackend.start; i < this.#sharedBackend.end; ++i) {
-            const element = this.#sharedBackend.list.get(i);
-            hashCode = 31 * hashCode + MurmurHash.hashCode(element);
-        }
-
-        return hashCode;
+        return MurmurHash.hashCode(this.toArray());
     }
 
     /**
@@ -316,15 +369,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *          this list does not contain the element.
      */
     public indexOf(element: T): number {
-        const index = this.#sharedBackend.list.findIndex((value, i) => {
-            if (i < this.#sharedBackend.start || i >= this.#sharedBackend.end) {
-                return false;
-            }
+        this.checkModCount();
 
-            return is(element, value);
-        });
+        const array = this.toArray();
 
-        return index - this.#sharedBackend.start;
+        return array.findIndex((value) => { return Objects.equals(element, value); });
     }
 
     /**
@@ -345,14 +394,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns An iterator over the elements in this list in proper sequence.
      */
     public iterator(): JavaIterator<T> {
-        if (this.#sharedBackend.start === 0 && this.#sharedBackend.end === undefined) {
-            // Fast path
-            return new IteratorWrapper(this.#sharedBackend.list[Symbol.iterator]());
-        }
+        this.checkModCount();
 
-        const subList = this.#sharedBackend.list.slice(this.#sharedBackend.start, this.#sharedBackend.end);
-
-        return new IteratorWrapper(subList[Symbol.iterator]());
+        return new IteratorWrapper(this.toArray()[Symbol.iterator]());
     }
 
     public override parallelStream(): Stream<T> {
@@ -370,19 +414,19 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *          this list does not contain the element.
      */
     public lastIndexOf(element: T): number {
+        this.checkModCount();
+
         if (this.isEmpty()) {
             return -1;
         }
 
-        const index = this.#sharedBackend.list.findIndex((value, i) => {
-            if (i < this.#sharedBackend.start || i >= this.#sharedBackend.end) {
-                return false;
-            }
+        const array = this.toArray().reverse();
+        const index = array.findIndex((value) => { return Objects.equals(element, value); });
+        if (index === -1) {
+            return -1;
+        }
 
-            return is(element, value);
-        });
-
-        return index - this.#sharedBackend.start;
+        return array.length - index - 1;
     }
 
     /**
@@ -397,7 +441,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns A list iterator over the elements in this list (in proper sequence).
      */
     public listIterator(index = 0): ListIterator<T> {
-        return new ListIteratorImpl(this.#sharedBackend, this.#sharedBackend.start + index);
+        this.checkModCount();
+
+        return new ListIteratorImpl(this.#subListDetails, index);
     }
 
     /**
@@ -414,8 +460,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     /**
      * Removes the first occurrence of the specified element from this list, if it is present. If this list does not
      * contain the element, it is unchanged. More formally, removes the element with the lowest index i such that
-     * `is(element, get(i))` (if such an element exists). Returns true if this list contained the specified element
-     * (or equivalently, if this list changed as a result of the call).
+     * `Objects.equals(element, get(i))` (if such an element exists). Returns true if this list contained the specified
+     * element (or equivalently, if this list changed as a result of the call).
      *
      * @param element The element to be removed from this list, if present.
      *
@@ -423,31 +469,21 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     public remove(element: T): boolean;
     public remove(...args: unknown[]): boolean | T {
+        this.checkModCount();
+
         switch (args.length) {
             case 1: {
+                // Note: we cannot distinguish between an argument being an index or an element of type number.
+                // Therefore, we assume it's an index if it's a number.
                 if (typeof args[0] === "number") {
-                    const index = args[0] - this.#sharedBackend.start;
+                    const index = args[0];
                     if (index < 0 || index >= this.size()) {
                         throw new IndexOutOfBoundsException();
                     }
 
-                    const result = this.#sharedBackend.list.get(index)!;
-                    this.#sharedBackend.list = this.#sharedBackend.list.splice(index, 1);
-                    this.changeSize(-1);
-
-                    return result;
+                    return this.removeAt(index);
                 } else {
-                    const index = this.#sharedBackend.list.indexOf(args[0] as T);
-                    if (index > -1) {
-                        if (this.#sharedBackend.start <= index && index < this.#sharedBackend.end) {
-                            this.#sharedBackend.list.splice(index, 1);
-                            this.changeSize(-1);
-
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return this.removeValue(args[0] as T);
                 }
             }
 
@@ -465,18 +501,24 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list changed as a result of the call.
      */
     public removeAll(c: Collection<T>): boolean {
-        const oldSize = this.#sharedBackend.list.count();
-        this.#sharedBackend.list = this.#sharedBackend.list.filter((value, index) => {
-            return index >= this.#sharedBackend.start && index < this.#sharedBackend.end && !c.contains(value);
-        });
+        this.checkModCount();
 
-        if (this.#sharedBackend.list.count() < oldSize) {
-            this.changeSize(this.#sharedBackend.list.count() - oldSize);
+        if (this === c) {
+            // Fast path.
+            this.clear();
 
-            return true;
+            return c.size() > 0;
         }
 
-        return false;
+        let result = false;
+        const consumer = Consumer.create<T>((value: T) => {
+            result ||= this.removeValue(value);
+        });
+
+        // We know that the collection is not this list, so we can iterate and remove at the same time.
+        c.forEach(consumer);
+
+        return result;
     }
 
     /**
@@ -487,18 +529,21 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if any elements were removed.
      */
     public removeIf(filter: Predicate<T>): boolean {
-        const oldSize = this.#sharedBackend.list.count();
-        this.#sharedBackend.list = this.#sharedBackend.list.filterNot((value, index) => {
-            return index >= this.#sharedBackend.start && index < this.#sharedBackend.end && filter.test(value);
+        this.checkModCount();
+
+        const candidates: T[] = [];
+        const consumer = Consumer.create<T>((value: T) => {
+            if (filter.test(value)) {
+                candidates.push(value);
+            }
+        });
+        this.forEach(consumer);
+
+        candidates.forEach((value) => {
+            this.removeValue(value);
         });
 
-        if (this.#sharedBackend.list.count() < oldSize) {
-            this.changeSize(this.#sharedBackend.list.count() - oldSize);
-
-            return true;
-        }
-
-        return false;
+        return candidates.length > 0;
     }
 
     /**
@@ -512,6 +557,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @throws IllegalArgumentException if the endpoint indices are out of order
      */
     public removeRange(fromIndex: number, toIndex: number): void {
+        this.checkModCount();
+
         if (fromIndex < 0 || toIndex > this.size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -525,9 +572,16 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             return;
         }
 
-        this.#sharedBackend.list = this.#sharedBackend.list.splice(this.#sharedBackend.start + fromIndex, delta);
+        if (this.#subListDetails.parentList === undefined) {
+            this.#subListDetails.data.copyWithin(fromIndex, toIndex, this.#subListDetails.end);
+            this.#subListDetails.data.fill(null as T, this.#subListDetails.end - delta, this.#subListDetails.end);
+        } else {
+            this.#subListDetails.parentList.removeRange(this.#subListDetails.start + fromIndex,
+                this.#subListDetails.start + toIndex);
+        }
 
-        this.changeSize(-delta);
+        this.#subListDetails.end -= delta;
+        ++this.modCount;
     }
 
     /**
@@ -539,18 +593,24 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list changed as a result of the call.
      */
     public retainAll(c: Collection<T>): boolean {
-        const oldSize = this.#sharedBackend.list.count();
-        this.#sharedBackend.list = this.#sharedBackend.list.filter((value, index) => {
-            return index >= this.#sharedBackend.start && index < this.#sharedBackend.end && c.contains(value);
-        });
+        this.checkModCount();
 
-        if (this.#sharedBackend.list.count() < oldSize) {
-            this.changeSize(this.#sharedBackend.list.count() - oldSize);
-
-            return true;
+        if (this === c) {
+            // Fast path.
+            return false;
         }
 
-        return false;
+        let result = false;
+        const predicate = Predicate.create<T>((value: T): boolean => {
+            const missed = !c.contains(value);
+            result ||= missed;
+
+            return missed;
+        });
+
+        this.removeIf(predicate);
+
+        return result;
     }
 
     /**
@@ -562,21 +622,29 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns The element previously at the specified position.
      */
     public set(index: number, element: T): T {
+        this.checkModCount();
+
         if (index < 0 || index >= this.size()) {
             throw new IndexOutOfBoundsException();
         }
 
-        const result = this.#sharedBackend.list.get(this.#sharedBackend.start + index)!;
-        this.#sharedBackend.list = this.#sharedBackend.list.set(this.#sharedBackend.start + index, element);
+        if (this.#subListDetails.parentList === undefined) {
+            const result = this.#subListDetails.data[index];
+            this.#subListDetails.data[this.#subListDetails.start + index] = element;
 
-        return result;
+            return result;
+        } else {
+            return this.#subListDetails.parentList.set(index + this.#subListDetails.start, element);
+        }
     }
 
     /**
      * @returns The number of elements in this list.
      */
     public size(): number {
-        return this.#sharedBackend.end - this.#sharedBackend.start;
+        this.checkModCount();
+
+        return this.#subListDetails.end - this.#subListDetails.start;
     }
 
     public override stream(): Stream<T> {
@@ -591,7 +659,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
      * (If fromIndex and toIndex are equal, the returned list is empty.) The returned list is backed by this list, so
      * non-structural changes in the returned list are reflected in this list, and vice-versa. The returned list
-     * supports  all of the optional list operations supported by this list.
+     * supports all of the optional list operations supported by this list.
      *
      * @param fromIndex The low endpoint (inclusive) of the subList.
      * @param toIndex The high endpoint (exclusive) of the subList.
@@ -602,6 +670,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @throws IllegalArgumentException if the endpoint indices are out of order
      */
     public subList(fromIndex: number, toIndex: number): List<T> {
+        this.checkModCount();
+
         if (fromIndex < 0 || toIndex > this.size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -611,12 +681,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         const list = new AbstractList<T>({
-            list: this.#sharedBackend.list,
-            start: this.#sharedBackend.start + fromIndex,
-            end: this.#sharedBackend.start + toIndex,
-            updateEnd: (delta) => {
-                this.changeSize(delta);
-            },
+            data: this.#subListDetails.data,
+            start: this.#subListDetails.start + fromIndex,
+            end: this.#subListDetails.start + toIndex,
         });
         list.modCount = this.modCount;
 
@@ -645,12 +712,14 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     public toArray<T2 extends T>(a: T2[]): T2[];
     public toArray<T2 extends T>(a?: T2[]): T2[] | T[] {
+        this.checkModCount();
+
         if (!a || a.length > this.size()) {
-            return this.#sharedBackend.list.slice(this.#sharedBackend.start, this.#sharedBackend.end).toArray();
+            return this.arrayFromRange(this.#subListDetails.start, this.#subListDetails.end);
         }
 
         // The array is big enough, to hold all elements.
-        this.copyToArray(a, 0);
+        this.copyToArray(a);
 
         return a;
     }
@@ -664,6 +733,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns A string representation of this list.
      */
     public toString(): JavaString {
+        this.checkModCount();
+
         const builder = new StringBuilder();
         builder.append("[");
         for (let i = 0; i < this.size(); i++) {
@@ -686,9 +757,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     protected createClone<L extends AbstractList<T>>(c: (new () => L)): L {
         const clone = new c();
-        clone.#sharedBackend = {
-            ...this.#sharedBackend,
-            list: this.#sharedBackend.list.slice(),
+        clone.#subListDetails = {
+            ...this.#subListDetails,
+            data: this.#subListDetails.data.slice(),
         };
         clone.modCount = this.modCount;
 
@@ -699,26 +770,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * Copies the elements of this list into the specified array.
      *
      * @param array The target array. It must be large enough to hold all elements of this list.
-     * @param index A start index in the target array.
-     *
-     * @throws IndexOutOfBoundsException if the index is either < 0, larger than the target array size, or if
-     *         the list size + the start index exceeds the target array upper bound.
      */
-    protected copyToArray(array: T[], index: number): void {
-        if (index < 0 || index >= array.length) {
-            throw new IndexOutOfBoundsException();
+    protected copyToArray(array: T[]): void {
+        for (let i = 0; i < this.size(); i++) {
+            array[i] = this.get(i);
         }
-
-        if (index + this.size() > array.length) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        const end = this.#sharedBackend.end;
-        this.#sharedBackend.list.forEach((value, i) => {
-            if (i >= this.#sharedBackend.start && i < end) {
-                array[index++] = value;
-            }
-        });
 
         // If the target array is bigger than the list, we need to set the entry following the last set element to null.
         if (array.length > this.size()) {
@@ -727,14 +783,70 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     }
 
     /**
-     * Applies the given value to this list and notifies the shared backend about the change.
+     * Copies a sub range of this list into the specified array.
      *
-     * @param delta The delta to apply.
+     * @param start The start index of the sub range.
+     * @param end The end index of the sub range.
+     *
+     * @returns An array containing the elements of the sub range.
      */
-    private changeSize(delta: number): void {
-        ++this.modCount;
-        this.#sharedBackend.end += delta;
+    protected arrayFromRange(start: number, end: number): T[] {
+        if (this.#subListDetails.parentList === undefined) {
+            return this.#subListDetails.data.slice(start, end);
+        } else {
+            return this.#subListDetails.parentList.arrayFromRange(this.#subListDetails.start + start,
+                this.#subListDetails.start + end);
+        }
+    }
 
-        this.#sharedBackend.updateEnd(delta);
+    private checkModCount(): void {
+        if (this.#subListDetails.parentList !== undefined) {
+            if (this.#subListDetails.parentList.modCount !== this.modCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
+
+    /**
+     * Removes the first occurrence of the specified element from this list, if it is present.
+     *
+     * @param value The element to be removed from this list, if present.
+     *
+     * @returns true if this list contained the specified element.
+     */
+    private removeValue(value: T): boolean {
+        const index = this.indexOf(value);
+        if (index === -1) {
+            return false;
+        }
+
+        this.removeAt(index);
+
+        return true;
+    }
+
+    /**
+     * Removes the element at the specified position in this list. It does not check for concurrent modification or
+     * index out of bounds.
+     *
+     * @param index The index of the element to be removed.
+     *
+     * @returns The element that was removed from the list.
+     */
+    private removeAt(index: number): T {
+        let result: T;
+        if (this.#subListDetails.parentList === undefined) {
+            result = this.#subListDetails.data[index];
+            if (index + 1 < this.#subListDetails.data.length) {
+                this.#subListDetails.data.copyWithin(index, index + 1, this.#subListDetails.end);
+            }
+            this.#subListDetails.data[this.#subListDetails.end - 1] = null as T;
+        } else {
+            result = this.#subListDetails.parentList.remove(index + this.#subListDetails.start);
+        }
+        --this.#subListDetails.end;
+        ++this.modCount;
+
+        return result;
     }
 }
