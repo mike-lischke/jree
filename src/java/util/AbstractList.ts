@@ -93,7 +93,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             }
 
             case 2: {
-                const index = args[0] as number;
+                const index = Math.floor(args[0] as number);
                 if (index < 0 || index > this.size()) {
                     throw new ArrayIndexOutOfBoundsException();
                 }
@@ -168,7 +168,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             }
 
             case 2: {
-                let index = args[0] as number;
+                let index = Math.floor(args[0] as number);
                 if (index < 0 || index >= this.size()) {
                     throw new ArrayIndexOutOfBoundsException();
                 }
@@ -332,6 +332,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public get(index: number): T {
         this.checkModCount();
 
+        index = Math.floor(index);
         if (index < 0 || index >= this.size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -443,7 +444,13 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public listIterator(index = 0): ListIterator<T> {
         this.checkModCount();
 
-        return new ListIteratorImpl(this.#subListDetails, index);
+        index = Math.floor(index);
+        const details = { ...this.#subListDetails };
+        if (details.parentList === undefined) {
+            details.parentList = this;
+        }
+
+        return new ListIteratorImpl(details, index);
     }
 
     /**
@@ -476,7 +483,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
                 // Note: we cannot distinguish between an argument being an index or an element of type number.
                 // Therefore, we assume it's an index if it's a number.
                 if (typeof args[0] === "number") {
-                    const index = args[0];
+                    const index = Math.floor(args[0]);
                     if (index < 0 || index >= this.size()) {
                         throw new IndexOutOfBoundsException();
                     }
@@ -559,6 +566,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public removeRange(fromIndex: number, toIndex: number): void {
         this.checkModCount();
 
+        fromIndex = Math.floor(fromIndex);
+        toIndex = Math.floor(toIndex);
         if (fromIndex < 0 || toIndex > this.size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -624,6 +633,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public set(index: number, element: T): T {
         this.checkModCount();
 
+        index = Math.floor(index);
         if (index < 0 || index >= this.size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -672,6 +682,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public subList(fromIndex: number, toIndex: number): List<T> {
         this.checkModCount();
 
+        fromIndex = Math.floor(fromIndex);
+        toIndex = Math.floor(toIndex);
         if (fromIndex < 0 || toIndex > this.size()) {
             throw new IndexOutOfBoundsException();
         }
