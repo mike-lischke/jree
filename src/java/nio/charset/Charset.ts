@@ -256,9 +256,9 @@ export class Charset extends JavaObject implements Comparable<Charset> {
         super();
 
         if (typeof canonicalName === "string") {
-            this.#canonicalName = canonicalName;
+            this.#canonicalName = canonicalName.toLowerCase();
         } else {
-            this.#canonicalName = canonicalName.valueOf();
+            this.#canonicalName = canonicalName.valueOf().toLowerCase();
         }
 
         if (!Charset.#encodingsMap.has(this.#canonicalName)) {

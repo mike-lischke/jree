@@ -69,6 +69,8 @@ Strings in Java and TypeScript are also pretty similar. Like for numbers also st
 
 In both languages strings are stored in UTF-16 (two bytes per character) and use surrogates for values > 0xFFFF. However, there's no simple `char` type in TypeScript, so we can only use `number` for it. To better distinguish a char type from an ordinary number a type alias is used in TypeScript (`char`) for any occurrence of a single `char` (and uses a number as base type, with only the lowest 16 bits). However, using a number for a char is all but optimal, so arrays of chars are converted to `Uint16Array` instead, which should be as efficient as the Java implementation.
 
+Using `number` for char codes can lead to trouble when converting such a value to a string. For example `java.lang.String.valueOf()` takes any value and creates a string from. This method cannot distinguish between a number or character and hence returns the number expression for it. In such cases use `java.lang.String.fromCharCode()` instead, which is not part of the Java API, but exists for such cases.
+
 ### <a name="coding">Encoding and Decoding</a>
 
 The classes `java.nio.charset.Charset`, `java.nio.charset.CharsetEncoder` and `java.nio.charset.CharsetDecoder` are mostly supported by using the `TextEncoder` and `TextDecoder` classes from the browser. With this a large number of charsets are available for decoding. Unfortunately, the `TextEncoder` class does not support encoding to a specific charset, so only UTF-8 is supported for encoding.

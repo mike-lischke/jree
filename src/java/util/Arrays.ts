@@ -140,15 +140,19 @@ export class Arrays extends JavaObject {
         if (!Array.isArray(original)) {
             const result = new (original.constructor as new (arg: number) => TypedArray)(newLength);
             result.set(original);
+            if (newLength > original.length) {
+                result.fill(0, original.length);
+            }
 
             return result;
         } else {
-            const result = new Array<T>(newLength);
-            original.forEach((v, i) => {
-                result[i] = v;
-            });
+            const result = original.slice() as Array<T | null>;
+            result.length = newLength;
+            if (newLength > original.length) {
+                result.fill(null, original.length);
+            }
 
-            return result;
+            return result as T[];
         }
     }
 

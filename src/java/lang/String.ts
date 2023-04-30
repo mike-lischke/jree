@@ -183,12 +183,27 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      *
      * @returns A Java string with a single letter (represented by the code point).
      */
-    public static fromCodePoint(codePoint: number): JavaString {
+    public static fromCodePoint(codePoint: int): JavaString {
         if (codePoint < 0 || codePoint > 0x10ffff) {
             throw new IllegalArgumentException(new JavaString(`Invalid code point: ${codePoint}`));
         }
 
         return new JavaString(String.fromCodePoint(codePoint));
+    }
+
+    /**
+     * Not part of the Java API. Creates a Java string from a code point.
+     *
+     * @param charCode The character code to convert to a string.
+     *
+     * @returns A Java string with a single letter (represented by the character code).
+     */
+    public static fromCharCode(charCode: char): JavaString {
+        if (charCode < 0 || charCode > 0xffff) {
+            throw new IllegalArgumentException(new JavaString(`Invalid char code: ${charCode}`));
+        }
+
+        return new JavaString(String.fromCharCode(charCode));
     }
 
     /**

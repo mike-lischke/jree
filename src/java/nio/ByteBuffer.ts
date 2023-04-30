@@ -83,7 +83,7 @@ export class ByteBuffer extends BufferImpl<Int8Array> {
 
     public static wrap(array: Int8Array, offset?: int, length?: int): ByteBuffer {
         if (offset !== undefined && length !== undefined) {
-            return new ByteBuffer(array, offset, offset + length);
+            return new ByteBuffer(array, offset, length);
         }
 
         return new ByteBuffer(array);

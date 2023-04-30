@@ -32,7 +32,7 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
 
     /** @returns the byte array that backs this buffer (optional operation). */
     public array(): T {
-        return this.#array;
+        return this.#array.subarray(this.currentPosition, this.currentLimit) as T;
     }
 
     /**
