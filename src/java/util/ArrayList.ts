@@ -44,6 +44,7 @@ export class ArrayList<T> extends AbstractList<T> implements Cloneable<ArrayList
                 if (typeof arg === "number") {
                     end = 0;
                     input = new Array<T>(arg);
+                    input.fill(null as T);
                 } else if (Array.isArray(arg)) {
                     end = arg.length;
                     input = arg;

@@ -7,6 +7,7 @@ import { NotImplementedError } from "../../NotImplementedError";
 import { Consumer } from "../util/function/Consumer";
 import { JavaIterator } from "../util/Iterator";
 import { Spliterator } from "../util/Spliterator";
+import { NullPointerException } from "./NullPointerException";
 import { IReflection, JavaObject } from "./Object";
 import { JavaString } from "./String";
 
@@ -33,7 +34,11 @@ export class JavaIterable<T> extends JavaObject {
      *
      * @param action The action to be performed for each element.
      */
-    public forEach(action: Consumer<T>): void {
+    public forEach(action: Consumer<T> | null): void {
+        if (!action) {
+            throw new NullPointerException();
+        }
+
         for (const item of this) {
             action.accept(item);
         }

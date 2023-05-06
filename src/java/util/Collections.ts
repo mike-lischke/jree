@@ -19,11 +19,11 @@ export abstract class Collections extends JavaObject {
     public static readonly EMPTY_MAP = new HashMap();
     public static readonly EMPTY_SET = new HashSet();
 
-    public static unmodifiableMap<K, V>(map: JavaMap<K, V>): Readonly<JavaMap<K, V>> {
+    public static unmodifiableMap<K, V>(map: JavaMap<K, V>): JavaMap<K, V> {
         return map;
     }
 
-    public static unmodifiableList<T>(list: List<T>): Readonly<List<T>> {
+    public static unmodifiableList<T>(list: List<T>): List<T> {
         return list;
     }
 

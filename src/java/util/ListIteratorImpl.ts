@@ -63,7 +63,7 @@ export class ListIteratorImpl<T> extends JavaObject implements ListIterator<T> {
 
     public add(element: T): void {
         this.#movedForward = undefined;
-        this.#backend.parentList!.add(element);
+        this.#backend.parentList!.add(this.#index, element);
     }
 
     public hasNext(): boolean {
@@ -81,7 +81,7 @@ export class ListIteratorImpl<T> extends JavaObject implements ListIterator<T> {
 
         this.#movedForward = true;
 
-        return this.#backend.data[this.#index++];
+        return this.#backend.parentList!.get(this.#index++);
     }
 
     public nextIndex(): number {
@@ -95,7 +95,7 @@ export class ListIteratorImpl<T> extends JavaObject implements ListIterator<T> {
 
         this.#movedForward = false;
 
-        return this.#backend.data[--this.#index];
+        return this.#backend.parentList!.get(--this.#index);
     }
 
     public previousIndex(): number {
@@ -122,10 +122,10 @@ export class ListIteratorImpl<T> extends JavaObject implements ListIterator<T> {
     public set(element: T): void {
         if (this.#movedForward) {
             // Index was moved to next element.
-            this.#backend.data[this.#index - 1] = element;
+            this.#backend.parentList!.set(this.#index - 1, element);
         } else {
             // Index at last returned element.
-            this.#backend.data[this.#index] = element;
+            this.#backend.parentList!.set(this.#index, element);
         }
     }
 

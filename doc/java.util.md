@@ -49,6 +49,7 @@ This page lists the java.util types that are currently in this Node package. The
 |🅿|[Objects](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Objects.html)|This class consists of static utility methods for operating on objects, or checking certain conditions before operation.|
 |🅿|[Optional\<T>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html)|A container object which may or may not contain a non-null value.|
 |🅵|[Properties](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html)|The `Properties` class represents a persistent set of properties.|
+|🅿|[Random](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html)|An instance of this class is used to generate a stream of pseudorandom numbers.|
 |🅵|[Stack\<E>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Stack.html)|The `Stack` class represents a last-in-first-out (LIFO) stack of objects.|
 |🅂|[TimeZone](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/TimeZone.html)|A `TimeZone` object represents a time zone offset, and also figures out daylight savings.|
 |🅵|[Vector\<E>](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Vector.html)|The `Vector` class implements a growable array of objects.|

@@ -36,6 +36,7 @@ export * from "./Spliterator";
 export * from "./Vector";
 export * from "./Stack";
 export * from "./RandomAccess";
+export * from "./Random";
 export * from "./ArrayDeque";
 export * from "./AbstractList";
 export * from "./Optional";

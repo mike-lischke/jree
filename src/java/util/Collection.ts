@@ -4,6 +4,7 @@
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
+import { NullPointerException } from "../lang";
 import { JavaIterable } from "../lang/Iterable";
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
@@ -113,7 +114,11 @@ export class Collection<T> extends JavaObject {
      *
      * @returns true if any elements were removed
      */
-    public removeIf(filter: Predicate<T>): boolean {
+    public removeIf(filter: Predicate<T> | null): boolean {
+        if (!filter) {
+            throw new NullPointerException();
+        }
+
         let removed = false;
         const it = this.iterator();
         while (it.hasNext()) {

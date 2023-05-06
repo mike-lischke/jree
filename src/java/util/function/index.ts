@@ -6,6 +6,6 @@
 export * from "./Supplier";
 export * from "./Consumer";
 export * from "./Predicate";
-export * from "./Function";
+export { JavaFunction as Function } from "./Function";
 export * from "./UnaryOperator";
 export * from "./BiConsumer";

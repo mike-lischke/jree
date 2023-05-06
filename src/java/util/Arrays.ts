@@ -40,11 +40,13 @@ export class Arrays extends JavaObject {
     }
 
     /**
-     * @param a the array by which the list will be backed
+     * @param a the array by which the list will be backed or a list of values to initialize the array with.
      *
      * @returns a fixed-size list backed by the specified array.
      */
-    public static asList<T>(...a: T[]): List<T> {
+    public static asList<T>(a: T[]): List<T>;
+    public static asList<T>(...a: T[]): List<T>;
+    public static asList<T>(a: T[]): List<T> {
         return new ArrayList<T>(a);
     }
 

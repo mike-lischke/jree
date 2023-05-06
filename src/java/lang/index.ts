@@ -23,7 +23,7 @@ export * from "./Cloneable";
 export * from "./Appendable";
 export * from "./Comparable";
 export * from "./Readable";
-export * from "./Iterable";
+export { JavaIterable as Iterable } from "./Iterable";
 export * from "./AutoCloseable";
 export * from "./Runnable";
 
