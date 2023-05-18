@@ -23,12 +23,6 @@
  * questions.
  */
 
-/* eslint-disable @typescript-eslint/prefer-for-of */
-/* eslint-disable max-len */
-/* cspell: disable */
-/* eslint-disable jsdoc/check-tag-names */
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { java, JavaObject, int, S, I } from "../../../../../../src";
 import { org } from "../../../../../org/org";
 
@@ -54,15 +48,13 @@ const Collections = java.util.Collections;
 type Collections = java.util.Collections;
 type Function<T, R> = java.util.function.Function<T, R>;
 type Supplier<T> = java.util.function.Supplier<T>;
-
-const Predicate = java.util.function.Predicate;
+const Supplier = java.util.function.Supplier;
 
 /**
- * @library
  * @summary A Supplier of test cases for Collection tests
  */
-export class CollectionSupplier<C extends Collection<Integer>> extends JavaObject
-    implements Supplier<Iterable<CollectionSupplier.TestCase<C>>> {
+export class CollectionSupplier<C extends Collection<Integer>>
+    extends Supplier<Iterable<CollectionSupplier.TestCase<C>>> {
 
     /**
      * A Collection test case.
@@ -160,33 +152,33 @@ export class CollectionSupplier<C extends Collection<Integer>> extends JavaObjec
         const cases = new LinkedList<CollectionSupplier.TestCase<C>>();
         for (const supplier of this.suppliers) {
             try {
-                cases.add(new CollectionSupplier.TestCase("empty", supplier, supplier.apply(Collections.emptyList())));
+                cases.add(new CollectionSupplier.TestCase("empty", supplier, supplier(Collections.emptyList())));
 
-                cases.add(new CollectionSupplier.TestCase("single", supplier, supplier.apply(Arrays.asList(I`${42}`))));
+                cases.add(new CollectionSupplier.TestCase("single", supplier, supplier(Arrays.asList(I`${42}`))));
 
                 const regular = new ArrayList<Integer>();
                 for (let i = 0; i < this.size; i++) {
                     regular.add(I`${i}`);
                 }
-                cases.add(new CollectionSupplier.TestCase("regular", supplier, supplier.apply(regular)));
+                cases.add(new CollectionSupplier.TestCase("regular", supplier, supplier(regular)));
 
                 const reverse = new ArrayList<Integer>();
                 for (let i = this.size; i >= 0; i--) {
                     reverse.add(I`${i}`);
                 }
-                cases.add(new CollectionSupplier.TestCase("reverse", supplier, supplier.apply(reverse)));
+                cases.add(new CollectionSupplier.TestCase("reverse", supplier, supplier(reverse)));
 
                 const odds = new ArrayList<Integer>();
                 for (let i = 0; i < this.size; i++) {
                     odds.add(I`${(i * 2) + 1}`);
                 }
-                cases.add(new CollectionSupplier.TestCase("odds", supplier, supplier.apply(odds)));
+                cases.add(new CollectionSupplier.TestCase("odds", supplier, supplier(odds)));
 
                 const evens = new ArrayList<Integer>();
                 for (let i = 0; i < this.size; i++) {
                     evens.add(I`${i * 2}`);
                 }
-                cases.add(new CollectionSupplier.TestCase("evens", supplier, supplier.apply(evens)));
+                cases.add(new CollectionSupplier.TestCase("evens", supplier, supplier(evens)));
 
                 const fibonacci = new ArrayList<Integer>();
                 let prev2 = 0;
@@ -200,11 +192,11 @@ export class CollectionSupplier<C extends Collection<Integer>> extends JavaObjec
                     prev2 = prev1;
                     prev1 = n;
                 }
-                cases.add(new CollectionSupplier.TestCase("fibonacci", supplier, supplier.apply(fibonacci)));
+                cases.add(new CollectionSupplier.TestCase("fibonacci", supplier, supplier(fibonacci)));
 
                 let isStructurallyModifiable = false;
                 try {
-                    const t = supplier.apply(Collections.emptyList());
+                    const t = supplier(Collections.emptyList());
                     t.add(I`${1}`);
                     isStructurallyModifiable = true;
                 } catch (e) {
@@ -220,56 +212,55 @@ export class CollectionSupplier<C extends Collection<Integer>> extends JavaObjec
 
                 // variants where the size of the backing storage != reported size
                 // created by removing half of the elements
-                const emptyWithSlack = supplier.apply(Collections.emptyList());
+                const emptyWithSlack = supplier(Collections.emptyList());
                 emptyWithSlack.add(I`${42}`);
                 assertTrue(emptyWithSlack.remove(42));
                 cases.add(new CollectionSupplier.TestCase("emptyWithSlack", supplier, emptyWithSlack));
 
-                const singleWithSlack = supplier.apply(Collections.emptyList());
+                const singleWithSlack = supplier(Collections.emptyList());
                 singleWithSlack.add(I`${42}`);
                 singleWithSlack.add(I`${43}`);
                 assertTrue(singleWithSlack.remove(43));
                 cases.add(new CollectionSupplier.TestCase("singleWithSlack", supplier, singleWithSlack));
 
-                const regularWithSlack = supplier.apply(Collections.emptyList());
+                const regularWithSlack = supplier(Collections.emptyList());
                 for (let i = 0; i < (2 * this.size); i++) {
                     regularWithSlack.add(I`${i}`);
                 }
-
-                const predicateLessThan = Predicate.create<Integer>((x) => {
+                assertTrue(regularWithSlack.removeIf((x) => {
                     return x.valueOf() < this.size;
-                });
-
-                assertTrue(regularWithSlack.removeIf(predicateLessThan));
+                }));
                 cases.add(new CollectionSupplier.TestCase("regularWithSlack", supplier, regularWithSlack));
 
-                const reverseWithSlack = supplier.apply(Collections.emptyList());
+                const reverseWithSlack = supplier(Collections.emptyList());
                 for (let i = 2 * this.size; i >= 0; i--) {
                     reverseWithSlack.add(I`${i}`);
                 }
-                assertTrue(reverseWithSlack.removeIf(predicateLessThan));
+                assertTrue(reverseWithSlack.removeIf((x) => {
+                    return x.valueOf() < this.size;
+                }));
                 cases.add(new CollectionSupplier.TestCase("reverseWithSlack", supplier, reverseWithSlack));
 
-                const oddsWithSlack = supplier.apply(Collections.emptyList());
+                const oddsWithSlack = supplier(Collections.emptyList());
                 for (let i = 0; i < 2 * this.size; i++) {
                     oddsWithSlack.add(I`${(i * 2) + 1}`);
                 }
 
-                const predicateGreaterThan = Predicate.create<Integer>((x) => {
+                assertTrue(oddsWithSlack.removeIf((x) => {
                     return x.valueOf() >= this.size;
-                });
-
-                assertTrue(oddsWithSlack.removeIf(predicateGreaterThan));
+                }));
                 cases.add(new CollectionSupplier.TestCase("oddsWithSlack", supplier, oddsWithSlack));
 
-                const evensWithSlack = supplier.apply(Collections.emptyList());
+                const evensWithSlack = supplier(Collections.emptyList());
                 for (let i = 0; i < 2 * this.size; i++) {
                     evensWithSlack.add(I`${i * 2}`);
                 }
-                assertTrue(evensWithSlack.removeIf(predicateGreaterThan));
+                assertTrue(evensWithSlack.removeIf((x) => {
+                    return x.valueOf() >= this.size;
+                }));
                 cases.add(new CollectionSupplier.TestCase("evensWithSlack", supplier, evensWithSlack));
 
-                const fibonacciWithSlack = supplier.apply(Collections.emptyList());
+                const fibonacciWithSlack = supplier(Collections.emptyList());
                 prev2 = 0;
                 prev1 = 1;
                 for (let i = 0; i < this.size; i++) {
@@ -282,11 +273,9 @@ export class CollectionSupplier<C extends Collection<Integer>> extends JavaObjec
                     prev1 = n;
                 }
 
-                const predicateLessThan20 = Predicate.create<Integer>((x) => {
+                assertTrue(fibonacciWithSlack.removeIf((x) => {
                     return x.valueOf() < 20;
-                });
-
-                assertTrue(fibonacciWithSlack.removeIf(predicateLessThan20));
+                }));
                 cases.add(new CollectionSupplier.TestCase("fibonacciWithSlack", supplier, fibonacciWithSlack));
             } catch (failed) {
                 if (failed instanceof Exception) {

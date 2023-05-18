@@ -106,7 +106,7 @@ export interface Collection<T> extends JavaIterable<T> {
     toArray<T2>(a: T2[]): T2[];
 }
 
-export class Collection<T> extends JavaObject {
+export class Collection<T> extends JavaObject implements Collection<T> {
     /**
      * Removes all of the elements of this collection that satisfy the given predicate.
      *
@@ -122,7 +122,7 @@ export class Collection<T> extends JavaObject {
         let removed = false;
         const it = this.iterator();
         while (it.hasNext()) {
-            if (filter.test(it.next())) {
+            if (filter(it.next())) {
                 it.remove();
                 removed = true;
             }

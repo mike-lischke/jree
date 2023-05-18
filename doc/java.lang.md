@@ -50,6 +50,7 @@ This page lists the java.lang types that are currently in this Node package.
 |---|---|---|
 |🅵|[ArithmeticException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArithmeticException.html)|Thrown when an exceptional arithmetic condition has occurred.|
 |🅵|[ArrayIndexOutOfBoundsException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArrayIndexOutOfBoundsException.html)|Thrown to indicate that an array has been accessed with an illegal index.|
+|🅵|[ClassCastException](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassCastException.html)|Thrown to indicate that the code has attempted to cast an object to a subclass of which it is not an instance.|
 |🅵|[CloneNotSupportedException](https://docs.oracle.com/javase/8/docs/api/java/lang/CloneNotSupportedException.html)|Thrown to indicate that the `clone` method in class Object has been called to clone an object, but that the object's class does not implement the Cloneable interface.|
 |🅵|[Error](https://docs.oracle.com/javase/8/docs/api/java/lang/Error.html)|An Error is a subclass of Throwable that indicates serious problems that a reasonable application should not try to catch.|
 |🅵|[Exception](https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html)|Exception is a class that represents an exception condition that a reasonable application might want to catch.|
@@ -64,6 +65,7 @@ This page lists the java.lang types that are currently in this Node package.
 |🅵|[NumberFormatException](https://docs.oracle.com/javase/8/docs/api/java/lang/NumberFormatException.html)|Thrown to indicate that the application has attempted to convert a string to one of the numeric types, but that the string does not have the appropriate format.|
 |🅵|[OutOfMemoryError](https://docs.oracle.com/javase/8/docs/api/java/lang/OutOfMemoryError.html)|Thrown when the Java Virtual Machine cannot allocate an object because it is out of memory, and no more memory could be made available by the garbage collector.|
 |🅵|[RuntimeException](https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html)|RuntimeException is the superclass of those exceptions that can be thrown during the normal operation of the Java Virtual Machine.|
+|🅵|[StackOverflowError](https://docs.oracle.com/javase/8/docs/api/java/lang/StackOverflowError.html)|Thrown when a stack overflow occurs because an application recurses too deeply.|
 |🅵|[Throwable](https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html)|The Throwable class is the superclass of all errors and exceptions in the Java language.|
 |🅵|[UnsupportedOperationException](https://docs.oracle.com/javase/8/docs/api/java/lang/UnsupportedOperationException.html)|Thrown to indicate that the requested operation is not supported.|
 |🅵|[VirtualMachineError](https://docs.oracle.com/javase/8/docs/api/java/lang/VirtualMachineError.html)|Subclasses of VirtualMachineError are thrown when the Java Virtual Machine is broken or has run out of resources necessary for it to continue operating.|

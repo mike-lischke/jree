@@ -5,3 +5,5 @@
 
 export * from "./TestException";
 export * from "./Assert";
+
+export * from "./annotations/$annotations";

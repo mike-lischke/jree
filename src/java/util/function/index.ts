@@ -9,3 +9,5 @@ export * from "./Predicate";
 export { JavaFunction as Function } from "./Function";
 export * from "./UnaryOperator";
 export * from "./BiConsumer";
+export * from "./IntBinaryOperator";
+export * from "./IntUnaryOperator";

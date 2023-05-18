@@ -173,6 +173,10 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
             return this.value === obj.value;
         }
 
+        if (typeof obj === "boolean") {
+            return this.value === obj;
+        }
+
         return false;
     }
 

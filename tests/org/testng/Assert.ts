@@ -6,25 +6,16 @@
 import { java } from "../../../src";
 
 /**
- * This is an emulation of the Java TestNG Assert class, which acts as a thin wrapper around Jest.
+ * Assertion tool class. Presents assertion methods with a more natural parameter order. The order is always
+ * actualValue, expectedValue [, message].
+ *
+ * This is an emulation of the org.testng.Assert class, which acts as a thin wrapper around Jest.
  */
 export class Assert extends java.lang.Object {
     public static assertEquals = (expected: unknown, actual: unknown): void => {
-        if (expected === actual) {
-            return;
+        if (!java.util.Objects.equals(expected, actual)) {
+            fail("Expected: " + expected + " but was: " + actual);
         }
-
-        if (expected == null || actual == null) {
-            fail();
-        }
-
-        if (expected instanceof java.lang.Object && actual instanceof java.lang.Object) {
-            if (expected.equals(actual)) {
-                return;
-            }
-        }
-
-        fail("Expected: " + expected + " but was: " + actual);
     };
 
     public static assertTrue = (condition: boolean, message?: string): void => {
@@ -33,7 +24,43 @@ export class Assert extends java.lang.Object {
         }
     };
 
+    public static assertFalse = (condition: boolean, message?: string): void => {
+        if (condition) {
+            fail(message);
+        }
+    };
+
+    public static assertNotEquals = (expected: unknown, actual: unknown): void => {
+        if (java.util.Objects.equals(expected, actual)) {
+            fail("Expected: " + expected + " but was: " + actual);
+        }
+    };
+
+    public static assertNull = (object: unknown, message?: string): void => {
+        if (object != null) {
+            fail(message);
+        }
+    };
+
+    public static assertNotNull = (object: unknown, message?: string): void => {
+        if (object == null) {
+            fail(message);
+        }
+    };
+
+    public static assertSame = (expected: unknown, actual: unknown): void => {
+        if (!java.util.Objects.equals(expected, actual)) {
+            fail("Expected: " + expected + " but was: " + actual);
+        }
+    };
+
+    public static assertNotSame = (expected: unknown, actual: unknown): void => {
+        if (java.util.Objects.equals(expected, actual)) {
+            fail("Expected: " + expected + " but was: " + actual);
+        }
+    };
+
     public static fail = (message?: string): void => {
-        this.fail(message);
+        fail(message); // Jest fail function.
     };
 }

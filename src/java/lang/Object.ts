@@ -103,6 +103,10 @@ export class Class<T> extends JavaObject {
         return clazz as Class<T>;
     }
 
+    public cast(o: unknown): T {
+        return o as T;
+    }
+
     public getName(): string {
         return this.c.name;
     }
@@ -111,12 +115,26 @@ export class Class<T> extends JavaObject {
         return this.c.name;
     }
 
-    public isInstance(o: unknown): boolean {
-        return o instanceof this.c;
+    /**
+     * Determines if the class or interface represented by this Class object is either the same as, or is a superclass
+     * or super interface of, the class or interface represented by the specified Class parameter.
+     *
+     * @param cls The class to check against.
+     *
+     * @returns the boolean value indicating whether objects of the type cls can be assigned to objects of this class.
+     */
+    public isAssignableFrom(cls: Class<unknown>): boolean {
+        // Same type?
+        if (this.c.prototype === cls.c.prototype) {
+            return true;
+        }
+
+        // Is cls a subclass of this.c?
+        return this.c.prototype instanceof cls.c;
     }
 
-    public cast(o: unknown): T {
-        return o as T;
+    public isInstance(o: unknown): boolean {
+        return o instanceof this.c;
     }
 
     public newInstance(): T {

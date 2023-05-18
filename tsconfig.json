@@ -12,7 +12,7 @@
         "noImplicitOverride": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
-        "removeComments": false
+        "removeComments": false,
     },
     "include": [
         "src/**/*.ts",

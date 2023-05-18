@@ -14,6 +14,7 @@ import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { List } from "./List";
 import { ArrayList } from "./ArrayList";
+import { ArrayIndexOutOfBoundsException, NullPointerException } from "../lang";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =
@@ -44,9 +45,9 @@ export class Arrays extends JavaObject {
      *
      * @returns a fixed-size list backed by the specified array.
      */
-    public static asList<T>(a: T[]): List<T>;
-    public static asList<T>(...a: T[]): List<T>;
-    public static asList<T>(a: T[]): List<T> {
+    public static asList<T>(this: void, a: T[]): List<T>;
+    public static asList<T>(this: void, ...a: T[]): List<T>;
+    public static asList<T>(this: void, a: T[]): List<T> {
         return new ArrayList<T>(a);
     }
 
@@ -117,47 +118,6 @@ export class Arrays extends JavaObject {
         return hash1 === hash2;
     }
 
-    public static copyOf<T extends TypedArray>(original: T, newLength: number): T;
-    /**
-     * Copies the specified array, truncating or padding with null (if necessary) so the copy has the specified length.
-     * For all indices that are valid in both the original array and the copy, the two arrays will contain identical
-     * values. For any indices that are valid in the copy but not the original, the copy will be undefined.
-     * Such indices will exist if and only if the specified length is greater than that of the original array.
-     *
-     * @param original The array to be copied.
-     * @param newLength The length of the copy to be returned.
-     *
-     * @returns A copy of the original array, truncated or padded with null to obtain the specified length.
-     */
-    public static copyOf<T>(original: T[], newLength: number): T[];
-    public static copyOf<T>(original: T[] | TypedArray, newLength: number): T[] | TypedArray {
-        if (newLength < original.length) {
-            return original.slice(0, newLength);
-        }
-
-        if (newLength === original.length) {
-            return original.slice();
-        }
-
-        if (!Array.isArray(original)) {
-            const result = new (original.constructor as new (arg: number) => TypedArray)(newLength);
-            result.set(original);
-            if (newLength > original.length) {
-                result.fill(0, original.length);
-            }
-
-            return result;
-        } else {
-            const result = original.slice() as Array<T | null>;
-            result.length = newLength;
-            if (newLength > original.length) {
-                result.fill(null, original.length);
-            }
-
-            return result as T[];
-        }
-    }
-
     public static binarySearch<T extends ComparableValueType>(list: ArrayLike<T>, value: T): number;
     public static binarySearch<T extends ComparableValueType>(list: ArrayLike<T>, start: number, end: number,
         value: T): number;
@@ -192,6 +152,94 @@ export class Arrays extends JavaObject {
         }
 
         return -start - 1;
+    }
+
+    public static copyOf<T extends TypedArray>(original: T, newLength: number): T;
+    /**
+     * Copies the specified array, truncating or padding with null (if necessary) so the copy has the specified length.
+     * For all indices that are valid in both the original array and the copy, the two arrays will contain identical
+     * values. For any indices that are valid in the copy but not the original, the copy will be undefined.
+     * Such indices will exist if and only if the specified length is greater than that of the original array.
+     *
+     * @param original The array to be copied.
+     * @param newLength The length of the copy to be returned.
+     *
+     * @returns A copy of the original array, truncated or padded with null to obtain the specified length.
+     */
+    public static copyOf<T>(original: T[], newLength: number): T[];
+    public static copyOf<T>(original: T[] | TypedArray, newLength: number): T[] | TypedArray {
+        if (newLength < original.length) {
+            return original.slice(0, newLength);
+        }
+
+        if (newLength === original.length) {
+            return original.slice();
+        }
+
+        if (!Array.isArray(original)) {
+            const result = new (original.constructor as new (arg: number) => TypedArray)(newLength);
+            result.set(original);
+            if (newLength > original.length) {
+                result.fill(0, original.length);
+            }
+
+            return result;
+        } else {
+            const result = original.slice();
+            result.length = newLength;
+            if (newLength > original.length) {
+                result.fill(null as T, original.length);
+            }
+
+            return result;
+        }
+    }
+
+    public static copyOfRange<T extends TypedArray>(original: T, from: int, to: int): T;
+    /**
+     * Copies the specified array, truncating or padding with null (if necessary) so the copy has the specified length.
+     * For all indices that are valid in both the original array and the copy, the two arrays will contain identical
+     * values. For any indices that are valid in the copy but not the original, the copy will be undefined.
+     * Such indices will exist if and only if the specified length is greater than that of the original array.
+     *
+     * @param original The array to be copied.
+     * @param newLength The length of the copy to be returned.
+     *
+     * @returns A copy of the original array, truncated or padded with null to obtain the specified length.
+     */
+    public static copyOfRange<T>(original: T[], from: int, to: int): T[];
+    public static copyOfRange<T>(original: T[] | TypedArray, from: int, to: int): T[] | TypedArray {
+        if (from < 0 || to > original.length) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+
+        if (from > to) {
+            throw new IllegalArgumentException();
+        }
+
+        if (original === null) {
+            throw new NullPointerException();
+        }
+
+        const newLength = to - from;
+        if (to < original.length) {
+            return original.slice(from, to);
+        }
+
+        // "to" is >= than original.length, so we copy everything from "from" to the end of the array.
+        if (!Array.isArray(original)) {
+            const result = new (original.constructor as new (arg: number) => TypedArray)(newLength);
+            result.set(original.slice(from));
+            result.fill(0, original.length - from);
+
+            return result;
+        } else {
+            const result = original.slice(from);
+            result.length = newLength;
+            result.fill(null as T, original.length - from);
+
+            return result;
+        }
     }
 
     public static hashCode(a: ArrayLike<unknown>): int {
@@ -253,7 +301,7 @@ export class Arrays extends JavaObject {
                     return i;
                 }
 
-                if (cmp.compare!(a[i], b[i]) !== 0) {
+                if (cmp(a[i], b[i]) !== 0) {
                     return i;
                 }
             }

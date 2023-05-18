@@ -40,7 +40,7 @@ export class JavaIterable<T> extends JavaObject {
         }
 
         for (const item of this) {
-            action.accept(item);
+            action(item);
         }
     }
 

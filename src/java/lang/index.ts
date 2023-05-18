@@ -46,6 +46,8 @@ export * from "./NegativeArraySizeException";
 export * from "./CloneNotSupportedException";
 export * from "./ArrayIndexOutOfBoundsException";
 export * from "./ArithmeticException";
+export * from "./ClassCastException";
+export * from "./StackOverflowError";
 
 export * from "./System";
 export * from "./StackTraceElement";

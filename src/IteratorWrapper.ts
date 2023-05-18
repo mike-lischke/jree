@@ -6,6 +6,7 @@
 import { JavaObject } from "./java/lang/Object";
 import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException";
 import { JavaIterator } from "./java/util/Iterator";
+import { Consumer } from "./java/util/function";
 
 /** A JRE iterator which wraps a Typescript iterator. */
 export class IteratorWrapper<T> extends JavaObject implements JavaIterator<T> {
@@ -26,6 +27,12 @@ export class IteratorWrapper<T> extends JavaObject implements JavaIterator<T> {
 
         yield this.nextValue.value;
         yield* this.iterator;
+    }
+
+    public forEachRemaining(action: Consumer<T>): void {
+        while (this.hasNext()) {
+            action(this.next());
+        }
     }
 
     public hasNext(): boolean {

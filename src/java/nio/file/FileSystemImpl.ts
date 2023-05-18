@@ -88,6 +88,10 @@ export class FileSystemImpl extends JavaFileSystem {
                     public remove(): void {
                         throw new UnsupportedOperationException();
                     }
+
+                    public forEachRemaining(consumer: (t: Path) => void): void {
+                        throw new NotImplementedError();
+                    }
                 }();
             }
         }();

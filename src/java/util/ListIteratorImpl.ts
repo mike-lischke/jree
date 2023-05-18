@@ -66,6 +66,12 @@ export class ListIteratorImpl<T> extends JavaObject implements ListIterator<T> {
         this.#backend.parentList!.add(this.#index, element);
     }
 
+    public forEachRemaining(consumer: (element: T) => void): void {
+        while (this.hasNext()) {
+            consumer(this.next());
+        }
+    }
+
     public hasNext(): boolean {
         return this.#index < this.#backend.end;
     }

@@ -4,8 +4,16 @@
  */
 
 import { IReflection } from "../lang/Object";
+import { Consumer } from "./function/Consumer";
 
+/** An iterator over a collection.  */
 export interface JavaIterator<T> extends IReflection {
+    /**
+     * Performs the given action for each remaining element until all elements have been processed or the action
+     * throws an exception.
+     */
+    forEachRemaining(action: Consumer<T>): void;
+
     /** Returns true if the iteration has more elements. */
     hasNext(): boolean;
 

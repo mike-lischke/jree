@@ -111,7 +111,14 @@ const i2 = I`${890}`; // Using a number literal.
 console.log(1 + i1 + i2);
 ```
 
-which prints `1458`. Unfortunately, the typescript compiler issues an error for the console call, saying that you cannot add a number and an `Integer` type, which is plain wrong, because obviously this is valid JS code. You can work around this error either by using the unary `+` in addition to the binary operator, wrap the `Integer` instance in a TypeScript `Number`, cast the `Integer` objects to `any`, add a `.valueOf()` call to each object or suppress the error. See also this [years old Typescript issue](https://github.com/microsoft/TypeScript/issues/2361) about this matter.
+which prints `1458`. Unfortunately, the typescript compiler issues an error for the console call, saying that you cannot add a number and an `Integer` type, which is plain wrong, because obviously this is valid JS code. You can work around this problem using one of these methods:
+
+- Add the unary `+` operator in front of the `Integer` instance, forcing so a primitive type coercion.
+- Wrap the `Integer` instance in a TypeScript `Number` (which also triggers primitive type coercion)
+- Cast the `Integer` instance to `any` or
+- Add a `.valueOf()` or `.intValue()` call to each object.
+
+See also this [years old Typescript issue](https://github.com/microsoft/TypeScript/issues/2361) about this matter.
 
 If you use ESLint as your linter, you may want to disable two rules that get in the way with the described approach, which are [@typescript-eslint/restrict-template-expressions](https://typescript-eslint.io/rules/restrict-template-expressions) and [@typescript-eslint/restrict-plus-operands](https://typescript-eslint.io/rules/restrict-plus-operands).
 
@@ -119,14 +126,36 @@ The missing auto boxing of TypeScript literals to Java like objects is probably 
 
 ## <a name="functional-interfaces">Functional Interfaces</a>
 
-Functional interfaces are a pretty special language construct with some implications. Such interfaces are annotated to denote their special type (`@FunctionalInterface`) and have only a single abstract method that is executed in a lambda expression (closure) without explicitly mentioning it. As this is not supported in TypeScript, you have to make the call explicit in your code, if you need such an interface. For example:
+Functional interfaces are a pretty special language construct which get some internal treatment by the Java compiler. They are closely related to lambda expressions. Such an interface contains a single method, which is implicitly called in Java. In TypeScript this implemented by using a call signature on the interface, which results in a function type. For example:
+
+```java
+interface Supplier<T> {
+    T get();
+}
+```
+
+is converted to:
 
 ```typescript
-    public forEach(action: java.util.function.Consumer<T>): void {
-        for (const item of this) {
-            action.accept(item);
-        }
-    }
+interface Supplier<T> {
+    () => T;
+}
+```
+
+Unfortunately, this has a few shortcomings. The most important is probably that such call signatures have no automatic `this` binding. This means that you have to explicitly bind the `this` object to the function, if you want to use it.
+
+Another issue is that you cannot use a constructor reference to an object to create it in the interface. For example, the following Java code:
+
+```java
+Supplier<ArrayList<E>> supplier = ArrayList<E>::new;
+ArrayList<E> list = supplier.get();
+```
+
+must be written in TypeScript as:
+
+```typescript
+const supplier: Supplier<ArrayList<E>> = () => new ArrayList<E>();
+const list = supplier();
 ```
 
 ## <a name="regex">Regular Expressions</a>

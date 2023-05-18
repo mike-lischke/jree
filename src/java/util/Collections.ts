@@ -4,7 +4,7 @@
  */
 
 import { Comparable } from "../lang/Comparable";
-import { JavaObject } from "../lang/Object";
+import { Class, JavaObject } from "../lang/Object";
 import { ArrayList } from "./ArrayList";
 import { Collection } from "./Collection";
 import { Comparator } from "./Comparator";
@@ -19,8 +19,16 @@ export abstract class Collections extends JavaObject {
     public static readonly EMPTY_MAP = new HashMap();
     public static readonly EMPTY_SET = new HashSet();
 
+    public static checkedList<T>(list: List<T>, type: Class<T>): List<T> {
+        return list;
+    }
+
     public static unmodifiableMap<K, V>(map: JavaMap<K, V>): JavaMap<K, V> {
         return map;
+    }
+
+    public static synchronizedList<T>(list: List<T>): List<T> {
+        return list;
     }
 
     public static unmodifiableList<T>(list: List<T>): List<T> {
@@ -42,7 +50,7 @@ export abstract class Collections extends JavaObject {
     public static sort<T>(list: List<T>, c: Comparator<T>): List<T> {
         const array = list.toArray();
         array.sort((a, b) => {
-            return c.compare!(a, b);
+            return c(a, b);
         });
 
         return new ArrayList<T>(array);
@@ -61,7 +69,7 @@ export abstract class Collections extends JavaObject {
                     continue;
                 }
 
-                const comparison = comp.compare!(result, current);
+                const comparison = comp(result, current);
                 if (comparison < 0) {
                     result = current;
                 }
@@ -100,7 +108,7 @@ export abstract class Collections extends JavaObject {
                     continue;
                 }
 
-                const comparison = comp.compare!(result, current);
+                const comparison = comp(result, current);
                 if (comparison > 0) {
                     result = current;
                 }

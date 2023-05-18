@@ -421,6 +421,14 @@ export class Long extends JavaObject implements Serializable, Comparable<Long>  
             return this.value === obj.value;
         }
 
+        if (typeof obj === "bigint") {
+            return this.value === obj;
+        }
+
+        if (typeof obj === "number") {
+            return this.value === BigInt(obj);
+        }
+
         return false;
     }
 

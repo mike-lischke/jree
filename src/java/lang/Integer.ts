@@ -14,6 +14,7 @@ import { JavaString } from "./String";
 import { IllegalArgumentException } from "./IllegalArgumentException";
 import { NumberFormatException } from "./NumberFormatException";
 import { Throwable } from "./Throwable";
+import { byte, float, int, long, short } from "../../types";
 
 export class Integer extends JavaNumber implements Serializable, Comparable<Integer>  {
     public static readonly MAX_VALUE = 2147483647;
@@ -21,20 +22,20 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
     public static readonly SIZE = 32;
 
     // @ts-expect-error, as the constructors are incompatible. Need to investigate.
-    public static readonly TYPE = Class.fromConstructor(Integer);
+    public static readonly TYPE = Class.fromConstructor<Integer>();
 
     // All number types are signed in Java.
     private static byte = new Int8Array(1);
     private static short = new Int16Array(1);
 
-    private value: number; // Can use number here, as it uses 52 bit for the mantissa, while we only need 32 bit.
+    private value: int; // Can use number here, as it uses 52 bit for the mantissa, while we only need 32 bit.
 
     /**
      * Constructs a newly allocated Integer object that represents the specified int or string value.
      *
      * @param value A primitive type to wrap in this instance.
      */
-    public constructor(value: number | string | JavaString) {
+    public constructor(value: int | string | JavaString) {
         super();
 
         if (typeof value === "string") {
@@ -53,7 +54,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value to examine.
      */
-    public static bitCount(i: number): number {
+    public static bitCount(i: int): int {
         if (Number.isInteger(i)) {
             i = i - ((i >> 1) & 0x55555555);
             i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
@@ -72,12 +73,16 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @returns A value < 0 if x is less than y, > 0 if x is larger than y, otherwise 0.
      */
-    public static compare(x: number, y: number): number {
-        if (!Number.isInteger(x) || !Number.isInteger(y)) {
+    public static compare(x: Integer, y: Integer): int;
+    public static compare(x: int, y: int): int;
+    public static compare(x: int | Integer, y: int | Integer): int {
+        const xValue = typeof x === "number" ? x : x.valueOf();
+        const yValue = typeof y === "number" ? y : y.valueOf();
+        if (!Number.isInteger(xValue) || !Number.isInteger(yValue)) {
             throw new IllegalArgumentException();
         }
 
-        return x - y;
+        return xValue - yValue;
     }
 
     /**
@@ -132,7 +137,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @returns The system property as Integer or the default value as Integer.
      */
-    public static getInteger(nm?: JavaString, val?: number): Integer | null {
+    public static getInteger(nm?: JavaString, val?: int): Integer | null {
         const p = nm && nm.length() > 0 ? System.getProperty(nm) : undefined;
         if (!p) {
             if (val === undefined) {
@@ -155,7 +160,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value for which the result must be determined.
      */
-    public static highestOneBit(i: number): number {
+    public static highestOneBit(i: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -169,7 +174,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value for which the result must be determined.
      */
-    public static lowestOneBit(i: number): number {
+    public static lowestOneBit(i: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -183,7 +188,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value for which the result must be determined.
      */
-    public static numberOfLeadingZeros(i: number): number {
+    public static numberOfLeadingZeros(i: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -197,7 +202,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value for which the result must be determined.
      */
-    public static numberOfTrailingZeros(i: number): number {
+    public static numberOfTrailingZeros(i: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -238,7 +243,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value to reverse.
      */
-    public static reverse(i: number): number {
+    public static reverse(i: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -257,7 +262,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The number to reverse.
      */
-    public static reverseBytes(i: number): number {
+    public static reverseBytes(i: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -287,7 +292,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      * @param i The number with the bits to rotate.
      * @param distance Determines how far to rotate.
      */
-    public static rotateRight(i: number, distance: number): number {
+    public static rotateRight(i: int, distance: int): int {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -300,7 +305,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The value from which to get the signum.
      */
-    public static signum(i: number): number {
+    public static signum(i: int): int {
         return i < 0 ? -1 : (i > 0) ? 1 : 0;
     }
 
@@ -309,7 +314,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The number to convert.
      */
-    public static toBinaryString(i: number): JavaString {
+    public static toBinaryString(i: int): JavaString {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -322,7 +327,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The number to convert.
      */
-    public static toHexString(i: number): JavaString {
+    public static toHexString(i: int): JavaString {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -336,7 +341,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @param i The number to convert.
      */
-    public static toOctalString(i: number): JavaString {
+    public static toOctalString(i: int): JavaString {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -351,7 +356,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      * @param i The number to convert.
      * @param radix The radix of the result string.
      */
-    public static override toString(i: number, radix?: number): JavaString {
+    public static override toString(i: int, radix?: int): JavaString {
         if (!Number.isInteger(i)) {
             throw new IllegalArgumentException();
         }
@@ -364,9 +369,9 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      * Returns an Integer object holding the value given or extracted from the specified String when parsed with the
      * radix given by the second argument.
      */
-    public static override valueOf(i: number): Integer;
-    public static override valueOf(s: JavaString, radix?: number): Integer;
-    public static override valueOf(value: number | JavaString, radix?: number): Integer {
+    public static override valueOf(i: int): Integer;
+    public static override valueOf(s: JavaString, radix?: int): Integer;
+    public static override valueOf(value: int | JavaString, radix?: int): Integer {
         if (!radix || typeof value === "number") {
             return new Integer(value);
         }
@@ -374,7 +379,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
         return new Integer(parseInt(value.valueOf(), radix));
     }
 
-    public static parseInt(s: string | JavaString, radix = 10): number {
+    public static parseInt(s: string | JavaString, radix = 10): int {
         const result = parseInt(`${s}`, radix);
         if (isNaN(result) || result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
             throw new NumberFormatException();
@@ -383,8 +388,12 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
         return result;
     }
 
+    public static override get class(): Class<Integer> {
+        return Integer.TYPE;
+    }
+
     /** @returns the value of this Integer as a byte. */
-    public override byteValue(): number {
+    public override byteValue(): byte {
         Integer.byte[0] = this.value; // Signed integer "casting".
 
         return Integer.byte[0];
@@ -397,7 +406,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
      *
      * @returns A value < 0 if this instance is smaller than the other one, > 0 if larger, and 0 if they are equal.
      */
-    public compareTo(anotherInteger: Integer): number {
+    public compareTo(anotherInteger: Integer): int {
         return this.value - anotherInteger.value;
     }
 
@@ -419,16 +428,20 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
             return this.value === obj.value;
         }
 
+        if (typeof obj === "number") {
+            return this.value === obj;
+        }
+
         return false;
     }
 
     /** @returns the value of this Integer as a float. */
-    public floatValue(): number {
+    public floatValue(): float {
         return this.value;
     }
 
     /** @returns a hash code for this Integer. */
-    public override hashCode(): number {
+    public override hashCode(): int {
         let hash = MurmurHash.initialize(11);
         hash = MurmurHash.update(hash, this.value);
         hash = MurmurHash.finish(hash, 1);
@@ -437,17 +450,17 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
     }
 
     /** @returns the value of this Integer as an int. */
-    public intValue(): number {
+    public intValue(): int {
         return this.value;
     }
 
     /** @returns the value of this Integer as a long. */
-    public longValue(): bigint {
+    public longValue(): long {
         return BigInt(this.value);
     }
 
     /** @returns the value of this Integer as a short. */
-    public override shortValue(): number {
+    public override shortValue(): short {
         Integer.short[0] = this.value;
 
         return Integer.short[0];
@@ -458,7 +471,7 @@ export class Integer extends JavaNumber implements Serializable, Comparable<Inte
         return `${this.value}`;
     }
 
-    public override valueOf(): number {
+    public override valueOf(): int {
         return this.value;
     }
 

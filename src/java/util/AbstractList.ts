@@ -6,13 +6,14 @@
 import { IteratorWrapper } from "../../IteratorWrapper";
 import { MurmurHash } from "../../MurmurHash";
 import { NotImplementedError } from "../../NotImplementedError";
-import { JavaString } from "../lang";
+import { Comparable, JavaString, NullPointerException } from "../lang";
 import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { StringBuilder } from "../lang/StringBuilder";
 import { AbstractCollection } from "./AbstractCollection";
 import { Collection } from "./Collection";
+import { Comparator } from "./Comparator";
 import { ConcurrentModificationException } from "./ConcurrentModificationException";
 import { JavaIterator } from "./Iterator";
 import { List } from "./List";
@@ -20,6 +21,7 @@ import { ListIterator } from "./ListIterator";
 import { ISubList, ListIteratorImpl } from "./ListIteratorImpl";
 import { Objects } from "./Objects";
 import { Spliterator } from "./Spliterator";
+import { UnaryOperator } from "./function";
 import { Consumer } from "./function/Consumer";
 import { Predicate } from "./function/Predicate";
 import { Stream } from "./stream";
@@ -38,10 +40,14 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
 
     #subListDetails: ISubList<T>;
 
-    protected constructor(list: ISubList<T>) {
+    protected constructor(list?: ISubList<T>) {
         super();
 
-        this.#subListDetails = list;
+        this.#subListDetails = list ?? {
+            data: [],
+            start: 0,
+            end: 0,
+        };
     }
 
     public *[Symbol.iterator](): IterableIterator<T> {
@@ -215,6 +221,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list contains the specified element.
      */
     public contains(element: T): boolean {
+        if (element === null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         if (this.#subListDetails.parentList === undefined) {
@@ -316,7 +326,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         this.checkModCount();
 
         for (let i = 0; i < this.size(); ++i) {
-            action.accept(this.get(i));
+            action(this.get(i));
         }
     }
 
@@ -370,6 +380,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *          this list does not contain the element.
      */
     public indexOf(element: T): number {
+        if (element === null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         const array = this.toArray();
@@ -415,6 +429,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *          this list does not contain the element.
      */
     public lastIndexOf(element: T): number {
+        if (element === null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         if (this.isEmpty()) {
@@ -518,12 +536,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         let result = false;
-        const consumer = Consumer.create<T>((value: T) => {
-            result ||= this.removeValue(value);
-        });
 
         // We know that the collection is not this list, so we can iterate and remove at the same time.
-        c.forEach(consumer);
+        c.forEach((value: T) => {
+            result ||= this.removeValue(value);
+        });
 
         return result;
     }
@@ -539,12 +556,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         this.checkModCount();
 
         const candidates: T[] = [];
-        const consumer = Consumer.create<T>((value: T) => {
-            if (filter.test(value)) {
+        this.forEach((value: T) => {
+            if (filter(value)) {
                 candidates.push(value);
             }
         });
-        this.forEach(consumer);
 
         candidates.forEach((value) => {
             this.removeValue(value);
@@ -593,6 +609,22 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         ++this.modCount;
     }
 
+    public replaceAll(operator: UnaryOperator<T> | null): void {
+        if (operator === null) {
+            throw new NullPointerException();
+        }
+
+        this.checkModCount();
+
+        for (let i = 0; i < this.size(); ++i) {
+            const oldValue = this.get(i);
+            const newValue = operator(oldValue);
+            if (oldValue !== newValue) {
+                this.set(i, newValue);
+            }
+        }
+    }
+
     /**
      * Retains only the element in this list that are contained in the specified collection. In other words, removes
      * from this list all of its elements that are not contained in the specified collection.
@@ -610,14 +642,12 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         let result = false;
-        const predicate = Predicate.create<T>((value: T): boolean => {
+        this.removeIf((value: T): boolean => {
             const missed = !c.contains(value);
             result ||= missed;
 
             return missed;
         });
-
-        this.removeIf(predicate);
 
         return result;
     }
@@ -655,6 +685,20 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         this.checkModCount();
 
         return this.#subListDetails.end - this.#subListDetails.start;
+    }
+
+    public sort(c: Comparator<T> | null): void {
+        const list = this.toArray();
+        if (c !== null) {
+            list.sort((a: T, b: T) => {
+                return c(a, b);
+            });
+        } else {
+            list.sort((a: T, b: T) => {
+                return (a as Comparable<T>).compareTo(b);
+            });
+        }
+
     }
 
     public override stream(): Stream<T> {

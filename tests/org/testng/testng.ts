@@ -3,6 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as testng from "./index";
+import { java } from "../../../src";
 
-export { testng };
+/** This class is the main entry point for running tests in the TestNG framework. */
+export class TestNG extends java.lang.Object {
+    public run(): void {
+        console.log("Running testng tests...");
+    }
+}

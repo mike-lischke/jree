@@ -157,7 +157,7 @@ export class ArrayDeque<T> extends AbstractCollection<T> implements Deque<T>, Se
      */
     public forEach(action: Consumer<T>): void {
         for (let i = 0; i < this.#backend.size(); ++i) {
-            action.accept(this.#backend.get(i)!);
+            action(this.#backend.get(i)!);
         }
     }
 

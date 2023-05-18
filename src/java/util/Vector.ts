@@ -224,11 +224,11 @@ export class Vector<T> extends AbstractList<T>
      *
      * @param operator the operator to apply to each element
      */
-    public replaceAll(operator: java.util.function.UnaryOperator<T>): void {
+    public override replaceAll(operator: java.util.function.UnaryOperator<T>): void {
         let index = 0;
-        this.forEach(java.util.function.Consumer.create((value) => {
-            this.set(index++, operator.apply(value));
-        }));
+        this.forEach((value) => {
+            this.set(index++, operator(value));
+        });
     }
 
     /**

@@ -26,7 +26,7 @@ export abstract class JavaFileSystem extends JavaObject {
     /**
      * @returns an object to iterate over the underlying file stores.
      */
-    public abstract getFileStores(): java.lang.JavaIterable<java.nio.file.FileStore>;
+    public abstract getFileStores(): java.lang.Iterable<java.nio.file.FileStore>;
 
     /**
      * Converts a path string, or a sequence of strings that when joined form a path string, to a Path.
@@ -53,7 +53,7 @@ export abstract class JavaFileSystem extends JavaObject {
      *
      * @throws IOException if an I/O error occurs.
      */
-    public abstract getRootDirectories(): java.lang.JavaIterable<java.nio.file.Path>;
+    public abstract getRootDirectories(): java.lang.Iterable<java.nio.file.Path>;
 
     /**
      * @returns the name separator, represented as a string.
@@ -93,5 +93,5 @@ export abstract class JavaFileSystem extends JavaObject {
     /**
      * @returns the set of names of the file attribute views supported by this file system.
      */
-    public abstract supportedFileAttributeViews(): java.lang.JavaIterable<java.lang.String>;
+    public abstract supportedFileAttributeViews(): java.lang.Iterable<java.lang.String>;
 }

@@ -3,18 +3,36 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../../lang/Object";
 import { Objects } from "../Objects";
 
 /**
  * Represents a predicate (boolean-valued function) of one argument.
  * This is a functional interface whose functional method is {@link #test(Object)}.
  */
-export interface Predicate<T> extends IReflection {
-    test(t: T): boolean;
+export interface Predicate<T> {
+    /* test*/(t: T): boolean;
+    and?: (other: Predicate<T>) => Predicate<T>;
+    negate?: () => Predicate<T>;
+    or?: (other: Predicate<T>) => Predicate<T>;
 }
 
 export class Predicate<T> {
+    /**
+     * Emulates the default methods of the Predicate interface, by adding the prototype methods to the given predicate
+     * function (if not already there).
+     *
+     * @param predicate The predicate to extend.
+     *
+     * @returns The given predicate, with the prototype methods added.
+     */
+    public static of<T>(predicate: Predicate<T>): Required<Predicate<T>> {
+        predicate.and = predicate.and ?? Predicate.prototype.and;
+        predicate.negate = predicate.negate || Predicate.prototype.negate;
+        predicate.or = predicate.or || Predicate.prototype.or;
+
+        return predicate as Required<Predicate<T>>;
+
+    }
     /**
      * Returns a predicate that tests if two arguments are equal according to {@link Objects#equals(Object, Object)}.
      *
@@ -23,9 +41,9 @@ export class Predicate<T> {
      * @returns a predicate that tests if two arguments are equal according to {@link Objects#equals(Object, Object)}
      */
     public static isEqual<T>(targetRef: T): Predicate<T> {
-        return Predicate.create<T>((t: T) => {
+        return (t: T) => {
             return Objects.equals(t, targetRef);
-        });
+        };
     }
 
     /**
@@ -36,22 +54,9 @@ export class Predicate<T> {
      * @returns a predicate that tests if the argument is {@code null}
      */
     public static not<T>(target: Predicate<T>): Predicate<T> {
-        return Predicate.create<T>((t: T) => {
-            return !target.test(t);
-        });
-    }
-
-    /**
-     * Returns a {@code Predicate} that wraps the given operation.
-     *
-     * @param test the operation to perform when the Predicate's test method is called.
-     *
-     * @returns a {@code Predicate} that performs the given operation on the given argument
-     */
-    public static create<T>(test: (t: T) => boolean): Predicate<T> {
-        return new class extends Predicate<T> {
-            public override test = (t: T): boolean => { return test(t); };
-        }();
+        return (t: T) => {
+            return !target(t);
+        };
     }
 
     /**
@@ -64,22 +69,22 @@ export class Predicate<T> {
      * @returns a composed predicate that represents the short-circuiting logical AND of this predicate and the
      *        {@code other} predicate
      */
-    public and(other: Predicate<T>): Predicate<T> {
-        return Predicate.create<T>((t: T) => {
-            return this.test(t) && other.test(t);
-        });
-    }
+    public and?= (other: Predicate<T>): Predicate<T> => {
+        return (t: T) => {
+            return this(t) && other(t);
+        };
+    };
 
     /**
      * Returns a predicate that represents the logical negation of this predicate.
      *
      * @returns a predicate that represents the logical negation of this predicate
      */
-    public negate(): Predicate<T> {
-        return Predicate.create<T>((t: T) => {
-            return !this.test(t);
-        });
-    }
+    public negate?= (): Predicate<T> => {
+        return (t: T) => {
+            return !this(t);
+        };
+    };
 
     /**
      * Returns a composed predicate that represents a short-circuiting logical OR of this predicate and another. When
@@ -91,9 +96,9 @@ export class Predicate<T> {
      * @returns a composed predicate that represents the short-circuiting logical OR of this predicate and the
      *       {@code other} predicate
      */
-    public or(other: Predicate<T>): Predicate<T> {
-        return Predicate.create<T>((t: T) => {
-            return this.test(t) || other.test(t);
-        });
-    }
+    public or?= (other: Predicate<T>): Predicate<T> => {
+        return (t: T) => {
+            return this(t) || other(t);
+        };
+    };
 }

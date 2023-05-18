@@ -71,7 +71,7 @@ export class Objects extends JavaObject {
             return 0;
         }
 
-        return c.compare!(a, b);
+        return c(a, b);
     }
 
     /**

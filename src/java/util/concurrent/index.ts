@@ -5,3 +5,5 @@
 
 export * from "./CancellationException";
 export * from "./CopyOnWriteArrayList";
+
+export * from "./atomic/atomic";

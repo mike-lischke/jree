@@ -210,7 +210,6 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
      * @param v the value to convert to a string.
      *
      * @returns the string representation of the argument.
-     *
      */
     public static override valueOf(v: unknown): JavaString {
         if (v instanceof Uint16Array) {

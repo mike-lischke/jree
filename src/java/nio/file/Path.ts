@@ -11,6 +11,7 @@ import { JavaObject } from "../../lang/Object";
 import { JavaString } from "../../lang/String";
 import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
 import { URI } from "../../net/URI";
+import { Consumer } from "../../util/function/Consumer";
 import { JavaIterator } from "../../util/Iterator";
 import { NoSuchElementException } from "../../util/NoSuchElementException";
 import { JavaFileSystem } from "./FileSystem";
@@ -297,6 +298,10 @@ export class Path extends JavaObject implements Path {
 
             public remove(): void {
                 throw new UnsupportedOperationException();
+            }
+
+            public forEachRemaining(action: Consumer<Path>): void {
+                throw new NotImplementedError();
             }
         }(this);
     }

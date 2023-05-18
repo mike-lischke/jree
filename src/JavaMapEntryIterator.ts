@@ -8,6 +8,7 @@ import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationE
 import { HashMapEntry } from "./java/util/HashMapEntry";
 import { JavaIterator } from "./java/util/Iterator";
 import { JavaMap } from "./java/util/Map";
+import { Consumer } from "./java/util/function";
 
 /** A specialized JRE iterator for Map entries, which wraps a Typescript iterator. */
 export class JavaMapEntryIterator<K, V> extends JavaObject implements JavaIterator<JavaMap.Entry<K, V>> {
@@ -17,6 +18,13 @@ export class JavaMapEntryIterator<K, V> extends JavaObject implements JavaIterat
     public constructor(private iterator: Iterator<[K, V]>) {
         super();
         this.nextValue = iterator.next();
+    }
+
+    public forEachRemaining(action: Consumer<JavaMap.Entry<K, V>>): void {
+        while (!this.nextValue.done) {
+            action(new HashMapEntry(this.nextValue.value[0], this.nextValue.value[1]));
+            this.nextValue = this.iterator.next();
+        }
     }
 
     public hasNext(): boolean {

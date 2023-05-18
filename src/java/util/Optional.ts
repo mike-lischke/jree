@@ -95,7 +95,7 @@ export class Optional<T> extends JavaObject {
             return this;
         }
 
-        if (predicate.test(this.#value)) {
+        if (predicate(this.#value)) {
             return this;
         }
 
@@ -116,7 +116,7 @@ export class Optional<T> extends JavaObject {
             return Optional.empty();
         }
 
-        return mapper.apply(this.#value);
+        return mapper(this.#value);
     }
 
     /**
@@ -153,7 +153,7 @@ export class Optional<T> extends JavaObject {
      */
     public ifPresent(consumer: Consumer<T>): void {
         if (this.#value !== undefined) {
-            consumer.accept(this.#value);
+            consumer(this.#value);
         }
     }
 
@@ -165,7 +165,7 @@ export class Optional<T> extends JavaObject {
      */
     public ifPresentOrElse(consumer: Consumer<T>, emptyAction: Runnable): void {
         if (this.#value !== undefined) {
-            consumer.accept(this.#value);
+            consumer(this.#value);
         } else {
             emptyAction.run();
         }
@@ -203,7 +203,7 @@ export class Optional<T> extends JavaObject {
             return Optional.empty();
         }
 
-        return Optional.of(mapper.apply(this.#value));
+        return Optional.of(mapper(this.#value));
     }
 
     /**
