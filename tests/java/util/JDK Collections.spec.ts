@@ -4,7 +4,7 @@
  */
 
 import { ListDefaults } from "../../jdk/java/util/List/ListDefaults";
-import { TestNG } from "../../org/testng/TestNG1";
+import { TestNG } from "../../org/testng/TestNG";
 
 /** Executes the ListDefault JDK tests. */
 describe("Run JDK Collections Tests", () => {
