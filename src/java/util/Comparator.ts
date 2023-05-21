@@ -17,20 +17,16 @@ export interface Comparator<T> {
     /*compare*/(o1: T, o2: T): number;
 }
 
-export abstract class Comparator<T> implements Comparator<T> {
+export class Comparator<T> implements Comparator<T> {
     public static naturalOrder<E extends Comparable<E>>(): Comparator<E> {
-        return new class extends Comparator<E> {
-            public compare(o1: E, o2: E): number {
-                return o1.compareTo(o2);
-            }
-        }();
+        return (o1: E, o2: E): number => {
+            return o1.compareTo(o2);
+        };
     }
 
     public static reverseOrder<E extends Comparable<E>>(): Comparator<E> {
-        return new class extends Comparator<E> {
-            public compare(o1: E, o2: E): number {
-                return o2.compareTo(o1);
-            }
-        }();
+        return (o1: E, o2: E): number => {
+            return o2.compareTo(o1);
+        };
     }
 }

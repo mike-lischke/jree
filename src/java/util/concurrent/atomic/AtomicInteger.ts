@@ -4,7 +4,9 @@
  */
 
 import { double, float, int, long } from "../../../../types";
+
 import { JavaNumber } from "../../../lang/Number";
+import { JavaObject } from "../../../lang/Object";
 import { JavaString } from "../../../lang/String";
 import { IntBinaryOperator } from "../../function/IntBinaryOperator";
 import { IntUnaryOperator } from "../../function/IntUnaryOperator";
@@ -398,5 +400,37 @@ export class AtomicInteger extends JavaNumber {
      */
     public weakCompareAndSetVolatile(expect: int, update: int): boolean {
         return this.compareAndSet(expect, update);
+    }
+
+    public override byteValue(): number {
+        return this.#value & 0xFF;
+    }
+
+    public override shortValue(): number {
+        return this.#value & 0xFFFF;
+    }
+
+    public override clone(): JavaObject {
+        return new AtomicInteger(this.#value);
+    }
+
+    public override equals(obj: unknown): boolean {
+        if (obj instanceof AtomicInteger) {
+            return this.#value === obj.#value;
+        }
+
+        if (obj instanceof JavaNumber) {
+            return this.#value === obj.intValue();
+        }
+
+        if (typeof obj === "number") {
+            return this.#value === obj;
+        }
+
+        return false;
+    }
+
+    public [Symbol.toPrimitive](): number {
+        return this.#value;
     }
 }

@@ -125,7 +125,7 @@ export class Objects extends JavaObject {
             return true;
         }
 
-        if (a === undefined || b === undefined) {
+        if (a == null || b == null) {
             return false;
         }
 

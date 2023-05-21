@@ -5,6 +5,7 @@
 
 import { java, NotImplementedError } from "../..";
 import { S } from "../../templates";
+import { NullPointerException } from "../lang/NullPointerException";
 import { AbstractList } from "./AbstractList";
 import { ISubList } from "./ListIteratorImpl";
 
@@ -225,6 +226,10 @@ export class Vector<T> extends AbstractList<T>
      * @param operator the operator to apply to each element
      */
     public override replaceAll(operator: java.util.function.UnaryOperator<T>): void {
+        if (operator == null) {
+            throw new NullPointerException();
+        }
+
         let index = 0;
         this.forEach((value) => {
             this.set(index++, operator(value));

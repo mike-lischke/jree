@@ -107,6 +107,10 @@ export interface Collection<T> extends JavaIterable<T> {
 }
 
 export class Collection<T> extends JavaObject implements Collection<T> {
+    public static isCollection<T>(obj: unknown): obj is Collection<T> {
+        return (obj != null) && (typeof obj === "object") && ("addAll" in obj) && ("iterator" in obj);
+    }
+
     /**
      * Removes all of the elements of this collection that satisfy the given predicate.
      *

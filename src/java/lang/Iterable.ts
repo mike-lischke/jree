@@ -28,6 +28,10 @@ export interface JavaIterable<T> extends IReflection {
 }
 
 export class JavaIterable<T> extends JavaObject {
+    public static isIterable<T>(object: unknown): object is JavaIterable<T> {
+        return (object != null) && (typeof object === "object") && ("iterator" in object);
+    }
+
     /**
      * Performs the given action for each element of the Iterable until all elements have been processed or the action
      * throws an exception.

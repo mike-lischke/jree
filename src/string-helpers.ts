@@ -154,13 +154,13 @@ export const indexOfSubArray = (data: Uint16Array, searchValue: Uint16Array, sta
         start = 0;
     }
 
-    if (start + searchValue.length >= data.length) {
+    if (start + searchValue.length > data.length) {
         return -1;
     }
 
     const firstCode = searchValue[0];
     for (let i = start; i < data.length; ++i) {
-        if (i + searchValue.length >= data.length) {
+        if (i + searchValue.length > data.length) {
             return -1;
         }
 

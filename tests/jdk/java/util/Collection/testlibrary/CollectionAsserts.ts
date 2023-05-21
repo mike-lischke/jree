@@ -53,7 +53,7 @@ export class CollectionAsserts extends JavaObject {
     public static assertCountSum(it: java.lang.Iterable<java.lang.Integer> | Iterator<java.lang.Integer>, count: int,
         sum: int): void {
 
-        if (it instanceof java.lang.Iterable) {
+        if (java.lang.Iterable.isIterable(it)) {
             it = it.iterator();
         }
 
@@ -86,7 +86,7 @@ export class CollectionAsserts extends JavaObject {
         switch (args.length) {
             case 1: {
                 let [it] = args as [Iterator<T> | java.lang.Iterable<T>];
-                if (it instanceof java.lang.Iterable) {
+                if (java.lang.Iterable.isIterable(it)) {
                     it = it.iterator();
                 }
 
@@ -107,11 +107,11 @@ export class CollectionAsserts extends JavaObject {
 
             case 2: {
                 let [it, comp] = args as [Iterator<T> | java.lang.Iterable<T>, Comparator<T>];
-                if (it instanceof java.lang.Iterable) {
+                if (java.lang.Iterable.isIterable(it)) {
                     it = it.iterator();
                 }
-                if (!it.hasNext()) {
 
+                if (!it.hasNext()) {
                     return;
                 }
 
@@ -139,7 +139,7 @@ export class CollectionAsserts extends JavaObject {
             case 1: {
                 let [it] = args as [java.lang.Iterable<T> | Iterator<T>];
 
-                if (it instanceof java.lang.Iterable) {
+                if (java.lang.Iterable.isIterable(it)) {
                     it = it.iterator();
                 }
 
@@ -175,10 +175,11 @@ export class CollectionAsserts extends JavaObject {
             let [actual, expected] =
                 args as [java.lang.Iterable<T> | Iterator<T>, java.lang.Iterable<T> | Iterator<T>];
 
-            if (actual instanceof java.lang.Iterable) {
+            if (java.lang.Iterable.isIterable(actual)) {
                 actual = actual.iterator();
             }
-            if (expected instanceof java.lang.Iterable) {
+
+            if (java.lang.Iterable.isIterable(expected)) {
                 expected = expected.iterator();
             } else if (Array.isArray(expected)) {
                 expected = Arrays.asList(expected).iterator();
@@ -209,9 +210,9 @@ export class CollectionAsserts extends JavaObject {
             }
 
             if (actual.hasNext()) {
-                const rest = new ArrayList();
+                const rest = new ArrayList<T>();
                 while (actual.hasNext()) { rest.add(actual.next()); }
-                fail(`${msg === null ? "" : msg} Unexpected data ${rest} after ${history}`);
+                fail(`${msg === null ? "" : msg + " "}Unexpected data ${rest} after ${history}`);
             }
         }
     }

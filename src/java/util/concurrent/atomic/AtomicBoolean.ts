@@ -238,4 +238,8 @@ export class AtomicBoolean extends JavaObject {
     public weakCompareAndSetVolatile(expected: boolean, newValue: boolean): boolean {
         return this.compareAndExchange(expected, newValue);
     }
+
+    public [Symbol.toPrimitive](): boolean {
+        return this.#value;
+    }
 }

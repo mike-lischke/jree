@@ -50,11 +50,11 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
 
         if (source === undefined) {
             this.list = new ArrayList<E>();
-        } else if (source instanceof Collection) {
+        } else if (Collection.isCollection(source)) {
             this.list = new ArrayList<E>();
             this.list.addAll(source);
         } else {
-            this.list = source.get();
+            this.list = source();
         }
     }
 
@@ -82,6 +82,14 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
         }
     }
 
+    public override clear(): void {
+        this.list.clear();
+    }
+
+    public override contains(element: E): boolean {
+        return this.list.contains(element);
+    }
+
     public override get(index: int): E {
         return this.list.get(index);
     }
@@ -100,10 +108,12 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
 
     public override iterator(): Iterator<E> {
         return new class extends JavaObject implements Iterator<E> {
-            public source = this.$outer.list.iterator();
+            public source: java.util.Iterator<E>;
 
             public constructor(private $outer: ExtendsAbstractList<E>) {
                 super();
+
+                this.source = $outer.list.iterator();
             }
 
             public forEachRemaining(action: java.util.function.Consumer<E>): void {
@@ -126,5 +136,13 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
 
     public override size(): int {
         return this.list.size();
+    }
+
+    public override subList(fromIndex: number, toIndex: number): java.util.List<E> {
+        return this.list.subList(fromIndex, toIndex);
+    }
+
+    public override toArray(): E[] {
+        return this.list.toArray();
     }
 }

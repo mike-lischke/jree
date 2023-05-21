@@ -220,7 +220,7 @@ export class Throwable extends JavaObject {
         const headLine = this.toString();
 
         if (!s) {
-            console.error(headLine);
+            console.error(headLine.valueOf());
             console.error(this.stack);
 
             return;

@@ -254,6 +254,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list contains all of the elements of the specified collection.
      */
     public containsAll(c: Collection<T>): boolean {
+        if (c == null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         for (const element of c) {
@@ -323,10 +327,19 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     }
 
     public forEach(action: Consumer<T>): void {
-        this.checkModCount();
+        if (action == null) {
+            throw new NullPointerException();
+        }
 
-        for (let i = 0; i < this.size(); ++i) {
+        const expectedModeCount = this.modCount;
+        const size = this.size();
+
+        for (let i = 0; i < size; ++i) {
             action(this.get(i));
+        }
+
+        if (this.modCount !== expectedModeCount) {
+            throw new ConcurrentModificationException();
         }
     }
 
@@ -526,6 +539,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list changed as a result of the call.
      */
     public removeAll(c: Collection<T>): boolean {
+        if (c == null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         if (this === c) {
@@ -539,7 +556,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
 
         // We know that the collection is not this list, so we can iterate and remove at the same time.
         c.forEach((value: T) => {
-            result ||= this.removeValue(value);
+            if (this.removeValue(value)) {
+                result = true;
+            }
         });
 
         return result;
@@ -553,6 +572,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if any elements were removed.
      */
     public removeIf(filter: Predicate<T>): boolean {
+        if (filter == null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         const candidates: T[] = [];
@@ -563,7 +586,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         });
 
         candidates.forEach((value) => {
-            this.removeValue(value);
+            // Have to use this.remove() instead of this.removeValue() in case this.remove() is overridden.
+            this.remove(value);
         });
 
         return candidates.length > 0;
@@ -614,14 +638,19 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             throw new NullPointerException();
         }
 
-        this.checkModCount();
+        const size = this.size();
+        const expectedModCount = this.modCount;
 
-        for (let i = 0; i < this.size(); ++i) {
+        for (let i = 0; i < size; ++i) {
             const oldValue = this.get(i);
             const newValue = operator(oldValue);
             if (oldValue !== newValue) {
                 this.set(i, newValue);
             }
+        }
+
+        if (this.modCount !== expectedModCount) {
+            throw new ConcurrentModificationException();
         }
     }
 
@@ -634,6 +663,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns true if this list changed as a result of the call.
      */
     public retainAll(c: Collection<T>): boolean {
+        if (c == null) {
+            throw new NullPointerException();
+        }
+
         this.checkModCount();
 
         if (this === c) {
@@ -688,6 +721,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     }
 
     public sort(c: Comparator<T> | null): void {
+        const expectedModCount = this.modCount;
         const list = this.toArray();
         if (c !== null) {
             list.sort((a: T, b: T) => {
@@ -699,6 +733,13 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             });
         }
 
+        if (this.modCount !== expectedModCount) {
+            throw new ConcurrentModificationException();
+        }
+
+        list.forEach((value: T, index: number) => {
+            this.set(index, value);
+        });
     }
 
     public override stream(): Stream<T> {
@@ -737,9 +778,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         const list = new AbstractList<T>({
+            parentList: this,
             data: this.#subListDetails.data,
-            start: this.#subListDetails.start + fromIndex,
-            end: this.#subListDetails.start + toIndex,
+            start: fromIndex, // Indexes are relative to their parent list.
+            end: toIndex,
         });
         list.modCount = this.modCount;
 
@@ -771,7 +813,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         this.checkModCount();
 
         if (!a || a.length > this.size()) {
-            return this.arrayFromRange(this.#subListDetails.start, this.#subListDetails.end);
+            return this.arrayFromRange(0, this.size());
         }
 
         // The array is big enough, to hold all elements.

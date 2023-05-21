@@ -171,6 +171,10 @@ export class List<T> extends JavaObject implements List<T> {
                 return (a as Comparable<T>).compareTo(b);
             });
         }
+
+        list.forEach((element: T, index: number) => {
+            this.set(index, element);
+        });
     }
 }
 

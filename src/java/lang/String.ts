@@ -571,7 +571,7 @@ export class JavaString extends JavaObject implements Serializable, CharSequence
     /** Tests if the substring of this string beginning at the specified index starts with the specified prefix. */
     public startsWith(prefix: JavaString, offset: int): boolean;
     public startsWith(prefix: JavaString, offset?: int): boolean {
-        return indexOfSubArray(prefix.#value, this.#value, offset) === 0;
+        return indexOfSubArray(this.#value, prefix.#value, offset) === 0;
     }
 
     /** @returns a string whose value is this string, with all leading and trailing white space removed. */

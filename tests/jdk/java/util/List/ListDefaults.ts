@@ -32,6 +32,7 @@
 
 import { I, JavaObject, S, java } from "../../../../../src";
 import { org } from "../../../../org/org";
+import { Assert } from "../../../../org/testng/Assert";
 import { CollectionAsserts } from "../Collection/testlibrary/CollectionAsserts";
 import { CollectionSupplier } from "../Collection/testlibrary/CollectionSupplier";
 import { ExtendsAbstractList } from "../Collection/testlibrary/ExtendsAbstractList";
@@ -80,20 +81,20 @@ export class ListDefaults extends JavaObject {
 
     // Suppliers of lists that can support structural modifications
     private static readonly LIST_STRUCT_MOD_SUPPLIERS = Arrays.asList<Function<Collection<Integer>, List<Integer>>>(
-        () => { return new java.util.ArrayList<Integer>(); },
-        () => { return new java.util.LinkedList<Integer>(); },
-        () => { return new java.util.Vector<Integer>(); },
-        () => { return new java.util.concurrent.CopyOnWriteArrayList<Integer>(); },
-        () => { return new ExtendsAbstractList<Integer>(); },
+        (c) => { return new java.util.ArrayList<Integer>(c); },
+        (c) => { return new java.util.LinkedList<Integer>(c); },
+        (c) => { return new java.util.Vector<Integer>(c); },
+        (c) => { return new java.util.concurrent.CopyOnWriteArrayList<Integer>(c); },
+        (c) => { return new ExtendsAbstractList<Integer>(c); },
     );
 
     // Suppliers of lists that can support in place modifications
     private static readonly LIST_SUPPLIERS = Arrays.asList<Function<Collection<Integer>, List<Integer>>>(
-        () => { return new java.util.ArrayList<Integer>(); },
-        () => { return new java.util.LinkedList<Integer>(); },
-        () => { return new java.util.Vector<Integer>(); },
-        () => { return new java.util.concurrent.CopyOnWriteArrayList<Integer>(); },
-        () => { return new ExtendsAbstractList<Integer>(); },
+        (c) => { return new java.util.ArrayList<Integer>(c); },
+        (c) => { return new java.util.LinkedList<Integer>(c); },
+        (c) => { return new java.util.Vector<Integer>(c); },
+        (c) => { return new java.util.concurrent.CopyOnWriteArrayList<Integer>(c); },
+        (c) => { return new ExtendsAbstractList<Integer>(c); },
         (c: List<Integer>) => { return Arrays.asList<Integer>(c.toArray()); },
     );
 
@@ -110,17 +111,6 @@ export class ListDefaults extends JavaObject {
 
     private static readonly SLICED_EXPECTED = Arrays.asList(I`0`, I`1`, I`2`, I`3`, I`5`, I`6`, I`7`, I`8`, I`9`);
     private static readonly SLICED_EXPECTED2 = Arrays.asList(I`0`, I`1`, I`2`, I`5`, I`6`, I`7`, I`8`, I`9`);
-
-    private static readonly pEven = (x: Integer) => { return 0 === +x % 2; };
-    private static readonly pOdd = (x: Integer) => { return 1 === +x % 2; };
-
-    private static readonly BIT_COUNT_COMPARATOR = (x: Integer, y: Integer) => {
-        return java.lang.Integer.bitCount(+x) - java.lang.Integer.bitCount(+y);
-    };
-
-    private static readonly ATOMIC_INTEGER_COMPARATOR = (x: AtomicInteger, y: AtomicInteger) => {
-        return +x - +y;
-    };
 
     @DataProvider({ name: "listProvider", parallel: true })
     public static listCases(): java.lang.Object[][] {
@@ -147,7 +137,7 @@ export class ListDefaults extends JavaObject {
 
     @DataProvider({ name: "shortIntListProvider", parallel: true })
     public static intListCases(): java.lang.Object[][] {
-        const DATA = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const DATA: Integer[] = [I`0`, I`1`, I`2`, I`3`, I`4`, I`5`, I`6`, I`7`, I`8`, I`9`];
         const cases = new LinkedList<java.lang.Object[]>();
         cases.add([new ArrayList(Arrays.asList(DATA))]);
         cases.add([new LinkedList(Arrays.asList(DATA))]);
@@ -158,11 +148,22 @@ export class ListDefaults extends JavaObject {
         return cases.toArray();
     }
 
-    @Test({ dataProvider: "listProvider" })
+    private static readonly pEven = (x: Integer) => { return 0 === +x % 2; };
+    private static readonly pOdd = (x: Integer) => { return 1 === +x % 2; };
+
+    private static readonly BIT_COUNT_COMPARATOR = (x: Integer, y: Integer) => {
+        return java.lang.Integer.bitCount(+x) - java.lang.Integer.bitCount(+y);
+    };
+
+    private static readonly ATOMIC_INTEGER_COMPARATOR = (x: AtomicInteger, y: AtomicInteger) => {
+        return +x - +y;
+    };
+
+    @Test({ dataProvider: "listProvider", enabled: true, description: "Check for null functions" })
     public testProvidedWithNull(list: List<Integer>): void {
         try {
             list.forEach(null);
-            fail("expected NPE not thrown");
+            Assert.fail("expected NPE not thrown");
         } catch (npe) {
             if (npe instanceof java.lang.NullPointerException) { /**/ } else {
                 throw npe;
@@ -170,7 +171,7 @@ export class ListDefaults extends JavaObject {
         }
         try {
             list.replaceAll(null);
-            fail("expected NPE not thrown");
+            Assert.fail("expected NPE not thrown");
         } catch (npe) {
             if (npe instanceof java.lang.NullPointerException) { /**/ } else {
                 throw npe;
@@ -178,7 +179,7 @@ export class ListDefaults extends JavaObject {
         }
         try {
             list.removeIf(null);
-            fail("expected NPE not thrown");
+            Assert.fail("expected NPE not thrown");
         } catch (npe) {
             if (npe instanceof java.lang.NullPointerException) { /**/ } else {
                 throw npe;
@@ -188,14 +189,14 @@ export class ListDefaults extends JavaObject {
             list.sort(null);
         } catch (t) {
             if (t instanceof java.lang.Throwable) {
-                fail("Exception not expected: " + t);
+                Assert.fail("Exception not expected: " + t);
             } else {
                 throw t;
             }
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testForEach(): void {
         const supplier = new CollectionSupplier<List<Integer>>(ListDefaults.LIST_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -204,7 +205,7 @@ export class ListDefaults extends JavaObject {
 
             try {
                 list.forEach(null);
-                fail("expected NPE not thrown");
+                Assert.fail("expected NPE not thrown");
             } catch (npe) {
                 if (npe instanceof java.lang.NullPointerException) { /**/ } else {
                     throw npe;
@@ -236,7 +237,7 @@ export class ListDefaults extends JavaObject {
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testRemoveIf(): void {
         const supplier = new CollectionSupplier<List<Integer>>(ListDefaults.LIST_STRUCT_MOD_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -245,7 +246,7 @@ export class ListDefaults extends JavaObject {
 
             try {
                 list.removeIf(null);
-                fail("expected NPE not thrown");
+                Assert.fail("expected NPE not thrown");
             } catch (npe) {
                 if (npe instanceof java.lang.NullPointerException) { /**/ } else {
                     throw npe;
@@ -320,7 +321,7 @@ export class ListDefaults extends JavaObject {
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testReplaceAll(): void {
         const scale = 3;
         const supplier = new CollectionSupplier<List<Integer>>(ListDefaults.LIST_SUPPLIERS, ListDefaults.SIZE);
@@ -330,7 +331,7 @@ export class ListDefaults extends JavaObject {
 
             try {
                 list.replaceAll(null);
-                fail("expected NPE not thrown");
+                Assert.fail("expected NPE not thrown");
             } catch (npe) {
                 if (npe instanceof java.lang.NullPointerException) { /**/ } else {
                     throw npe;
@@ -377,7 +378,7 @@ export class ListDefaults extends JavaObject {
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testSort(): void {
         const supplier = new CollectionSupplier<List<Integer>>(ListDefaults.LIST_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -428,12 +429,12 @@ export class ListDefaults extends JavaObject {
 
             // Reuse the supplier to store AtomicInteger instead of Integer
             // Hence the use of raw type and cast
-            const incomparablesData = new ArrayList();
+            const incomparablesData = new ArrayList<AtomicInteger>();
             for (let i = 0; i < test.expected.size(); i++) {
                 incomparablesData.add(new AtomicInteger(i));
             }
             const f = test.supplier;
-            const incomparables = f.apply(incomparablesData) as List<AtomicInteger>;
+            const incomparables = f(incomparablesData as unknown as List<Integer>) as unknown as List<AtomicInteger>;
 
             CollectionSupplier.shuffle(incomparables);
             incomparables.sort(ListDefaults.ATOMIC_INTEGER_COMPARATOR);
@@ -470,7 +471,7 @@ export class ListDefaults extends JavaObject {
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testForEachThrowsCME(): void {
         const supplier = new CollectionSupplier(ListDefaults.LIST_CME_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -491,12 +492,12 @@ export class ListDefaults extends JavaObject {
                 }
             }
             if (!gotException) {
-                fail("expected CME was not thrown from " + test);
+                Assert.fail("expected CME was not thrown from " + test);
             }
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testRemoveIfThrowsCME(): void {
         const supplier = new CollectionSupplier(ListDefaults.LIST_CME_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -517,12 +518,12 @@ export class ListDefaults extends JavaObject {
                 }
             }
             if (!gotException) {
-                fail("expected CME was not thrown from " + test);
+                Assert.fail("expected CME was not thrown from " + test);
             }
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testReplaceAllThrowsCME(): void {
         const supplier = new CollectionSupplier(ListDefaults.LIST_CME_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -548,12 +549,12 @@ export class ListDefaults extends JavaObject {
                 }
             }
             if (!gotException) {
-                fail("expected CME was not thrown from " + test);
+                Assert.fail("expected CME was not thrown from " + test);
             }
         }
     }
 
-    @Test
+    @Test({ enabled: true })
     public testSortThrowsCME(): void {
         const supplier = new CollectionSupplier(ListDefaults.LIST_CME_SUPPLIERS, ListDefaults.SIZE);
         for (const test of supplier.get()) {
@@ -578,12 +579,12 @@ export class ListDefaults extends JavaObject {
                 }
             }
             if (!gotException) {
-                fail("expected CME was not thrown from " + test);
+                Assert.fail("expected CME was not thrown from " + test);
             }
         }
     }
 
-    @Test({ dataProvider: "shortIntListProvider" })
+    @Test({ dataProvider: "shortIntListProvider", enabled: true })
     public testRemoveIfFromSlice(list: List<java.lang.Integer>): void {
         const sublist = list.subList(3, 6);
         assertTrue(sublist.removeIf((x) => { return +x === 4; }));
@@ -609,6 +610,7 @@ export class ListDefaults extends JavaObject {
     private removeFirst(original: List<Integer>, list: List<Integer>, offset: AtomicInteger): void {
         const first = new AtomicBoolean(true);
         list.removeIf((x) => { return first.getAndSet(false); });
+
         CollectionAsserts.assertContents(original.subList(offset.getAndIncrement(), original.size()), list);
     }
 }
