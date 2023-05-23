@@ -46,6 +46,11 @@ export class IteratorWrapper<T> extends JavaObject implements JavaIterator<T> {
         return result.value;
     }
 
+    /** This method is not part of the Iterator interface, but tested to throw in the JDK unit tests. */
+    public previous(): T {
+        throw new UnsupportedOperationException();
+    }
+
     public remove(): void {
         throw new UnsupportedOperationException();
     }

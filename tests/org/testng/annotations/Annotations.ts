@@ -18,8 +18,8 @@ export interface ITestParameters {
     /** The name of a static method in the same class, which generates test data for the decorated method. */
     dataProvider?: string;
 
-    /** The type of an expected exception in the decorated method. */
-    expectedExceptions?: typeof java.lang.Throwable;
+    /** The type of expected exceptions in the decorated method. */
+    expectedExceptions?: Array<typeof java.lang.Throwable>;
 
     /** Whether methods on this class/method are enabled. */
     enabled?: boolean;
@@ -34,6 +34,33 @@ export interface IDataProviderParameters {
 
     /** Not used. */
     parallel?: boolean;
+}
+
+/**
+ * Executes the given target method and handles expected exceptions.
+ *
+ * @param target The target method.
+ * @param expectedExceptions If given then the method is expected to throw an exception of one of the given types.
+ * @param args The arguments for the target method.
+ */
+function executeTarget(this: unknown, target: Function, expectedExceptions?: Array<typeof java.lang.Throwable>,
+    ...args: unknown[]) {
+    try {
+        target.call(this, ...args);
+
+        if (expectedExceptions) {
+            throw new Error(`Expected exception of type ${expectedExceptions} ` +
+                `but no exception was thrown.`);
+        }
+    } catch (e) {
+        for (const expected of expectedExceptions ?? []) {
+            if (e instanceof expected) {
+                return;
+            }
+        }
+        throw e;
+    }
+
 }
 
 export function DataProvider<This, Args extends unknown[], Return>(
@@ -66,6 +93,7 @@ export function DataProvider<This, Args extends unknown[], Return>(
                 //       name of the method itself.
                 Object.defineProperty(target, "name", { value: param.name });
             }
+            Object.defineProperty(target, "isDataProvider", { value: true });
 
             return target;
         };
@@ -73,6 +101,7 @@ export function DataProvider<This, Args extends unknown[], Return>(
         // Multiple arguments given. This makes this function to a decorator.
         const [target, _context] = args as [TargetFunction<This, Args, Return>,
             ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>];
+        Object.defineProperty(target, "isDataProvider", { value: true });
 
         return target;
     }
@@ -100,14 +129,17 @@ export function Test<T extends ITestParameters>(param: T): Function;
  */
 export function Test<T extends ITestParameters, This, Args extends unknown[], Return>(
     ...args: unknown[]): Function | TargetFunction<This, Args, Return> {
+
     if (args.length === 1) {
         // Only one argument given. This makes this function to a decorator factory.
         const param = args[0] as T;
 
         return <This, Args extends unknown[], Return>(target: TargetFunction<This, Args, Return>,
             context: ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>) => {
-            const result = function (this: This & { constructor: { [key: string]: Function; }; },
-                ...args: Args): Return {
+            const result = function (this: This & {
+                [key: string]: unknown;
+                constructor: { [key: string]: Function; };
+            }, ...args: Args): Return {
                 const title = param.description ?? param.testName ?? target.name;
                 if (param.enabled === false) { // Can be undefined which defaults to true.
                     xit(title, () => {
@@ -128,34 +160,52 @@ export function Test<T extends ITestParameters, This, Args extends unknown[], Re
                         });
 
                         if (!provider) {
-                            throw new Error(`Data provider "${param.dataProvider}" not found. The provider method ` +
-                                `must be static.`);
+                            // If there's no static method with the provider name try to find a method with the
+                            // provider name on the prototype.
+                            Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach((name) => {
+                                if (typeof this[name] === "function" && name === param.dataProvider) {
+                                    provider = this[name] as Function;
+                                }
+                            });
+                        }
+
+                        if (!provider) {
+                            throw new Error(`Data provider "${param.dataProvider}" not found.`);
                         }
 
                         if (typeof provider !== "function") {
                             throw new Error(`Data provider "${param.dataProvider}" is not a function.`);
                         }
 
-                        // Call the provider method to get a list of test cases.
-                        const cases = provider() as unknown[][];
-                        cases?.forEach((testArgs, index: number) => {
-                            it(`Data Set ${index}`, () => {
-                                try {
-                                    target.call(this, ...testArgs) as Return;
-                                } catch (e) {
-                                    if (param.expectedExceptions && e instanceof param.expectedExceptions) {
-                                        return;
-                                    }
+                        if (!("isDataProvider" in provider)) {
+                            throw new Error(`The method "${param.dataProvider}" is not a data provider. ` +
+                                `Use the @DataProvider decorator to mark it as data provider.`);
+                        }
 
-                                    throw e;
-                                }
+                        // Call the provider method to get a list of test cases.
+                        const list = provider.call(this);
+                        let cases: java.util.Iterator<unknown[]>;
+                        if ("iterator" in list && typeof list.iterator === "function") {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                            cases = list.iterator();
+                        } else if (Array.isArray(list)) {
+                            cases = java.util.Arrays.asList(list).iterator();
+                        } else {
+                            cases = list;
+                        }
+
+                        let index = 0;
+                        while (cases.hasNext()) {
+                            const testArgs = cases.next() as Args;
+                            it(`Data Set ${index++}`, () => {
+                                executeTarget.call(this, target, param?.expectedExceptions, ...testArgs);
                             }, param.timeout);
-                        });
+                        }
 
                         return void 0 as Return;
                     } else {
                         it(title, () => {
-                            target.call(this, ...args);
+                            executeTarget.call(this, target, param?.expectedExceptions, args);
                         }, param.timeout);
                     }
                 }

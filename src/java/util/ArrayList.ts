@@ -10,7 +10,8 @@ import { RandomAccess } from "./RandomAccess";
 import { Serializable } from "../io/Serializable";
 import { Collection } from "./Collection";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { JavaString } from "../lang";
+import { NullPointerException } from "../lang/NullPointerException";
+import { JavaString } from "../lang/String";
 
 /**
  * Resizable-array implementation of the List interface. Implements all optional list operations, and permits all
@@ -48,6 +49,14 @@ export class ArrayList<T> extends AbstractList<T> implements Cloneable<ArrayList
                 } else if (Array.isArray(arg)) {
                     end = arg.length;
                     input = arg;
+
+                    input.every((element) => {
+                        if (element == null) {
+                            throw new NullPointerException();
+                        }
+
+                        return true;
+                    });
                 } else {
                     end = arg.size();
                     input = arg.toArray();

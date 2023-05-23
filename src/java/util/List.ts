@@ -7,6 +7,7 @@ import { Comparable, NullPointerException } from "../lang";
 import { JavaObject } from "../lang/Object";
 import { ArrayList } from "./ArrayList";
 import { Collection } from "./Collection";
+import { Collections } from "./Collections";
 import { Comparator } from "./Comparator";
 import { JavaIterator } from "./Iterator";
 import { ListIterator } from "./ListIterator";
@@ -212,8 +213,13 @@ export namespace List {
      */
     // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
     export function of<T>(...args: T[]): List<T> {
-        const result = new ArrayList<T>(args);
+        if (args.length === 1 && Array.isArray(args[0])) {
+            // If there is only one argument and it is an array, use that array as the list.
+            // Make a copy of the array to avoid it is used as backing store (and can hence be modified outside of
+            // the list).
+            return Collections.unmodifiableList<T>(new ArrayList<T>(args[0].slice() as T[]));
+        }
 
-        return result;
+        return Collections.unmodifiableList<T>(new ArrayList<T>(args));
     }
 }

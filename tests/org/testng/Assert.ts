@@ -96,11 +96,11 @@ export class Assert extends java.lang.Object {
     };
 
     public static assertSame = (expected: unknown, actual: unknown): void => {
-        expect(actual).javaValuesEqual(expected);
+        expect(actual).toEqual(expected); // Object identity test.
     };
 
     public static assertNotSame = (expected: unknown, actual: unknown): void => {
-        expect(actual).not.javaValuesEqual(expected);
+        expect(actual).not.toEqual(expected);
     };
 
     public static fail = (message?: string): void => {

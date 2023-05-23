@@ -6,6 +6,7 @@
 import { NotImplementedError } from "../../NotImplementedError";
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 import { Collection } from "./Collection";
 import { JavaMap } from "./Map";
 import { JavaSet } from "./Set";
@@ -15,7 +16,6 @@ import { WeakMapKeyView } from "./WeakMapKeyView";
 /**
  * This interface provides shared access to the backend of a HashMap instance for all currently active key, value
  * and entry views. This way each of them sees updates of the backend and can update it as well.
- * I wish we had friend classes, which would make this unnecessary.
  */
 export interface IWeakHashMapViewBackend<K extends object, V> {
     backend: WeakMap<K, { value: V, ref: WeakRef<K>; }>;
@@ -66,6 +66,8 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
 
     /** Removes all of the mappings from this map. */
     public clear(): void {
+        this.#checkReadonly();
+
         this.#sharedBackend.backend = new WeakMap();
         this.#sharedBackend.refSet.clear();
     }
@@ -132,6 +134,8 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *          (A null return can also indicate that the map previously associated null with key.)
      */
     public put(key: K, value: V): V | null {
+        this.#checkReadonly();
+
         const ref = new WeakRef(key);
 
         const previous = this.#sharedBackend.backend.get(key);
@@ -149,6 +153,8 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      * @param m A map with the values to copy.
      */
     public putAll(m: JavaMap<K, V>): void {
+        this.#checkReadonly();
+
         for (const entry of m.entrySet()) {
             this.put(entry.getKey(), entry.getValue());
         }
@@ -163,6 +169,8 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *          (A null return can also indicate that the map previously associated null with key.)
      */
     public remove(key: K): V | null {
+        this.#checkReadonly();
+
         const entry = this.#sharedBackend.backend.get(key);
         if (!entry) {
             return null;
@@ -222,5 +230,11 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
         }
 
         return new JavaString(`{${entries.join(", ")}}`);
+    }
+
+    #checkReadonly(): void {
+        if ("readOnly" in this && this.readOnly) {
+            throw new UnsupportedOperationException("This map is readonly.");
+        }
     }
 }

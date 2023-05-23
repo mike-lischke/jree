@@ -45,9 +45,9 @@ export class Arrays extends JavaObject {
      *
      * @returns a fixed-size list backed by the specified array.
      */
-    public static asList<T>(a: T[]): List<T>;
-    public static asList<T>(...a: T[]): List<T>;
-    public static asList<T>(...args: T[]): List<T> {
+    public static asList<T>(this: void, a: T[]): List<T>;
+    public static asList<T>(this: void, ...a: T[]): List<T>;
+    public static asList<T>(this: void, ...args: T[]): List<T> {
         if (args.length === 1 && Array.isArray(args[0])) {
             return new ArrayList<T>(args[0] as T[]);
         }

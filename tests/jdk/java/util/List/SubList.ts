@@ -204,7 +204,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModAdd(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -214,7 +214,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodAdd(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -233,7 +233,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModAddAtPos(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -244,7 +244,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodAddAtPos(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -262,7 +262,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModClear(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -272,7 +272,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodClear(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -309,7 +309,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModHashCode(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -329,7 +329,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModGet(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -369,7 +369,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModIndexOf(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -390,7 +390,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModIteratorNext(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -414,7 +414,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModIteratorRemove(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -426,7 +426,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodIteratorRemove(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -489,7 +489,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModLastIndexOf(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -511,7 +511,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModListIteratorNext(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -537,7 +537,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModListIteratorSet(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -549,7 +549,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unsettable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodListIteratorSet(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -572,7 +572,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModListIteratorPrevious(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -598,7 +598,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unsettable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodListIteratorSetPrevious(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -622,7 +622,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodListIteratorAdd(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -633,7 +633,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModListIteratorAdd(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -659,7 +659,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodListIteratorRemoveNext(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -670,7 +670,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModListIteratorRemove(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -696,7 +696,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodListIteratorRemovePrevious(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -721,7 +721,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "unresizable",
-        expectedExceptions: UnsupportedOperationException,
+        expectedExceptions: [UnsupportedOperationException],
     })
     public testUnmodRemove(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -731,7 +731,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModRemove(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);
@@ -752,7 +752,7 @@ export class SubList extends org.testng.Assert {
 
     @Test({
         dataProvider: "modifiable",
-        expectedExceptions: ConcurrentModificationException,
+        expectedExceptions: [ConcurrentModificationException],
     })
     public testModSet(list: List<Integer>, from: int, to: int): void {
         const subList = list.subList(from, to);

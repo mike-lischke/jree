@@ -6,7 +6,7 @@
 import { IteratorWrapper } from "../../IteratorWrapper";
 import { MurmurHash } from "../../MurmurHash";
 import { NotImplementedError } from "../../NotImplementedError";
-import { Comparable, JavaString, NullPointerException } from "../lang";
+import { Comparable, JavaString, NullPointerException, UnsupportedOperationException } from "../lang";
 import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
@@ -61,7 +61,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if the element was added.
      */
-    public add(element: T): boolean;
+    public override add(element: T): boolean;
     /**
      * Inserts the specified element at the specified position in this list. Shifts the element
      * currently at that position (if any) and any subsequent elements to the right (adds one to
@@ -74,8 +74,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
-    public add(index: number, element: T): void;
-    public add(...args: unknown[]): void | boolean {
+    public override add(index: number, element: T): void;
+    public override add(...args: unknown[]): void | boolean {
+        this.checkReadOnly();
         this.checkModCount();
 
         switch (args.length) {
@@ -136,7 +137,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list changed as a result of the call.
      */
-    public addAll(c: Collection<T>): boolean;
+    public override addAll(c: Collection<T>): boolean;
     /**
      * Inserts all of the elements in the specified collection into this list, starting at the
      * specified position. Shifts the element currently at that position (if any) and any subsequent
@@ -151,8 +152,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list changed as a result of the call.
      */
-    public addAll(index: number, c: Collection<T>): boolean;
-    public addAll(...args: unknown[]): boolean {
+    public override addAll(index: number, c: Collection<T>): boolean;
+    public override addAll(...args: unknown[]): boolean {
+        this.checkReadOnly();
         this.checkModCount();
 
         switch (args.length) {
@@ -207,7 +209,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * Removes all of the elements from this list. The list will be empty after this call returns.
      * This method is equivalent to calling `removeRange(0, size())`.
      */
-    public clear(): void {
+    public override clear(): void {
         this.removeRange(0, this.size());
     }
 
@@ -220,7 +222,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list contains the specified element.
      */
-    public contains(element: T): boolean {
+    public override contains(element: T): boolean {
         if (element === null) {
             throw new NullPointerException();
         }
@@ -253,7 +255,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list contains all of the elements of the specified collection.
      */
-    public containsAll(c: Collection<T>): boolean {
+    public override containsAll(c: Collection<T>): boolean {
         if (c == null) {
             throw new NullPointerException();
         }
@@ -293,7 +295,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if the specified object is equal to this list.
      */
-    public equals(other: unknown): boolean {
+    public override equals(other: unknown): boolean {
         this.checkModCount();
 
         if (this === other) {
@@ -309,24 +311,16 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         const size = this.size();
-        if (other.#subListDetails.parentList === undefined) {
-            for (let i = 0; i < size; ++i) {
-                if (!Objects.equals(this.get(i), other.#subListDetails.data[i])) {
-                    return false;
-                }
-            }
-        } else {
-            for (let i = 0; i < size; ++i) {
-                if (!Objects.equals(this.get(i), other.#subListDetails.parentList.get(i))) {
-                    return false;
-                }
+        for (let i = 0; i < size; ++i) {
+            if (!Objects.equals(this.get(i), other.get(i))) {
+                return false;
             }
         }
 
         return true;
     }
 
-    public forEach(action: Consumer<T>): void {
+    public override forEach(action: Consumer<T>): void {
         if (action == null) {
             throw new NullPointerException();
         }
@@ -372,7 +366,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns The hash code value for this list.
      */
-    public hashCode(): number {
+    public override hashCode(): number {
         this.checkModCount();
 
         if (this.#subListDetails.parentList === undefined) {
@@ -407,7 +401,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     /**
      * @returns true if this list contains no elements.
      */
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.size() === 0;
     }
 
@@ -421,7 +415,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns An iterator over the elements in this list in proper sequence.
      */
-    public iterator(): JavaIterator<T> {
+    public override iterator(): JavaIterator<T> {
         this.checkModCount();
 
         return new IteratorWrapper(this.toArray()[Symbol.iterator]());
@@ -494,7 +488,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
-    public remove(index: number): T;
+    public override remove(index: number): T;
     /**
      * Removes the first occurrence of the specified element from this list, if it is present. If this list does not
      * contain the element, it is unchanged. More formally, removes the element with the lowest index i such that
@@ -505,8 +499,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list contained the specified element.
      */
-    public remove(element: T): boolean;
-    public remove(...args: unknown[]): boolean | T {
+    public override remove(element: T): boolean;
+    public override remove(...args: unknown[]): boolean | T {
+        this.checkReadOnly();
         this.checkModCount();
 
         switch (args.length) {
@@ -538,11 +533,12 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list changed as a result of the call.
      */
-    public removeAll(c: Collection<T>): boolean {
+    public override removeAll(c: Collection<T>): boolean {
         if (c == null) {
             throw new NullPointerException();
         }
 
+        this.checkReadOnly();
         this.checkModCount();
 
         if (this === c) {
@@ -571,11 +567,12 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if any elements were removed.
      */
-    public removeIf(filter: Predicate<T>): boolean {
+    public override removeIf(filter: Predicate<T>): boolean {
         if (filter == null) {
             throw new NullPointerException();
         }
 
+        this.checkReadOnly();
         this.checkModCount();
 
         const candidates: T[] = [];
@@ -604,6 +601,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @throws IllegalArgumentException if the endpoint indices are out of order
      */
     public removeRange(fromIndex: number, toIndex: number): void {
+        this.checkReadOnly();
         this.checkModCount();
 
         fromIndex = Math.floor(fromIndex);
@@ -638,6 +636,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             throw new NullPointerException();
         }
 
+        this.checkReadOnly();
+
         const size = this.size();
         const expectedModCount = this.modCount;
 
@@ -662,11 +662,12 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns true if this list changed as a result of the call.
      */
-    public retainAll(c: Collection<T>): boolean {
+    public override retainAll(c: Collection<T>): boolean {
         if (c == null) {
             throw new NullPointerException();
         }
 
+        this.checkReadOnly();
         this.checkModCount();
 
         if (this === c) {
@@ -694,6 +695,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * @returns The element previously at the specified position.
      */
     public set(index: number, element: T): T {
+        this.checkReadOnly();
         this.checkModCount();
 
         index = Math.floor(index);
@@ -714,13 +716,14 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     /**
      * @returns The number of elements in this list.
      */
-    public size(): number {
+    public override size(): number {
         this.checkModCount();
 
         return this.#subListDetails.end - this.#subListDetails.start;
     }
 
     public sort(c: Comparator<T> | null): void {
+        this.checkReadOnly();
         const expectedModCount = this.modCount;
         const list = this.toArray();
         if (c !== null) {
@@ -746,7 +749,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         throw new NotImplementedError();
     }
 
-    public spliterator(): Spliterator<T> {
+    public override spliterator(): Spliterator<T> {
         throw new NotImplementedError();
     }
 
@@ -785,6 +788,15 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         });
         list.modCount = this.modCount;
 
+        if ("readOnly" in this) {
+            Object.defineProperty(list, "readOnly", {
+                value: this.readOnly,
+                writable: false,
+                configurable: false,
+                enumerable: true,
+            });
+        }
+
         return list;
     }
 
@@ -793,7 +805,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns An array containing all of the elements in this list in proper sequence.
      */
-    public toArray(): T[];
+    public override toArray(): T[];
     /**
      * Returns an array containing all of the elements in this list in proper sequence (from first to last element);
      * the runtime type of the returned array is that of the specified array. If the list fits in the specified array,
@@ -808,8 +820,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      * Note: In Java this method accept any element type and throws an ArrayStoreException if the given type is not
      * assignable to the list element type. In Typescript we enforce the type to be assignable to the list element type.
      */
-    public toArray<T2 extends T>(a: T2[]): T2[];
-    public toArray<T2 extends T>(a?: T2[]): T2[] | T[] {
+    public override toArray<T2 extends T>(a: T2[]): T2[];
+    public override toArray<T2 extends T>(a?: T2[]): T2[] | T[] {
         this.checkModCount();
 
         if (!a || a.length > this.size()) {
@@ -830,7 +842,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      *
      * @returns A string representation of this list.
      */
-    public toString(): JavaString {
+    public override toString(): JavaString {
         this.checkModCount();
 
         const builder = new StringBuilder();
@@ -860,6 +872,15 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             data: this.#subListDetails.data.slice(),
         };
         clone.modCount = this.modCount;
+
+        if ("readOnly" in this) {
+            Object.defineProperty(clone, "readOnly", {
+                value: this.readOnly,
+                writable: false,
+                configurable: false,
+                enumerable: true,
+            });
+        }
 
         return clone;
     }
@@ -895,6 +916,10 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             return this.#subListDetails.parentList.arrayFromRange(this.#subListDetails.start + start,
                 this.#subListDetails.start + end);
         }
+    }
+
+    protected [Symbol.toPrimitive](): string {
+        return `${this.toString().valueOf()}`;
     }
 
     private checkModCount(): void {
@@ -946,5 +971,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         ++this.modCount;
 
         return result;
+    }
+
+    private checkReadOnly(): void {
+        if ("readOnly" in this && this.readOnly) {
+            throw new UnsupportedOperationException("This list is read-only.");
+        }
     }
 }

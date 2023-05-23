@@ -19,7 +19,7 @@ export class TestNG extends java.lang.Object {
         if ("constructor" in descriptors && "value" in descriptors.constructor) {
             const constructor = descriptors.constructor.value as Function;
             if ("main" in constructor) {
-                const main = (constructor.main as Function);
+                const main = constructor.main as Function;
                 main();
 
                 return;

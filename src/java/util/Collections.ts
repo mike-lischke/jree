@@ -24,6 +24,13 @@ export abstract class Collections extends JavaObject {
     }
 
     public static unmodifiableMap<K, V>(map: JavaMap<K, V>): JavaMap<K, V> {
+        Object.defineProperty(map, "readOnly", {
+            value: true,
+            writable: false,
+            configurable: false,
+            enumerable: false,
+        });
+
         return map;
     }
 
@@ -32,6 +39,13 @@ export abstract class Collections extends JavaObject {
     }
 
     public static unmodifiableList<T>(list: List<T>): List<T> {
+        Object.defineProperty(list, "readOnly", {
+            value: true,
+            writable: false,
+            configurable: false,
+            enumerable: false,
+        });
+
         return list;
     }
 

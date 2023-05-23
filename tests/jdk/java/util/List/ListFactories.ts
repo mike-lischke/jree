@@ -1,5 +1,3 @@
-/* java2ts: keep */
-
 /*
  * Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -28,27 +26,37 @@
 /* cspell: disable */
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 
-import { java, JavaObject, I, S } from "../../../../../src";
+import { java, JavaObject, S, I } from "../../../../../src";
 import { org } from "../../../../org/org";
 
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-const Arrays = java.util.Arrays;
-type Arrays = java.util.Arrays;
-const Collections = java.util.Collections;
-type Collections = java.util.Collections;
-type Iterator<T> = java.util.Iterator<T>;
-type List<E> = java.util.List<E>;
+type String = java.lang.String;
+const String = java.lang.String;
 const List = java.util.List;
-type ListIterator<E> = java.util.ListIterator<E>;
+type List<E> = java.util.List<E>;
+const DataProvider = org.testng.annotations.DataProvider;
+type Iterator<E> = java.util.Iterator<E>;
+type Collections = java.util.Collections;
+const Collections = java.util.Collections;
 const asList = java.util.Arrays.asList;
+type Arrays = java.util.Arrays;
+const Arrays = java.util.Arrays;
+type ArrayList<E> = java.util.ArrayList<E>;
+const ArrayList = java.util.ArrayList;
+const Test = org.testng.annotations.Test;
+type UnsupportedOperationException = java.lang.UnsupportedOperationException;
+const UnsupportedOperationException = java.lang.UnsupportedOperationException;
 const assertEquals = org.testng.Assert.assertEquals;
-const assertNotEquals = org.testng.Assert.assertNotEquals;
 const assertNotSame = org.testng.Assert.assertNotSame;
+type NullPointerException = java.lang.NullPointerException;
+const NullPointerException = java.lang.NullPointerException;
 const assertSame = org.testng.Assert.assertSame;
-const fail = org.testng.Assert.fail;
+type Integer = java.lang.Integer;
+const Integer = java.lang.Integer;
+const assertNotEquals = org.testng.Assert.assertNotEquals;
+type ListIterator<E> = java.util.ListIterator<E>;
+type ClassCastException = java.lang.ClassCastException;
+const ClassCastException = java.lang.ClassCastException;
 
 /*
  * @test
@@ -60,53 +68,21 @@ const fail = org.testng.Assert.fail;
 export class ListFactories extends JavaObject {
 
     protected static readonly NUM_STRINGS = 20; // should be larger than the largest fixed-arg overload
-    protected static readonly stringArray: java.lang.String[];
+    protected static readonly stringArray: String[];
 
     // returns array of [actual, expected]
-    protected static a(act: List<java.lang.String>, exp: List<java.lang.String>): java.lang.Object[] {
+    protected static a(act: List<String>, exp: List<String>): java.lang.Object[] {
         return [act, exp];
     }
 
-    /*protected static serialClone<T>(obj: T): T {
-        try {
-            let baos = new ByteArrayOutputStream();
-            {
-                // This holds the final error to throw (if any).
-                let error: java.lang.Throwable | undefined;
-
-                const oos: ObjectOutputStream = new ObjectOutputStream(baos);
-                try {
-                    try {
-                        oos.writeObject(obj);
-                    }
-                    finally {
-                        error = closeResources([oos]);
-                    }
-                } catch (e) {
-                    error = handleResourceError(e, error);
-                } finally {
-                    throwResourceError(error);
-                }
-            }
-
-            let bais = new ByteArrayInputStream(baos.toByteArray());
-            let ois = new ObjectInputStream(bais);
-            return ois.readObject() as T;
-        } catch (e) {
-            if (e instanceof IOException || e instanceof java.lang.ClassNotFoundException) {
-                throw new java.lang.AssertionError(e);
-            } else {
-                throw e;
-            }
-        }
-    } */
-
+    @DataProvider({ name: "empty" })
     public empty(): Iterator<java.lang.Object[]> {
         return Collections.singletonList(
             ListFactories.a(List.of(), asList()),
         ).iterator();
     }
 
+    @DataProvider({ name: "nonempty" })
     public nonempty(): Iterator<java.lang.Object[]> {
         return asList(
             ListFactories.a(List.of(S`a`),
@@ -134,9 +110,10 @@ export class ListFactories extends JavaObject {
         ).iterator();
     }
 
+    @DataProvider({ name: "sublists" })
     public sublists(): Iterator<java.lang.Object[]> {
         return asList(
-            ListFactories.a(List.of<java.lang.String>().subList(0, 0),
+            ListFactories.a(List.of<String>().subList(0, 0),
                 asList()),
             ListFactories.a(List.of(S`a`).subList(0, 0),
                 asList(S`a`).subList(0, 0)),
@@ -164,97 +141,118 @@ export class ListFactories extends JavaObject {
         ).iterator();
     }
 
+    @DataProvider({ name: "all" })
     public all(): Iterator<java.lang.Object[]> {
         const all = new ArrayList<java.lang.Object[]>();
-        this.empty().forEachRemaining(all.add.bind(all));
-        this.nonempty().forEachRemaining(all.add.bind(all));
-        this.sublists().forEachRemaining(all.add.bind(all));
+        this.empty().forEachRemaining((x) => { return all.add(x); });
+        this.nonempty().forEachRemaining((x) => { return all.add(x); });
+        this.sublists().forEachRemaining((x) => { return all.add(x); });
 
         return all.iterator();
     }
 
+    @DataProvider({ name: "nonsublists" })
     public nonsublists(): Iterator<java.lang.Object[]> {
         const all = new ArrayList<java.lang.Object[]>();
-        this.empty().forEachRemaining(all.add.bind(all));
-        this.nonempty().forEachRemaining(all.add.bind(all));
+        this.empty().forEachRemaining((x) => { return all.add(x); });
+        this.nonempty().forEachRemaining((x) => { return all.add(x); });
 
         return all.iterator();
     }
 
-    public cannotAddLast(act: List<java.lang.String>, exp: List<java.lang.String>): void {
+    @Test({ dataProvider: "all", expectedExceptions: [UnsupportedOperationException], enabled: true })
+    public cannotAddLast(act: List<String>, exp: List<String>): void {
         act.add(S`x`);
     }
 
-    public cannotAddFirst(act: List<java.lang.String>, exp: List<java.lang.String>): void {
+    @Test({ dataProvider: "all", expectedExceptions: [UnsupportedOperationException], enabled: true })
+    public cannotAddFirst(act: List<String>, exp: List<String>): void {
         act.add(0, S`x`);
     }
 
-    public cannotRemove(act: List<java.lang.String>, exp: List<java.lang.String>): void {
+    @Test({ dataProvider: "nonempty", expectedExceptions: [UnsupportedOperationException], enabled: true })
+    public cannotRemove(act: List<String>, exp: List<String>): void {
         act.remove(0);
     }
 
-    public cannotSet(act: List<java.lang.String>, exp: List<java.lang.String>): void {
+    @Test({ dataProvider: "nonempty", expectedExceptions: [UnsupportedOperationException], enabled: true })
+    public cannotSet(act: List<String>, exp: List<String>): void {
         act.set(0, S`x`);
     }
 
-    public contentsMatch(act: List<java.lang.String>, exp: List<java.lang.String>): void {
+    @Test({ dataProvider: "all", enabled: true })
+    public contentsMatch(act: List<String>, exp: List<String>): void {
         assertEquals(act, exp);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed1(): void {
-        List.of(null as unknown as java.lang.Object); // force one-arg overload
+        List.of(null as never); // force one-arg overload
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed2a(): void {
         List.of(S`a`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed2b(): void {
         List.of(null, S`b`);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed3(): void {
         List.of(S`a`, S`b`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed4(): void {
         List.of(S`a`, S`b`, S`c`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed5(): void {
         List.of(S`a`, S`b`, S`c`, S`d`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed6(): void {
         List.of(S`a`, S`b`, S`c`, S`d`, S`e`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed7(): void {
         List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed8(): void {
         List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed9(): void {
         List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowed10(): void {
         List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullDisallowedN(): void {
         const array = ListFactories.stringArray.slice();
-        array[0] = null as unknown as java.lang.String;
+        array[0] = null as never;
         List.of(array);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public nullArrayDisallowed(): void {
-        List.of(null as unknown as java.lang.Object[]);
+        List.of(null as never);
     }
 
+    @Test
     public ensureArrayCannotModifyList(): void {
         const array = ListFactories.stringArray.slice();
         const list = List.of(array);
@@ -262,19 +260,22 @@ export class ListFactories extends JavaObject {
         assertEquals(list, Arrays.asList(ListFactories.stringArray));
     }
 
-    public containsNullShouldThrowNPE(act: List<java.lang.String>, exp: List<java.lang.String>): void {
-        // Forcing a null in TS where no null is allowed.
-        act.contains(null as unknown as java.lang.String);
+    @Test({ dataProvider: "all", expectedExceptions: [NullPointerException], enabled: true })
+    public containsNullShouldThrowNPE(act: List<String>, exp: List<String>): void {
+        act.contains(null as never);
     }
 
-    public indexOfNullShouldThrowNPE(act: List<java.lang.String>, exp: List<java.lang.String>): void {
-        act.indexOf(null as unknown as java.lang.String);
+    @Test({ dataProvider: "all", expectedExceptions: [NullPointerException], enabled: true })
+    public indexOfNullShouldThrowNPE(act: List<String>, exp: List<String>): void {
+        act.indexOf(null as never);
     }
 
-    public lastIndexOfNullShouldThrowNPE(act: List<java.lang.String>, exp: List<java.lang.String>): void {
-        act.lastIndexOf(null as unknown as java.lang.String);
+    @Test({ dataProvider: "all", expectedExceptions: [NullPointerException], enabled: true })
+    public lastIndexOfNullShouldThrowNPE(act: List<String>, exp: List<String>): void {
+        act.lastIndexOf(null as never);
     }
 
+    @Test
     public copyOfResultsEqual(): void {
         const orig = this.genList();
         const copy = List.copyOf(orig);
@@ -283,6 +284,7 @@ export class ListFactories extends JavaObject {
         assertEquals(copy, orig);
     }
 
+    @Test
     public copyOfModifiedUnequal(): void {
         const orig = this.genList();
         const copy = List.copyOf(orig);
@@ -292,6 +294,7 @@ export class ListFactories extends JavaObject {
         assertNotEquals(copy, orig);
     }
 
+    @Test
     public copyOfIdentity(): void {
         const orig = this.genList();
         const copy1 = List.copyOf(orig);
@@ -301,6 +304,7 @@ export class ListFactories extends JavaObject {
         assertSame(copy1, copy2);
     }
 
+    @Test
     public copyOfSubList(): void {
         const orig = List.of(0, 1, 2, 3);
         const sub = orig.subList(0, 3);
@@ -309,6 +313,7 @@ export class ListFactories extends JavaObject {
         assertNotSame(sub, copy);
     }
 
+    @Test
     public copyOfSubSubList(): void {
         const orig = List.of(0, 1, 2, 3);
         const sub = orig.subList(0, 3).subList(0, 2);
@@ -317,38 +322,37 @@ export class ListFactories extends JavaObject {
         assertNotSame(sub, copy);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public copyOfRejectsNullCollection(): void {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const list = List.copyOf(null);
+        List.copyOf(null);
     }
 
+    @Test({ expectedExceptions: [NullPointerException], enabled: true })
     public copyOfRejectsNullElements(): void {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const list = List.copyOf(Arrays.asList(1, null, 3));
+        List.copyOf(Arrays.asList(1, null, 3));
     }
 
+    @Test
     public iteratorShouldNotBeListIterator(): void {
         const list = List.of<java.lang.Integer>(I`1`, I`2`, I`3`, I`4`, I`5`);
         const it = list.iterator();
         it.next();
         try {
-            (it as ListIterator<java.lang.Integer>).previous();
+            (it as ListIterator<Integer>).previous();
             fail("ListIterator operation succeeded on Iterator");
         } catch (ignore) {
-            if (ignore instanceof java.lang.ClassCastException || ignore instanceof java.lang.UnsupportedOperationException) {
-                /* */
-            } else {
+            if (ignore instanceof ClassCastException || ignore instanceof UnsupportedOperationException) { /**/ } else {
                 throw ignore;
             }
         }
     }
 
-    protected genList(): List<java.lang.Integer> {
+    protected genList(): List<Integer> {
         return new ArrayList(Arrays.asList(I`1`, I`2`, I`3`));
     }
 
     static {
-        const sa = new Array<java.lang.String>(ListFactories.NUM_STRINGS);
+        const sa = new Array<String>(ListFactories.NUM_STRINGS);
         for (let i = 0; i < ListFactories.NUM_STRINGS; i++) {
             sa[i] = java.lang.String.valueOf(String.fromCharCode("a".charCodeAt(0) + i));
         }
