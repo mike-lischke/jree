@@ -55,8 +55,6 @@ type Integer = java.lang.Integer;
 const Integer = java.lang.Integer;
 const assertNotEquals = org.testng.Assert.assertNotEquals;
 type ListIterator<E> = java.util.ListIterator<E>;
-type ClassCastException = java.lang.ClassCastException;
-const ClassCastException = java.lang.ClassCastException;
 
 /*
  * @test
@@ -341,7 +339,7 @@ export class ListFactories extends JavaObject {
             (it as ListIterator<Integer>).previous();
             fail("ListIterator operation succeeded on Iterator");
         } catch (ignore) {
-            if (ignore instanceof ClassCastException || ignore instanceof UnsupportedOperationException) { /**/ } else {
+            if (ignore instanceof TypeError) { /**/ } else {
                 throw ignore;
             }
         }

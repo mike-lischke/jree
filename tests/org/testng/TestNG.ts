@@ -11,7 +11,7 @@ export type TestFunction = Function & { isTest: boolean; };
 
 /** This class is the main entry point for running tests in the TestNG framework. */
 export class TestNG extends java.lang.Object {
-    public run<T>(testClass: TestClass<T>): void {
+    public run<T>(testClass: TestClass<T>, params: unknown[] = []): void {
         // Get all properties of the given class.
         const descriptors = Object.getOwnPropertyDescriptors(testClass.prototype);
 
@@ -20,7 +20,9 @@ export class TestNG extends java.lang.Object {
             const constructor = descriptors.constructor.value as Function;
             if ("main" in constructor) {
                 const main = constructor.main as Function;
-                main();
+                describe("main", () => {
+                    main(params);
+                });
 
                 return;
             }

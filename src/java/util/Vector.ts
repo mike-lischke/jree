@@ -6,8 +6,7 @@
 import { java, NotImplementedError } from "../..";
 import { S } from "../../templates";
 import { NullPointerException } from "../lang/NullPointerException";
-import { AbstractList } from "./AbstractList";
-import { ISubList } from "./ListIteratorImpl";
+import { AbstractList, ISubList } from "./AbstractList";
 
 /**
  * The Vector class implements a growable array of objects. Like an array, it contains components that can be

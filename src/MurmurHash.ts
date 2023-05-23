@@ -174,7 +174,7 @@ export class MurmurHash {
      */
     public static hashCode = (value: unknown, seed?: number): number => {
         if (value == null) {
-            return MurmurHash.finish(MurmurHash.update(seed ?? MurmurHash.defaultSeed, 0), 1);
+            return 0;
         }
 
         if (isEquatable(value)) {

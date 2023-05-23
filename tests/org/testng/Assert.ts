@@ -17,7 +17,13 @@ import { java } from "../../../src";
  * @returns A result object with a pass flag and a message.
  */
 const javaValuesEqual: MatcherFunction<[other: unknown]> = function (actual, other) {
-    const pass = java.util.Objects.equals(actual, other);
+    let pass;
+    if (Array.isArray(actual) && Array.isArray(other)) {
+        pass = java.util.Arrays.equals(actual, other);
+    } else {
+        pass = java.util.Objects.equals(actual, other);
+    }
+
     if (pass) {
         return {
             message: () => {

@@ -3,8 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ISubList } from "./ListIteratorImpl";
-import { AbstractList } from "./AbstractList";
+import { AbstractList, ISubList } from "./AbstractList";
 import { Cloneable } from "../lang/Cloneable";
 import { RandomAccess } from "./RandomAccess";
 import { Serializable } from "../io/Serializable";

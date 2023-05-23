@@ -3,13 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IteratorWrapper } from "../../IteratorWrapper";
-import { MurmurHash } from "../../MurmurHash";
 import { NotImplementedError } from "../../NotImplementedError";
-import { Comparable, JavaString, NullPointerException, UnsupportedOperationException } from "../lang";
+import {
+    Comparable, IllegalStateException, JavaString, NullPointerException, UnsupportedOperationException,
+} from "../lang";
 import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { JavaObject } from "../lang/Object";
 import { StringBuilder } from "../lang/StringBuilder";
 import { AbstractCollection } from "./AbstractCollection";
 import { Collection } from "./Collection";
@@ -18,13 +19,34 @@ import { ConcurrentModificationException } from "./ConcurrentModificationExcepti
 import { JavaIterator } from "./Iterator";
 import { List } from "./List";
 import { ListIterator } from "./ListIterator";
-import { ISubList, ListIteratorImpl } from "./ListIteratorImpl";
+import { NoSuchElementException } from "./NoSuchElementException";
 import { Objects } from "./Objects";
 import { Spliterator } from "./Spliterator";
 import { UnaryOperator } from "./function";
 import { Consumer } from "./function/Consumer";
 import { Predicate } from "./function/Predicate";
 import { Stream } from "./stream";
+
+/**
+ * This interface provides shared access to the backend of a list class.
+ * It is usually not shared itself, but holds the shared list.
+ */
+export interface ISubList<T> {
+    /** The underlying data. */
+    data: T[];
+
+    /**
+     * The list from which this sub list was created. If undefined then this sub list represents the original
+     * list and index values are relative to the start of the data array.
+     */
+    parentList?: AbstractList<T>;
+
+    /** The start index of the sub list relative to the parent list (inclusive). */
+    start: number;
+
+    /** The end index of the sub list relative to the parent list (exclusive). */
+    end: number;
+}
 
 /**
  * This is the base class for all list implementations. It provides the core functionality and the
@@ -37,6 +59,120 @@ import { Stream } from "./stream";
 export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
 
     protected modCount = 0;
+
+    #IteratorImpl = class IteratorImpl<T> extends JavaObject implements JavaIterator<T> {
+        // Holds the direction we navigated last (either by calling next() or previous()).
+        protected movedForward: boolean | undefined;
+
+        protected currentModCount = 0;
+
+        public constructor(protected owner: AbstractList<T>, protected index: number) {
+            super();
+
+            this.currentModCount = owner.modCount;
+
+            if (index < 0 || index > owner.size()) {
+                throw new IndexOutOfBoundsException();
+            }
+        }
+
+        public forEachRemaining(consumer: (element: T) => void): void {
+            while (this.hasNext()) {
+                consumer(this.next());
+            }
+        }
+
+        public hasNext(): boolean {
+            return this.index < this.owner.size();
+        }
+
+        public next(): T {
+            this.checkModCount();
+
+            if (!this.hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            this.movedForward = true;
+
+            return this.owner.get(this.index++);
+        }
+
+        public nextIndex(): number {
+            return this.index;
+        }
+
+        public remove(): void {
+            if (this.movedForward === undefined) {
+                throw new IllegalStateException();
+            }
+
+            if (this.movedForward) {
+                // Index was moved to next element.
+                this.owner.remove(this.index - 1);
+            } else {
+                // Index at last returned element.
+                this.owner.remove(this.index);
+            }
+
+            this.currentModCount = this.owner.modCount;
+            this.movedForward = undefined;
+        }
+
+        protected checkModCount(): void {
+            if (this.currentModCount !== this.owner.modCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    };
+
+    #ListIteratorImpl = class ListIteratorImpl<T> extends this.#IteratorImpl<T> implements ListIterator<T> {
+        public add(element: T): void {
+            this.movedForward = undefined;
+            if (this.owner.size() === 0) {
+                this.owner.add(element);
+            } else {
+                this.owner.add(this.index, element);
+            }
+
+            ++this.index;
+        }
+
+        public hasPrevious(): boolean {
+            return this.index > 0;
+        }
+
+        public previous(): T {
+            this.checkModCount();
+
+            if (!this.hasPrevious) {
+                throw new NoSuchElementException();
+            }
+
+            this.movedForward = false;
+
+            return this.owner.get(--this.index);
+        }
+
+        public previousIndex(): number {
+            return this.index - 1;
+        }
+
+        public set(element: T): void {
+            if (this.movedForward === undefined) {
+                throw new IllegalStateException();
+            }
+
+            if (this.movedForward) {
+                // Index was moved to next element.
+                this.owner.set(this.index - 1, element);
+            } else {
+                // Index at last returned element.
+                this.owner.set(this.index, element);
+            }
+        }
+
+    };
 
     #subListDetails: ISubList<T>;
 
@@ -369,11 +505,12 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public override hashCode(): number {
         this.checkModCount();
 
-        if (this.#subListDetails.parentList === undefined) {
-            return MurmurHash.hashCode(this.#subListDetails.data);
+        let result = 1;
+        for (const element of this) {
+            result = 31 * result + Objects.hashCode(element);
         }
 
-        return MurmurHash.hashCode(this.toArray());
+        return result;
     }
 
     /**
@@ -418,7 +555,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public override iterator(): JavaIterator<T> {
         this.checkModCount();
 
-        return new IteratorWrapper(this.toArray()[Symbol.iterator]());
+        return new this.#IteratorImpl(this, 0);
     }
 
     public override parallelStream(): Stream<T> {
@@ -468,14 +605,9 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
      */
     public listIterator(index = 0): ListIterator<T> {
         this.checkModCount();
-
         index = Math.floor(index);
-        const details = { ...this.#subListDetails };
-        if (details.parentList === undefined) {
-            details.parentList = this;
-        }
 
-        return new ListIteratorImpl(details, index);
+        return new this.#ListIteratorImpl(this, index);
     }
 
     /**
@@ -824,7 +956,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     public override toArray<T2 extends T>(a?: T2[]): T2[] | T[] {
         this.checkModCount();
 
-        if (!a || a.length > this.size()) {
+        if (!a || a.length < this.size()) {
             return this.arrayFromRange(0, this.size());
         }
 
@@ -978,4 +1110,5 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
             throw new UnsupportedOperationException("This list is read-only.");
         }
     }
+
 }

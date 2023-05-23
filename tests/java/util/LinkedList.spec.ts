@@ -45,7 +45,9 @@ describe("LinkedList Tests", () => {
         expect(() => { list.set(10, 0b11); }).toThrowError(java.lang.IndexOutOfBoundsException);
 
         expect(list.toArray()).toEqual([]);
-        expect(list.toArray(new Array<number>(10))).toEqual([]);
+        expect(list.toArray(new Array<number>(10))).toEqual([
+            null, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+        ]);
 
         expect([...list]).toEqual([]);
 

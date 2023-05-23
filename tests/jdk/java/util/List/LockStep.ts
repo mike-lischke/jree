@@ -38,12 +38,11 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int, S } from "../../../../../src";
+import { java, JavaObject, int, S, I } from "../../../../../src";
+import { Assert } from "../../../../org/testng";
 
 const ArrayList = java.util.ArrayList;
 type ArrayList<E> = java.util.ArrayList<E>;
-const Arrays = java.util.Arrays;
-type Arrays = java.util.Arrays;
 type Collection<E> = java.util.Collection<E>;
 const Collections = java.util.Collections;
 type Collections = java.util.Collections;
@@ -72,30 +71,6 @@ export class LockStep extends JavaObject {
     public static main(args: java.lang.String[]): void {
         new LockStep().instanceMain(args);
     }
-    /*protected static serializedForm(obj: java.lang.Object): Int8Array {
-        try {
-            const baos = new ByteArrayOutputStream();
-            new ObjectOutputStream(baos).writeObject(obj);
-
-            return baos.toByteArray();
-        } catch (e) {
-            if (e instanceof IOException) { throw new java.lang.RuntimeException(e); } else {
-                throw e;
-            }
-        }
-    }
-    protected static readObject(bytes: Int8Array): java.lang.Object {
-        const is = new ByteArrayInputStream(bytes);
-
-        return new ObjectInputStream(is).readObject();
-    }
-    protected static serialClone<T>(obj: T): T {
-        try { return LockStep.readObject(LockStep.serializedForm(obj)) as T; } catch (e) {
-            if (e instanceof java.lang.Exception) { throw new java.lang.RuntimeException(e); } else {
-                throw e;
-            }
-        }
-    } */          // Running time is O(size**2)
 
     protected intArg(args: java.lang.String[], i: int, defaultValue: int): int {
         return args.length > i ? java.lang.Integer.parseInt(args[i]) : defaultValue;
@@ -112,6 +87,7 @@ export class LockStep extends JavaObject {
     }
 
     protected equalLists<T>(...lists: Array<List<T>>): void;
+    protected equalLists<T>(lists: Array<List<T>>): void;
     protected equalLists<T>(x: List<T>, y: List<T>): void;
     protected equalLists<T>(...args: unknown[]): void {
         switch (args.length) {
@@ -146,25 +122,32 @@ export class LockStep extends JavaObject {
     }
 
     protected lockSteps(...lists: Array<List<java.lang.Integer>>): void {
-        for (let i = 0; i < lists.length; i++) {
-            if (this.maybe(4)) {
-                //lists[i] = LockStep.serialClone(lists[i]);
+        it("Clone", () => {
+            for (let i = 0; i < lists.length; i++) {
+                if (this.maybe(4)) {
+                    //lists[i] = LockStep.serialClone(lists[i]);
+                }
             }
-        }
+        });
 
-        for (const list of lists) {
-            this.testEmptyList(list);
-        }
-
-        for (let i = 0; i < this.size; i++) {
-            const adder = this.randomAdder();
+        it("Empty List", () => {
             for (const list of lists) {
-                adder.frob(list);
-                this.equal(list.size(), i + 1);
+                this.testEmptyList(list);
             }
-            this.equalLists(...lists);
-        }
-        {
+        });
+
+        it("Equal List 1", () => {
+            for (let i = 0; i < this.size; i++) {
+                const adder = this.randomAdder();
+                for (const list of lists) {
+                    adder.frob(list);
+                    this.equal(list.size(), i + 1);
+                }
+                this.equalLists<java.lang.Integer>(lists);
+            }
+        });
+
+        it("Concurrent Changes", () => {
             const adder = this.randomAdder();
             const remover = this.randomRemover<java.lang.Integer>();
             for (const list of lists) {
@@ -229,48 +212,46 @@ export class LockStep extends JavaObject {
                         }
                     }(this));
             }
-        }
+        });
 
-        for (const l of lists) {
-            const sl = this.asSubList(l);
-            const ssl = this.asSubList(sl);
-            ssl.add(0, new java.lang.Integer(42));
-            this.equal(ssl.get(0), 42);
-            this.equal(sl.get(0), 42);
-            this.equal(l.get(0), 42);
-            const s = l.size();
-            const rndIndex = this.rnd.nextInt(l.size());
-            this.THROWS(java.lang.IndexOutOfBoundsException,
-                new class implements LockStep.F { public f(): void { l.subList(rndIndex, rndIndex).get(0); } }(),
-                new class implements LockStep.F { public f(): void { l.subList(s / 2, s).get(s / 2 + 1); } }(),
-                new class implements LockStep.F { public f(): void { l.subList(s / 2, s).get(-1); } }(),
-            );
-            this.THROWS(java.lang.IllegalArgumentException,
-                new class implements LockStep.F { public f(): void { l.subList(1, 0); } }(),
-                new class implements LockStep.F { public f(): void { sl.subList(1, 0); } }(),
-                new class implements LockStep.F { public f(): void { ssl.subList(1, 0); } }());
-        }
-
-        this.equalLists(...lists);
-
-        for (const list of lists) {
-            this.equalLists(list, this.asSubList(list));
-            this.equalLists(list, this.asSubList(this.asSubList(list)));
-        }
-        for (const list of lists) {
-
-            java.lang.System.out.println(list);
-        }
-
-        for (let i = lists[0].size(); i > 0; i--) {
-            const remover = this.randomRemover();
-            for (const list of lists) {
-
-                remover.frob(list);
+        it("Equal Lists 2", () => {
+            for (const l of lists) {
+                const sl = this.asSubList(l);
+                const ssl = this.asSubList(sl);
+                ssl.add(0, I`42`);
+                this.equal(ssl.get(0), I`42`);
+                this.equal(sl.get(0), I`42`);
+                this.equal(l.get(0), I`42`);
+                const s = l.size();
+                const rndIndex = this.rnd.nextInt(l.size());
+                this.THROWS(java.lang.IndexOutOfBoundsException,
+                    new class implements LockStep.F { public f(): void { l.subList(rndIndex, rndIndex).get(0); } }(),
+                    new class implements LockStep.F { public f(): void { l.subList(s / 2, s).get(s / 2 + 1); } }(),
+                    new class implements LockStep.F { public f(): void { l.subList(s / 2, s).get(-1); } }(),
+                );
+                this.THROWS(java.lang.IllegalArgumentException,
+                    new class implements LockStep.F { public f(): void { l.subList(1, 0); } }(),
+                    new class implements LockStep.F { public f(): void { sl.subList(1, 0); } }(),
+                    new class implements LockStep.F { public f(): void { ssl.subList(1, 0); } }());
             }
 
-            this.equalLists(...lists);
-        }
+            this.equalLists(lists);
+
+            for (const list of lists) {
+                this.equalLists(list, this.asSubList(list));
+                this.equalLists(list, this.asSubList(this.asSubList(list)));
+            }
+
+            for (let i = lists[0].size(); i > 0; i--) {
+                const remover = this.randomRemover();
+                for (const list of lists) {
+
+                    remover.frob(list);
+                }
+
+                this.equalLists(lists);
+            }
+        });
     }
 
     protected asSubList<T>(list: List<T>): List<T> {
@@ -280,11 +261,12 @@ export class LockStep extends JavaObject {
     protected testEmptyCollection(c: Collection<unknown>): void {
         this.check(c.isEmpty());
         this.equal(c.size(), 0);
-        this.equal(c.toString(), "[]");
+        this.equal(c.toString(), S`[]`);
         this.equal(c.toArray().length, 0);
         this.equal(c.toArray(new Array<java.lang.Object>(0)).length, 0);
 
-        const a = new Array<java.lang.Object>(1); a[0] = java.lang.Boolean.TRUE;
+        const a = new Array<java.lang.Object>(1);
+        a[0] = java.lang.Boolean.TRUE;
         this.equal(c.toArray(a), a);
         this.equal(a[0], null);
     }
@@ -300,7 +282,6 @@ export class LockStep extends JavaObject {
         const subListCount = this.rnd.nextInt(3);
         const atBeginning = this.rnd.nextBoolean();
         const useIterator = this.rnd.nextBoolean();
-        //const simpleIterator = this.rnd.nextBoolean();
 
         return new class implements LockStep.ListFrobber<java.lang.Integer> {
             public constructor(private $outer: LockStep) {
@@ -331,7 +312,6 @@ export class LockStep extends JavaObject {
                             default: {
                                 throw new java.lang.Error();
                             }
-
                         }
                     } else {
                         switch (this.$outer.rnd.nextInt(3)) {
@@ -350,7 +330,6 @@ export class LockStep extends JavaObject {
                             default: {
                                 throw new java.lang.Error();
                             }
-
                         }
                     }
                 } else {
@@ -501,81 +480,25 @@ export class LockStep extends JavaObject {
         }(this);
     }
 
-    protected pass(): void { this.passed++; }
-
-    protected fail(): void;
-    protected fail(msg: java.lang.String | string): void;
-    protected fail(...args: unknown[]): void {
-        switch (args.length) {
-            case 0: {
-                this.failed++;
-                //java.lang.Thread.dumpStack();
-
-                break;
-            }
-
-            case 1: {
-                const [msg] = args as [java.lang.String | string];
-
-                java.lang.System.err.println(msg);
-                this.fail();
-
-                break;
-            }
-
-            default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
-            }
-        }
-    }
-
-    protected unexpected(t: java.lang.Throwable): void { this.failed++; t.printStackTrace(); }
-
     protected check(cond: boolean): void {
-        if (cond) {
-            this.pass();
-        }
-        else {
-            this.fail();
-        }
+        Assert.assertTrue(cond);
     }
 
     protected equal(x: unknown, y: unknown): void {
-        if (x === y) {
-            this.pass();
-        } else if (Array.isArray(x) && Array.isArray(y)) {
-            this.check(Arrays.equals(x, y));
-        } else if (java.util.Objects.equals(x, y)) {
-            this.pass();
-        } else {
-            this.fail(x + " not equal to " + y);
-        }
+        Assert.assertEquals(x, y);
     }
 
     protected instanceMain(args: java.lang.String[]): void {
-        try { this.test(args); } catch (t) {
-            if (t instanceof java.lang.Throwable) { this.unexpected(t); } else {
-                throw t;
-            }
-        }
-        java.lang.System.out.printf(S`%nPassed = %d, failed = %d%n%n`, this.passed, this.failed);
-        if (this.failed > 0) {
-            fail();
-        }
+        this.test(args);
     }
+
     protected THROWS(k: typeof java.lang.Throwable, ...fs: LockStep.F[]): void {
         for (const f of fs) {
             try {
                 f.f();
-                this.fail("Expected " + k.constructor.name + " not thrown");
+                throw new Error("Expected " + k.constructor.name + " not thrown");
             } catch (t) {
-                if (t instanceof java.lang.Throwable) {
-                    if (t instanceof k) {
-                        this.pass();
-                    } else {
-                        this.unexpected(t);
-                    }
-                } else {
+                if (!(t instanceof k)) {
                     throw t;
                 }
             }
