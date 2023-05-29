@@ -3,18 +3,28 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java, NotImplementedError } from "../..";
 import { S } from "../../templates";
+
 import { NullPointerException } from "../lang/NullPointerException";
 import { AbstractList, ISubList } from "./AbstractList";
+import { RandomAccess } from "./RandomAccess";
+import { Cloneable } from "../lang/Cloneable";
+import { Serializable } from "../io/Serializable";
+import { Collection } from "./Collection";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { NotImplementedError } from "../../NotImplementedError";
+import { Enumeration } from "./Enumeration";
+import { NoSuchElementException } from "./NoSuchElementException";
+import { UnaryOperator } from "./function/UnaryOperator";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
 
 /**
  * The Vector class implements a growable array of objects. Like an array, it contains components that can be
  * accessed using an integer index. However, the size of a Vector can grow or shrink as needed to accommodate
  * adding and removing items after the Vector has been created.
  */
-export class Vector<T> extends AbstractList<T>
-    implements java.lang.Cloneable<Vector<T>>, java.util.RandomAccess, java.io.Serializable {
+export class Vector<T> extends AbstractList<T> implements Cloneable<Vector<T>>, RandomAccess, Serializable {
 
     protected capacityIncrement: number;
     protected elementCount = 0;
@@ -22,7 +32,7 @@ export class Vector<T> extends AbstractList<T>
     public constructor();
     public constructor(initialCapacity: number);
     public constructor(initialCapacity: number, capacityIncrement: number);
-    public constructor(c: java.util.Collection<T>);
+    public constructor(c: Collection<T>);
     public constructor(...args: unknown[]) {
         let backend: ISubList<T> | undefined;
         let increment = 0;
@@ -46,7 +56,7 @@ export class Vector<T> extends AbstractList<T>
                         end: 0,
                     };
                 } else {
-                    const input = args[0] as java.util.Collection<T>;
+                    const input = args[0] as Collection<T>;
                     backend = {
                         data: input.toArray(),
                         start: 0,
@@ -69,7 +79,7 @@ export class Vector<T> extends AbstractList<T>
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Wrong number of arguments`);
+                throw new IllegalArgumentException(S`Wrong number of arguments`);
             }
         }
 
@@ -121,7 +131,7 @@ export class Vector<T> extends AbstractList<T>
      */
     public copyInto(anArray: T[]): void {
         if (anArray.length < this.size()) {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         this.copyToArray(anArray);
@@ -141,7 +151,7 @@ export class Vector<T> extends AbstractList<T>
     /**
      * Returns an enumeration of the components of this vector.
      */
-    public elements(): java.util.Enumeration<T> {
+    public elements(): Enumeration<T> {
         throw new NotImplementedError();
     }
 
@@ -154,7 +164,7 @@ export class Vector<T> extends AbstractList<T>
      */
     public firstElement(): T {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.get(0);
@@ -181,7 +191,7 @@ export class Vector<T> extends AbstractList<T>
      */
     public lastElement(): T {
         if (this.size() === 0) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
 
         return this.get(this.size() - 1);
@@ -224,7 +234,7 @@ export class Vector<T> extends AbstractList<T>
      *
      * @param operator the operator to apply to each element
      */
-    public override replaceAll(operator: java.util.function.UnaryOperator<T>): void {
+    public override replaceAll(operator: UnaryOperator<T>): void {
         if (operator == null) {
             throw new NullPointerException();
         }
@@ -261,7 +271,7 @@ export class Vector<T> extends AbstractList<T>
      */
     public setSize(newSize: number): void {
         if (newSize < 0) {
-            throw new java.lang.ArrayIndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
     }
 

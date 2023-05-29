@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../lang/Object";
+import { IReflection, JavaObject } from "../lang/Object";
 import { Collection } from "./Collection";
 import { JavaSet } from "./Set";
 
@@ -52,18 +52,12 @@ export interface JavaMap<K, V> extends IReflection {
 }
 
 export namespace JavaMap {
-    export abstract class Entry<K, V> {
-        /** Compares the specified object with this entry for equality. */
-        public abstract equals(o: unknown): boolean;
-
+    export abstract class Entry<K, V> extends JavaObject {
         /** Returns the key corresponding to this entry. */
         public abstract getKey(): K;
 
         /** Returns the value corresponding to this entry. */
         public abstract getValue(): V;
-
-        /** Returns the hash code value for this map entry. */
-        public abstract hashCode(): number;
 
         /** Replaces the value corresponding to this entry with the specified value (optional operation). */
         public abstract setValue(value: V): V;

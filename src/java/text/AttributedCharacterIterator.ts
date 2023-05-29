@@ -18,7 +18,7 @@ export interface AttributedCharacterIterator extends CharacterIterator {
     getAttribute(attribute: AttributedCharacterIterator.Attribute): unknown;
 
     /** Returns a map with the attributes defined on the current character. */
-    getAttributes(): JavaMap<AttributedCharacterIterator.Attribute, unknown>;
+    getAttributes(): JavaMap<AttributedCharacterIterator.Attribute, JavaObject>;
 
     /**
      * Returns the index of the first character following the run with respect to all attributes containing the

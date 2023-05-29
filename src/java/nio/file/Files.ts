@@ -4,35 +4,39 @@
  */
 import fs from "fs";
 
-import { java } from "../../..";
 import { S } from "../../../templates";
 import { JavaObject } from "../../lang/Object";
+import { JavaSet } from "../../util/Set";
+import { OpenOption } from "./OpenOption";
+import { Path } from "./Path";
+import { SeekableByteChannel } from "../channels/SeekableByteChannel";
+import { FileAttribute } from "./attribute/FileAttribute";
+import { FileChannel } from "../channels/FileChannel";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
 
 /** This class consists exclusively of static methods that operate on files, directories, or other types of files. */
 export class Files extends JavaObject {
     /** Opens or creates a file, returning a seekable byte channel to access the file. */
-    public static newByteChannel(path: java.nio.file.Path,
-        ...options: java.nio.file.OpenOption[]): java.nio.channels.SeekableByteChannel;
-    public static newByteChannel(path: java.nio.file.Path,
-        options: java.nio.file.OpenOption[],
-        ...attrs: Array<java.nio.file.FileAttribute<unknown>>): java.nio.channels.SeekableByteChannel;
-    public static newByteChannel(...args: unknown[]): java.nio.channels.SeekableByteChannel {
+    public static newByteChannel(path: Path, ...options: OpenOption[]): SeekableByteChannel;
+    public static newByteChannel(path: Path, options: OpenOption[],
+        ...attrs: Array<FileAttribute<unknown>>): SeekableByteChannel;
+    public static newByteChannel(...args: unknown[]): SeekableByteChannel {
         switch (args.length) {
             case 2: {
-                const [path, options] = args as [java.nio.file.Path, java.util.Set<java.nio.file.OpenOption>];
+                const [path, options] = args as [Path, JavaSet<OpenOption>];
 
-                return java.nio.channels.FileChannel.open(path, options);
+                return FileChannel.open(path, options);
             }
 
             case 3: {
-                const [path, options, attrs] = args as [java.nio.file.Path, java.util.Set<java.nio.file.OpenOption>,
-                    java.nio.file.FileAttribute<unknown>];
+                const [path, options, attrs] = args as [Path, JavaSet<OpenOption>,
+                    FileAttribute<unknown>];
 
-                return java.nio.channels.FileChannel.open(path, options, attrs);
+                return FileChannel.open(path, options, attrs);
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
@@ -44,7 +48,7 @@ export class Files extends JavaObject {
      *
      * @returns The file size, in bytes.
      */
-    public static size(path: java.nio.file.Path): bigint {
+    public static size(path: Path): bigint {
         const stats = fs.statSync(`${path}`, { bigint: true });
 
         return stats.size;

@@ -127,11 +127,11 @@ export interface Path extends Comparable<Path>, JavaIterable<Path>, Watchable {
 
     // of(uri: URI): Path;
 
-    register(watcher: WatchService, events: Array<WatchEvent.Kind<unknown>>,
+    register(watcher: WatchService, events: Array<WatchEvent.Kind<JavaObject>>,
         ...modifiers: WatchEvent.Modifier[]): WatchKey;
 
     register(watcher: WatchService,
-        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
+        ...events: Array<WatchEvent.Kind<JavaObject>>): WatchKey;
 
     /**
      * Constructs a relative path between this path and a given path.
@@ -314,8 +314,8 @@ export class Path extends JavaObject implements Path {
      * @param modifiers The modifiers, if any, that modify how the object is registered.
      */
     public register(watcher: WatchService,
-        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
-    public register(watcher: WatchService, events: Array<WatchEvent.Kind<unknown>>,
+        ...events: Array<WatchEvent.Kind<JavaObject>>): WatchKey;
+    public register(watcher: WatchService, events: Array<WatchEvent.Kind<JavaObject>>,
         ...modifiers: WatchEvent.Modifier[]): WatchKey;
     public register(...args: unknown[]): WatchKey {
         throw new NotImplementedError();

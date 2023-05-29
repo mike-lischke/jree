@@ -6,13 +6,14 @@
 import { MurmurHash } from "../../MurmurHash";
 import { JavaMap } from "./Map";
 
-export class HashMapEntry<K, V> implements JavaMap.Entry<K, V> {
+export class HashMapEntry<K, V> extends JavaMap.Entry<K, V> {
     private computedHash: number | undefined;
 
     public constructor(private key: K, private value: V) {
+        super();
     }
 
-    public equals(o: unknown): boolean {
+    public override equals(o: unknown): boolean {
         if (!(o instanceof HashMapEntry)) {
             return false;
         }
@@ -46,7 +47,7 @@ export class HashMapEntry<K, V> implements JavaMap.Entry<K, V> {
         return this.value;
     }
 
-    public hashCode(): number {
+    public override hashCode(): number {
         if (this.computedHash === undefined) {
             this.computedHash = (this.key === null ? 0 : MurmurHash.hashCode(this.key))
                 ^ (this.value === null ? 0 : MurmurHash.hashCode(this.value));

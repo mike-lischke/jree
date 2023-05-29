@@ -5,13 +5,14 @@
 
 import { IteratorWrapper } from "../../IteratorWrapper";
 
-import { java } from "../..";
 import { IHashMapViewBackend } from "./HashMap";
 import { Collection } from "./Collection";
 import { JavaIterator } from "./Iterator";
+import { JavaSet } from "./Set";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 
 /** This support class provides a view on a map's values. It allows to modify the map for which it was created. */
-export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V> {
+export class MapValueView<K, V> extends Collection<V> implements JavaSet<V> {
     public constructor(private sharedBackend: IHashMapViewBackend<K, V>) {
         super();
     }
@@ -21,11 +22,11 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
     }
 
     public override add(_e: unknown): boolean {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public override addAll(_c: unknown): boolean {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public override clear(): void {
@@ -36,7 +37,7 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return this.sharedBackend.backend.includes(o);
     }
 
-    public override containsAll(c: java.util.Collection<V>): boolean {
+    public override containsAll(c: Collection<V>): boolean {
         for (const entry of c) {
             if (!this.sharedBackend.backend.includes(entry)) {
                 return false;
@@ -93,7 +94,7 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return false;
     }
 
-    public override removeAll(c: java.util.Collection<V>): boolean {
+    public override removeAll(c: Collection<V>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {
@@ -116,7 +117,7 @@ export class MapValueView<K, V> extends Collection<V> implements java.util.Set<V
         return false;
     }
 
-    public override retainAll(c: java.util.Collection<V>): boolean {
+    public override retainAll(c: Collection<V>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {

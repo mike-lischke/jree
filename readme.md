@@ -29,7 +29,7 @@ You can also import a class directly from full path, but I recommend to stay wit
 
 ### Unit Tests
 
-The project comes with a number of unit tests. Currently the test coverage is pretty low, but it's a start. They can be executed with `npm run test-coverage`. For debugging a test open the JREE project in VS Code, open one of the spec files you want to debug, select the "Run current Jest test" launch config in the debugger view and start debugging. You can set breakpoints in the test code and in the JREE code.
+Since the implementation is created solely from the Java API documentation it is important to have a good test coverage to ensure that the classes behave as expected. Therefore a number of [JDK tests](tests/jdk/java/) have been converted to Typescript and run as part of the test suite. The overall test coverage is currently at 43%. The tests are located in the `test` folder and can be run using `npm run test` or `npm run test-coverage` (the latter will also print a coverage report).
 
 ### Examples
 

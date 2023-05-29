@@ -74,7 +74,7 @@ export class WeakMapEntryView<K extends object, V> extends Collection<JavaMap.En
         throw new NotImplementedError();
     }
 
-    public override remove(o: K): boolean {
+    public override remove(o: JavaMap.Entry<K, V>): boolean {
         throw new NotImplementedError();
     }
 

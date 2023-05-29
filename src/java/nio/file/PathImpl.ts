@@ -17,6 +17,7 @@ import { Path } from "./Path";
 import { WatchEvent } from "./WatchEvent";
 import { WatchKey } from "./WatchKey";
 import { WatchService } from "./WatchService";
+import { JavaObject } from "../../lang/Object";
 
 export class PathImpl extends Path {
     #parsed: path.ParsedPath;
@@ -90,7 +91,7 @@ export class PathImpl extends Path {
     }
 
     public override register(watcher: WatchService,
-        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
+        ...events: Array<WatchEvent.Kind<JavaObject>>): WatchKey;
     /**
      * Registers the file located by this path with a watch service.
      *
@@ -99,7 +100,7 @@ export class PathImpl extends Path {
      * @param modifiers The modifiers to apply.
      */
     public override register(watcher: WatchService,
-        events: Array<WatchEvent.Kind<unknown>>,
+        events: Array<WatchEvent.Kind<JavaObject>>,
         ...modifiers: WatchEvent.Modifier[]): WatchKey;
     public override register(...args: unknown[]): WatchKey {
         throw new NotImplementedError();

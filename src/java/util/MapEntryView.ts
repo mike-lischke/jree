@@ -74,8 +74,8 @@ export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implemen
         return new JavaMapEntryIterator(this.sharedBackend.backend.entries());
     }
 
-    public override remove(o: K): boolean {
-        return this.sharedBackend.backend.remove(o) !== null;
+    public override remove(o: JavaMap.Entry<K, V>): boolean {
+        return this.sharedBackend.backend.remove(o.getKey()) !== null;
     }
 
     public override removeAll(c: Collection<JavaMap.Entry<K, V>>): boolean {

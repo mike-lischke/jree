@@ -33,11 +33,11 @@ describe("HashMapEntry Tests", () => {
     it("Equality", () => {
         const entry0 = new HashMapEntry("abc", true);
 
-        expect(entry0.equals("abc")).toBeFalsy();
-        expect(entry0.equals({ a: "abc" })).toBeFalsy();
+        expect(entry0.equals("abc")).toBe(false);
+        expect(entry0.equals({ a: "abc" })).toBe(false);
 
-        expect(entry0.equals(new HashMapEntry("abc", false))).toBeFalsy();
-        expect(entry0.equals(new HashMapEntry("abc", true))).toBeTruthy();
+        expect(entry0.equals(new HashMapEntry("abc", false))).toBe(false);
+        expect(entry0.equals(new HashMapEntry("abc", true))).toBe(true);
 
         const key = {
             equals: (_other: unknown) => { return false; },
@@ -63,24 +63,24 @@ describe("HashMapEntry Tests", () => {
         const entry2 = new HashMapEntry(key, value2);
         const entry3 = new HashMapEntry(key, value3);
 
-        expect(entry1.equals(entry2)).toBeTruthy();
-        expect(entry1.equals(entry3)).toBeFalsy();
+        expect(entry1.equals(entry2)).toBe(true);
+        expect(entry1.equals(entry3)).toBe(false);
     });
 
     it("Null Equality", () => {
         const entry1 = new HashMapEntry(123, 456);
 
-        expect(entry1.equals(new HashMapEntry(123, null))).toBeFalsy();
-        expect(entry1.equals(new HashMapEntry(null, 456))).toBeFalsy();
+        expect(entry1.equals(new HashMapEntry(123, null))).toBe(false);
+        expect(entry1.equals(new HashMapEntry(null, 456))).toBe(false);
 
         const entry2 = new HashMapEntry(null, 456);
 
-        expect(entry2.equals(new HashMapEntry(123, null))).toBeFalsy();
-        expect(entry2.equals(new HashMapEntry(null, 456))).toBeTruthy();
+        expect(entry2.equals(new HashMapEntry(123, null))).toBe(false);
+        expect(entry2.equals(new HashMapEntry(null, 456))).toBe(true);
 
         const entry3 = new HashMapEntry(123, null);
 
-        expect(entry3.equals(new HashMapEntry(123, null))).toBeTruthy();
-        expect(entry3.equals(new HashMapEntry(null, 456))).toBeFalsy();
+        expect(entry3.equals(new HashMapEntry(123, null))).toBe(true);
+        expect(entry3.equals(new HashMapEntry(null, 456))).toBe(false);
     });
 });

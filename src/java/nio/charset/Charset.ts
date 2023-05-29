@@ -276,7 +276,7 @@ export class Charset extends JavaObject implements Comparable<Charset> {
     /**
      * Constructs a sorted map from canonical charset names to charset objects.
      */
-    public static availableCharsets(): SortedMap<string, Charset> {
+    public static availableCharsets(): SortedMap<JavaString, Charset> {
         throw new NotImplementedError();
     }
 

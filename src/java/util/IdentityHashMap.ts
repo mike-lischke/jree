@@ -13,8 +13,8 @@ import { JavaMap } from "./Map";
 import { JavaSet } from "./Set";
 import { Collection } from "./Collection";
 
-export class IdentityHashMap<K, V> extends JavaObject implements Cloneable<IdentityHashMap<K, V>>,
-    Serializable, JavaMap<K, V> {
+export class IdentityHashMap<K, V> extends JavaObject
+    implements Cloneable<IdentityHashMap<K, V>>, Serializable, JavaMap<K, V> {
 
     // Since we are using reference equality in this map, we can just let TS map do the heavy lifting.
     private backingStore = new Map<K, V>();

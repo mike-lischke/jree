@@ -2,7 +2,7 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { IReflection } from "../../lang/Object";
+import { IReflection, JavaObject } from "../../lang/Object";
 import { WatchEvent } from "./WatchEvent";
 import { WatchKey } from "./WatchKey";
 import { WatchService } from "./WatchService";
@@ -13,9 +13,9 @@ import { WatchService } from "./WatchService";
 export interface Watchable extends IReflection {
     /** Registers an object with a watch service. */
     register(watcher: WatchService,
-        ...events: Array<WatchEvent.Kind<unknown>>): WatchKey;
+        ...events: Array<WatchEvent.Kind<JavaObject>>): WatchKey;
 
     /** Registers an object with a watch service. */
-    register(watcher: WatchService, events: Array<WatchEvent.Kind<unknown>>,
+    register(watcher: WatchService, events: Array<WatchEvent.Kind<JavaObject>>,
         ...modifiers: WatchEvent.Modifier[]): WatchKey;
 }

@@ -169,6 +169,10 @@ export class List<T> extends JavaObject implements List<T> {
             });
         } else {
             list.sort((a: T, b: T) => {
+                if (a === null) {
+                    throw new NullPointerException();
+                }
+
                 return (a as Comparable<T>).compareTo(b);
             });
         }
@@ -188,7 +192,7 @@ export namespace List {
         const result = new ArrayList<T>();
         result.addAll(list);
 
-        return result;
+        return Collections.unmodifiableList<T>(result);
     };
 
     export function of<T>(): List<T>;

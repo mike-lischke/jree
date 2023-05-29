@@ -2,13 +2,13 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { IReflection } from "../../lang/Object";
+import { IReflection, JavaObject } from "../../lang/Object";
 import { JavaString } from "../../lang/String";
 
 /**
  * An event or a repeated event for an object that is registered with a watch service.
  */
-export interface WatchEvent<T> extends IReflection {
+export interface WatchEvent<T extends JavaObject> extends IReflection {
     /**
      * An event kind, for the purposes of identification.
      *
@@ -31,7 +31,7 @@ export namespace WatchEvent {
     /**
      * An event kind, for the purposes of identification.
      */
-    export interface Kind<T> extends IReflection {
+    export interface Kind<T extends JavaObject> extends IReflection {
         /**
          * @returns the name of the event kind.
          */

@@ -4,6 +4,7 @@
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
+import { ReverseIteratorWrapper } from "../../ReverseIteratorWrapper";
 import {
     Comparable, IllegalStateException, JavaString, NullPointerException, UnsupportedOperationException,
 } from "../lang";
@@ -61,9 +62,11 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     protected modCount = 0;
 
     #IteratorImpl = class IteratorImpl<T> extends JavaObject implements JavaIterator<T> {
-        // Holds the direction we navigated last (either by calling next() or previous()).
-        protected movedForward: boolean | undefined;
+        // The index of the item that was returned last by the next() method.
+        // This is reset to -1 if the iterator is used to remove this element.
+        protected lastIndex = -1;
 
+        // The mod count of the owner when this iterator was created.
         protected currentModCount = 0;
 
         public constructor(protected owner: AbstractList<T>, protected index: number) {
@@ -83,6 +86,8 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         public hasNext(): boolean {
+            this.checkModCount();
+
             return this.index < this.owner.size();
         }
 
@@ -93,7 +98,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
                 throw new NoSuchElementException();
             }
 
-            this.movedForward = true;
+            this.lastIndex = this.index;
 
             return this.owner.get(this.index++);
         }
@@ -103,20 +108,16 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         public remove(): void {
-            if (this.movedForward === undefined) {
+            this.checkModCount();
+
+            if (this.lastIndex === -1) {
                 throw new IllegalStateException();
             }
 
-            if (this.movedForward) {
-                // Index was moved to next element.
-                this.owner.remove(this.index - 1);
-            } else {
-                // Index at last returned element.
-                this.owner.remove(this.index);
-            }
-
+            this.index = this.lastIndex;
+            this.owner.remove(this.lastIndex);
+            this.lastIndex = -1;
             this.currentModCount = this.owner.modCount;
-            this.movedForward = undefined;
         }
 
         protected checkModCount(): void {
@@ -126,9 +127,12 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
     };
 
-    #ListIteratorImpl = class ListIteratorImpl<T> extends this.#IteratorImpl<T> implements ListIterator<T> {
+    #ListIteratorImpl = class ListIteratorImpl<T> extends this.#IteratorImpl<T>
+        implements ListIterator<T> {
         public add(element: T): void {
-            this.movedForward = undefined;
+            this.checkModCount();
+
+            this.lastIndex = -1;
             if (this.owner.size() === 0) {
                 this.owner.add(element);
             } else {
@@ -145,13 +149,13 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         public previous(): T {
             this.checkModCount();
 
-            if (!this.hasPrevious) {
+            if (!this.hasPrevious()) {
                 throw new NoSuchElementException();
             }
 
-            this.movedForward = false;
+            this.lastIndex = --this.index;
 
-            return this.owner.get(--this.index);
+            return this.owner.get(this.index);
         }
 
         public previousIndex(): number {
@@ -159,17 +163,13 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
         }
 
         public set(element: T): void {
-            if (this.movedForward === undefined) {
+            this.checkModCount();
+
+            if (this.lastIndex === -1) {
                 throw new IllegalStateException();
             }
 
-            if (this.movedForward) {
-                // Index was moved to next element.
-                this.owner.set(this.index - 1, element);
-            } else {
-                // Index at last returned element.
-                this.owner.set(this.index, element);
-            }
+            this.owner.set(this.lastIndex, element);
         }
 
     };
@@ -187,7 +187,7 @@ export class AbstractList<T> extends AbstractCollection<T> implements List<T> {
     }
 
     public *[Symbol.iterator](): IterableIterator<T> {
-        yield* this.#subListDetails.data.slice(this.#subListDetails.start, this.#subListDetails.end);
+        yield* new ReverseIteratorWrapper(this.iterator());
     }
 
     /**

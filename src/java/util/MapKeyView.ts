@@ -5,13 +5,14 @@
 
 import { IteratorWrapper } from "../../IteratorWrapper";
 
-import { java } from "../..";
 import { IHashMapViewBackend } from "./HashMap";
 import { Collection } from "./Collection";
+import { JavaSet } from "./Set";
 import { JavaIterator } from "./Iterator";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 
 /** This support class provides a view on a map's keys. It allows to modify the map for which it was created. */
-export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> {
+export class MapKeyView<K, V> extends Collection<K> implements JavaSet<K> {
     public constructor(private sharedBackend: IHashMapViewBackend<K, V>) {
         super();
     }
@@ -21,11 +22,11 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
     }
 
     public override add(_e: unknown): boolean {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public override addAll(_c: unknown): boolean {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public override clear(): void {
@@ -36,7 +37,7 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return this.sharedBackend.backend.has(o);
     }
 
-    public override containsAll(c: java.util.Collection<K>): boolean {
+    public override containsAll(c: Collection<K>): boolean {
         for (const entry of c) {
             if (!this.sharedBackend.backend.has(entry)) {
                 return false;
@@ -81,7 +82,7 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return false;
     }
 
-    public override removeAll(c: java.util.Collection<K>): boolean {
+    public override removeAll(c: Collection<K>): boolean {
         const m = this.sharedBackend.backend.deleteAll(c);
 
         if (m !== this.sharedBackend.backend) {
@@ -93,7 +94,7 @@ export class MapKeyView<K, V> extends Collection<K> implements java.util.Set<K> 
         return false;
     }
 
-    public override retainAll(c: java.util.Collection<K>): boolean {
+    public override retainAll(c: Collection<K>): boolean {
         const m = this.sharedBackend.backend.withMutations((map) => {
             const candidates: K[] = [];
             for (const e of map) {

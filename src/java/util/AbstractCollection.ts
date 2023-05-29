@@ -13,8 +13,8 @@ import { Spliterator } from "./Spliterator";
 import { Stream } from "./stream";
 
 /**
- * This is the base class for all collections in this library. It implements the common methods of the
- * Collection interface. The actual implementation of the collection is done by the derived classes.
+ * This class provides a skeletal implementation of the Collection interface, to minimize the effort required to
+ * implement this interface.
  */
 export abstract class AbstractCollection<T> extends JavaObject implements Collection<T> {
     protected constructor() {

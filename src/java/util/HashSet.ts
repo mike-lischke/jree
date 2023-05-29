@@ -22,8 +22,7 @@ export interface IHashSetViewBackend<V> {
     backend: Set<V>;
 }
 
-export class HashSet<T> extends Collection<T>
-    implements Cloneable<HashSet<T>>, Serializable, JavaSet<T> {
+export class HashSet<T> extends Collection<T> implements Cloneable<HashSet<T>>, Serializable, JavaSet<T> {
 
     #sharedBackend: IHashSetViewBackend<T> = {
         backend: Set<T>(),

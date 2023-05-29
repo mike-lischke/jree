@@ -4,14 +4,17 @@
  */
 
 import { IteratorWrapper } from "../../IteratorWrapper";
+import { NotImplementedError } from "../../NotImplementedError";
 
-import { NotImplementedError, java } from "../..";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 import { Collection } from "./Collection";
 import { JavaIterator } from "./Iterator";
+import { JavaSet } from "./Set";
 import { IWeakHashMapViewBackend } from "./WeakHashMap";
 
 /** This support class provides a view on a weak map's keys. It allows to modify the map for which it was created. */
-export class WeakMapKeyView<K extends object, V> extends Collection<K> implements java.util.Set<K> {
+export class WeakMapKeyView<K extends object, V> extends Collection<K>
+    implements JavaSet<K> {
     #sharedBackend: IWeakHashMapViewBackend<K, V>;
 
     public constructor(sharedBackend: IWeakHashMapViewBackend<K, V>) {
@@ -32,11 +35,11 @@ export class WeakMapKeyView<K extends object, V> extends Collection<K> implement
     }
 
     public override add(_e: unknown): boolean {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public override addAll(_c: unknown): boolean {
-        throw new java.lang.UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public override clear(): void {
@@ -96,7 +99,7 @@ export class WeakMapKeyView<K extends object, V> extends Collection<K> implement
         return true;
     }
 
-    public override removeAll(c: java.util.Collection<K>): boolean {
+    public override removeAll(c: Collection<K>): boolean {
         let changed = false;
         for (const entry of c) {
             changed = this.remove(entry) || changed;
@@ -105,7 +108,7 @@ export class WeakMapKeyView<K extends object, V> extends Collection<K> implement
         return changed;
     }
 
-    public override retainAll(c: java.util.Collection<K>): boolean {
+    public override retainAll(c: Collection<K>): boolean {
         const candidates: K[] = [];
         for (const e of this) {
             if (!c.contains(e)) {
@@ -127,8 +130,7 @@ export class WeakMapKeyView<K extends object, V> extends Collection<K> implement
     public override toArray(): K[];
     public override toArray<U extends K>(a: U[]): U[];
     public override toArray<U extends K>(a?: U[]): K[] | U[] {
-        const result = [...this.#sharedBackend.refSet.keys()];
-
-        return result as U[];
+        // Cannot create a list of the keys, as that would make them strongly referenced.
+        throw new NotImplementedError();
     }
 }

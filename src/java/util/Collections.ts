@@ -49,6 +49,17 @@ export abstract class Collections extends JavaObject {
         return list;
     }
 
+    public static unmodifiableSet<T>(list: JavaSet<T>): JavaSet<T> {
+        Object.defineProperty(list, "readOnly", {
+            value: true,
+            writable: false,
+            configurable: false,
+            enumerable: false,
+        });
+
+        return list;
+    }
+
     public static reverse<T>(list: List<T>): void {
         const array = list.toArray().reverse();
         list.clear();
@@ -111,8 +122,8 @@ export abstract class Collections extends JavaObject {
 
     public static min<T1 extends Comparable<T1>>(coll: Collection<T1>): T1 | null;
     public static min<T2>(coll: Collection<T2>, comp: Comparator<T2>): T2 | null;
-    public static min<T1 extends Comparable<T1>, T2>(
-        coll: Collection<T1> | Collection<T2>, comp?: Comparator<T2>): T1 | T2 | null {
+    public static min<T1 extends Comparable<T1>, T2>(coll: Collection<T1> | Collection<T2>,
+        comp?: Comparator<T2>): T1 | T2 | null {
         if (comp) {
             let result: T2 | null = null;
 
@@ -157,7 +168,7 @@ export abstract class Collections extends JavaObject {
         const set = new HashSet<T>();
         set.add(o);
 
-        return set;
+        return Collections.unmodifiableSet(set);
     }
 
     /**
@@ -166,6 +177,6 @@ export abstract class Collections extends JavaObject {
      * @param o the sole object to be stored in the returned list.
      */
     public static singletonList<T>(o: T): List<T> {
-        return new ArrayList<T>([o]);
+        return Collections.unmodifiableList<T>(new ArrayList<T>([o]));
     }
 }
