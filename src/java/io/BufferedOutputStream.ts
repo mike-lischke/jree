@@ -4,7 +4,6 @@
  */
 
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { JavaString } from "../lang/String";
 import { FilterOutputStream } from "./FilterOutputStream";
 import { OutputStream } from "./OutputStream";
 
@@ -37,7 +36,7 @@ export class BufferedOutputStream extends FilterOutputStream {
             const length = len ?? b.length;
             if (offset + length > b.length) {
                 throw new IllegalArgumentException(
-                    new JavaString(`The specified values exceed the size of the specified source.`));
+                    `The specified values exceed the size of the specified source.`);
             }
 
             const data = b.subarray(offset, offset + length);

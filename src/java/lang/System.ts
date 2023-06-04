@@ -14,6 +14,8 @@ import { PrintStream } from "../io/PrintStream";
 import { Properties } from "../util/Properties";
 import { JavaString } from "./String";
 import { IllegalArgumentException } from "./IllegalArgumentException";
+import { NullPointerException } from "./NullPointerException";
+import { ArraysStoreException } from "./ArraysStoreException";
 
 /** User agent client hints are still experimental and hence there's no type definition yet. */
 
@@ -50,7 +52,25 @@ export class System extends JavaObject {
 
     private static properties: Properties;
 
+    /**
+     * Copies an array from the specified source array, beginning at the specified position, to the specified position
+     * of the destination array.
+     *
+     * @param src The source array.
+     * @param srcPos Starting position in the source array.
+     * @param dest The destination array.
+     * @param destPos Starting position in the destination data.
+     * @param count The number of array elements to be copied.
+     */
     public static arraycopy<T>(src: T[], srcPos: number, dest: T[], destPos: number, count: number): void {
+        if (src === null || dest === null) {
+            throw new NullPointerException();
+        }
+
+        if (!Array.isArray(src) || !Array.isArray(dest)) {
+            throw new ArraysStoreException();
+        }
+
         dest.splice(destPos, count, ...src.slice(srcPos, srcPos + count));
     }
 
@@ -68,6 +88,17 @@ export class System extends JavaObject {
 
     public static currentTimeNanos(): bigint {
         return BigInt(performance.now());
+    }
+
+    /**
+     * Runs the garbage collector.
+     *
+     * Note: this works only if we run under Node.js and the --expose-gc flag is set.
+     */
+    public static gc(): void {
+        if (typeof global.gc === "function") {
+            global.gc();
+        }
     }
 
     public static get err(): PrintStream {

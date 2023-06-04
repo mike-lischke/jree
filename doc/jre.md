@@ -12,6 +12,7 @@ This page lists the java.base packages that are currently in this Node package.
 |---|---|---|
 |🅿|[java.io](./java.io.md)|Provides for system input and output through data streams, serialization and the file system.|
 |🅿|[java.lang](./java.lang.md)|Classes that are fundamental to the design of the Java programming language.|
+|🅿|[java.lang.ref](.java.lang.ref.md)|Provides reference-object classes, which support a limited degree of interaction with the garbage collector.|
 |🅿|[java.net](./java.net.md)|Provides the classes for implementing networking applications.|
 |🅿|[java.nio](./java.nio.md)|Provides an API for input and output with channels, buffers, and selectors.|
 |🅿|[java.nio.channels](./java.nio.channels.md)|Provides the classes for asynchronous, bidirectional, and non-blocking I/O.|

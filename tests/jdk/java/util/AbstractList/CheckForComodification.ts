@@ -38,11 +38,11 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { I, java, JavaObject } from "../../../../../src";
+import { java, JavaObject } from "../../../../../src";
 
 type String = java.lang.String;
 const String = java.lang.String;
-type ArrayList<E extends JavaObject> = java.util.ArrayList<E>;
+type ArrayList<E> = java.util.ArrayList<E>;
 const ArrayList = java.util.ArrayList;
 type ConcurrentModificationException = java.util.ConcurrentModificationException;
 const ConcurrentModificationException = java.util.ConcurrentModificationException;

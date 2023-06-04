@@ -5,14 +5,14 @@
 
 import { NotImplementedError } from "../../NotImplementedError";
 
-import { int, long } from "../../types";
+import type { int, long } from "../../types";
 import { OutOfMemoryError, StringBuilder } from "../lang";
 
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { JavaString } from "../lang/String";
+import type { JavaString } from "../lang/String";
 import { CharBuffer } from "../nio";
-import { Stream } from "../util/stream/Stream";
+import type { Stream } from "../util/stream/Stream";
 import { IOException } from "./IOException";
 import { Reader } from "./Reader";
 
@@ -43,7 +43,7 @@ export class BufferedReader extends Reader {
         }
 
         if (size <= 0) {
-            throw new IllegalArgumentException(new JavaString("Buffer size <= 0"));
+            throw new IllegalArgumentException("Buffer size <= 0");
         }
 
         this.#buffer = new Uint16Array(size);
@@ -74,7 +74,7 @@ export class BufferedReader extends Reader {
         this.checkOpen();
 
         if (readAheadLimit < 0) {
-            throw new IllegalArgumentException(new JavaString("Read-ahead limit < 0"));
+            throw new IllegalArgumentException("Read-ahead limit < 0");
         }
 
         // TS will happily allocate a MAX_INT sized buffer, but Java would throw an OutOfMemoryError.
@@ -345,7 +345,7 @@ export class BufferedReader extends Reader {
     /** @throws IOException if the underlying reader has been closed. */
     private checkOpen(): void {
         if (this.#buffer.length === 0) {
-            throw new IOException(new JavaString("Stream closed"));
+            throw new IOException("Stream closed");
         }
     }
 }

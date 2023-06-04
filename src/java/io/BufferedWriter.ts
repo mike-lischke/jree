@@ -4,7 +4,7 @@
  */
 
 import { S } from "../../templates";
-import { int } from "../../types";
+import type { int } from "../../types";
 
 import { JavaString } from "../lang/String";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";

@@ -3,42 +3,49 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java, MurmurHash, NotImplementedError } from "../..";
 import { S } from "../../templates";
+import { MurmurHash } from "../../MurmurHash";
+
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { URISyntaxException } from "./URISyntaxException";
+import type { Serializable } from "../io/Serializable";
+import type { Comparable } from "../lang/Comparable";
+import { NotImplementedError } from "../../NotImplementedError";
 
 /** Represents a Uniform Resource Identifier (URI) reference. */
-export class URI extends JavaObject implements java.io.Serializable, java.lang.Comparable<URI> {
+export class URI extends JavaObject implements Serializable, Comparable<URI> {
     // eslint-disable-next-line max-len
     private static ipv6Pattern = /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/;
     #uri: globalThis.URL;
 
-    #scheme: java.lang.String | null = null;
-    #schemeSpecificPart: java.lang.String | null = null;
-    #authority: java.lang.String | null = null;
-    #userInfo: java.lang.String | null = null;
-    #host: java.lang.String | null = null;
+    #scheme: JavaString | null = null;
+    #schemeSpecificPart: JavaString | null = null;
+    #authority: JavaString | null = null;
+    #userInfo: JavaString | null = null;
+    #host: JavaString | null = null;
     #port = -1;
-    #path: java.lang.String | null = null;
-    #query: java.lang.String | null = null;
-    #fragment: java.lang.String | null = null;
+    #path: JavaString | null = null;
+    #query: JavaString | null = null;
+    #fragment: JavaString | null = null;
 
-    public constructor(uri: java.lang.String);
-    public constructor(scheme: java.lang.String | null, ssp: java.lang.String | null,
-        fragment: java.lang.String | null);
-    public constructor(scheme: java.lang.String, userInfo: java.lang.String | null, host: java.lang.String,
-        port: number, path: java.lang.String, query: java.lang.String | null, fragment: java.lang.String);
-    public constructor(scheme: java.lang.String, host: java.lang.String, path: java.lang.String,
-        fragment: java.lang.String);
-    public constructor(scheme: java.lang.String, authority: java.lang.String, path: java.lang.String,
-        query: java.lang.String, fragment: java.lang.String);
+    public constructor(uri: JavaString);
+    public constructor(scheme: JavaString | null, ssp: JavaString | null,
+        fragment: JavaString | null);
+    public constructor(scheme: JavaString, userInfo: JavaString | null, host: JavaString,
+        port: number, path: JavaString, query: JavaString | null, fragment: JavaString);
+    public constructor(scheme: JavaString, host: JavaString, path: JavaString,
+        fragment: JavaString);
+    public constructor(scheme: JavaString, authority: JavaString, path: JavaString,
+        query: JavaString, fragment: JavaString);
     public constructor(...args: unknown[]) {
         super();
 
         let uri = "";
         switch (args.length) {
             case 1: {
-                uri = `${args[0] as java.lang.String}`;
+                uri = `${args[0] as JavaString}`;
 
                 break;
             }
@@ -64,11 +71,11 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
 
                 if (args.length === 4) {
                     [this.#scheme, this.#host, this.#path, this.#fragment] =
-                        args as [java.lang.String, java.lang.String, java.lang.String, java.lang.String];
+                        args as [JavaString, JavaString, JavaString, JavaString];
                 } else {
                     [this.#scheme, this.#userInfo, this.#host, this.#port, this.#path, this.#query, this.#fragment] =
-                        args as [java.lang.String, java.lang.String, java.lang.String, number, java.lang.String,
-                            java.lang.String, java.lang.String];
+                        args as [JavaString, JavaString, JavaString, number, JavaString,
+                            JavaString, JavaString];
                 }
 
                 if (this.#scheme !== null) {
@@ -112,7 +119,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
 
             case 5: {
                 [this.#scheme, this.#authority, this.#path, this.#query, this.#fragment] =
-                    args as [java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String];
+                    args as [JavaString, JavaString, JavaString, JavaString, JavaString];
 
                 if (this.#scheme !== null) {
                     uri += `${this.#scheme}:`;
@@ -137,7 +144,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
                 break;
             }
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException("Invalid number of arguments");
             }
         }
 
@@ -146,11 +153,11 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
         } catch (e) {
             let message;
             if (e instanceof TypeError) {
-                message = S`${e.message}`;
+                message = `${e.message}`;
             } else {
-                message = S`${e}`;
+                message = `${e}`;
             }
-            throw new java.net.URISyntaxException(args[0] as java.lang.String, message);
+            throw new URISyntaxException(args[0] as string, message);
         }
     }
 
@@ -161,7 +168,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
      *
      * @returns The new URI
      */
-    public static create(uri: java.lang.String): URI {
+    public static create(uri: JavaString): URI {
         return new URI(uri);
     }
 
@@ -245,7 +252,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
      *
      * @returns The decoded authority component of this URI, or null if the authority is undefined
      */
-    public getAuthority(): java.lang.String | null {
+    public getAuthority(): JavaString | null {
         return this.#authority;
     }
 
@@ -254,7 +261,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
      *
      * @returns The decoded fragment component of this URI, or null if the fragment is undefined
      */
-    public getFragment(): java.lang.String | null {
+    public getFragment(): JavaString | null {
         if (this.#fragment === null) {
             return null;
         }
@@ -263,12 +270,12 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
     }
 
     /** @returns The host component of this URI, or null if the host is undefined */
-    public getHost(): java.lang.String {
+    public getHost(): JavaString {
         return S`${this.#uri.host}`;
     }
 
     /** @returns The decoded path component of this URI, or null if the path is undefined */
-    public getPath(): java.lang.String {
+    public getPath(): JavaString {
         return S`${this.#uri.pathname}`;
     }
 
@@ -278,52 +285,52 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
     }
 
     /** @returns The decoded query component of this URI, or null if the query is undefined */
-    public getQuery(): java.lang.String {
+    public getQuery(): JavaString {
         return S`${this.#uri.search}`;
     }
 
     /** @returns The raw authority of this URI, or null if the scheme is undefined */
-    public getRawAuthority(): java.lang.String | null {
+    public getRawAuthority(): JavaString | null {
         return this.#authority;
     }
 
     /** @returns The raw fragment component of this URI, or null if the fragment is undefined */
-    public getRawFragment(): java.lang.String | null {
+    public getRawFragment(): JavaString | null {
         return this.#fragment;
     }
 
     /** @returns The raw path component of this URI, or null if the path is undefined */
-    public getRawPath(): java.lang.String | null {
+    public getRawPath(): JavaString | null {
         return this.#path;
     }
 
     /** @returns The raw query component of this URI, or null if the query is undefined */
-    public getRawQuery(): java.lang.String | null {
+    public getRawQuery(): JavaString | null {
         return this.#query;
     }
 
     /** @returns The raw scheme-specific part of this URI, or null if the scheme-specific part is undefined */
-    public getRawSchemeSpecificPart(): java.lang.String | null {
+    public getRawSchemeSpecificPart(): JavaString | null {
         return this.#schemeSpecificPart;
     }
 
     /** @returns The raw user-information component of this URI, or null if the user information is undefined */
-    public getRawUserInfo(): java.lang.String | null {
+    public getRawUserInfo(): JavaString | null {
         return this.#userInfo;
     }
 
     /** @returns The scheme component of this URI, or null if the scheme is undefined */
-    public getScheme(): java.lang.String | null {
+    public getScheme(): JavaString | null {
         return this.#scheme;
     }
 
     /** @returns The scheme-specific part of this URI, or null if the scheme-specific part is undefined */
-    public getSchemeSpecificPart(): java.lang.String | null {
+    public getSchemeSpecificPart(): JavaString | null {
         return this.#schemeSpecificPart;
     }
 
     /** @returns The decoded user-information component of this URI, or null if the user information is undefined */
-    public getUserInfo(): java.lang.String | null {
+    public getUserInfo(): JavaString | null {
         return this.#userInfo;
     }
 
@@ -378,7 +385,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
         return this;
     }
 
-    public toASCIIString(): java.lang.String {
+    public toASCIIString(): JavaString {
         return S`${this.#uri}`;
     }
 
@@ -397,7 +404,7 @@ export class URI extends JavaObject implements java.io.Serializable, java.lang.C
      * @returns 0 if both strings are null, -1 if the first string is null, 1 if the second string is null, or the
      *            result of {@link String#compareTo(String)} if both strings are not null
      */
-    private compareValues(value1: java.lang.String | null, value2: java.lang.String | null): number {
+    private compareValues(value1: JavaString | null, value2: JavaString | null): number {
         if (value1 !== null) {
             if (value2 !== null) {
                 return value1.compareTo(value2);

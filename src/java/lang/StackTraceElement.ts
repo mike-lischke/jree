@@ -5,7 +5,6 @@
 
 import { MurmurHash } from "../../MurmurHash";
 import { JavaObject } from "./Object";
-import { JavaString } from "./String";
 
 export class StackTraceElement extends JavaObject {
     private declaringClass = "";
@@ -88,13 +87,13 @@ export class StackTraceElement extends JavaObject {
      * @returns the fully qualified name of the class containing the execution point represented by this
      * stack trace element.
      */
-    public getClassName(): JavaString {
-        return new JavaString(this.declaringClass);
+    public getClassName(): string {
+        return this.declaringClass;
     }
 
     /** @returns the name of the source file containing the execution point represented by this stack trace element. */
-    public getFileName(): JavaString {
-        return new JavaString(this.fileName);
+    public getFileName(): string {
+        return this.fileName;
     }
 
     /**
@@ -106,8 +105,8 @@ export class StackTraceElement extends JavaObject {
     }
 
     /** @returns the name of the method containing the execution point represented by this stack trace element. */
-    public getMethodName(): JavaString {
-        return new JavaString(this.methodName);
+    public getMethodName(): string {
+        return this.methodName;
     }
 
     /**

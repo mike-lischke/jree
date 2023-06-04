@@ -5,7 +5,7 @@
 
 import { isEquatable } from "../../type-guards";
 import { MurmurHash } from "../../MurmurHash";
-import { int } from "../../types";
+import type { int } from "../../types";
 
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
@@ -14,7 +14,8 @@ import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 import { List } from "./List";
 import { ArrayList } from "./ArrayList";
-import { ArrayIndexOutOfBoundsException, NullPointerException } from "../lang";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
+import { NullPointerException } from "../lang/NullPointerException";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =

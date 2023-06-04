@@ -5,12 +5,13 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
 import { NotImplementedError } from "../../../src/NotImplementedError";
+import { HashMap } from "../../../src/java/util/HashMap";
+import { IdentityHashMap } from "../../../src/java/util/IdentityHashMap";
 
 describe("HashMap Tests", () => {
     it("Basic Map Operations", () => {
-        const m = new java.util.IdentityHashMap<string, number>();
+        const m = new IdentityHashMap<string, number>();
 
         expect(m.size()).toBe(0);
         expect(m.isEmpty()).toBeTruthy();
@@ -40,7 +41,7 @@ describe("HashMap Tests", () => {
     });
 
     it("Reference and Value Equality", () => {
-        const m = new java.util.IdentityHashMap<String, number | object>();
+        const m = new IdentityHashMap<String, number | object>();
 
         // String literals are automatically converted to the same string object, if they are equal. That's why we
         // have to use explicit String object construction, to avoid this coercion.
@@ -76,8 +77,8 @@ describe("HashMap Tests", () => {
     });
 
     it("Map Hash Code and Equality", () => {
-        const m1 = new java.util.IdentityHashMap<number | null, number | null>();
-        const m2 = new java.util.IdentityHashMap<number | null, number | null>();
+        const m1 = new IdentityHashMap<number | null, number | null>();
+        const m2 = new IdentityHashMap<number | null, number | null>();
 
         expect(m1.equals(m2)).toBeTruthy();
         expect(m1.hashCode()).toBe(m2.hashCode());
@@ -101,7 +102,7 @@ describe("HashMap Tests", () => {
         expect(m1.hashCode()).not.toBe(m2.hashCode());
 
         // Store entries from another map, but not IdentityHashMap in the test maps.
-        const m3 = new java.util.HashMap<number | null, number | null>();
+        const m3 = new HashMap<number | null, number | null>();
         m3.put(5, 5);
         m1.putAll(m3);
 
@@ -111,7 +112,7 @@ describe("HashMap Tests", () => {
 
     it("Sub Lists", () => {
         // Sub list are currently not supported.
-        const m = new java.util.IdentityHashMap<String, number | object>();
+        const m = new IdentityHashMap<String, number | object>();
 
         expect(() => { m.values(); }).toThrowError(NotImplementedError);
         expect(() => { m.keySet(); }).toThrowError(NotImplementedError);

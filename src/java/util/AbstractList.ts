@@ -5,14 +5,16 @@
 
 import { NotImplementedError } from "../../NotImplementedError";
 import { ReverseIteratorWrapper } from "../../ReverseIteratorWrapper";
-import {
-    Comparable, IllegalStateException, JavaString, NullPointerException, UnsupportedOperationException,
-} from "../lang";
 import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
+import { Comparable } from "../lang/Comparable";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { IllegalStateException } from "../lang/IllegalStateException";
 import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { NullPointerException } from "../lang/NullPointerException";
 import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String";
 import { StringBuilder } from "../lang/StringBuilder";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 import { AbstractCollection } from "./AbstractCollection";
 import { Collection } from "./Collection";
 import { Comparator } from "./Comparator";

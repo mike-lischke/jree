@@ -3,8 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../lang/Object";
-
 import { MurmurHash } from "../../MurmurHash";
 import { NotImplementedError } from "../../NotImplementedError";
 import { Cloneable } from "../lang/Cloneable";
@@ -13,8 +11,8 @@ import { JavaMap } from "./Map";
 import { JavaSet } from "./Set";
 import { Collection } from "./Collection";
 
-export class IdentityHashMap<K, V> extends JavaObject
-    implements Cloneable<IdentityHashMap<K, V>>, Serializable, JavaMap<K, V> {
+export class IdentityHashMap<K, V> extends JavaMap<K, V>
+    implements Cloneable<IdentityHashMap<K, V>>, Serializable {
 
     // Since we are using reference equality in this map, we can just let TS map do the heavy lifting.
     private backingStore = new Map<K, V>();
@@ -33,7 +31,7 @@ export class IdentityHashMap<K, V> extends JavaObject
         // Ignore the max expected size.
     }
 
-    public clear(): void {
+    public override clear(): void {
         this.backingStore.clear();
     }
 
@@ -41,11 +39,11 @@ export class IdentityHashMap<K, V> extends JavaObject
         return new IdentityHashMap<K, V>(this);
     }
 
-    public containsKey(key: K): boolean {
+    public override containsKey(key: K): boolean {
         return this.backingStore.has(key);
     }
 
-    public containsValue(value: V): boolean {
+    public override containsValue(value: V): boolean {
         for (const e of this.backingStore) {
             if (e[1] === value) {
                 return true;
@@ -55,30 +53,30 @@ export class IdentityHashMap<K, V> extends JavaObject
         return false;
     }
 
-    public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
+    public override entrySet(): JavaSet<JavaMap.Entry<K, V>> {
         throw new NotImplementedError();
     }
 
-    public get(key: K): V | null {
+    public override get(key: K): V | null {
         return this.backingStore.get(key) ?? null;
     }
 
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.backingStore.size === 0;
     }
 
-    public keySet(): JavaSet<K> {
+    public override keySet(): JavaSet<K> {
         throw new NotImplementedError();
     }
 
-    public put(key: K, value: V): V | null {
+    public override put(key: K, value: V): V | null {
         const result = this.backingStore.get(key);
         this.backingStore.set(key, value);
 
         return result ?? null;
     }
 
-    public putAll(map: JavaMap<K, V>): void {
+    public override putAll(map: JavaMap<K, V>): void {
         if (map instanceof IdentityHashMap<K, V>) {
             (map.backingStore as Map<K, V>).forEach((value, key) => {
                 this.backingStore.set(key, value);
@@ -91,14 +89,14 @@ export class IdentityHashMap<K, V> extends JavaObject
         }
     }
 
-    public remove(key: K): V | null {
+    public override remove(key: K): V | null {
         const result = this.backingStore.get(key);
         this.backingStore.delete(key);
 
         return result ?? null;
     }
 
-    public size(): number {
+    public override size(): number {
         return this.backingStore.size;
     }
 
@@ -131,7 +129,7 @@ export class IdentityHashMap<K, V> extends JavaObject
         return true;
     }
 
-    public values(): Collection<V> {
+    public override values(): Collection<V> {
         throw new NotImplementedError();
     }
 }

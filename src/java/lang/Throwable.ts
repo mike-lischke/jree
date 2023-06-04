@@ -8,8 +8,8 @@ import { JavaObject } from "./Object";
 import { StackTraceElement } from "./StackTraceElement";
 
 // import { System } from "./System"; creates a circular dependency
-import { JavaString } from "./String";
-import { PrintWriter, PrintStream } from "../io";
+import type { JavaString } from "./String";
+import type { PrintWriter, PrintStream } from "../io";
 
 /**
  * The Throwable class is the superclass of all errors and exceptions in the Java language.
@@ -18,10 +18,10 @@ import { PrintWriter, PrintStream } from "../io";
  * Similarly, only this class or one of its subclasses can be the argument type in a catch clause.
  */
 export class Throwable extends JavaObject {
-    private stack?: string;
-
-    #message: JavaString | null = null;
+    #stack?: string;
+    #message: string | null = null;
     #cause: Throwable | null = null;
+
     #enableSuppression = true;
     #writableStackTrace = false;
 
@@ -52,12 +52,14 @@ export class Throwable extends JavaObject {
         switch (args.length) {
             case 1: {
                 const arg = args[0] as JavaString | string | Throwable | null;
-                if (arg instanceof JavaString) {
-                    this.#message = arg;
-                } else if (arg instanceof Throwable) {
-                    this.#cause = arg;
-                } else if (typeof arg === "string") {
-                    this.#message = new JavaString(arg);
+                if (arg !== null) {
+                    if (arg instanceof Throwable) {
+                        this.#cause = arg;
+                    } else if (typeof arg === "string") {
+                        this.#message = arg;
+                    } else {
+                        this.#message = arg.valueOf();
+                    }
                 }
 
                 break;
@@ -65,10 +67,10 @@ export class Throwable extends JavaObject {
 
             case 2: {
                 const [message, cause] = args as [JavaString | string, Throwable | null];
-                if (message instanceof JavaString) {
+                if (typeof message === "string") {
                     this.#message = message;
-                } else if (typeof message === "string") {
-                    this.#message = new JavaString(message);
+                } else {
+                    this.#message = message.valueOf();
                 }
 
                 this.#cause = cause;
@@ -79,10 +81,10 @@ export class Throwable extends JavaObject {
                 const [message, cause, enableSuppression, writableStackTrace] =
                     args as [JavaString | string, Throwable | null, boolean, boolean];
 
-                if (message instanceof JavaString) {
+                if (typeof message === "string") {
                     this.#message = message;
-                } else if (typeof message === "string") {
-                    this.#message = new JavaString(message);
+                } else {
+                    this.#message = message.valueOf();
                 }
 
                 this.#cause = cause;
@@ -96,7 +98,10 @@ export class Throwable extends JavaObject {
         }
 
         Error.captureStackTrace(this, this.constructor);
-        this.fillInStackTrace();
+
+        if (this.#writableStackTrace) {
+            this.fillInStackTrace();
+        }
     }
 
     /**
@@ -117,10 +122,10 @@ export class Throwable extends JavaObject {
                 cause = Throwable.fromError(error.cause);
             }
 
-            return new Throwable(new JavaString(`${error.message}`), cause);
+            return new Throwable(`${error.message}`, cause);
         }
 
-        return new Throwable(new JavaString(`${error}`));
+        return new Throwable(`${error}`);
     }
 
     /**
@@ -129,7 +134,26 @@ export class Throwable extends JavaObject {
      * @param exception The exception to be added to the list of suppressed exceptions.
      */
     public addSuppressed(exception: Throwable): void {
-        this.#suppressed.push(exception);
+        if (this === exception) {
+            // Dynamically import the exception class to avoid a circular dependency.
+            void import("./IllegalArgumentException").then((module) => {
+                throw new module.IllegalArgumentException();
+            });
+
+            return;
+        }
+
+        if (exception === null) {
+            void import("./NullPointerException").then((module) => {
+                throw new module.NullPointerException();
+            });
+
+            return;
+        }
+
+        if (this.#enableSuppression) {
+            this.#suppressed.push(exception);
+        }
     }
 
     /**
@@ -139,8 +163,8 @@ export class Throwable extends JavaObject {
      * @returns this Throwable object.
      */
     public fillInStackTrace(): Throwable {
-        if (this.stack) {
-            const lines = this.stack.split("\n").slice(1);
+        if (this.#stack) {
+            const lines = this.#stack.split("\n").slice(1);
 
             this.#elements = lines.map((line) => {
                 return new StackTraceElement(line);
@@ -160,12 +184,12 @@ export class Throwable extends JavaObject {
     /**
      * @returns a localized description of this throwable.
      */
-    public getLocalizedMessage(): JavaString | null {
+    public getLocalizedMessage(): string | null {
         return this.#message;
     }
 
     /** @returns the detail message string of this throwable. */
-    public getMessage(): JavaString | null {
+    public getMessage(): string | null {
         return this.#message;
     }
 
@@ -183,7 +207,11 @@ export class Throwable extends JavaObject {
      * statement, in order to deliver this exception.
      */
     public getSuppressed(): Throwable[] {
-        return this.#suppressed;
+        if (this.#enableSuppression) {
+            return this.#suppressed;
+        }
+
+        return [];
     }
 
     /**
@@ -221,13 +249,13 @@ export class Throwable extends JavaObject {
 
         if (!s) {
             console.error(headLine.valueOf());
-            console.error(this.stack);
+            console.error(this.#stack);
 
             return;
         }
 
         s.println(headLine);
-        s.println(new JavaString(`${this.stack}`));
+        s.println(`${this.#stack}`);
     }
 
     /**
@@ -237,7 +265,9 @@ export class Throwable extends JavaObject {
      * @param stackTrace tbd
      */
     public setStackTrace(stackTrace: StackTraceElement[]): void {
-        this.#elements = stackTrace;
+        if (!this.#writableStackTrace) {
+            this.#elements = stackTrace;
+        }
     }
 
     /**
@@ -247,20 +277,20 @@ export class Throwable extends JavaObject {
      *
      * @returns this Throwable object.
      */
-    public setMessage(message: JavaString): this {
-        this.#message = message;
+    public setMessage(message: JavaString | string): this {
+        this.#message = typeof message === "string" ? message : message.valueOf();
 
         return this;
     }
 
     /** @returns a short description of this throwable. */
-    public override toString(): JavaString {
+    public override toString(): string {
         const message = this.getLocalizedMessage();
         if (!message) {
-            return new JavaString(`${this.stack}`);
+            return `${this.#stack}`;
         }
 
-        return new JavaString(`${this.constructor.name}: ${message}`);
+        return `${this.constructor.name}: ${message}`;
     }
 
     protected [Symbol.toPrimitive](): string {

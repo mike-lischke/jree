@@ -9,18 +9,18 @@ import { EnsureCapacity } from "../../jdk/java/util/ArrayList/EnsureCapacity";
 
 describe("ArrayList Tests", () => {
 
-    it("AddAll", () => {
+    it("JDK AddAll", () => {
         // There are no checks in this test, just a couple of value additions to array lists.
         // They are all expected to succeed.
         expect(() => { AddAll.main([]); }).not.toThrow();
     });
 
     // Cannot catch an OutOfMemoryError in JS.
-    xit("Bug8146568", () => {
+    xit("JDK Bug8146568", () => {
         expect(() => { Bug8146568.main(); }).not.toThrow();
     });
 
-    it("EnsureCapacity", () => {
+    it("JDK EnsureCapacity", () => {
         EnsureCapacity.main([]);
     });
 });

@@ -50,6 +50,7 @@ This page lists the java.lang types that are currently in this Node package.
 |---|---|---|
 |🅵|[ArithmeticException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArithmeticException.html)|Thrown when an exceptional arithmetic condition has occurred.|
 |🅵|[ArrayIndexOutOfBoundsException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArrayIndexOutOfBoundsException.html)|Thrown to indicate that an array has been accessed with an illegal index.|
+|🅵|[ArrayStoreException](https://docs.oracle.com/javase/8/docs/api/java/lang/ArrayStoreException.html)|Thrown to indicate that an attempt has been made to store the wrong type of object into an array of objects.|
 |🅵|[ClassCastException](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassCastException.html)|Thrown to indicate that the code has attempted to cast an object to a subclass of which it is not an instance.|
 |🅵|[CloneNotSupportedException](https://docs.oracle.com/javase/8/docs/api/java/lang/CloneNotSupportedException.html)|Thrown to indicate that the `clone` method in class Object has been called to clone an object, but that the object's class does not implement the Cloneable interface.|
 |🅵|[Error](https://docs.oracle.com/javase/8/docs/api/java/lang/Error.html)|An Error is a subclass of Throwable that indicates serious problems that a reasonable application should not try to catch.|

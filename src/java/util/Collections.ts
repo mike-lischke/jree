@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { makeReadOnly } from "../../helpers";
+
 import { Comparable } from "../lang/Comparable";
 import { Class, JavaObject } from "../lang/Object";
 import { ArrayList } from "./ArrayList";
@@ -24,14 +26,7 @@ export abstract class Collections extends JavaObject {
     }
 
     public static unmodifiableMap<K, V>(map: JavaMap<K, V>): JavaMap<K, V> {
-        Object.defineProperty(map, "readOnly", {
-            value: true,
-            writable: false,
-            configurable: false,
-            enumerable: false,
-        });
-
-        return map;
+        return makeReadOnly(map);
     }
 
     public static synchronizedList<T>(list: List<T>): List<T> {
@@ -39,25 +34,11 @@ export abstract class Collections extends JavaObject {
     }
 
     public static unmodifiableList<T>(list: List<T>): List<T> {
-        Object.defineProperty(list, "readOnly", {
-            value: true,
-            writable: false,
-            configurable: false,
-            enumerable: false,
-        });
-
-        return list;
+        return makeReadOnly(list);
     }
 
-    public static unmodifiableSet<T>(list: JavaSet<T>): JavaSet<T> {
-        Object.defineProperty(list, "readOnly", {
-            value: true,
-            writable: false,
-            configurable: false,
-            enumerable: false,
-        });
-
-        return list;
+    public static unmodifiableSet<T>(set: JavaSet<T>): JavaSet<T> {
+        return makeReadOnly(set);
     }
 
     public static reverse<T>(list: List<T>): void {

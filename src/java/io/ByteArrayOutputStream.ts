@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int } from "../../types";
+import type { int } from "../../types";
 import { JavaString } from "../lang/String";
 import { ByteBuffer } from "../nio/ByteBuffer";
 import { Charset } from "../nio/charset";

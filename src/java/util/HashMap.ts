@@ -7,7 +7,6 @@ import { Map } from "immutable";
 import { Serializable } from "../io/Serializable";
 import { Cloneable } from "../lang/Cloneable";
 
-import { JavaObject } from "../lang/Object";
 import { Collection } from "./Collection";
 import { JavaMap } from "./Map";
 import { MapEntryView } from "./MapEntryView";
@@ -25,7 +24,7 @@ export interface IHashMapViewBackend<K, V> {
     backend: Map<K, V>;
 }
 
-export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>>, Serializable, JavaMap<K, V> {
+export class HashMap<K, V> extends JavaMap<K, V> implements Cloneable<HashMap<K, V>>, Serializable {
 
     private sharedBackend: IHashMapViewBackend<K, V>;
 
@@ -47,7 +46,7 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
     }
 
     /** Removes all of the mappings from this map. */
-    public clear(): void {
+    public override clear(): void {
         this.sharedBackend.backend = this.sharedBackend.backend.clear();
     }
 
@@ -61,7 +60,7 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
      *
      * @returns true if this map contains a mapping for the specified key.
      */
-    public containsKey(key: K): boolean {
+    public override containsKey(key: K): boolean {
         return this.sharedBackend.backend.has(key);
     }
 
@@ -70,12 +69,12 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
      *
      * @returns true if this map maps one or more keys to the specified value.
      */
-    public containsValue(value: V): boolean {
+    public override containsValue(value: V): boolean {
         return this.sharedBackend.backend.includes(value);
     }
 
     /** @returns a Set view of the mappings contained in this map. */
-    public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
+    public override entrySet(): JavaSet<JavaMap.Entry<K, V>> {
         return new MapEntryView(this.sharedBackend);
     }
 
@@ -84,17 +83,17 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
      *
      * @returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
      */
-    public get(key: K): V | null {
+    public override get(key: K): V | null {
         return this.sharedBackend.backend.get(key) ?? null;
     }
 
     /** @returns true if this map contains no key-value mappings. */
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.sharedBackend.backend.isEmpty();
     }
 
     /** @returns a Set view of the keys contained in this map. */
-    public keySet(): JavaSet<K> {
+    public override keySet(): JavaSet<K> {
         return new MapKeyView<K, V>(this.sharedBackend);
     }
 
@@ -107,7 +106,7 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
      * @returns the previous value associated with key, or null if there was no mapping for key.
      *          (A null return can also indicate that the map previously associated null with key.)
      */
-    public put(key: K, value: V): V | null {
+    public override put(key: K, value: V): V | null {
         const previous = this.sharedBackend.backend.get(key);
         const m = this.sharedBackend.backend.set(key, value);
         if (this.sharedBackend.backend !== m) {
@@ -122,7 +121,7 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
      *
      * @param map A map with the values to copy.
      */
-    public putAll(map: JavaMap<K, V>): void {
+    public override putAll(map: JavaMap<K, V>): void {
         const m = this.sharedBackend.backend.withMutations((mutable) => {
             for (const entry of map.entrySet()) {
                 mutable.set(entry.getKey(), entry.getValue());
@@ -140,14 +139,14 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
      * @returns the previous value associated with key, or null if there was no mapping for key.
      *          (A null return can also indicate that the map previously associated null with key.)
      */
-    public remove(key: K): V | null {
+    public override remove(key: K): V | null {
         const previous = this.sharedBackend.backend.get(key);
         this.sharedBackend.backend = this.sharedBackend.backend.delete(key);
 
         return previous ?? null;
     }
 
-    public size(): number {
+    public override size(): number {
         return this.sharedBackend.backend.count();
     }
 
@@ -163,7 +162,7 @@ export class HashMap<K, V> extends JavaObject implements Cloneable<HashMap<K, V>
         return this.sharedBackend.backend.equals(o.sharedBackend.backend);
     }
 
-    public values(): Collection<V> {
+    public override values(): Collection<V> {
         return new MapValueView(this.sharedBackend);
     }
 

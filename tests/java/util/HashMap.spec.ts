@@ -5,33 +5,39 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java, JavaObject } from "../../../src";
+import { java } from "../../../src";
 import { HashMapEntry } from "../../../src/java/util/HashMapEntry";
+import { HashMapCloneLeak } from "../../jdk/java/util/HashMap/HashMapCloneLeak";
+import { NullKeyAtResize } from "../../jdk/java/util/HashMap/NullKeyAtResize";
+import { OverrideIsEmpty } from "../../jdk/java/util/HashMap/OverrideIsEmpty";
+import { ReplaceExisting } from "../../jdk/java/util/HashMap/ReplaceExisting";
+import { SetValue } from "../../jdk/java/util/HashMap/SetValue";
+import { ToString } from "../../jdk/java/util/HashMap/ToString";
 
 // A test class which is not a HashMap but implements the Map interface.
-class Test<K, V> extends JavaObject implements java.util.Map<K, V> {
+class Test<K, V> extends java.util.Map<K, V> {
     public constructor() {
         super();
     }
 
-    public clear(): void { /**/ }
-    public containsKey(_key: K): boolean { return true; }
-    public containsValue(_value: V): boolean { return true; }
-    public entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
+    public override clear(): void { /**/ }
+    public override containsKey(_key: K): boolean { return true; }
+    public override containsValue(_value: V): boolean { return true; }
+    public override entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
         const set = new java.util.HashSet<java.util.Map.Entry<K, V>>();
 
         return set;
     }
     public override equals(_o: unknown): boolean { return false; }
-    public get(_key: K): V | null { return null; }
+    public override get(_key: K): V | null { return null; }
     public override hashCode(): number { return 0; }
-    public isEmpty(): boolean { return false; }
-    public keySet(): java.util.Set<K> { return new java.util.HashSet<K>(); }
-    public put(_key: K, value: V): V { return value; }
-    public putAll(_m: java.util.Map<K, V>): void { return; }
-    public remove(_key: K): V | null { return null; }
-    public size(): number { return 0; }
-    public values(): java.util.Collection<V> { return new java.util.HashSet<V>(); }
+    public override isEmpty(): boolean { return false; }
+    public override keySet(): java.util.Set<K> { return new java.util.HashSet<K>(); }
+    public override put(_key: K, value: V): V { return value; }
+    public override putAll(_m: java.util.Map<K, V>): void { return; }
+    public override remove(_key: K): V | null { return null; }
+    public override size(): number { return 0; }
+    public override values(): java.util.Collection<V> { return new java.util.HashSet<V>(); }
 }
 
 describe("HashMap Tests", () => {
@@ -175,4 +181,29 @@ describe("HashMap Tests", () => {
         expect(entries.size()).toBe(0);
         expect(keys.size()).toBe(0);
     });
+
+    xit("HashMapCloneLeak", () => {
+        HashMapCloneLeak.main([]);
+    });
+
+    it("JDK NullKeyAtResize", () => {
+        NullKeyAtResize.main();
+    });
+
+    it("JDK OverrideIsEmpty", () => {
+        expect(() => { OverrideIsEmpty.main(); }).not.toThrow();
+    });
+
+    it("JDK ReplaceExisting", () => {
+        expect(() => { ReplaceExisting.main([]); }).not.toThrow();
+    });
+
+    it("JDK SetValue", () => {
+        expect(() => { SetValue.main([]); }).not.toThrow();
+    });
+
+    it("ToString", () => {
+        expect(() => { ToString.main([]); }).not.toThrow();
+    });
+
 });

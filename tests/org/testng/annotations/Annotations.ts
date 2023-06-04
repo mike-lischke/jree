@@ -1,9 +1,12 @@
+/*
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 
-import { java } from "../../../../src";
-
-type TargetFunction<This, Args extends unknown[], Return> = (this: This, ...args: Args) => Return;
+import { DecoratorTargetFunction, java } from "../../../../src";
 
 /**
  * Parameters for the @test decorator.
@@ -64,8 +67,9 @@ function executeTarget(this: unknown, target: Function, expectedExceptions?: Arr
 }
 
 export function DataProvider<This, Args extends unknown[], Return>(
-    target: TargetFunction<This, Args, Return>,
-    context: ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>): TargetFunction<This, Args, Return>;
+    target: DecoratorTargetFunction<This, Args, Return>,
+    context: ClassMethodDecoratorContext<This, DecoratorTargetFunction<This, Args, Return>>
+): DecoratorTargetFunction<This, Args, Return>;
 export function DataProvider(param: IDataProviderParameters): Function;
 /**
  * Mark a method as supplying data for a test method.
@@ -78,14 +82,14 @@ export function DataProvider(param: IDataProviderParameters): Function;
  * @returns The original method.
  */
 export function DataProvider<This, Args extends unknown[], Return>(
-    ...args: unknown[]): Function | TargetFunction<This, Args, Return> {
+    ...args: unknown[]): Function | DecoratorTargetFunction<This, Args, Return> {
     if (args.length === 1) {
         // Only one argument given => handled as decorator factory.
         const [param] = args as [IDataProviderParameters];
 
         return <This, Args extends unknown[], Return>(
-            target: TargetFunction<This, Args, Return>,
-            context: ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>) => {
+            target: DecoratorTargetFunction<This, Args, Return>,
+            context: ClassMethodDecoratorContext<This, DecoratorTargetFunction<This, Args, Return>>) => {
 
             if (param.name) {
                 // If a name is given for the data provider then change the name of the method to that name.
@@ -99,8 +103,8 @@ export function DataProvider<This, Args extends unknown[], Return>(
         };
     } else {
         // Multiple arguments given. This makes this function to a decorator.
-        const [target, _context] = args as [TargetFunction<This, Args, Return>,
-            ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>];
+        const [target, _context] = args as [DecoratorTargetFunction<This, Args, Return>,
+            ClassMethodDecoratorContext<This, DecoratorTargetFunction<This, Args, Return>>];
         Object.defineProperty(target, "isDataProvider", { value: true });
 
         return target;
@@ -116,8 +120,9 @@ export function DataProvider<This, Args extends unknown[], Return>(
  * @returns a method decorator.
  */
 export function Test<This, Args extends unknown[], Return>(
-    target: TargetFunction<This, Args, Return>,
-    context: ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>): TargetFunction<This, Args, Return>;
+    target: DecoratorTargetFunction<This, Args, Return>,
+    context: ClassMethodDecoratorContext<This, DecoratorTargetFunction<This, Args, Return>>
+): DecoratorTargetFunction<This, Args, Return>;
 export function Test<T extends ITestParameters>(param: T): Function;
 /**
  * Decorator factory for the Test annotation. It creates a method decorator that applies the parameters given to the
@@ -128,14 +133,14 @@ export function Test<T extends ITestParameters>(param: T): Function;
  * @returns A decorator factory method.
  */
 export function Test<T extends ITestParameters, This, Args extends unknown[], Return>(
-    ...args: unknown[]): Function | TargetFunction<This, Args, Return> {
+    ...args: unknown[]): Function | DecoratorTargetFunction<This, Args, Return> {
 
     if (args.length === 1) {
         // Only one argument given. This makes this function to a decorator factory.
         const param = args[0] as T;
 
-        return <This, Args extends unknown[], Return>(target: TargetFunction<This, Args, Return>,
-            context: ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>) => {
+        return <This, Args extends unknown[], Return>(target: DecoratorTargetFunction<This, Args, Return>,
+            context: ClassMethodDecoratorContext<This, DecoratorTargetFunction<This, Args, Return>>) => {
             const result = function (this: This & {
                 [key: string]: unknown;
                 constructor: { [key: string]: Function; };
@@ -222,8 +227,8 @@ export function Test<T extends ITestParameters, This, Args extends unknown[], Re
         };
     } else {
         // Multiple arguments given, that is, the decorator has no parameters.
-        const [target, _context] = args as [TargetFunction<This, Args, Return>,
-            ClassMethodDecoratorContext<This, TargetFunction<This, Args, Return>>];
+        const [target, _context] = args as [DecoratorTargetFunction<This, Args, Return>,
+            ClassMethodDecoratorContext<This, DecoratorTargetFunction<This, Args, Return>>];
 
         const result = function (this: This, ...args: Args): Return {
             it(target.name, () => {

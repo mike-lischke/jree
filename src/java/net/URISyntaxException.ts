@@ -3,46 +3,45 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { S } from "../../templates";
+import type { JavaString } from "../lang/String";
 import { Exception } from "../lang/Exception";
 import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { JavaString } from "../lang/String";
 
 export class URISyntaxException extends Exception {
     #index: number;
-    #input: JavaString;
-    #reason: JavaString;
+    #input: string;
+    #reason: string;
 
-    public constructor(input: JavaString, reason: JavaString);
-    public constructor(input: JavaString, reason: JavaString, index: number);
+    public constructor(input: JavaString | string, reason: JavaString | string);
+    public constructor(input: JavaString | string, reason: JavaString | string, index: number);
     public constructor(...args: unknown[]) {
-        let input: JavaString;
-        let reason: JavaString;
+        let input: JavaString | string;
+        let reason: JavaString | string;
         let index = -1;
         switch (args.length) {
             case 2: {
-                [input, reason] = args as [JavaString, JavaString];
+                [input, reason] = args as [JavaString | string, JavaString | string];
 
                 break;
             }
 
             case 3: {
-                [input, reason, index] = args as [JavaString, JavaString, number];
+                [input, reason, index] = args as [JavaString | string, JavaString | string, number];
                 break;
             }
 
             default: {
-                throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
+                throw new IllegalArgumentException("Invalid number of arguments");
             }
         }
 
-        const message = S`The input "${input}" could not be parsed: ${reason}`;
+        const message = `The input "${input}" could not be parsed: ${reason}`;
 
         super(message);
 
         this.#index = index;
-        this.#input = input;
-        this.#reason = reason;
+        this.#input = typeof input === "string" ? input : input.valueOf();
+        this.#reason = typeof reason === "string" ? reason : reason.valueOf();
     }
 
     /**
@@ -55,14 +54,14 @@ export class URISyntaxException extends Exception {
     /**
      * @returns The input string.
      */
-    public getInput(): JavaString {
+    public getInput(): string {
         return this.#input;
     }
 
     /**
      * @returns The reason why the input string could not be parsed.
      */
-    public getReason(): JavaString {
+    public getReason(): string {
         return this.#reason;
     }
 

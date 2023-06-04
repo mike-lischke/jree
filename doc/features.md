@@ -191,9 +191,8 @@ System properties are supported just like in Java, and get their initial values 
 
 This chapter collects a few other things that are worth to be mentioned.
 
-- `java.lang.Object.toString()` returns a Typescript string, not `java.lang.String` to avoid a circular dependency between the two classes.
-- The same holds true for `java.lang.Class.getName()` and `java.lang.Class.getSimpleName()`.
-- All classes deriving from `java.lang.Object` override the `toString()` method and return `java.lang.String`, however (if they support `toString` at all).
+- A number of classes which are close to the root of the class hierarchy (and exceptions/errors) return TypeScript strings from methods that are supposed to return Java strings (like `java.lang.Object.toString()`, because they internally use Typescript strings, to avoid circular dependencies. This includes classes like `java.lang.Object`, `java.lang.Class` and `java.lang.Throwable`.
+- The `toString()` method is overridden in classes that support an own string representation and returns a Java string then.
 
 ## <a name="unsupported">Unsupported Features</a>
 

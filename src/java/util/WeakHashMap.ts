@@ -4,7 +4,6 @@
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
-import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
 import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
 import { Collection } from "./Collection";
@@ -23,7 +22,7 @@ export interface IWeakHashMapViewBackend<K extends object, V> {
     finalizationGroup: FinalizationRegistry<{ set: Set<WeakRef<K>>; ref: WeakRef<K>; }>;
 }
 
-export class WeakHashMap<K extends object, V> extends JavaObject implements JavaMap<K, V> {
+export class WeakHashMap<K extends object, V> extends JavaMap<K, V> {
     // Implementation based on https://github.com/tc39/proposal-weakrefs#iterable-weakmaps.
     #sharedBackend: IWeakHashMapViewBackend<K, V>;
 
@@ -65,7 +64,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
     }
 
     /** Removes all of the mappings from this map. */
-    public clear(): void {
+    public override clear(): void {
         this.#checkReadonly();
 
         this.#sharedBackend.backend = new WeakMap();
@@ -79,7 +78,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *
      * @returns tbd
      */
-    public containsKey(key: K): boolean {
+    public override containsKey(key: K): boolean {
         return this.#sharedBackend.backend.has(key);
     }
 
@@ -88,7 +87,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *
      * @returns true if this map maps one or more keys to the specified value.
      */
-    public containsValue(value: V): boolean {
+    public override containsValue(value: V): boolean {
         for (const [_, candidate] of this) {
             if (candidate === value) {
                 return true;
@@ -99,7 +98,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
     }
 
     /** @returns a Set view of the mappings contained in this map. */
-    public entrySet(): JavaSet<JavaMap.Entry<K, V>> {
+    public override entrySet(): JavaSet<JavaMap.Entry<K, V>> {
         return new WeakMapEntryView(this.#sharedBackend);
     }
 
@@ -108,19 +107,19 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *
      * @returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
      */
-    public get(key: K): V | null {
+    public override get(key: K): V | null {
         const entry = this.#sharedBackend.backend.get(key);
 
         return entry?.value ?? null;
     }
 
     /** @returns true if this map contains no key - value mappings. */
-    public isEmpty(): boolean {
+    public override isEmpty(): boolean {
         return this.#sharedBackend.refSet.size > 0;
     }
 
     /** @returns a Set view of the keys contained in this map. */
-    public keySet(): JavaSet<K> {
+    public override keySet(): JavaSet<K> {
         return new WeakMapKeyView(this.#sharedBackend);
     }
 
@@ -133,7 +132,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      * @returns the previous value associated with key, or null if there was no mapping for key.
      *          (A null return can also indicate that the map previously associated null with key.)
      */
-    public put(key: K, value: V): V | null {
+    public override put(key: K, value: V): V | null {
         this.#checkReadonly();
 
         const ref = new WeakRef(key);
@@ -152,7 +151,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      *
      * @param m A map with the values to copy.
      */
-    public putAll(m: JavaMap<K, V>): void {
+    public override putAll(m: JavaMap<K, V>): void {
         this.#checkReadonly();
 
         for (const entry of m.entrySet()) {
@@ -168,7 +167,7 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
      * @returns the previous value associated with key, or null if there was no mapping for key.
      *          (A null return can also indicate that the map previously associated null with key.)
      */
-    public remove(key: K): V | null {
+    public override remove(key: K): V | null {
         this.#checkReadonly();
 
         const entry = this.#sharedBackend.backend.get(key);
@@ -184,12 +183,12 @@ export class WeakHashMap<K extends object, V> extends JavaObject implements Java
     }
 
     /** @returns the number of key - value mappings in this map. */
-    public size(): number {
+    public override size(): number {
         return this.#sharedBackend.refSet.size;
     }
 
     /** Returns a Collection view of the values contained in this map. */
-    public values(): Collection<V> {
+    public override values(): Collection<V> {
         throw new NotImplementedError();
     }
 

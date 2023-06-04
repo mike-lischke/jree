@@ -23,15 +23,15 @@ export interface JavaFunction<T, R> {
 
 export class JavaFunction<T, R> {
     /**
-     * Returns a composed {@code Consumer} that performs, in sequence, this operation followed by the {@code after}
+     * Returns a composed {@code Function} that performs, in sequence, this operation followed by the {@code after}
      * operation.
      *
      * @param after the operation to perform after this operation
      *
-     * @returns a composed {@code Consumer} that performs in sequence this operation followed by the {@code after}
+     * @returns a composed {@code Function} that performs in sequence this operation followed by the {@code after}
      *         operation
      *
-     * Implementation note: this implements the default method of the {@link Consumer} interface.
+     * Implementation note: this implements the default method of the {@link Function} interface.
      */
     public andThen?= <V>(after: JavaFunction<R, V>): JavaFunction<T, V> => {
         return (t: T): V => {

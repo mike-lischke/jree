@@ -4,8 +4,8 @@
  */
 
 import { NotImplementedError } from "../../NotImplementedError";
-import { NullPointerException } from "../lang";
 import { JavaIterable } from "../lang/Iterable";
+import { NullPointerException } from "../lang/NullPointerException";
 import { JavaObject } from "../lang/Object";
 import { JavaString } from "../lang/String";
 import { Predicate } from "./function/Predicate";

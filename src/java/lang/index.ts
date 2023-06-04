@@ -48,6 +48,9 @@ export * from "./ArrayIndexOutOfBoundsException";
 export * from "./ArithmeticException";
 export * from "./ClassCastException";
 export * from "./StackOverflowError";
+export * from "./ArraysStoreException";
 
 export * from "./System";
 export * from "./StackTraceElement";
+
+export * from "./ref/ref";

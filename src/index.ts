@@ -10,6 +10,7 @@ export * from "./java/lang/String";
 export * from "./java/lang/Boolean";
 export * from "./java/lang/Number";
 
+export * from "./decorators";
 export * from "./DefaultJavaEqualityComparator";
 export * from "./JavaEqualityComparator";
 export * from "./IteratorWrapper";

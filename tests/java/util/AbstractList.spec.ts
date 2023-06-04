@@ -7,16 +7,16 @@ import { CheckForComodification } from "../../jdk/java/util/AbstractList/CheckFo
 import { FailFastIterator } from "../../jdk/java/util/AbstractList/FailFastIterator";
 import { HasNextAfterException } from "../../jdk/java/util/AbstractList/HasNextAfterException";
 
-describe("AbstractList", () => {
-    it("CheckForComodification", () => {
+describe("AbstractList Tests", () => {
+    it("JDK CheckForComodification", () => {
         CheckForComodification.main([]);
     });
 
-    it("FailFastIterator", () => {
+    it("JDK FailFastIterator", () => {
         FailFastIterator.main([]);
     });
 
-    it("HasNextAfterException", () => {
+    it("JDK HasNextAfterException", () => {
         HasNextAfterException.main([]);
     });
 });

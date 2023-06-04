@@ -4,8 +4,8 @@
  */
 
 import { MurmurHash } from "../../MurmurHash";
-import { int } from "../../types";
-import { IndexOutOfBoundsException } from "../lang";
+import type { int } from "../../types";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
 
 import type { Comparable } from "../lang/Comparable";
 import { JavaString } from "../lang/String";
