@@ -12,7 +12,7 @@ import { System } from "./System";
 export class JavaBoolean extends JavaObject implements Serializable, Comparable<JavaBoolean> {
     public static readonly TRUE = new JavaBoolean(true);
     public static readonly FALSE = new JavaBoolean(false);
-    public static readonly TYPE: Class<JavaBoolean> = Class.fromConstructor(JavaBoolean);
+    public static readonly TYPE: Class<JavaBoolean>;
 
     private value = false;
 
@@ -203,4 +203,10 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
         return this.value ? "true" : "false";
     }
 
+    static {
+        void Class.forName<JavaBoolean>("java.lang.Boolean").then((clazz) => {
+            // @ts-ignore, because TYPE is readonly.
+            JavaBoolean.TYPE = clazz;
+        });
+    }
 }

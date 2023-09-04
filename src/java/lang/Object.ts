@@ -5,11 +5,12 @@
 
 /* eslint-disable max-classes-per-file */
 
-import { int } from "../../types";
+import type { int } from "../../types";
 
 /** Helper interface to add the implicit reflection stuff to each translated interface. */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IReflection {
-    getClass<T extends JavaObject>(): Class<T>;
+    // getClass<T extends JavaObject>(): Class<T>;
 }
 
 // JavaObject and Class depend directly on each other, so we need to define them in the same file.
@@ -25,10 +26,10 @@ export class JavaObject implements IReflection {
         this.#id = JavaObject.#nextId++;
     }
 
-    public static get class(): Class<JavaObject> {
+    /*public static get class(): Class<JavaObject> {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         return Class.fromConstructor(this.constructor as typeof JavaObject);
-    }
+    }*/
 
     /**
      * Indicates whether some other object is "equal to" this one.
@@ -42,10 +43,10 @@ export class JavaObject implements IReflection {
     }
 
     /** @returns the runtime class of this JavaObject. */
-    public getClass<T extends JavaObject>(): Class<T> {
+    /*public getClass<T extends JavaObject>(): Class<T> {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         return Class.fromConstructor(this.constructor as typeof JavaObject);
-    }
+    }*/
 
     /** @returns a hash code value for the object. */
     public hashCode(): int {
@@ -86,25 +87,40 @@ export class JavaObject implements IReflection {
 
 /** A partial implementation of Java's Class type. */
 export class Class<T> extends JavaObject {
-
-    private static classes = new Map<typeof JavaObject, Class<JavaObject>>();
+    // This is the class registry in the library and is used to return a Class object for a given fully qualified
+    // class name.
+    static #classes = new Map<string, Class<JavaObject>>();
 
     private constructor(private c: typeof JavaObject) {
         super();
     }
 
-    public static fromConstructor<T extends JavaObject>(c: typeof JavaObject): Class<T> {
-        let clazz = Class.classes.get(c);
-        if (!clazz) {
-            clazz = new Class(c);
-            Class.classes.set(c, clazz);
+    /**
+     * Returns the Class object associated with the class or interface with the given string name.
+     * It looks for a class file with the given name (using the individual parts as folder names) and loads it
+     * with a dynamic import.
+     *
+     * @param name The fully qualified name of the desired class.
+     *
+     * @returns A promise resolving to the class object for the requested class or null, if the class cannot be loaded.
+     */
+    public async forName<T extends JavaObject>(name: string): Promise<Class<T> | null> {
+        let clazz = Class.#classes.get(name);
+        if (clazz) {
+            return clazz as Class<T>;
         }
 
-        return clazz as Class<T>;
-    }
+        const parts = name.split(".");
+        const fileName = parts.join("/") + ".js";
+        const module = await import(fileName);
+        if (module) {
+            clazz = new Class(module.default as typeof JavaObject);
+            Class.#classes.set(name, clazz);
 
-    public cast(o: unknown): T {
-        return o as T;
+            return clazz as Class<T>;
+        }
+
+        return null;
     }
 
     public getName(): string {

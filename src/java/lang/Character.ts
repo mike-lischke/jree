@@ -220,7 +220,7 @@ export class Character extends JavaObject {
     public static readonly TITLECASE_LETTER = 51;
 
     /** The Class instance representing the primitive type char. */
-    public static readonly TYPE = Class.fromConstructor(Character);
+    public static readonly TYPE: Class<Character>;
 
     /** General category "Cn" in the Unicode specification. */
     public static readonly UNASSIGNED = 52;
@@ -383,6 +383,12 @@ export class Character extends JavaObject {
         return new JavaString(s.valueOf().toLowerCase());
     }
 
+    static {
+        void Class.forName("java.lang.Character").then((clazz) => {
+            // @ts-ignore, because TYPE is readonly.
+            Character.TYPE = clazz;
+        });
+    }
 }
 
 // @ts-ignore, because the field is readonly.
