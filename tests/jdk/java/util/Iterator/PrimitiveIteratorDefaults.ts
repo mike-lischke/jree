@@ -71,8 +71,7 @@ export class PrimitiveIteratorDefaults extends JavaObject {
 
     public testLongForEachRemainingWithNull(): void {
         const i = new class extends JavaObject implements PrimitiveIterator.OfLong {
-            @Override
-            public nextLong(): long {
+            public override nextLong(): long {
                 return 0;
             }
 

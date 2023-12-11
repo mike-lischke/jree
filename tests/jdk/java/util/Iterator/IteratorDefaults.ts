@@ -27,7 +27,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, type int, type long } from "../../../../../src";
+import { java, JavaObject, Override } from "../../../../../src";
 import { org } from "../../../../org/org";
 
 const Test = org.testng.annotations.Test;

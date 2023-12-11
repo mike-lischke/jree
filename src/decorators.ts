@@ -3,13 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/*
+ eslint-disable @typescript-eslint/naming-convention, prefer-arrow/prefer-arrow-functions, jsdoc/require-param,
+ jsdoc/require-returns
+*/
 
 /** A definition of the target function for a function decorator. */
 export type DecoratorTargetFunction<This, Args extends unknown[], Return> = (this: This, ...args: Args) => Return;
 
-// eslint-disable-next-line jsdoc/require-param, jsdoc/require-returns
 /** Marks a method as overriding an inherited method. */
 export function Override<This, Args extends unknown[], Return>(
     target: DecoratorTargetFunction<This, Args, Return>,
