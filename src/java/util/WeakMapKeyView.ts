@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IteratorWrapper } from "../../IteratorWrapper";
-import { NotImplementedError } from "../../NotImplementedError";
+import { IteratorWrapper } from "../../IteratorWrapper.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
 
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
-import { Collection } from "./Collection";
-import { JavaIterator } from "./Iterator";
-import { JavaSet } from "./Set";
-import { IWeakHashMapViewBackend } from "./WeakHashMap";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
+import { Collection } from "./Collection.js";
+import { JavaIterator } from "./Iterator.js";
+import { JavaSet } from "./Set.js";
+import { IWeakHashMapViewBackend } from "./WeakHashMap.js";
 
 /** This support class provides a view on a weak map's keys. It allows to modify the map for which it was created. */
 export class WeakMapKeyView<K extends object, V> extends Collection<K>

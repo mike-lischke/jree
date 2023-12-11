@@ -3,22 +3,22 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { HashMap } from "./HashMap";
+import { HashMap } from "./HashMap.js";
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { S } from "../../templates";
-import { JavaString } from "../lang/String";
-import { PrintStream } from "../io/PrintStream";
-import { InputStream } from "../io/InputStream";
-import { Reader } from "../io/Reader";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { StringBuilder } from "../lang/StringBuilder";
-import { JavaIterator } from "./Iterator";
-import { OutputStream } from "../io/OutputStream";
-import { Writer } from "../io/Writer";
-import { System } from "../lang/System";
-import { HashSet } from "./HashSet";
-import { JavaSet } from "./Set";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { S } from "../../templates.js";
+import { JavaString } from "../lang/String.js";
+import { PrintStream } from "../io/PrintStream.js";
+import { InputStream } from "../io/InputStream.js";
+import { Reader } from "../io/Reader.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { StringBuilder } from "../lang/StringBuilder.js";
+import { JavaIterator } from "./Iterator.js";
+import { OutputStream } from "../io/OutputStream.js";
+import { Writer } from "../io/Writer.js";
+import { System } from "../lang/System.js";
+import { HashSet } from "./HashSet.js";
+import { JavaSet } from "./Set.js";
 
 export class Properties extends HashMap<JavaString, JavaString> {
     public constructor(private defaults?: Properties) {
@@ -73,7 +73,7 @@ export class Properties extends HashMap<JavaString, JavaString> {
      * @param input The source to read the properties from.
      */
     public load(input: InputStream | Reader): void {
-        let text = "";
+        let text = ".js";
         if (input instanceof InputStream) {
             const buffer = new Int8Array(input.available());
             input.read(buffer);
@@ -92,7 +92,7 @@ export class Properties extends HashMap<JavaString, JavaString> {
                             throw new IllegalArgumentException();
                         }
 
-                        let code = "";
+                        let code = ".js";
                         for (let i = 0; i < 4; ++i) {
                             code += String.fromCodePoint(buffer.at(offset++)!);
                         }
@@ -119,9 +119,9 @@ export class Properties extends HashMap<JavaString, JavaString> {
         let start = 0;
         let run = 0;
 
-        const ws = " \t\f\n";
-        const separator = ws + "=:";
-        const commentStart = "#!";
+        const ws = " \t\f\n.js";
+        const separator = ws + "=:.js";
+        const commentStart = "#!.js";
 
         // Go for each key/value pair.
         while (start < text.length) {
@@ -146,8 +146,8 @@ export class Properties extends HashMap<JavaString, JavaString> {
                 break;
             }
 
-            let currentKey = "";
-            let currentValue = "";
+            let currentKey = ".js";
+            let currentValue = ".js";
 
             // This is the start of the key. Find the first whitespace, "=" or ":", which end the key.
             // Resolve any escape sequence on the way.

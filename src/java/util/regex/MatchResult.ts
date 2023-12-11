@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
+import { IReflection } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
 
 /** The result of a match operation. */
 export interface MatchResult extends IReflection {

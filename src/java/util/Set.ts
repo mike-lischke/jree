@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { Collection } from "./Collection";
-import { Collections } from "./Collections";
-import { HashSet } from "./HashSet";
-import { JavaIterator } from "./Iterator";
-import { Spliterator } from "./Spliterator";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Collection } from "./Collection.js";
+import { Collections } from "./Collections.js";
+import { HashSet } from "./HashSet.js";
+import { JavaIterator } from "./Iterator.js";
+import { Spliterator } from "./Spliterator.js";
 
 /**
  * A collection that contains no duplicate elements. More formally, sets contain no pair of elements e1 and e2 such

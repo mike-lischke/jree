@@ -7,6 +7,6 @@
  * Provides reference-object classes, which support a limited degree of interaction with the garbage collector.
  */
 
-import * as ref from "./index";
+import * as ref from "./index.js";
 
 export { ref };

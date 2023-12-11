@@ -3,13 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../..";
-
-import { S } from "../../templates";
-import { ObjectStreamException } from "./ObjectStreamException";
+import { S } from "../../templates.js";
+import { JavaString } from "../lang/String.js";
+import { ObjectStreamException } from "./ObjectStreamException.js";
 
 export class InvalidClassException extends ObjectStreamException {
-    public constructor(className: java.lang.String, reason: java.lang.String) {
+    public constructor(className: JavaString, reason: JavaString) {
         super(S`Invalid class "${className}: ${reason}"`);
     }
 }

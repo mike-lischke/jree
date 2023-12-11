@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../../lang/String";
-import { JavaObject } from "../../lang/Object";
+import { JavaString } from "../../lang/String.js";
+import { JavaObject } from "../../lang/Object.js";
 
 /** A typesafe enumeration for coding-error actions. */
 export class CodingErrorAction extends JavaObject {

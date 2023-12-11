@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { CheckForComodification } from "../../jdk/java/util/AbstractList/CheckForComodification";
-import { FailFastIterator } from "../../jdk/java/util/AbstractList/FailFastIterator";
-import { HasNextAfterException } from "../../jdk/java/util/AbstractList/HasNextAfterException";
+import { CheckForComodification } from "../../jdk/java/util/AbstractList/CheckForComodification.js";
+import { FailFastIterator } from "../../jdk/java/util/AbstractList/FailFastIterator.js";
+import { HasNextAfterException } from "../../jdk/java/util/AbstractList/HasNextAfterException.js";
 
 describe("AbstractList Tests", () => {
     it("JDK CheckForComodification", () => {

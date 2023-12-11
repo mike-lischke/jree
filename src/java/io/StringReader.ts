@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { S } from "../../templates";
-import { int, long } from "../../types";
+import { S } from "../../templates.js";
+import { int, long } from "../../types.js";
 
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { JavaString } from "../lang/String";
-import { CharBuffer } from "../nio";
-import { Reader } from "./Reader";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { JavaString } from "../lang/String.js";
+import { CharBuffer } from "../nio/CharBuffer.js";
+import { Reader } from "./Reader.js";
 
 /** A character stream whose source is a string. */
 export class StringReader extends Reader {

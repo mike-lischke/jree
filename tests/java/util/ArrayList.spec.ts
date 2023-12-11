@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AddAll } from "../../jdk/java/util/ArrayList/AddAll";
-import { Bug8146568 } from "../../jdk/java/util/ArrayList/Bug8146568";
-import { EnsureCapacity } from "../../jdk/java/util/ArrayList/EnsureCapacity";
+import { AddAll } from "../../jdk/java/util/ArrayList/AddAll.js";
+import { Bug8146568 } from "../../jdk/java/util/ArrayList/Bug8146568.js";
+import { EnsureCapacity } from "../../jdk/java/util/ArrayList/EnsureCapacity.js";
 
 describe("ArrayList Tests", () => {
 

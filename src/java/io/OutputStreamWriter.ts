@@ -3,16 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int } from "../../types";
+import { int } from "../../types.js";
 
-import { JavaString } from "../lang/String";
-import { Charset } from "../nio/charset/Charset";
-import { OutputStream } from "./OutputStream";
-import { Writer } from "./Writer";
-import { CharsetEncoder } from "../nio/charset/CharsetEncoder";
-import { CharBuffer } from "../nio/CharBuffer";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang";
+import { JavaString } from "../lang/String.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { OutputStream } from "./OutputStream.js";
+import { Writer } from "./Writer.js";
+import { CharsetEncoder } from "../nio/charset/CharsetEncoder.js";
+import { CharBuffer } from "../nio/CharBuffer.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
 
 /**
  * An OutputStreamWriter is a bridge from character streams to byte streams: Characters written to it are encoded

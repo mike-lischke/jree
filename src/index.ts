@@ -3,21 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * as java from "./java/index";
+export * as java from "./java/index.js";
 
-export * from "./java/lang/Object";
-export * from "./java/lang/String";
-export * from "./java/lang/Boolean";
-export * from "./java/lang/Number";
+export * from "./java/lang/Object.js";
+export * from "./java/lang/String.js";
+export * from "./java/lang/Boolean.js";
+export * from "./java/lang/Number.js";
 
-export * from "./decorators";
-export * from "./DefaultJavaEqualityComparator";
-export * from "./JavaEqualityComparator";
-export * from "./IteratorWrapper";
-export * from "./JavaMapEntryIterator";
-export * from "./MurmurHash";
-export * from "./NotImplementedError";
-export * from "./templates";
-export * from "./resource-helpers";
-export * from "./string-helpers";
-export * from "./types";
+export * from "./decorators.js";
+export * from "./DefaultJavaEqualityComparator.js";
+export * from "./JavaEqualityComparator.js";
+export * from "./IteratorWrapper.js";
+export * from "./JavaMapEntryIterator.js";
+export * from "./MurmurHash.js";
+export * from "./NotImplementedError.js";
+export * from "./templates.js";
+export * from "./resource-helpers.js";
+export * from "./string-helpers.js";
+export * from "./types.js";

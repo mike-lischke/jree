@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { isEquatable } from "./type-guards";
-import { Arrays } from "./java/util/Arrays";
-import { JavaEqualityComparator } from "./JavaEqualityComparator";
+import { isEquatable } from "./type-guards.js";
+import { Arrays } from "./java/util/Arrays.js";
+import { JavaEqualityComparator } from "./JavaEqualityComparator.js";
 
-import { MurmurHash } from "./MurmurHash";
+import { MurmurHash } from "./MurmurHash.js";
 
 /**
  * A class implementing Java's comparison semantics, which are based on object equality, that is, equality based on

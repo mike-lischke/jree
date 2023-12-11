@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../..";
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
+import { Locale } from "../util/Locale.js";
 
 export class DateFormatSymbols extends JavaObject {
     public constructor();
-    public constructor(locale: java.util.Locale);
-    public constructor(locale?: java.util.Locale) {
+    public constructor(locale: Locale);
+    public constructor(locale?: Locale) {
         super();
     }
 }

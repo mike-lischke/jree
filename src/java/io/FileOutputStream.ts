@@ -5,17 +5,17 @@
 
 import { openSync, writeSync } from "fs";
 
-import { OutputStream } from "./OutputStream";
-import { FileDescriptor } from "./FileDescriptor";
-import { JavaFile } from "./File";
-import { JavaString } from "../lang/String";
-import { FileNotFoundException } from "./FileNotFoundException";
-import { Throwable } from "../lang/Throwable";
-import { IOException } from "./IOException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { AutoCloseable } from "../lang/AutoCloseable";
-import { JavaObject } from "../lang/Object";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { OutputStream } from "./OutputStream.js";
+import { FileDescriptor } from "./FileDescriptor.js";
+import { JavaFile } from "./File.js";
+import { JavaString } from "../lang/String.js";
+import { FileNotFoundException } from "./FileNotFoundException.js";
+import { Throwable } from "../lang/Throwable.js";
+import { IOException } from "./IOException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { AutoCloseable } from "../lang/AutoCloseable.js";
+import { JavaObject } from "../lang/Object.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
 /**
  * A file output stream is an output stream for writing data to a File or to a FileDescriptor. Whether or not a file

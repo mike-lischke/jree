@@ -4,7 +4,7 @@
  */
 
 import path from "path";
-import { java } from ".";
+import { java } from "./index.js";
 
 /** Define the entry point of an executable TS class. */
 interface IRunnable {

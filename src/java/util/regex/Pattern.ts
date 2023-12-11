@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
-import { Matcher } from "./Matcher";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { Matcher } from "./Matcher.js";
 
 export class Pattern extends JavaObject {
     /** Enables canonical equivalence. */
@@ -40,21 +40,21 @@ export class Pattern extends JavaObject {
     private constructor(private source: JavaString, private sourceFlags: number) {
         super();
 
-        let flags = "dy"; // Sticky indexes are used, not a global search, to better match Java's regex behavior.
+        let flags = "dy.js"; // Sticky indexes are used, not a global search, to better match Java's regex behavior.
         if (sourceFlags & Pattern.DOTALL) {
-            flags += "s";
+            flags += "s.js";
         }
 
         if (sourceFlags & Pattern.CASE_INSENSITIVE) {
-            flags += "i";
+            flags += "i.js";
         }
 
         if (sourceFlags & Pattern.MULTILINE) {
-            flags += "m";
+            flags += "m.js";
         }
 
         if (sourceFlags & Pattern.UNICODE_CASE) {
-            flags += "u";
+            flags += "u.js";
         }
 
         this.#regex = new RegExp(source.valueOf(), flags);

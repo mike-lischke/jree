@@ -5,14 +5,14 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
-import { HashMapEntry } from "../../../src/java/util/HashMapEntry";
-import { HashMapCloneLeak } from "../../jdk/java/util/HashMap/HashMapCloneLeak";
-import { NullKeyAtResize } from "../../jdk/java/util/HashMap/NullKeyAtResize";
-import { OverrideIsEmpty } from "../../jdk/java/util/HashMap/OverrideIsEmpty";
-import { ReplaceExisting } from "../../jdk/java/util/HashMap/ReplaceExisting";
-import { SetValue } from "../../jdk/java/util/HashMap/SetValue";
-import { ToString } from "../../jdk/java/util/HashMap/ToString";
+import { java } from "../../../src/index.js";
+import { HashMapEntry } from "../../../src/java/util/HashMapEntry.js";
+import { HashMapCloneLeak } from "../../jdk/java/util/HashMap/HashMapCloneLeak.js";
+import { NullKeyAtResize } from "../../jdk/java/util/HashMap/NullKeyAtResize.js";
+import { OverrideIsEmpty } from "../../jdk/java/util/HashMap/OverrideIsEmpty.js";
+import { ReplaceExisting } from "../../jdk/java/util/HashMap/ReplaceExisting.js";
+import { SetValue } from "../../jdk/java/util/HashMap/SetValue.js";
+import { ToString } from "../../jdk/java/util/HashMap/ToString.js";
 
 // A test class which is not a HashMap but implements the Map interface.
 class Test<K, V> extends java.util.Map<K, V> {

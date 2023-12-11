@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java, S } from "../src";
+import { java, S } from "../src/index.js";
 
 // Example taken from https://www.w3schools.com/java/showjava.asp?filename=demo_files_get.
 export class GetFileInfo {

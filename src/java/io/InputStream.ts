@@ -5,14 +5,14 @@
 
 /* cspell: ignore readlimit */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { int, long } from "../../types";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { int, long } from "../../types.js";
 
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Closeable } from "./Closeable";
-import { IOException } from "./IOException";
-import { OutputStream } from "./OutputStream";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Closeable } from "./Closeable.js";
+import { IOException } from "./IOException.js";
+import { OutputStream } from "./OutputStream.js";
 
 /** This abstract class is the superclass of all classes representing an input stream of bytes. */
 export abstract class InputStream extends JavaObject implements Closeable {

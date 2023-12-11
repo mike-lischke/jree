@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IteratorWrapper } from "../../IteratorWrapper";
+import { IteratorWrapper } from "../../IteratorWrapper.js";
 
-import { IHashMapViewBackend } from "./HashMap";
-import { Collection } from "./Collection";
-import { JavaSet } from "./Set";
-import { JavaIterator } from "./Iterator";
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
+import { IHashMapViewBackend } from "./HashMap.js";
+import { Collection } from "./Collection.js";
+import { JavaSet } from "./Set.js";
+import { JavaIterator } from "./Iterator.js";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
 
 /** This support class provides a view on a map's keys. It allows to modify the map for which it was created. */
 export class MapKeyView<K, V> extends Collection<K> implements JavaSet<K> {

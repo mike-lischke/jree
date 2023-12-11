@@ -38,7 +38,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
+import { java, JavaObject } from "../../../../../src/index.js";
 
 type String = java.lang.String;
 const String = java.lang.String;

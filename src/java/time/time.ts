@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as time from "./index";
+import * as time from "./index.js";
 
 export { time };

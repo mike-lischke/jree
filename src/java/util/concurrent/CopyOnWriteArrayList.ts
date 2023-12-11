@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ArrayList } from "../ArrayList";
+import { ArrayList } from "../ArrayList.js";
 
 /** A thread-safe variant of ArrayList. */
 export class CopyOnWriteArrayList<T> extends ArrayList<T> {

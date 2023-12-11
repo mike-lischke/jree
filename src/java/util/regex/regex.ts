@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as regex from "./index";
+import * as regex from "./index.js";
 
 export { regex };

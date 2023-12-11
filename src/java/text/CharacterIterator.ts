@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Cloneable } from "../lang/Cloneable";
-import { JavaString } from "../lang/String";
+import { Cloneable } from "../lang/Cloneable.js";
+import { JavaString } from "../lang/String.js";
 
 /**
  * This interface defines a protocol for bidirectional iteration over text. The iterator iterates over a bounded

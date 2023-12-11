@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../../lang/String";
-import { JavaObject } from "../../lang/Object";
-import { BufferOverflowException } from "../BufferOverflowException";
-import { BufferUnderflowException } from "../BufferUnderflowException";
-import { MalformedInputException } from "./MalformedInputException";
-import { UnmappableCharacterException } from "./UnmappableCharacterException";
+import { JavaString } from "../../lang/String.js";
+import { JavaObject } from "../../lang/Object.js";
+import { BufferOverflowException } from "../BufferOverflowException.js";
+import { BufferUnderflowException } from "../BufferUnderflowException.js";
+import { MalformedInputException } from "./MalformedInputException.js";
+import { UnmappableCharacterException } from "./UnmappableCharacterException.js";
 
 export class CoderResult extends JavaObject {
     /** Result object indicating overflow, meaning that there is insufficient room in the output buffer. */
@@ -74,7 +74,7 @@ export class CoderResult extends JavaObject {
      * @returns true if, and only if, this object describes an error condition
      */
     public isError(): boolean {
-        return this.#name !== "SUCCESS";
+        return this.#name !== "SUCCESS.js";
     }
 
     /**
@@ -83,7 +83,7 @@ export class CoderResult extends JavaObject {
      * @returns true if, and only if, this object describes a malformed-input error
      */
     public isMalformed(): boolean {
-        return this.#name === "MALFORMED";
+        return this.#name === "MALFORMED.js";
     }
 
     /**
@@ -110,7 +110,7 @@ export class CoderResult extends JavaObject {
      * @returns true if, and only if, this object describes an unmappable-character error
      */
     public isUnmappable(): boolean {
-        return this.#name === "UNMAPPABLE";
+        return this.#name === "UNMAPPABLE.js";
     }
 
     /**

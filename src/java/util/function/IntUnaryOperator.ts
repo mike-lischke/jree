@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int } from "../../../types";
+import { int } from "../../../types.js";
 
 /**
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or
@@ -39,7 +39,7 @@ export class IntUnaryOperator implements IntUnaryOperator {
      * @returns a composed operator that first applies this operator to its input, and then applies the after operator
      * to the result.
      */
-    public andThen?= (after: IntUnaryOperator): IntUnaryOperator => {
+    public andThen? = (after: IntUnaryOperator): IntUnaryOperator => {
         return (operand: int): int => {
             return after(this(operand));
         };
@@ -51,7 +51,7 @@ export class IntUnaryOperator implements IntUnaryOperator {
      * @returns a composed operator that first applies the before operator to its input, and then applies this operator
      * to the result.
      */
-    public compose?= (before: IntUnaryOperator): IntUnaryOperator => {
+    public compose? = (before: IntUnaryOperator): IntUnaryOperator => {
         return (operand: int): int => {
             return this(before(operand));
         };

@@ -36,7 +36,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int } from "../../../../../src";
+import { java, JavaObject, int } from "../../../../../src/index.js";
 
 export class EnsureCapacity extends JavaObject {
     public static main = (args: java.lang.String[]): void => {

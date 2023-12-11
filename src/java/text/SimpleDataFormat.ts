@@ -3,16 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { NullPointerException } from "../lang/NullPointerException";
-import { JavaString } from "../lang/String";
-import { StringBuffer } from "../lang/StringBuffer";
-import { JavaDate } from "../util/Date";
-import { Locale } from "../util/Locale";
-import { DateFormat } from "./DateFormat";
-import { DateFormatSymbols } from "./DateFormatSymbols";
-import { FieldPosition } from "./FieldPosition";
-import { ParsePosition } from "./ParsePosition";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { JavaString } from "../lang/String.js";
+import { StringBuffer } from "../lang/StringBuffer.js";
+import { JavaDate } from "../util/Date.js";
+import { Locale } from "../util/Locale.js";
+import { DateFormat } from "./DateFormat.js";
+import { DateFormatSymbols } from "./DateFormatSymbols.js";
+import { FieldPosition } from "./FieldPosition.js";
+import { ParsePosition } from "./ParsePosition.js";
 
 export class SimpleDateFormat extends DateFormat {
     #pattern: JavaString;

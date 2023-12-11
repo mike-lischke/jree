@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { JavaDate } from "./Date";
-import { TimeZone } from "./TimeZone";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { JavaDate } from "./Date.js";
+import { TimeZone } from "./TimeZone.js";
 
 export class Calendar extends JavaObject {
     public static readonly ERA = 0;

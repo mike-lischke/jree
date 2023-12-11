@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Comparison } from "../../jdk/java/lang/CharSequence/Comparison";
+import { Comparison } from "../../jdk/java/lang/CharSequence/Comparison.js";
 
 describe("java.lang.CharSequence Tests", () => {
     it("Compare with string", () => {

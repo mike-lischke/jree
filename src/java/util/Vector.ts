@@ -3,21 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { S } from "../../templates";
+import { S } from "../../templates.js";
 
-import { NullPointerException } from "../lang/NullPointerException";
-import { AbstractList, ISubList } from "./AbstractList";
-import { RandomAccess } from "./RandomAccess";
-import { Cloneable } from "../lang/Cloneable";
-import { Serializable } from "../io/Serializable";
-import { Collection } from "./Collection";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { NotImplementedError } from "../../NotImplementedError";
-import { Enumeration } from "./Enumeration";
-import { NoSuchElementException } from "./NoSuchElementException";
-import { UnaryOperator } from "./function/UnaryOperator";
-import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { AbstractList, ISubList } from "./AbstractList.js";
+import { RandomAccess } from "./RandomAccess.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { Serializable } from "../io/Serializable.js";
+import { Collection } from "./Collection.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Enumeration } from "./Enumeration.js";
+import { NoSuchElementException } from "./NoSuchElementException.js";
+import { UnaryOperator } from "./function/UnaryOperator.js";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException.js";
 
 /**
  * The Vector class implements a growable array of objects. Like an array, it contains components that can be

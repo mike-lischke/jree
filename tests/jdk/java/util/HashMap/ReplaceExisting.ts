@@ -29,7 +29,7 @@
  * not updating modCount.
  */
 
-import { java, JavaObject, int, I } from "../../../../../src";
+import { java, JavaObject, int, I } from "../../../../../src/index.js";
 
 type String = java.lang.String;
 const String = java.lang.String;

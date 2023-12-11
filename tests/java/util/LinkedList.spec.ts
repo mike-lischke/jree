@@ -5,8 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
-import { S } from "../../../src/templates";
+import { java } from "../../../src/index.js";
+import { S } from "../../../src/templates.js";
 
 describe("LinkedList Tests", () => {
     it("Basic Empty List Tests", () => {

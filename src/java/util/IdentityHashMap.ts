@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../MurmurHash";
-import { NotImplementedError } from "../../NotImplementedError";
-import { Cloneable } from "../lang/Cloneable";
-import { Serializable } from "../io/Serializable";
-import { JavaMap } from "./Map";
-import { JavaSet } from "./Set";
-import { Collection } from "./Collection";
+import { MurmurHash } from "../../MurmurHash.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { Serializable } from "../io/Serializable.js";
+import { JavaMap } from "./Map.js";
+import { JavaSet } from "./Set.js";
+import { Collection } from "./Collection.js";
 
 export class IdentityHashMap<K, V> extends JavaMap<K, V>
     implements Cloneable<IdentityHashMap<K, V>>, Serializable {
@@ -77,7 +77,7 @@ export class IdentityHashMap<K, V> extends JavaMap<K, V>
     }
 
     public override putAll(map: JavaMap<K, V>): void {
-        if (map instanceof IdentityHashMap<K, V>) {
+        if (map instanceof IdentityHashMap) {
             (map.backingStore as Map<K, V>).forEach((value, key) => {
                 this.backingStore.set(key, value);
             });
@@ -111,7 +111,7 @@ export class IdentityHashMap<K, V> extends JavaMap<K, V>
     }
 
     public override equals(o: unknown): boolean {
-        if (!(o instanceof IdentityHashMap<K, V>)) {
+        if (!(o instanceof IdentityHashMap)) {
             return false;
         }
 

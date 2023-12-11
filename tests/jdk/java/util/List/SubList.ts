@@ -39,8 +39,8 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, int, I } from "../../../../../src";
-import { org } from "../../../../org/org";
+import { java, int, I } from "../../../../../src/index.js";
+import { org } from "../../../../index.js";
 
 type Random = java.util.Random;
 const Random = java.util.Random;

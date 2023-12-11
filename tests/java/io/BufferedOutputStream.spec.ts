@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../src";
+import { java } from "../../../src/index.js";
 
 class TestOutputStream extends java.io.OutputStream {
     public output = new Int8Array(1000);

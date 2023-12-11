@@ -23,7 +23,7 @@
  * questions.
  */
 
-import { java, int } from "../../../../../../src";
+import { java, int } from "../../../../../../src/index.js";
 
 const ArrayList = java.util.ArrayList;
 type ArrayList<E> = java.util.ArrayList<E>;
@@ -66,10 +66,12 @@ export class ExtendsAbstractCollection<E> extends Collection<E> {
 
     public override iterator(): Iterator<E> {
         return new class extends java.lang.Object implements Iterator<E> {
-            public source = this.$outer.coll.iterator();
+            public source: Iterator<E>;
 
             public constructor(private $outer: ExtendsAbstractCollection<E>) {
                 super();
+
+                this.source = this.$outer.coll.iterator();
             }
 
             public forEachRemaining(action: java.util.function.Consumer<E>): void {

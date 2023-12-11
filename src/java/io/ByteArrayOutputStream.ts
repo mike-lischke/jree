@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import type { int } from "../../types";
-import { JavaString } from "../lang/String";
-import { ByteBuffer } from "../nio/ByteBuffer";
-import { Charset } from "../nio/charset";
-import { OutputStream } from "./OutputStream";
+import type { int } from "../../types.js";
+import { JavaString } from "../lang/String.js";
+import { ByteBuffer } from "../nio/ByteBuffer.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { OutputStream } from "./OutputStream.js";
 
 /**
  * This class implements an output stream in which the data is written into a byte array. The buffer automatically

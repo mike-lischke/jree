@@ -5,10 +5,10 @@
 
 import { closeSync, fsyncSync } from "fs";
 
-import { JavaObject } from "../lang/Object";
-import { Throwable } from "../lang/Throwable";
-import { Closeable } from "./Closeable";
-import { IOException } from "./IOException";
+import { JavaObject } from "../lang/Object.js";
+import { Throwable } from "../lang/Throwable.js";
+import { Closeable } from "./Closeable.js";
+import { IOException } from "./IOException.js";
 
 /**
  * Instances of the file descriptor class serve as an opaque handle to the underlying machine-specific structure

@@ -36,7 +36,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int } from "../../../../../src";
+import { java, JavaObject, int } from "../../../../../src/index.js";
 
 type List<E> = java.util.List<E>;
 const Integer = java.lang.Integer;
@@ -97,7 +97,6 @@ export class NestedSubList extends JavaObject {
     }
 
     public testAccessToSublists(list: List<Integer>, modifiable: boolean): void {
-        const cls = list.getClass();
         for (let i = 0; i < NestedSubList.NEST_LIMIT; ++i) {
             list = list.subList(0, 1);
         }
@@ -110,7 +109,7 @@ export class NestedSubList extends JavaObject {
             }
         } catch (e) {
             if (e instanceof StackOverflowError) {
-                fail("failed for " + cls);
+                fail("failed for " + list.constructor.name);
             } else {
                 throw e;
             }

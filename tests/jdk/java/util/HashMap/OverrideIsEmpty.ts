@@ -33,7 +33,7 @@
  * @author zhangshj@linux.vnet.ibm.com
  */
 
-import { java, JavaObject, type int, Override } from "../../../../../src";
+import { java, JavaObject, type int, Override } from "../../../../../src/index.js";
 
 type Object = java.lang.Object;
 

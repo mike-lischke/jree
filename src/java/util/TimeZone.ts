@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java, NotImplementedError } from "../..";
-import { JavaObject } from "../lang/Object";
+import { java, NotImplementedError } from "../../index.js";
+import { JavaObject } from "../lang/Object.js";
 
 export class TimeZone extends JavaObject {
     public static readonly SHORT = 0;

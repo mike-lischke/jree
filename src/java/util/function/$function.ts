@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as func from "./index";
+import * as func from "./index.js";
 
 export { func as function };

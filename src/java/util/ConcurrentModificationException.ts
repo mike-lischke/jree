@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { RuntimeException } from "../lang/RuntimeException";
+import { RuntimeException } from "../lang/RuntimeException.js";
 
 /**
  * This exception may be thrown by methods that have detected concurrent modification of an object when such

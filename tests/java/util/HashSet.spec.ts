@@ -5,8 +5,8 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
-import { JavaObject } from "../../../src/java/lang/Object";
+import { java } from "../../../src/index.js";
+import { JavaObject } from "../../../src/java/lang/Object.js";
 
 // Object which does not conform to IEquatable.
 interface ITest1 {

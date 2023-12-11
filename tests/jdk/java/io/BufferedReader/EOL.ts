@@ -33,7 +33,7 @@
 /* cspell: disable */
 /* eslint-disable jsdoc/check-tag-names */
 
-import { java, JavaObject, JavaString } from "../../../../../src";
+import { java, JavaObject, JavaString } from "../../../../../src/index.js";
 
 export class EOL extends JavaObject {
 

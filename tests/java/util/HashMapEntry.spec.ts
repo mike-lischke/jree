@@ -5,7 +5,7 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { HashMapEntry } from "../../../src/java/util/HashMapEntry";
+import { HashMapEntry } from "../../../src/java/util/HashMapEntry.js";
 
 describe("HashMapEntry Tests", () => {
     it("Key/value", () => {

@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../../lang/Object";
-import { Path } from "./Path";
+import { IReflection } from "../../lang/Object.js";
+import { Path } from "./Path.js";
 
 /**
  * An interface that is implemented by objects that perform match operations on paths.

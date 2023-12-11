@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { Serializable } from "../io/Serializable";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { JavaMap } from "../util/Map";
-import { CharacterIterator } from "./CharacterIterator";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Serializable } from "../io/Serializable.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { JavaMap } from "../util/Map.js";
+import { CharacterIterator } from "./CharacterIterator.js";
 
 export interface AttributedCharacterIterator extends CharacterIterator {
     /** Returns the keys of all attributes defined on the iterator's text range.*/

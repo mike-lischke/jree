@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 
-import { DecoratorTargetFunction, java } from "../../../../src";
+import { DecoratorTargetFunction, java } from "../../../../src/index.js";
 
 /**
  * Parameters for the @test decorator.

@@ -5,12 +5,12 @@
 
 /* eslint-disable max-classes-per-file */
 
-import type { int } from "../../types";
+import type { int } from "../../types.js";
 
 /** Helper interface to add the implicit reflection stuff to each translated interface. */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IReflection {
-    // getClass<T extends JavaObject>(): Class<T>;
+    //getClass(): Promise<Class<T> | null>;
 }
 
 // JavaObject and Class depend directly on each other, so we need to define them in the same file.
@@ -25,11 +25,6 @@ export class JavaObject implements IReflection {
     public constructor() {
         this.#id = JavaObject.#nextId++;
     }
-
-    /*public static get class(): Class<JavaObject> {
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        return Class.fromConstructor(this.constructor as typeof JavaObject);
-    }*/
 
     /**
      * Indicates whether some other object is "equal to" this one.
@@ -104,7 +99,7 @@ export class Class<T> extends JavaObject {
      *
      * @returns A promise resolving to the class object for the requested class or null, if the class cannot be loaded.
      */
-    public async forName<T extends JavaObject>(name: string): Promise<Class<T> | null> {
+    public static async forName<T extends JavaObject>(name: string): Promise<Class<T> | null> {
         let clazz = Class.#classes.get(name);
         if (clazz) {
             return clazz as Class<T>;

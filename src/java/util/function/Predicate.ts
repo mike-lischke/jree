@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Objects } from "../Objects";
+import { Objects } from "../Objects.js";
 
 /**
  * Represents a predicate (boolean-valued function) of one argument.
@@ -69,7 +69,7 @@ export class Predicate<T> {
      * @returns a composed predicate that represents the short-circuiting logical AND of this predicate and the
      *        {@code other} predicate
      */
-    public and?= (other: Predicate<T>): Predicate<T> => {
+    public and? = (other: Predicate<T>): Predicate<T> => {
         return (t: T) => {
             return this(t) && other(t);
         };
@@ -80,7 +80,7 @@ export class Predicate<T> {
      *
      * @returns a predicate that represents the logical negation of this predicate
      */
-    public negate?= (): Predicate<T> => {
+    public negate? = (): Predicate<T> => {
         return (t: T) => {
             return !this(t);
         };
@@ -96,7 +96,7 @@ export class Predicate<T> {
      * @returns a composed predicate that represents the short-circuiting logical OR of this predicate and the
      *       {@code other} predicate
      */
-    public or?= (other: Predicate<T>): Predicate<T> => {
+    public or? = (other: Predicate<T>): Predicate<T> => {
         return (t: T) => {
             return this(t) || other(t);
         };

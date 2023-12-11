@@ -36,7 +36,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int, S } from "../../../../../src";
+import { java, JavaObject, int, S } from "../../../../../src/index.js";
 
 export class Ready extends JavaObject {
 

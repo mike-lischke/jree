@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../..";
-import { S } from "../../../templates";
-import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
+import { java } from "../../../index.js";
+import { S } from "../../../templates.js";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException.js";
 
 export class PatternSyntaxException extends IllegalArgumentException {
     public constructor(private desc: java.lang.String, private regex: java.lang.String, private index: number) {

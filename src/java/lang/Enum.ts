@@ -3,20 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../..";
-import { JavaObject } from "./Object";
+import { JavaObject } from "./Object.js";
 
-import { MurmurHash } from "../../MurmurHash";
-import { S } from "../../templates";
+import { MurmurHash } from "../../MurmurHash.js";
+import { S } from "../../templates.js";
+import { JavaString } from "./String.js";
+import { IllegalArgumentException } from "./IllegalArgumentException.js";
 
 export class Enum<T extends Enum<T>> extends JavaObject {
     // Holds all created enum values for the class.
     private static members: unknown[] = [];
 
-    #name: java.lang.String;
+    #name: JavaString;
     #ordinal = 0;
 
-    public constructor(name: java.lang.String, ordinal: number) {
+    public constructor(name: JavaString, ordinal: number) {
         super();
 
         this.#name = name;
@@ -34,14 +35,14 @@ export class Enum<T extends Enum<T>> extends JavaObject {
      *
      * @throws IllegalArgumentException if the specified enum type has no constant with the specified name.
      */
-    public static override valueOf<T extends Enum<T>>(name: java.lang.String): T {
+    public static override valueOf<T extends Enum<T>>(name: JavaString): T {
         for (const value of Enum.members as T[]) {
             if (value.name() === name) {
                 return value;
             }
         }
 
-        throw new java.lang.IllegalArgumentException(S`No enum constant ${name}`);
+        throw new IllegalArgumentException(S`No enum constant ${name}`);
     }
 
     /**
@@ -68,7 +69,7 @@ export class Enum<T extends Enum<T>> extends JavaObject {
     }
 
     /** @returns the name of this enum constant, exactly as declared in its enum declaration. */
-    public name(): java.lang.String {
+    public name(): JavaString {
         return this.#name;
     }
 

@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { S } from "../../templates";
-import { Serializable } from "../io/Serializable";
-import { Cloneable } from "../lang/Cloneable";
-import { Comparable } from "../lang/Comparable";
-import { Long } from "../lang/Long";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Instant } from "../time/Instant";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { S } from "../../templates.js";
+import { Serializable } from "../io/Serializable.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { Comparable } from "../lang/Comparable.js";
+import { Long } from "../lang/Long.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Instant } from "../time/Instant.js";
 
 export class JavaDate extends JavaObject implements Serializable, Cloneable<JavaDate>, Comparable<JavaDate> {
 

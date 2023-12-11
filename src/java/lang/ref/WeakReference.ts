@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../Object";
-import { Reference } from "./Reference";
+import { JavaObject } from "../Object.js";
+import { Reference } from "./Reference.js";
 
 export class WeakReference<T extends JavaObject> extends Reference<T> {
     #ref: WeakRef<T> | null;

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IncompatibleClassChangeError } from "./IncompatibleClassChangeError";
+import { IncompatibleClassChangeError } from "./IncompatibleClassChangeError.js";
 
 export class NoSuchMethodError extends IncompatibleClassChangeError {
 }

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { OutputStream } from "./OutputStream";
+import { OutputStream } from "./OutputStream.js";
 
 /** Internal class to provide print stream like access to stdout and stderr. */
 export class SystemOutputStream extends OutputStream {

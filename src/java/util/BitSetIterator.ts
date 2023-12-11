@@ -8,7 +8,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
 
 // The code in this file was taken from the antlr4ts package.
 

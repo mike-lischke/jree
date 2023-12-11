@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ByteBuffer } from "../ByteBuffer";
-import { WritableByteChannel } from "./WritableByteChannel";
+import { ByteBuffer } from "../ByteBuffer.js";
+import { WritableByteChannel } from "./WritableByteChannel.js";
 
 /** A channel that can write bytes to a sequence of buffers. */
 export interface GatheringByteChannel extends WritableByteChannel {

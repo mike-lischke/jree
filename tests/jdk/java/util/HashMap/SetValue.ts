@@ -30,7 +30,7 @@
  * @author jbloch
  */
 
-import { java, JavaObject, S } from "../../../../../src";
+import { java, JavaObject, S } from "../../../../../src/index.js";
 
 type String = java.lang.String;
 const String = java.lang.String;

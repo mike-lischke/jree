@@ -5,18 +5,18 @@
 
 import printf from "printf";
 
-import { char, double, float, int, long } from "../../types";
-import { CharSequence } from "../lang";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Charset } from "../nio/charset/Charset";
-import { Locale } from "../util/Locale";
-import { JavaFile } from "./File";
-import { FileOutputStream } from "./FileOutputStream";
-import { OutputStream } from "./OutputStream";
-import { OutputStreamWriter } from "./OutputStreamWriter";
-import { Writer } from "./Writer";
+import { char, double, float, int, long } from "../../types.js";
+import { CharSequence } from "../lang/CharSequence.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { Locale } from "../util/Locale.js";
+import { JavaFile } from "./File.js";
+import { FileOutputStream } from "./FileOutputStream.js";
+import { OutputStream } from "./OutputStream.js";
+import { OutputStreamWriter } from "./OutputStreamWriter.js";
+import { Writer } from "./Writer.js";
 
 /**
  * Prints formatted representations of objects to a text-output stream. This class implements all of the print

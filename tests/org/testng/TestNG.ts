@@ -1,10 +1,10 @@
 /*
  * Copyright (c) Mike Lischke. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
+ * Licensed under the MIT License. See License.txt in the project root for license information./index
  */
 
-import { java } from "../../../src";
-import { TestException } from "./TestException";
+import { java } from "../../../src/index.js";
+import { TestException } from "./TestException.js";
 
 export type TestClass<T> = (new () => T);
 export type TestFunction = Function & { isTest: boolean; };

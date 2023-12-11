@@ -3,22 +3,22 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import type { char, int } from "../../types";
-import { convertStringToUTF16, convertUTF16ToString } from "../../string-helpers";
+import type { char, int } from "../../types.js";
+import { convertStringToUTF16, convertUTF16ToString } from "../../string-helpers.js";
 
-import { JavaString } from "../lang/String";
+import { JavaString } from "../lang/String.js";
 
-import type { Appendable } from "../lang/Appendable";
-import type { CharSequence } from "../lang/CharSequence";
-import type { Readable } from "../lang/Readable";
+import type { Appendable } from "../lang/Appendable.js";
+import type { CharSequence } from "../lang/CharSequence.js";
+import type { Readable } from "../lang/Readable.js";
 
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { ReadOnlyBufferException } from "./ReadOnlyBufferException";
-import { BufferOverflowException } from "./BufferOverflowException";
-import { BufferUnderflowException } from "./BufferUnderflowException";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { ReadOnlyBufferException } from "./ReadOnlyBufferException.js";
+import { BufferOverflowException } from "./BufferOverflowException.js";
+import { BufferUnderflowException } from "./BufferUnderflowException.js";
 
-import { BufferImpl } from "./BufferImpl";
+import { BufferImpl } from "./BufferImpl.js";
 
 export class CharBuffer extends BufferImpl<Uint16Array> implements Appendable, CharSequence, Readable {
     public constructor(capacity: int);

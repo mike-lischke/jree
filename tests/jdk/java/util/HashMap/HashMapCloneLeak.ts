@@ -28,7 +28,7 @@
  * @author david.buck@oracle.com
  */
 
-import { I, java, JavaObject } from "../../../../../src";
+import { I, java, JavaObject } from "../../../../../src/index.js";
 
 type WeakReference<T extends JavaObject> = java.lang.ref.WeakReference<T>;
 const WeakReference = java.lang.ref.WeakReference;

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { VirtualMachineError } from "./VirtualMachineError";
+import { VirtualMachineError } from "./VirtualMachineError.js";
 
 export class OutOfMemoryError extends VirtualMachineError {
 }

@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { Consumer } from "../util/function/Consumer";
-import { JavaIterator } from "../util/Iterator";
-import { Spliterator } from "../util/Spliterator";
-import { NullPointerException } from "./NullPointerException";
-import { IReflection, JavaObject } from "./Object";
-import { JavaString } from "./String";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Consumer } from "../util/function/Consumer.js";
+import { JavaIterator } from "../util/Iterator.js";
+import { Spliterator } from "../util/Spliterator.js";
+import { NullPointerException } from "./NullPointerException.js";
+import { IReflection, JavaObject } from "./Object.js";
+import { JavaString } from "./String.js";
 
 /**
  * Implementing this interface allows an object to be the target of the "for-each loop" statement.

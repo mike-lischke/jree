@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
-import { JavaString } from "./String";
+import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException.js";
+import { JavaString } from "./String.js";
 
 /**
  * Thrown to indicate that an array has been accessed with an illegal index. The index is either negative or greater

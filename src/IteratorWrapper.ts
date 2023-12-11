@@ -3,10 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "./java/lang/Object";
-import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException";
-import { JavaIterator } from "./java/util/Iterator";
-import { Consumer } from "./java/util/function";
+import { JavaObject } from "./java/lang/Object.js";
+import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException.js";
+import { JavaIterator } from "./java/util/Iterator.js";
+import { Consumer } from "./java/util/function/index.js";
 
 /** A JRE iterator which wraps a Typescript iterator. */
 export class IteratorWrapper<T> extends JavaObject implements JavaIterator<T> {

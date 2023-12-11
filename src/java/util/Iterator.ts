@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../lang/Object";
-import { Consumer } from "./function/Consumer";
+import { IReflection } from "../lang/Object.js";
+import { Consumer } from "./function/Consumer.js";
 
 /** An iterator over a collection.  */
 export interface JavaIterator<T> extends IReflection {

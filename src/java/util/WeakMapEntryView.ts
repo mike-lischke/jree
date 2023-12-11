@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Collection } from "./Collection";
-import { JavaMap } from "./Map";
-import { JavaSet } from "./Set";
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
-import { JavaIterator } from "./Iterator";
-import { IWeakHashMapViewBackend } from "./WeakHashMap";
-import { NotImplementedError } from "../../NotImplementedError";
+import { Collection } from "./Collection.js";
+import { JavaMap } from "./Map.js";
+import { JavaSet } from "./Set.js";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
+import { JavaIterator } from "./Iterator.js";
+import { IWeakHashMapViewBackend } from "./WeakHashMap.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
 
 /** This support class provides a view on a weak map's entries. It allows to modify the map for which it was created. */
 export class WeakMapEntryView<K extends object, V> extends Collection<JavaMap.Entry<K, V>>

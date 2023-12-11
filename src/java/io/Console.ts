@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
 
 export class JavaConsole extends JavaObject {
 }

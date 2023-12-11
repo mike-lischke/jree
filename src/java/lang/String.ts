@@ -5,28 +5,28 @@
 
 import printf from "printf";
 
-import { MurmurHash } from "../../MurmurHash";
-import { NotImplementedError } from "../../NotImplementedError";
+import { MurmurHash } from "../../MurmurHash.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
 import {
     codePointFromUTF16, convertStringToUTF16, convertUTF32ToUTF16, convertUTF16ToString, indexOfSubArray,
     lastIndexOfSubArray,
-} from "../../string-helpers";
-import { char, int } from "../../types";
+} from "../../string-helpers.js";
+import { char, int } from "../../types.js";
 
-import { Serializable } from "../io/Serializable";
-import { UnsupportedEncodingException } from "../io/UnsupportedEncodingException";
-import { ByteBuffer } from "../nio/ByteBuffer";
-import { Charset } from "../nio/charset/Charset";
-import { Locale } from "../util/Locale";
-import { IntStream } from "../util/stream/IntStream";
-import { CharSequence } from "./CharSequence";
-import { Comparable } from "./Comparable";
-import { IllegalArgumentException } from "./IllegalArgumentException";
-import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
+import { Serializable } from "../io/Serializable.js";
+import { UnsupportedEncodingException } from "../io/UnsupportedEncodingException.js";
+import { ByteBuffer } from "../nio/ByteBuffer.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { Locale } from "../util/Locale.js";
+import { IntStream } from "../util/stream/IntStream.js";
+import { CharSequence } from "./CharSequence.js";
+import { Comparable } from "./Comparable.js";
+import { IllegalArgumentException } from "./IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException.js";
 
-import { JavaObject } from "./Object";
-import { StringBuffer } from "./StringBuffer";
-import { StringBuilder } from "./StringBuilder";
+import { JavaObject } from "./Object.js";
+import { StringBuffer } from "./StringBuffer.js";
+import { StringBuilder } from "./StringBuilder.js";
 
 export class JavaString extends JavaObject implements Serializable, CharSequence, Comparable<JavaString> {
     // A space in Java is defined as anything equal or below the space char.

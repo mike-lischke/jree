@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../../NotImplementedError";
-import { CloneNotSupportedException } from "../CloneNotSupportedException";
-import { JavaObject } from "../Object";
+import { NotImplementedError } from "../../../NotImplementedError.js";
+import { CloneNotSupportedException } from "../CloneNotSupportedException.js";
+import { JavaObject } from "../Object.js";
 
 /**
  * Abstract base class for reference objects. This class defines the operations common to all reference objects.

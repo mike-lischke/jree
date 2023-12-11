@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
-import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
-import { ByteBuffer } from "../ByteBuffer";
-import { CharBuffer } from "../CharBuffer";
-import { Charset } from "./Charset";
-import { CoderResult } from "./CoderResult";
-import { CodingErrorAction } from "./CodingErrorAction";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException.js";
+import { ByteBuffer } from "../ByteBuffer.js";
+import { CharBuffer } from "../CharBuffer.js";
+import { Charset } from "./Charset.js";
+import { CoderResult } from "./CoderResult.js";
+import { CodingErrorAction } from "./CodingErrorAction.js";
 
 export class CharsetDecoder extends JavaObject {
     #cs: Charset;

@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { int } from "../../types";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Closeable } from "./Closeable";
-import { Flushable } from "./Flushable";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { int } from "../../types.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Closeable } from "./Closeable.js";
+import { Flushable } from "./Flushable.js";
 
 /**
  * This is the base class for all output streams. An output stream accepts output bytes and sends them to some sink.

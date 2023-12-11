@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./CancellationException";
-export * from "./CopyOnWriteArrayList";
+export * from "./CancellationException.js";
+export * from "./CopyOnWriteArrayList.js";
 
-export * from "./atomic/atomic";
+export * from "./atomic/atomic.js";

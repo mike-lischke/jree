@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { RuntimeException } from "../lang/RuntimeException";
+import { RuntimeException } from "../lang/RuntimeException.js";
 
 export class BufferOverflowException extends RuntimeException {
 }

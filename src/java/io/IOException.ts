@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Exception } from "../lang/Exception";
+import { Exception } from "../lang/Exception.js";
 
 export class IOException extends Exception {
 }

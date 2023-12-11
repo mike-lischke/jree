@@ -3,16 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../../NotImplementedError";
-import { char } from "../../../types";
+import { NotImplementedError } from "../../../NotImplementedError.js";
+import { char } from "../../../types.js";
 
-import { CharSequence } from "../../lang/CharSequence";
-import { JavaObject } from "../../lang/Object";
-import { ByteBuffer } from "../ByteBuffer";
-import { CharBuffer } from "../CharBuffer";
-import { Charset } from "./Charset";
-import { CoderResult } from "./CoderResult";
-import { CodingErrorAction } from "./CodingErrorAction";
+import { CharSequence } from "../../lang/CharSequence.js";
+import { JavaObject } from "../../lang/Object.js";
+import { ByteBuffer } from "../ByteBuffer.js";
+import { CharBuffer } from "../CharBuffer.js";
+import { Charset } from "./Charset.js";
+import { CoderResult } from "./CoderResult.js";
+import { CodingErrorAction } from "./CodingErrorAction.js";
 
 export class CharsetEncoder extends JavaObject {
     #charset: Charset;

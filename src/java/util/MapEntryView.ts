@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { HashMapEntry } from "./HashMapEntry";
-import { JavaMapEntryIterator } from "../../JavaMapEntryIterator";
-import { IHashMapViewBackend } from "./HashMap";
-import { Collection } from "./Collection";
-import { JavaMap } from "./Map";
-import { JavaSet } from "./Set";
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
-import { JavaIterator } from "./Iterator";
+import { HashMapEntry } from "./HashMapEntry.js";
+import { JavaMapEntryIterator } from "../../JavaMapEntryIterator.js";
+import { IHashMapViewBackend } from "./HashMap.js";
+import { Collection } from "./Collection.js";
+import { JavaMap } from "./Map.js";
+import { JavaSet } from "./Set.js";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
+import { JavaIterator } from "./Iterator.js";
 
 /** This support class provides a view on a map's keys. It allows to modify the map for which it was created. */
 export class MapEntryView<K, V> extends Collection<JavaMap.Entry<K, V>> implements JavaSet<JavaMap.Entry<K, V>> {

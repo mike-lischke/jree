@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./Supplier";
-export * from "./Consumer";
-export * from "./Predicate";
-export { JavaFunction as Function } from "./Function";
-export * from "./BiFunction";
-export * from "./UnaryOperator";
-export * from "./BiConsumer";
-export * from "./IntBinaryOperator";
-export * from "./IntUnaryOperator";
+export * from "./Supplier.js";
+export * from "./Consumer.js";
+export * from "./Predicate.js";
+export { JavaFunction as Function } from "./Function.js";
+export * from "./BiFunction.js";
+export * from "./UnaryOperator.js";
+export * from "./BiConsumer.js";
+export * from "./IntBinaryOperator.js";
+export * from "./IntUnaryOperator.js";

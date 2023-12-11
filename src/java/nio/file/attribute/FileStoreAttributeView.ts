@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AttributeView } from "./AttributeView";
+import { AttributeView } from "./AttributeView.js";
 
 /**
  * An attribute view that is a read-only or updatable view of the attributes of a FileStore.

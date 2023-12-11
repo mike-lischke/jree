@@ -9,32 +9,32 @@ import {
     closeSync, fstatSync, fsyncSync, Mode, OpenMode, openSync, readSync, truncateSync, unlinkSync, writeSync,
 } from "fs";
 
-import { int, long } from "../../../types";
+import { int, long } from "../../../types.js";
 
-import { NotImplementedError } from "../../../NotImplementedError";
+import { NotImplementedError } from "../../../NotImplementedError.js";
 
-import { JavaString } from "../../lang/String";
-import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
-import { HashSet } from "../../util/HashSet";
-import { JavaSet } from "../../util/Set";
-import { ByteBuffer } from "../ByteBuffer";
-import { FileAttribute } from "../file/attribute/FileAttribute";
-import { OpenOption } from "../file/OpenOption";
-import { Path } from "../file/Path";
-import { GatheringByteChannel } from "./GatheringByteChannel";
-import { ReadableByteChannel } from "./ReadableByteChannel";
-import { ScatteringByteChannel } from "./ScatteringByteChannel";
-import { SeekableByteChannel } from "./SeekableByteChannel";
-import { AbstractInterruptibleChannel } from "./spi/AbstractInterruptibleChannel";
-import { WritableByteChannel } from "./WritableByteChannel";
-import { StandardOpenOption } from "../file/StandardOpenOption";
-import { PosixFilePermissions } from "../file/attribute/PosixFilePermissions";
-import { PosixFilePermission } from "../file/attribute/PosixFilePermission";
-import { ClosedChannelException } from "./ClosedChannelException";
-import { NonWritableChannelException } from "./NonWritableChannelException";
-import { NonReadableChannelException } from "./NonReadableChannelException";
-import { IOException } from "../../io/IOException";
-import { Throwable } from "../../lang/Throwable";
+import { JavaString } from "../../lang/String.js";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException.js";
+import { HashSet } from "../../util/HashSet.js";
+import { JavaSet } from "../../util/Set.js";
+import { ByteBuffer } from "../ByteBuffer.js";
+import { FileAttribute } from "../file/attribute/FileAttribute.js";
+import { OpenOption } from "../file/OpenOption.js";
+import { Path } from "../file/Path.js";
+import { GatheringByteChannel } from "./GatheringByteChannel.js";
+import { ReadableByteChannel } from "./ReadableByteChannel.js";
+import { ScatteringByteChannel } from "./ScatteringByteChannel.js";
+import { SeekableByteChannel } from "./SeekableByteChannel.js";
+import { AbstractInterruptibleChannel } from "./spi/AbstractInterruptibleChannel.js";
+import { WritableByteChannel } from "./WritableByteChannel.js";
+import { StandardOpenOption } from "../file/StandardOpenOption.js";
+import { PosixFilePermissions } from "../file/attribute/PosixFilePermissions.js";
+import { PosixFilePermission } from "../file/attribute/PosixFilePermission.js";
+import { ClosedChannelException } from "./ClosedChannelException.js";
+import { NonWritableChannelException } from "./NonWritableChannelException.js";
+import { NonReadableChannelException } from "./NonReadableChannelException.js";
+import { IOException } from "../../io/IOException.js";
+import { Throwable } from "../../lang/Throwable.js";
 
 /** A channel for reading, writing, mapping, and manipulating a file. */
 export abstract class FileChannel extends AbstractInterruptibleChannel implements SeekableByteChannel,
@@ -168,7 +168,7 @@ export abstract class FileChannel extends AbstractInterruptibleChannel implement
 export class FileChannelImpl extends FileChannel {
     #currentPosition = 0n;
     #fileHandle = -1;
-    #nativePath = "";
+    #nativePath = ".js";
 
     #deleteOnClose = false;
     #canRead = false;
@@ -178,48 +178,48 @@ export class FileChannelImpl extends FileChannel {
         attrs: Array<FileAttribute<unknown>>) {
         super();
 
-        let flags = "";
+        let flags = ".js";
         if (options.contains(StandardOpenOption.APPEND)) {
             this.#canWrite = true;
-            flags += "a";
+            flags += "a.js";
             if (!options.contains(StandardOpenOption.CREATE)
                 || options.contains(StandardOpenOption.CREATE_NEW)) {
-                flags += "x";
+                flags += "x.js";
             }
 
             if (options.contains(StandardOpenOption.DSYNC)
                 || options.contains(StandardOpenOption.SYNC)) {
-                flags += "s";
+                flags += "s.js";
             }
 
             if (options.contains(StandardOpenOption.READ)) {
                 this.#canRead = true;
-                flags += "+";
+                flags += "+.js";
             }
         } else if (options.contains(StandardOpenOption.READ)) {
             this.#canRead = true;
-            flags += "r";
+            flags += "r.js";
 
             if (options.contains(StandardOpenOption.DSYNC)
                 || options.contains(StandardOpenOption.SYNC)) {
-                flags += "s";
+                flags += "s.js";
             }
 
             if (options.contains(StandardOpenOption.WRITE)) {
                 this.#canWrite = true;
-                flags += "+";
+                flags += "+.js";
             }
         } else if (options.contains(StandardOpenOption.WRITE)) {
             this.#canWrite = true;
-            flags += "w";
+            flags += "w.js";
 
             if (!options.contains(StandardOpenOption.TRUNCATE_EXISTING)) {
-                flags += "x";
+                flags += "x.js";
             }
 
             if (options.contains(StandardOpenOption.READ)) {
                 this.#canRead = true;
-                flags += "+";
+                flags += "+.js";
             }
         }
 
@@ -229,14 +229,14 @@ export class FileChannelImpl extends FileChannel {
         }
 
         if (flags.length === 0) {
-            flags = "r";
+            flags = "r.js";
         }
 
         const permissions = attrs.find((attr) => {
-            return attr.name().valueOf() === "posix:permissions";
+            return attr.name().valueOf() === "posix:permissions.js";
         })?.value() as JavaSet<PosixFilePermission> | undefined;
 
-        let mode = "666";
+        let mode = "666.js";
         if (permissions) {
             mode = `${PosixFilePermissions.toString(permissions)}`;
         }

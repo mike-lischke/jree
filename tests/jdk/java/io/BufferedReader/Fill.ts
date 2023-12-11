@@ -34,7 +34,7 @@
 /* cspell: disable */
 /* eslint-disable jsdoc/check-tag-names */
 
-import { java, JavaObject, int, char } from "../../../../../src";
+import { java, JavaObject, int, char } from "../../../../../src/index.js";
 
 export class Fill extends JavaObject {
 

@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { Serializable } from "../io/Serializable";
-import { Cloneable } from "../lang/Cloneable";
-import { AbstractList } from "./AbstractList";
-import { Collection } from "./Collection";
-import { Deque } from "./Deque";
-import { JavaIterator } from "./Iterator";
-import { List } from "./List";
-import { NoSuchElementException } from "./NoSuchElementException";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Serializable } from "../io/Serializable.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { AbstractList } from "./AbstractList.js";
+import { Collection } from "./Collection.js";
+import { Deque } from "./Deque.js";
+import { JavaIterator } from "./Iterator.js";
+import { List } from "./List.js";
+import { NoSuchElementException } from "./NoSuchElementException.js";
 
 /**
  * Implementation of the List and Deque interfaces. Implements all optional list operations, and

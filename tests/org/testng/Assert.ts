@@ -6,7 +6,7 @@
 import { expect } from "@jest/globals";
 import type { MatcherFunction } from "expect";
 
-import { java } from "../../../src";
+import { java } from "../../../src/index.js";
 
 /**
  * This is a custom matcher for Jest to compare Java values.

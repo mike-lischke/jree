@@ -30,7 +30,7 @@
  *          contained null keys or values.
  */
 
-import { java, JavaObject } from "../../../../../src";
+import { java, JavaObject } from "../../../../../src/index.js";
 
 type String = java.lang.String;
 const String = java.lang.String;

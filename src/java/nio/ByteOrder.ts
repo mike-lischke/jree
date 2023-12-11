@@ -5,8 +5,8 @@
 
 import { endianness } from "os";
 
-import { JavaString } from "../lang/String";
-import { JavaObject } from "../lang/Object";
+import { JavaString } from "../lang/String.js";
+import { JavaObject } from "../lang/Object.js";
 
 export class ByteOrder extends JavaObject {
     public static readonly BIG_ENDIAN = new ByteOrder(true);

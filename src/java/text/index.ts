@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./Format";
-export * from "./FieldPosition";
-export * from "./DateFormat";
-export * from "./SimpleDataFormat";
-export * from "./CharacterIterator";
-export * from "./AttributedCharacterIterator";
-export * from "./ParsePosition";
-export * from "./DateFormatSymbols";
+export * from "./Format.js";
+export * from "./FieldPosition.js";
+export * from "./DateFormat.js";
+export * from "./SimpleDataFormat.js";
+export * from "./CharacterIterator.js";
+export * from "./AttributedCharacterIterator.js";
+export * from "./ParsePosition.js";
+export * from "./DateFormatSymbols.js";

@@ -32,7 +32,7 @@
 
 /** cspell: ignore Appendables */
 
-import { java, JavaObject, S } from "../../../../../src";
+import { java, JavaObject, S } from "../../../../../src/index.js";
 
 interface BasicRunnable extends java.lang.Runnable {
     init(a: java.lang.Appendable, csq: java.lang.String, exp: java.lang.String): void;
@@ -354,7 +354,7 @@ export class Basic extends JavaObject {
             case 2: {
                 const [fs, ex] = args as [java.lang.String | string, java.lang.Throwable];
 
-                const s = "'" + fs + "': " + ex.getClass().getName() + " not thrown";
+                const s = "'" + fs + "': " + ex.constructor.name + " not thrown";
                 if (Basic.#first === null) {
 
                     Basic.#first = ex;
@@ -425,7 +425,7 @@ export class Basic extends JavaObject {
             const start = sp[j][0];
             const end = sp[j][1];
             try {
-                thunk.init(a.append(csq, start, end), S`${csq.getClass().getName()}`,
+                thunk.init(a.append(csq, start, end), S`${csq.constructor.name}`,
                     Basic.s.subSequence(start, end).toString());
                 thunk.run();
                 a = thunk.reset(a);

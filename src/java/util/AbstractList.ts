@@ -3,32 +3,32 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { ReverseIteratorWrapper } from "../../ReverseIteratorWrapper";
-import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
-import { Comparable } from "../lang/Comparable";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IllegalStateException } from "../lang/IllegalStateException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { NullPointerException } from "../lang/NullPointerException";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { StringBuilder } from "../lang/StringBuilder";
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
-import { AbstractCollection } from "./AbstractCollection";
-import { Collection } from "./Collection";
-import { Comparator } from "./Comparator";
-import { ConcurrentModificationException } from "./ConcurrentModificationException";
-import { JavaIterator } from "./Iterator";
-import { List } from "./List";
-import { ListIterator } from "./ListIterator";
-import { NoSuchElementException } from "./NoSuchElementException";
-import { Objects } from "./Objects";
-import { Spliterator } from "./Spliterator";
-import { UnaryOperator } from "./function";
-import { Consumer } from "./function/Consumer";
-import { Predicate } from "./function/Predicate";
-import { Stream } from "./stream";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { ReverseIteratorWrapper } from "../../ReverseIteratorWrapper.js";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException.js";
+import { Comparable } from "../lang/Comparable.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IllegalStateException } from "../lang/IllegalStateException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { StringBuilder } from "../lang/StringBuilder.js";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
+import { AbstractCollection } from "./AbstractCollection.js";
+import { Collection } from "./Collection.js";
+import { Comparator } from "./Comparator.js";
+import { ConcurrentModificationException } from "./ConcurrentModificationException.js";
+import { JavaIterator } from "./Iterator.js";
+import { List } from "./List.js";
+import { ListIterator } from "./ListIterator.js";
+import { NoSuchElementException } from "./NoSuchElementException.js";
+import { Objects } from "./Objects.js";
+import { Spliterator } from "./Spliterator.js";
+import { UnaryOperator } from "./function/UnaryOperator.js";
+import { Consumer } from "./function/Consumer.js";
+import { Predicate } from "./function/Predicate.js";
+import { Stream } from "./stream/Stream.js";
 
 /**
  * This interface provides shared access to the backend of a list class.

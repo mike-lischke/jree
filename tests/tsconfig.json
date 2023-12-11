@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "moduleResolution": "node",
+        "moduleResolution": "Node16",
         "target": "ES2022",
-        "module": "node16",
+        "module": "Node16",
         "noEmit": true,
         "declaration": true,
         "sourceMap": true,

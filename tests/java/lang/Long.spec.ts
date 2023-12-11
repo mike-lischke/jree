@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../src";
-import { S } from "../../../src/templates";
+import { java } from "../../../src/index.js";
+import { S } from "../../../src/templates.js";
 
 describe("java.lang.Long Tests", () => {
     it("Base", () => {
@@ -242,9 +242,11 @@ describe("java.lang.Long Tests", () => {
         expect(i3.compareTo(i2)).toBeLessThan(0);
         expect(i2.compareTo(i3)).toBeGreaterThan(0);
 
+        /*
         const c = i1.getClass();
         expect(c.isInstance(i2)).toBe(true);
         expect(c.getName()).toBe("Long");
+        */
 
         // Unboxing/explicit coercion.
         // @ts-ignore

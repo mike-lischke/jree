@@ -26,7 +26,7 @@
 /* cspell: disable */
 /* eslint-disable jsdoc/check-tag-names */
 
-import { java, JavaObject, int, S } from "../../../../../src";
+import { java, JavaObject, int, S } from "../../../../../src/index.js";
 
 /**
  * @test

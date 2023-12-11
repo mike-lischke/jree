@@ -29,7 +29,7 @@
             when mark is set.
 */
 
-import { java, JavaObject } from "../../../../../src";
+import { java, JavaObject } from "../../../../../src/index.js";
 
 export class MarkedFillAtEOF extends JavaObject {
 

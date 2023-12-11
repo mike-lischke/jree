@@ -5,19 +5,19 @@
 
 import path from "path";
 
-import { MurmurHash } from "../../../MurmurHash";
-import { NotImplementedError } from "../../../NotImplementedError";
+import { MurmurHash } from "../../../MurmurHash.js";
+import { NotImplementedError } from "../../../NotImplementedError.js";
 
-import { S } from "../../../templates";
-import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
-import { JavaString } from "../../lang/String";
-import { URI } from "../../net/URI";
-import { JavaFileSystem } from "./FileSystem";
-import { Path } from "./Path";
-import { WatchEvent } from "./WatchEvent";
-import { WatchKey } from "./WatchKey";
-import { WatchService } from "./WatchService";
-import { JavaObject } from "../../lang/Object";
+import { S } from "../../../templates.js";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException.js";
+import { JavaString } from "../../lang/String.js";
+import { URI } from "../../net/URI.js";
+import { JavaFileSystem } from "./FileSystem.js";
+import { Path } from "./Path.js";
+import { WatchEvent } from "./WatchEvent.js";
+import { WatchKey } from "./WatchKey.js";
+import { WatchService } from "./WatchService.js";
+import { JavaObject } from "../../lang/Object.js";
 
 export class PathImpl extends Path {
     #parsed: path.ParsedPath;

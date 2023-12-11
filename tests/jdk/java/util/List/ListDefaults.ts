@@ -30,12 +30,12 @@
 
 /* cspell: disable */
 
-import { I, JavaObject, S, java } from "../../../../../src";
-import { org } from "../../../../org/org";
-import { Assert } from "../../../../org/testng/Assert";
-import { CollectionAsserts } from "../Collection/testlibrary/CollectionAsserts";
-import { CollectionSupplier } from "../Collection/testlibrary/CollectionSupplier";
-import { ExtendsAbstractList } from "../Collection/testlibrary/ExtendsAbstractList";
+import { I, JavaObject, S, java } from "../../../../../src/index.js";
+import { org } from "../../../../index.js";
+import { Assert } from "../../../../org/testng/Assert.js";
+import { CollectionAsserts } from "../Collection/testlibrary/CollectionAsserts.js";
+import { CollectionSupplier } from "../Collection/testlibrary/CollectionSupplier.js";
+import { ExtendsAbstractList } from "../Collection/testlibrary/ExtendsAbstractList.js";
 
 type List<E> = java.util.List<E>;
 type Arrays = java.util.Arrays;

@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ByteBuffer } from "../ByteBuffer";
-import { ByteChannel } from "./ByteChannel";
+import { ByteBuffer } from "../ByteBuffer.js";
+import { ByteChannel } from "./ByteChannel.js";
 
 /** A byte channel that maintains a current position and allows the position to be changed. */
 export interface SeekableByteChannel extends ByteChannel {

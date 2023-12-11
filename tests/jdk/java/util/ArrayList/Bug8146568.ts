@@ -37,7 +37,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
+import { java, JavaObject } from "../../../../../src/index.js";
 
 export class Bug8146568 extends JavaObject {
     public static main = (): void => {

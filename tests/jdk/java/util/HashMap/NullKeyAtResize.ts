@@ -29,7 +29,7 @@
  * recalculate the hash of a null key. This will fail with an NPE.
  */
 
-import { I, java, JavaObject } from "../../../../../src";
+import { I, java, JavaObject } from "../../../../../src/index.js";
 
 export class NullKeyAtResize extends JavaObject {
     public static main(): void {

@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import type { JavaString } from "../lang/String";
-import { Exception } from "../lang/Exception";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import type { JavaString } from "../lang/String.js";
+import { Exception } from "../lang/Exception.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
 export class URISyntaxException extends Exception {
     #index: number;

@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { RuntimeException } from "./RuntimeException";
+import { RuntimeException } from "./RuntimeException.js";
 
 export class IllegalArgumentException extends RuntimeException { }

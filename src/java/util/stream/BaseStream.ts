@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AutoCloseable } from "../../lang/AutoCloseable";
-import { Spliterator } from "../Spliterator";
+import { AutoCloseable } from "../../lang/AutoCloseable.js";
+import { Spliterator } from "../Spliterator.js";
 
 /**
  * Base interface for streams, which are sequences of elements supporting sequential and parallel aggregate operations.

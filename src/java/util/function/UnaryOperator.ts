@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaFunction } from "./Function";
+import { JavaFunction } from "./Function.js";
 
 /**
  * Represents an operation on a single operand that produces a result of the same type as its operand. This is a

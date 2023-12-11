@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { FilterOutputStream } from "./FilterOutputStream";
-import { OutputStream } from "./OutputStream";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { FilterOutputStream } from "./FilterOutputStream.js";
+import { OutputStream } from "./OutputStream.js";
 
 export class BufferedOutputStream extends FilterOutputStream {
 

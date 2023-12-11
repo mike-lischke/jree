@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { double, float, int, long } from "../../../../types";
+import { double, float, int, long } from "../../../../types.js";
 
-import { JavaNumber } from "../../../lang/Number";
-import { JavaObject } from "../../../lang/Object";
-import { JavaString } from "../../../lang/String";
-import { IntBinaryOperator } from "../../function/IntBinaryOperator";
-import { IntUnaryOperator } from "../../function/IntUnaryOperator";
+import { JavaNumber } from "../../../lang/Number.js";
+import { JavaObject } from "../../../lang/Object.js";
+import { JavaString } from "../../../lang/String.js";
+import { IntBinaryOperator } from "../../function/IntBinaryOperator.js";
+import { IntUnaryOperator } from "../../function/IntUnaryOperator.js";
 
 /**
  * An int value that may be updated atomically. See the VarHandle specification for descriptions of the properties of

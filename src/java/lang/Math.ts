@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { double, float, int, long } from "../../types";
+import { double, float, int, long } from "../../types.js";
 
-import { ArithmeticException } from "./ArithmeticException";
-import { IllegalArgumentException } from "./IllegalArgumentException";
+import { ArithmeticException } from "./ArithmeticException.js";
+import { IllegalArgumentException } from "./IllegalArgumentException.js";
 
-import { JavaObject } from "./Object";
+import { JavaObject } from "./Object.js";
 
 /**
  * The class Math contains methods for performing basic numeric operations such as the elementary exponential,

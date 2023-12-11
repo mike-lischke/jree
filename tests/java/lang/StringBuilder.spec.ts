@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../src";
+import { java } from "../../../src/index.js";
 
 describe("Tests", () => {
     it("Construction", () => {

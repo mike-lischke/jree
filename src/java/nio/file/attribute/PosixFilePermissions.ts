@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../../../..";
-import { S } from "../../../../templates";
-import { IllegalArgumentException } from "../../../lang/IllegalArgumentException";
-import { JavaObject } from "../../../lang/Object";
-import { StringBuilder } from "../../../lang/StringBuilder";
-import { HashSet } from "../../../util/HashSet";
-import { JavaSet } from "../../../util/Set";
-import { FileAttribute } from "./FileAttribute";
-import { PosixFilePermission } from "./PosixFilePermission";
+import { JavaString } from "../../../lang/String.js";
+import { S } from "../../../../templates.js";
+import { IllegalArgumentException } from "../../../lang/IllegalArgumentException.js";
+import { JavaObject } from "../../../lang/Object.js";
+import { StringBuilder } from "../../../lang/StringBuilder.js";
+import { HashSet } from "../../../util/HashSet.js";
+import { JavaSet } from "../../../util/Set.js";
+import { FileAttribute } from "./FileAttribute.js";
+import { PosixFilePermission } from "./PosixFilePermission.js";
 
 type PosixFilePermissionSet = JavaSet<PosixFilePermission>;
 

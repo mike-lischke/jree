@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ReadableByteChannel } from "./ReadableByteChannel";
-import { WritableByteChannel } from "./WritableByteChannel";
+import { ReadableByteChannel } from "./ReadableByteChannel.js";
+import { WritableByteChannel } from "./WritableByteChannel.js";
 
 /**
  * A channel that can read and write bytes. This interface simply unifies ReadableByteChannel and

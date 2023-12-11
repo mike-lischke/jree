@@ -4,10 +4,10 @@
  */
 import unicode from "unicode-properties";
 
-import { char } from "../../types";
+import { char } from "../../types.js";
 
-import { Class, JavaObject } from "./Object";
-import { JavaString } from "./String";
+import { Class, JavaObject } from "./Object.js";
+import { JavaString } from "./String.js";
 
 /**
  * The Character class wraps a value of the primitive type char in an object. An object of type Character contains a

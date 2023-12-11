@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../lang/Object";
-import { JavaIterator } from "./Iterator";
+import { IReflection } from "../lang/Object.js";
+import { JavaIterator } from "./Iterator.js";
 
 /**
  * An object that implements the Enumeration interface generates a series of elements, one at a time.

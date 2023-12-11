@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../../../lang/Object";
-import { JavaString } from "../../../lang/String";
+import { JavaObject } from "../../../lang/Object.js";
+import { JavaString } from "../../../lang/String.js";
 
 /**
  * A boolean value that may be updated atomically. See the VarHandle specification for descriptions of the properties

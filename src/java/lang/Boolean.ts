@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "./String";
-import { Serializable } from "../io/Serializable";
-import { Comparable } from "./Comparable";
-import { JavaObject, Class } from "./Object";
-import { System } from "./System";
+import { JavaString } from "./String.js";
+import { Serializable } from "../io/Serializable.js";
+import { Comparable } from "./Comparable.js";
+import { JavaObject, Class } from "./Object.js";
+import { System } from "./System.js";
 
 export class JavaBoolean extends JavaObject implements Serializable, Comparable<JavaBoolean> {
     public static readonly TRUE = new JavaBoolean(true);
@@ -29,7 +29,7 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
         if (typeof value === "boolean") {
             this.value = value;
         } else {
-            this.value = `${value}`.toLowerCase() === "true";
+            this.value = `${value}`.toLowerCase() === "true.js";
         }
     }
 
@@ -114,7 +114,7 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
             return false;
         }
 
-        return s[Symbol.toPrimitive]("string").toLowerCase() === "true";
+        return s[Symbol.toPrimitive]("string").toLowerCase() === "true.js";
     }
 
     /**
@@ -200,7 +200,7 @@ export class JavaBoolean extends JavaObject implements Serializable, Comparable<
             return this.value ? 1 : 0;
         }
 
-        return this.value ? "true" : "false";
+        return this.value ? "true" : "false.js";
     }
 
     static {

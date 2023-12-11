@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../lang/Object";
+import { IReflection } from "../lang/Object.js";
 
 /**
  * An object for traversing and partitioning elements of a source. The source of elements covered by a Spliterator

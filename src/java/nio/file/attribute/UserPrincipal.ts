@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Principal } from "../../../security/Principal";
+import { Principal } from "../../../security/Principal.js";
 
 /**
  * A Principal representing an identity used to determine access rights to objects in a file system.

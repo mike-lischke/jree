@@ -42,7 +42,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int } from "../../../../src";
+import { java, JavaObject, int } from "../../../../src/index.js";
 
 export class Unicode extends JavaObject {
 

@@ -38,8 +38,8 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int, S, I } from "../../../../../src";
-import { Assert } from "../../../../org/testng";
+import { java, JavaObject, int, S, I } from "../../../../../src/index.js";
+import { Assert } from "../../../../org/testng/index.js";
 
 const ArrayList = java.util.ArrayList;
 type ArrayList<E> = java.util.ArrayList<E>;

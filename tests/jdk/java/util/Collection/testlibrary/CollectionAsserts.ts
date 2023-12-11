@@ -23,8 +23,8 @@
  * questions.
  */
 
-import { java, JavaObject, int, S } from "../../../../../../src";
-import { org } from "../../../../..";
+import { java, JavaObject, int, S } from "../../../../../../src/index.js";
+import { org } from "../../../../../index.js";
 
 const ArrayList = java.util.ArrayList;
 type ArrayList<E> = java.util.ArrayList<E>;

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "moduleResolution": "node",
+        "moduleResolution": "node16",
         "target": "ESNext",
         "module": "node16",
         "outDir": "./lib",
@@ -16,6 +16,7 @@
     },
     "include": [
         "src/**/*.ts",
+        "examples/**/*.ts",
     ],
     "exclude": [
         "node_modules/**/*.*",

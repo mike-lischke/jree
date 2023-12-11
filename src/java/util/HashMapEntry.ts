@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../MurmurHash";
-import { JavaMap } from "./Map";
+import { MurmurHash } from "../../MurmurHash.js";
+import { JavaMap } from "./Map.js";
 
 export class HashMapEntry<K, V> extends JavaMap.Entry<K, V> {
     private computedHash: number | undefined;

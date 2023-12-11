@@ -23,7 +23,7 @@
  * questions.
  */
 
-import { java, int, JavaObject } from "../../../../../../src";
+import { java, int, JavaObject } from "../../../../../../src/index.js";
 
 const HashSet = java.util.HashSet;
 type HashSet<E> = java.util.HashSet<E>;
@@ -66,10 +66,12 @@ export class ExtendsAbstractSet<E> extends HashSet<E> {
 
     public override iterator(): Iterator<E> {
         return new class extends JavaObject implements Iterator<E> {
-            public source = this.$outer.set.iterator();
+            public source: Iterator<E>;
 
             public constructor(private readonly $outer: ExtendsAbstractSet<E>) {
                 super();
+
+                this.source = this.$outer.set.iterator();
             }
 
             public forEachRemaining(action: java.util.function.Consumer<E>): void {

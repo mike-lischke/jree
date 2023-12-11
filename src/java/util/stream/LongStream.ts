@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Long } from "../../lang/Long";
-import { BaseStream } from "./BaseStream";
+import { Long } from "../../lang/Long.js";
+import { BaseStream } from "./BaseStream.js";
 
 export interface LongStream extends BaseStream<Long, LongStream> {
     /** @returns an empty sequential IntStream. */
