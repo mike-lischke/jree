@@ -152,7 +152,8 @@ export class CollectionSupplier<C extends Collection<Integer>>
         const cases = new LinkedList<CollectionSupplier.TestCase<C>>();
         for (const supplier of this.suppliers) {
             try {
-                cases.add(new CollectionSupplier.TestCase("empty", supplier, supplier(Collections.emptyList())));
+                cases.add(new CollectionSupplier.TestCase("empty", supplier,
+                    supplier(Collections.emptyList<java.lang.Integer>())));
 
                 cases.add(new CollectionSupplier.TestCase("single", supplier, supplier(Arrays.asList(I`${42}`))));
 
@@ -196,7 +197,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
 
                 let isStructurallyModifiable = false;
                 try {
-                    const t = supplier(Collections.emptyList());
+                    const t = supplier(Collections.emptyList<java.lang.Integer>());
                     t.add(I`${1}`);
                     isStructurallyModifiable = true;
                 } catch (e) {
@@ -212,18 +213,18 @@ export class CollectionSupplier<C extends Collection<Integer>>
 
                 // variants where the size of the backing storage != reported size
                 // created by removing half of the elements
-                const emptyWithSlack = supplier(Collections.emptyList());
+                const emptyWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 emptyWithSlack.add(I`${42}`);
                 assertTrue(emptyWithSlack.remove(I`${42}`));
                 cases.add(new CollectionSupplier.TestCase("emptyWithSlack", supplier, emptyWithSlack));
 
-                const singleWithSlack = supplier(Collections.emptyList());
+                const singleWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 singleWithSlack.add(I`${42}`);
                 singleWithSlack.add(I`${43}`);
                 assertTrue(singleWithSlack.remove(I`${43}`));
                 cases.add(new CollectionSupplier.TestCase("singleWithSlack", supplier, singleWithSlack));
 
-                const regularWithSlack = supplier(Collections.emptyList());
+                const regularWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 for (let i = 0; i < (2 * this.size); i++) {
                     regularWithSlack.add(I`${i}`);
                 }
@@ -232,7 +233,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("regularWithSlack", supplier, regularWithSlack));
 
-                const reverseWithSlack = supplier(Collections.emptyList());
+                const reverseWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 for (let i = 2 * this.size; i >= 0; i--) {
                     reverseWithSlack.add(I`${i}`);
                 }
@@ -241,7 +242,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("reverseWithSlack", supplier, reverseWithSlack));
 
-                const oddsWithSlack = supplier(Collections.emptyList());
+                const oddsWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 for (let i = 0; i < 2 * this.size; i++) {
                     oddsWithSlack.add(I`${(i * 2) + 1}`);
                 }
@@ -251,7 +252,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("oddsWithSlack", supplier, oddsWithSlack));
 
-                const evensWithSlack = supplier(Collections.emptyList());
+                const evensWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 for (let i = 0; i < 2 * this.size; i++) {
                     evensWithSlack.add(I`${i * 2}`);
                 }
@@ -260,7 +261,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("evensWithSlack", supplier, evensWithSlack));
 
-                const fibonacciWithSlack = supplier(Collections.emptyList());
+                const fibonacciWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
                 prev2 = 0;
                 prev1 = 1;
                 for (let i = 0; i < this.size; i++) {

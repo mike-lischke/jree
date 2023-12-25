@@ -109,7 +109,7 @@ export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> imp
             return true;
         }
 
-        if (!(ob instanceof JavaBuffer<T>)) {
+        if (!(ob instanceof JavaBuffer)) {
             return false;
         }
 

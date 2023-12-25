@@ -77,7 +77,7 @@ export class IdentityHashMap<K, V> extends JavaMap<K, V>
     }
 
     public override putAll(map: JavaMap<K, V>): void {
-        if (map instanceof IdentityHashMap<K, V>) {
+        if (map instanceof IdentityHashMap) {
             (map.backingStore as Map<K, V>).forEach((value, key) => {
                 this.backingStore.set(key, value);
             });
@@ -111,7 +111,7 @@ export class IdentityHashMap<K, V> extends JavaMap<K, V>
     }
 
     public override equals(o: unknown): boolean {
-        if (!(o instanceof IdentityHashMap<K, V>)) {
+        if (!(o instanceof IdentityHashMap)) {
             return false;
         }
 
