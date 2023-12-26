@@ -3,16 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { S } from "../../templates";
-import { MurmurHash } from "../../MurmurHash";
+import { S } from "../../templates.js";
+import { MurmurHash } from "../../MurmurHash.js";
 
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { URISyntaxException } from "./URISyntaxException";
-import type { Serializable } from "../io/Serializable";
-import type { Comparable } from "../lang/Comparable";
-import { NotImplementedError } from "../../NotImplementedError";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { URISyntaxException } from "./URISyntaxException.js";
+import type { Serializable } from "../io/Serializable.js";
+import type { Comparable } from "../lang/Comparable.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
 
 /** Represents a Uniform Resource Identifier (URI) reference. */
 export class URI extends JavaObject implements Serializable, Comparable<URI> {

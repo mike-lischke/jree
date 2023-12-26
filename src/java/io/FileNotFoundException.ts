@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IOException } from "./IOException";
+import { IOException } from "./IOException.js";
 
 export class FileNotFoundException extends IOException {
 

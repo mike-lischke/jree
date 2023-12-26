@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
 
 export class ReadOnlyBufferException extends UnsupportedOperationException {
 }

@@ -3,5 +3,5 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./URI";
-export * from "./URISyntaxException";
+export * from "./URI.js";
+export * from "./URISyntaxException.js";

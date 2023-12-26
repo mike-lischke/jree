@@ -5,8 +5,9 @@
 
 import { expect } from "@jest/globals";
 import type { MatcherFunction } from "expect";
-
-import { java } from "../../../src";
+import { Arrays } from "../../../src/java/util/Arrays.js";
+import { Objects } from "../../../src/java/util/Objects.js";
+import { JavaObject } from "../../../src/java/lang/Object.js";
 
 /**
  * This is a custom matcher for Jest to compare Java values.
@@ -19,9 +20,9 @@ import { java } from "../../../src";
 const javaValuesEqual: MatcherFunction<[other: unknown]> = function (actual, other) {
     let pass;
     if (Array.isArray(actual) && Array.isArray(other)) {
-        pass = java.util.Arrays.equals(actual, other);
+        pass = Arrays.equals(actual, other);
     } else {
-        pass = java.util.Objects.equals(actual, other);
+        pass = Objects.equals(actual, other);
     }
 
     if (pass) {
@@ -62,7 +63,7 @@ declare module "expect" {
  *
  * This is an emulation of the org.testng.Assert class, which acts as a thin wrapper around Jest.
  */
-export class Assert extends java.lang.Object {
+export class Assert extends JavaObject {
     public static assertEquals = (expected: unknown, actual: unknown): void => {
         expect(actual).javaValuesEqual(expected);
     };

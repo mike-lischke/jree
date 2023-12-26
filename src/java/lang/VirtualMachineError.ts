@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaError } from "./Error";
+import { JavaError } from "./Error.js";
 
 export class VirtualMachineError extends JavaError {
 }

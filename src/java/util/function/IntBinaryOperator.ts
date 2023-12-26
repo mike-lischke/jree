@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int } from "../../../types";
+import { int } from "../../../types.js";
 
 /**
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or

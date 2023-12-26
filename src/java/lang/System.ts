@@ -7,15 +7,15 @@ import * as os from "os";
 import * as path from "path";
 import * as process from "process";
 
-import { SystemOutputStream } from "../io/SystemOutputStream";
-import { JavaObject } from "./Object";
-import { JavaConsole } from "../io/Console";
-import { PrintStream } from "../io/PrintStream";
-import { Properties } from "../util/Properties";
-import { JavaString } from "./String";
-import { IllegalArgumentException } from "./IllegalArgumentException";
-import { NullPointerException } from "./NullPointerException";
-import { ArraysStoreException } from "./ArraysStoreException";
+import { SystemOutputStream } from "../io/SystemOutputStream.js";
+import { JavaObject } from "./Object.js";
+import { JavaConsole } from "../io/Console.js";
+import { PrintStream } from "../io/PrintStream.js";
+import { Properties } from "../util/Properties.js";
+import { JavaString } from "./String.js";
+import { IllegalArgumentException } from "./IllegalArgumentException.js";
+import { NullPointerException } from "./NullPointerException.js";
+import { ArraysStoreException } from "./ArraysStoreException.js";
 
 /** User agent client hints are still experimental and hence there's no type definition yet. */
 

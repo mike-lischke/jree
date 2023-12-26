@@ -5,7 +5,7 @@
 
 /* eslint-disable max-classes-per-file */
 
-import { int } from "../../types";
+import { int } from "../../types.js";
 
 /** Helper interface to add the implicit reflection stuff to each translated interface. */
 export interface IReflection {

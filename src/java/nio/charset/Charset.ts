@@ -3,21 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../../MurmurHash";
-import { NotImplementedError } from "../../../NotImplementedError";
-import { Comparable } from "../../lang/Comparable";
-import { JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
-import { HashSet } from "../../util/HashSet";
-import { Locale } from "../../util/Locale";
-import { JavaSet } from "../../util/Set";
-import { SortedMap } from "../../util/SortedMap";
-import { ByteBuffer } from "../ByteBuffer";
-import { CharBuffer } from "../CharBuffer";
-import { CharsetDecoder } from "./CharsetDecoder";
-import { CharsetEncoder } from "./CharsetEncoder";
-import { CodingErrorAction } from "./CodingErrorAction";
-import { IllegalCharsetNameException } from "./IllegalCharsetNameException";
+import { MurmurHash } from "../../../MurmurHash.js";
+import { NotImplementedError } from "../../../NotImplementedError.js";
+import { Comparable } from "../../lang/Comparable.js";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { HashSet } from "../../util/HashSet.js";
+import { Locale } from "../../util/Locale.js";
+import { JavaSet } from "../../util/Set.js";
+import { SortedMap } from "../../util/SortedMap.js";
+import { ByteBuffer } from "../ByteBuffer.js";
+import { CharBuffer } from "../CharBuffer.js";
+import { CharsetDecoder } from "./CharsetDecoder.js";
+import { CharsetEncoder } from "./CharsetEncoder.js";
+import { CodingErrorAction } from "./CodingErrorAction.js";
+import { IllegalCharsetNameException } from "./IllegalCharsetNameException.js";
 
 /**
  * A named mapping between sequences of sixteen-bit Unicode code units and sequences of bytes. This class defines

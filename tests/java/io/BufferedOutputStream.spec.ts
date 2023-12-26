@@ -3,9 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../src";
+import { jest } from "@jest/globals";
 
-class TestOutputStream extends java.io.OutputStream {
+import { BufferedOutputStream } from "../../../src/java/io/BufferedOutputStream.js";
+import { OutputStream } from "../../../src/java/io/OutputStream.js";
+
+class TestOutputStream extends OutputStream {
     public output = new Int8Array(1000);
     public override close = jest.fn(() => {/* */ });
 
@@ -35,14 +38,14 @@ class TestOutputStream extends java.io.OutputStream {
 describe("BufferedOutputStream Tests", () => {
     it("Creation and Writing", () => {
         const buffer = new TestOutputStream();
-        let stream = new java.io.BufferedOutputStream(buffer);
+        let stream = new BufferedOutputStream(buffer);
 
         // @ts-expect-error
         expect(stream.buf.length).toBe(0xFFFF);
 
-        expect(() => { stream = new java.io.BufferedOutputStream(buffer, -1); }).toThrow();
+        expect(() => { stream = new BufferedOutputStream(buffer, -1); }).toThrow();
 
-        stream = new java.io.BufferedOutputStream(buffer, 10);
+        stream = new BufferedOutputStream(buffer, 10);
 
         // @ts-expect-error
         expect(stream.buf.length).toBe(10);
@@ -84,7 +87,7 @@ describe("BufferedOutputStream Tests", () => {
 
         // Clear the underlying stream and start writing single bytes.
         buffer.clear();
-        expect(buffer.close).toBeCalledTimes(0);
+        expect(buffer.close).toHaveBeenCalledTimes(0);
 
         expect(buffer.output.subarray(0, 5)).toEqual(new Int8Array([0, 0, 0, 0, 0]));
         stream.write(1);
@@ -109,6 +112,6 @@ describe("BufferedOutputStream Tests", () => {
         expect(buffer.output.subarray(0, 12)).toEqual(new Int8Array([1, 3, 7, 11, 13, 17, 23, 29, 22, 33, 0, 0]));
         stream.close();
 
-        expect(buffer.close).toBeCalledTimes(1);
+        expect(buffer.close).toHaveBeenCalledTimes(1);
     });
 });

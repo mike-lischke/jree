@@ -74,11 +74,22 @@
         "testng",
         "typeof",
         "unmappable",
+        "unmocked",
         "uxxxx",
         "xdescribe",
         "ᬠᬣᬦᬪᬫᬬᬭ"
     ],
     "ignorePaths": [
         ".eslintrc.json"
+    ],
+    "dictionaries": [
+        "custom-dictionary"
+    ],
+    "dictionaryDefinitions": [
+        {
+            "name": "custom-dictionary",
+            "path": "./.cspell/custom-dictionary.txt",
+            "addWords": true
+        }
     ]
 }

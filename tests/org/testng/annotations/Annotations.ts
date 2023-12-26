@@ -3,10 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { DecoratorTargetFunction } from "../../../../src/decorators.js";
+import { Throwable } from "../../../../src/java/lang/Throwable.js";
+import { Arrays } from "../../../../src/java/util/Arrays.js";
+import { JavaIterator } from "../../../../src/java/util/Iterator.js";
+
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-
-import { DecoratorTargetFunction, java } from "../../../../src";
 
 /**
  * Parameters for the @test decorator.
@@ -22,7 +25,7 @@ export interface ITestParameters {
     dataProvider?: string;
 
     /** The type of expected exceptions in the decorated method. */
-    expectedExceptions?: Array<typeof java.lang.Throwable>;
+    expectedExceptions?: Array<typeof Throwable>;
 
     /** Whether methods on this class/method are enabled. */
     enabled?: boolean;
@@ -46,7 +49,7 @@ export interface IDataProviderParameters {
  * @param expectedExceptions If given then the method is expected to throw an exception of one of the given types.
  * @param args The arguments for the target method.
  */
-function executeTarget(this: unknown, target: Function, expectedExceptions?: Array<typeof java.lang.Throwable>,
+function executeTarget(this: unknown, target: Function, expectedExceptions?: Array<typeof Throwable>,
     ...args: unknown[]) {
     try {
         target.call(this, ...args);
@@ -189,12 +192,12 @@ export function Test<T extends ITestParameters, This, Args extends unknown[], Re
 
                         // Call the provider method to get a list of test cases.
                         const list = provider.call(this);
-                        let cases: java.util.Iterator<unknown[]>;
+                        let cases: JavaIterator<unknown[]>;
                         if ("iterator" in list && typeof list.iterator === "function") {
                             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                             cases = list.iterator();
                         } else if (Array.isArray(list)) {
-                            cases = java.util.Arrays.asList(list).iterator();
+                            cases = Arrays.asList(list).iterator();
                         } else {
                             cases = list;
                         }

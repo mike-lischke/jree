@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "./java/lang/Object";
-import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException";
-import { HashMapEntry } from "./java/util/HashMapEntry";
-import { JavaIterator } from "./java/util/Iterator";
-import { JavaMap } from "./java/util/Map";
-import { Consumer } from "./java/util/function";
+import { JavaObject } from "./java/lang/Object.js";
+import { UnsupportedOperationException } from "./java/lang/UnsupportedOperationException.js";
+import { HashMapEntry } from "./java/util/HashMapEntry.js";
+import { JavaIterator } from "./java/util/Iterator.js";
+import { JavaMap } from "./java/util/Map.js";
+import { Consumer } from "./java/util/function/Consumer.js";
 
 /** A specialized JRE iterator for Map entries, which wraps a Typescript iterator. */
 export class JavaMapEntryIterator<K, V> extends JavaObject implements JavaIterator<JavaMap.Entry<K, V>> {

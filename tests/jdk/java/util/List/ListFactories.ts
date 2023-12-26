@@ -29,34 +29,26 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, S, I } from "../../../../../src";
-import { org } from "../../../../org/org";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { NullPointerException } from "../../../../../src/java/lang/NullPointerException.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { UnsupportedOperationException } from "../../../../../src/java/lang/UnsupportedOperationException.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { Arrays } from "../../../../../src/java/util/Arrays.js";
+import { Collections } from "../../../../../src/java/util/Collections.js";
+import { JavaIterator } from "../../../../../src/java/util/Iterator.js";
+import { List } from "../../../../../src/java/util/List.js";
+import { ListIterator } from "../../../../../src/java/util/ListIterator.js";
+import { I, S } from "../../../../../src/templates.js";
+import { org } from "../../../../index.js";
 
-type String = java.lang.String;
-const String = java.lang.String;
-const List = java.util.List;
-type List<E> = java.util.List<E>;
 const DataProvider = org.testng.annotations.DataProvider;
-type Iterator<E> = java.util.Iterator<E>;
-type Collections = java.util.Collections;
-const Collections = java.util.Collections;
-const asList = java.util.Arrays.asList;
-type Arrays = java.util.Arrays;
-const Arrays = java.util.Arrays;
-type ArrayList<E> = java.util.ArrayList<E>;
-const ArrayList = java.util.ArrayList;
 const Test = org.testng.annotations.Test;
-type UnsupportedOperationException = java.lang.UnsupportedOperationException;
-const UnsupportedOperationException = java.lang.UnsupportedOperationException;
 const assertEquals = org.testng.Assert.assertEquals;
 const assertNotSame = org.testng.Assert.assertNotSame;
-type NullPointerException = java.lang.NullPointerException;
-const NullPointerException = java.lang.NullPointerException;
 const assertSame = org.testng.Assert.assertSame;
-type Integer = java.lang.Integer;
-const Integer = java.lang.Integer;
 const assertNotEquals = org.testng.Assert.assertNotEquals;
-type ListIterator<E> = java.util.ListIterator<E>;
 
 /*
  * @test
@@ -68,82 +60,82 @@ type ListIterator<E> = java.util.ListIterator<E>;
 export class ListFactories extends JavaObject {
 
     protected static readonly NUM_STRINGS = 20; // should be larger than the largest fixed-arg overload
-    protected static readonly stringArray: String[];
+    protected static readonly stringArray: JavaString[];
 
     // returns array of [actual, expected]
-    protected static a(act: List<String>, exp: List<String>): java.lang.Object[] {
+    protected static a(act: List<JavaString>, exp: List<JavaString>): JavaObject[] {
         return [act, exp];
     }
 
     @DataProvider({ name: "empty" })
-    public empty(): Iterator<java.lang.Object[]> {
+    public empty(): JavaIterator<JavaObject[]> {
         return Collections.singletonList(
-            ListFactories.a(List.of(), asList()),
+            ListFactories.a(List.of(), Arrays.asList()),
         ).iterator();
     }
 
     @DataProvider({ name: "nonempty" })
-    public nonempty(): Iterator<java.lang.Object[]> {
-        return asList(
+    public nonempty(): JavaIterator<JavaObject[]> {
+        return Arrays.asList(
             ListFactories.a(List.of(S`a`),
-                asList(S`a`)),
+                Arrays.asList(S`a`)),
             ListFactories.a(List.of(S`a`, S`b`),
-                asList(S`a`, S`b`)),
+                Arrays.asList(S`a`, S`b`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`),
-                asList(S`a`, S`b`, S`c`)),
+                Arrays.asList(S`a`, S`b`, S`c`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`),
-                asList(S`a`, S`b`, S`c`, S`d`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, S`j`),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, S`j`)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, S`j`)),
             ListFactories.a(List.of(...ListFactories.stringArray),
-                asList(ListFactories.stringArray)),
+                Arrays.asList(ListFactories.stringArray)),
         ).iterator();
     }
 
     @DataProvider({ name: "sublists" })
-    public sublists(): Iterator<java.lang.Object[]> {
-        return asList(
-            ListFactories.a(List.of<String>().subList(0, 0),
-                asList()),
+    public sublists(): JavaIterator<JavaObject[]> {
+        return Arrays.asList(
+            ListFactories.a(List.of<JavaString>().subList(0, 0),
+                Arrays.asList()),
             ListFactories.a(List.of(S`a`).subList(0, 0),
-                asList(S`a`).subList(0, 0)),
+                Arrays.asList(S`a`).subList(0, 0)),
             ListFactories.a(List.of(S`a`, S`b`).subList(0, 1),
-                asList(S`a`, S`b`).subList(0, 1)),
+                Arrays.asList(S`a`, S`b`).subList(0, 1)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`).subList(1, 3),
-                asList(S`a`, S`b`, S`c`).subList(1, 3)),
+                Arrays.asList(S`a`, S`b`, S`c`).subList(1, 3)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`).subList(0, 4),
-                asList(S`a`, S`b`, S`c`, S`d`).subList(0, 4)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`).subList(0, 4)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`).subList(0, 3),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`).subList(0, 3)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`).subList(0, 3)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`).subList(3, 5),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`).subList(3, 5)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`).subList(3, 5)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`).subList(0, 7),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`).subList(0, 7)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`).subList(0, 7)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`).subList(0, 0),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`).subList(0, 0)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`).subList(0, 0)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`).subList(4, 5),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`).subList(4, 5)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`).subList(4, 5)),
             ListFactories.a(List.of(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, S`j`).subList(1, 10),
-                asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, S`j`).subList(1, 10)),
+                Arrays.asList(S`a`, S`b`, S`c`, S`d`, S`e`, S`f`, S`g`, S`h`, S`i`, S`j`).subList(1, 10)),
 
             ListFactories.a(List.of(...ListFactories.stringArray).subList(5, ListFactories.NUM_STRINGS),
-                asList(Arrays.copyOfRange(ListFactories.stringArray, 5, ListFactories.NUM_STRINGS))),
+                Arrays.asList(Arrays.copyOfRange(ListFactories.stringArray, 5, ListFactories.NUM_STRINGS))),
         ).iterator();
     }
 
     @DataProvider({ name: "all" })
-    public all(): Iterator<java.lang.Object[]> {
-        const all = new ArrayList<java.lang.Object[]>();
+    public all(): JavaIterator<JavaObject[]> {
+        const all = new ArrayList<JavaObject[]>();
         this.empty().forEachRemaining((x) => { return all.add(x); });
         this.nonempty().forEachRemaining((x) => { return all.add(x); });
         this.sublists().forEachRemaining((x) => { return all.add(x); });
@@ -152,8 +144,8 @@ export class ListFactories extends JavaObject {
     }
 
     @DataProvider({ name: "nonsublists" })
-    public nonsublists(): Iterator<java.lang.Object[]> {
-        const all = new ArrayList<java.lang.Object[]>();
+    public nonsublists(): JavaIterator<JavaObject[]> {
+        const all = new ArrayList<JavaObject[]>();
         this.empty().forEachRemaining((x) => { return all.add(x); });
         this.nonempty().forEachRemaining((x) => { return all.add(x); });
 
@@ -161,27 +153,27 @@ export class ListFactories extends JavaObject {
     }
 
     @Test({ dataProvider: "all", expectedExceptions: [UnsupportedOperationException], enabled: true })
-    public cannotAddLast(act: List<String>, exp: List<String>): void {
+    public cannotAddLast(act: List<JavaString>, exp: List<JavaString>): void {
         act.add(S`x`);
     }
 
     @Test({ dataProvider: "all", expectedExceptions: [UnsupportedOperationException], enabled: true })
-    public cannotAddFirst(act: List<String>, exp: List<String>): void {
+    public cannotAddFirst(act: List<JavaString>, exp: List<JavaString>): void {
         act.add(0, S`x`);
     }
 
     @Test({ dataProvider: "nonempty", expectedExceptions: [UnsupportedOperationException], enabled: true })
-    public cannotRemove(act: List<String>, exp: List<String>): void {
+    public cannotRemove(act: List<JavaString>, exp: List<JavaString>): void {
         act.remove(0);
     }
 
     @Test({ dataProvider: "nonempty", expectedExceptions: [UnsupportedOperationException], enabled: true })
-    public cannotSet(act: List<String>, exp: List<String>): void {
+    public cannotSet(act: List<JavaString>, exp: List<JavaString>): void {
         act.set(0, S`x`);
     }
 
     @Test({ dataProvider: "all", enabled: true })
-    public contentsMatch(act: List<String>, exp: List<String>): void {
+    public contentsMatch(act: List<JavaString>, exp: List<JavaString>): void {
         assertEquals(act, exp);
     }
 
@@ -261,17 +253,17 @@ export class ListFactories extends JavaObject {
     }
 
     @Test({ dataProvider: "all", expectedExceptions: [NullPointerException], enabled: true })
-    public containsNullShouldThrowNPE(act: List<String>, exp: List<String>): void {
+    public containsNullShouldThrowNPE(act: List<JavaString>, exp: List<JavaString>): void {
         act.contains(null as never);
     }
 
     @Test({ dataProvider: "all", expectedExceptions: [NullPointerException], enabled: true })
-    public indexOfNullShouldThrowNPE(act: List<String>, exp: List<String>): void {
+    public indexOfNullShouldThrowNPE(act: List<JavaString>, exp: List<JavaString>): void {
         act.indexOf(null as never);
     }
 
     @Test({ dataProvider: "all", expectedExceptions: [NullPointerException], enabled: true })
-    public lastIndexOfNullShouldThrowNPE(act: List<String>, exp: List<String>): void {
+    public lastIndexOfNullShouldThrowNPE(act: List<JavaString>, exp: List<JavaString>): void {
         act.lastIndexOf(null as never);
     }
 
@@ -334,7 +326,7 @@ export class ListFactories extends JavaObject {
 
     @Test
     public iteratorShouldNotBeListIterator(): void {
-        const list = List.of<java.lang.Integer>(I`1`, I`2`, I`3`, I`4`, I`5`);
+        const list = List.of<Integer>(I`1`, I`2`, I`3`, I`4`, I`5`);
         const it = list.iterator();
         it.next();
         try {
@@ -352,9 +344,9 @@ export class ListFactories extends JavaObject {
     }
 
     static {
-        const sa = new Array<String>(ListFactories.NUM_STRINGS);
+        const sa = new Array<JavaString>(ListFactories.NUM_STRINGS);
         for (let i = 0; i < ListFactories.NUM_STRINGS; i++) {
-            sa[i] = java.lang.String.valueOf(String.fromCharCode("a".charCodeAt(0) + i));
+            sa[i] = JavaString.valueOf(String.fromCharCode("a".charCodeAt(0) + i));
         }
 
         // @ts-ignore

@@ -2,11 +2,12 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { JavaString } from "../../lang/String";
-import { JavaObject } from "../../lang/Object";
-import { URI } from "../../net";
-import { FileSystems } from "./FileSystems";
-import { Path } from "./Path";
+
+import { JavaString } from "../../lang/String.js";
+import { JavaObject } from "../../lang/Object.js";
+import { URI } from "../../net/URI.js";
+import { FileSystems } from "./FileSystems.js";
+import { Path } from "./Path.js";
 
 export class Paths extends JavaObject {
     public static get(path: JavaString | URI): Path {

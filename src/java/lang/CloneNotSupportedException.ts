@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Exception } from "./Exception";
+import { Exception } from "./Exception.js";
 
 export class CloneNotSupportedException extends Exception { }

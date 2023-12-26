@@ -23,19 +23,24 @@
  * questions.
  */
 
-import { java, JavaObject, int, S } from "../../../../../../src";
-import { org } from "../../../../..";
+import { Character } from "../../../../../../src/java/lang/Character.js";
+import { Comparable } from "../../../../../../src/java/lang/Comparable.js";
+import { IllegalArgumentException } from "../../../../../../src/java/lang/IllegalArgumentException.js";
+import { Integer } from "../../../../../../src/java/lang/Integer.js";
+import { JavaIterable } from "../../../../../../src/java/lang/Iterable.js";
+import { JavaObject } from "../../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../../src/java/lang/String.js";
+import { StringBuilder } from "../../../../../../src/java/lang/StringBuilder.js";
+import { ArrayList } from "../../../../../../src/java/util/ArrayList.js";
+import { Arrays } from "../../../../../../src/java/util/Arrays.js";
+import { Comparator } from "../../../../../../src/java/util/Comparator.js";
+import { HashSet } from "../../../../../../src/java/util/HashSet.js";
+import { JavaIterator } from "../../../../../../src/java/util/Iterator.js";
+import { Objects } from "../../../../../../src/java/util/Objects.js";
+import { S } from "../../../../../../src/templates.js";
+import { int } from "../../../../../../src/types.js";
+import { org } from "../../../../../index.js";
 
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-const Arrays = java.util.Arrays;
-type Arrays = java.util.Arrays;
-type Comparator<T> = java.util.Comparator<T>;
-const HashSet = java.util.HashSet;
-type HashSet<E> = java.util.HashSet<E>;
-type Iterator<T> = java.util.Iterator<T>;
-const Objects = java.util.Objects;
-type Objects = java.util.Objects;
 const assertEquals = org.testng.Assert.assertEquals;
 const assertTrue = org.testng.Assert.assertTrue;
 const fail = org.testng.Assert.fail;
@@ -50,10 +55,10 @@ export class CollectionAsserts extends JavaObject {
         super();
     }
 
-    public static assertCountSum(it: java.lang.Iterable<java.lang.Integer> | Iterator<java.lang.Integer>, count: int,
+    public static assertCountSum(it: JavaIterable<Integer> | JavaIterator<Integer>, count: int,
         sum: int): void {
 
-        if (java.lang.Iterable.isIterable(it)) {
+        if (JavaIterable.isIterable(it)) {
             it = it.iterator();
         }
 
@@ -69,8 +74,8 @@ export class CollectionAsserts extends JavaObject {
         assertEquals(s, sum);
     }
 
-    public static assertConcat(it: Iterator<java.lang.Character>, result: java.lang.String): void {
-        const sb = new java.lang.StringBuilder();
+    public static assertConcat(it: JavaIterator<Character>, result: JavaString): void {
+        const sb = new StringBuilder();
         while (it.hasNext()) {
             sb.append(it.next());
         }
@@ -78,15 +83,15 @@ export class CollectionAsserts extends JavaObject {
         assertEquals(result, sb.toString());
     }
 
-    public static assertSorted<T extends java.lang.Comparable<T>>(i: Iterator<T>): void;
-    public static assertSorted<T extends java.lang.Comparable<T>>(iter: java.lang.Iterable<T>): void;
-    public static assertSorted<T>(i: Iterator<T>, comp: Comparator<T>): void;
-    public static assertSorted<T>(iter: java.lang.Iterable<T>, comp: Comparator<T>): void;
-    public static assertSorted<T extends java.lang.Comparable<T>>(...args: unknown[]): void {
+    public static assertSorted<T extends Comparable<T>>(i: JavaIterator<T>): void;
+    public static assertSorted<T extends Comparable<T>>(iter: JavaIterable<T>): void;
+    public static assertSorted<T>(i: JavaIterator<T>, comp: Comparator<T>): void;
+    public static assertSorted<T>(iter: JavaIterable<T>, comp: Comparator<T>): void;
+    public static assertSorted<T extends Comparable<T>>(...args: unknown[]): void {
         switch (args.length) {
             case 1: {
-                let [it] = args as [Iterator<T> | java.lang.Iterable<T>];
-                if (java.lang.Iterable.isIterable(it)) {
+                let [it] = args as [JavaIterator<T> | JavaIterable<T>];
+                if (JavaIterable.isIterable(it)) {
                     it = it.iterator();
                 }
 
@@ -106,8 +111,8 @@ export class CollectionAsserts extends JavaObject {
             }
 
             case 2: {
-                let [it, comp] = args as [Iterator<T> | java.lang.Iterable<T>, Comparator<T>];
-                if (java.lang.Iterable.isIterable(it)) {
+                let [it, comp] = args as [JavaIterator<T> | JavaIterable<T>, Comparator<T>];
+                if (JavaIterable.isIterable(it)) {
                     it = it.iterator();
                 }
 
@@ -127,19 +132,19 @@ export class CollectionAsserts extends JavaObject {
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
 
-    public static assertUnique<T>(iter: java.lang.Iterable<T>): void;
-    public static assertUnique<T>(iter: Iterator<T>): void;
+    public static assertUnique<T>(iter: JavaIterable<T>): void;
+    public static assertUnique<T>(iter: JavaIterator<T>): void;
     public static assertUnique<T>(...args: unknown[]): void {
         switch (args.length) {
             case 1: {
-                let [it] = args as [java.lang.Iterable<T> | Iterator<T>];
+                let [it] = args as [JavaIterable<T> | JavaIterator<T>];
 
-                if (java.lang.Iterable.isIterable(it)) {
+                if (JavaIterable.isIterable(it)) {
                     it = it.iterator();
                 }
 
@@ -158,35 +163,35 @@ export class CollectionAsserts extends JavaObject {
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
 
-    public static assertContents<T>(actual: java.lang.Iterable<T>, expected: java.lang.Iterable<T>): void;
-    public static assertContents<T>(actual: Iterator<T>, expected: Iterator<T>): void;
-    public static assertContents<T>(actual: Iterator<T>, ...expected: T[]): void;
-    public static assertContents<T>(actual: java.lang.Iterable<T>, expected: java.lang.Iterable<T>,
-        msg: java.lang.String | null): void;
-    public static assertContents<T>(actual: Iterator<T>, expected: Iterator<T>, msg: java.lang.String | null): void;
+    public static assertContents<T>(actual: JavaIterable<T>, expected: JavaIterable<T>): void;
+    public static assertContents<T>(actual: JavaIterator<T>, expected: JavaIterator<T>): void;
+    public static assertContents<T>(actual: JavaIterator<T>, ...expected: T[]): void;
+    public static assertContents<T>(actual: JavaIterable<T>, expected: JavaIterable<T>,
+        msg: JavaString | null): void;
+    public static assertContents<T>(actual: JavaIterator<T>, expected: JavaIterator<T>, msg: JavaString | null): void;
     public static assertContents<T>(...args: unknown[]): void {
-        let msg: java.lang.String | null = null;
+        let msg: JavaString | null = null;
         if (args.length > 1) {
             let [actual, expected] =
-                args as [java.lang.Iterable<T> | Iterator<T>, java.lang.Iterable<T> | Iterator<T>];
+                args as [JavaIterable<T> | JavaIterator<T>, JavaIterable<T> | JavaIterator<T>];
 
-            if (java.lang.Iterable.isIterable(actual)) {
+            if (JavaIterable.isIterable(actual)) {
                 actual = actual.iterator();
             }
 
-            if (java.lang.Iterable.isIterable(expected)) {
+            if (JavaIterable.isIterable(expected)) {
                 expected = expected.iterator();
             } else if (Array.isArray(expected)) {
                 expected = Arrays.asList(expected).iterator();
             }
 
             if (args.length === 3) {
-                msg = args[2] as java.lang.String;
+                msg = args[2] as JavaString;
             }
 
             const history = new ArrayList();
@@ -217,14 +222,14 @@ export class CollectionAsserts extends JavaObject {
         }
     }
 
-    public static assertContentsUnordered<T extends java.lang.Comparable<T>>(actual: java.lang.Iterable<T>,
-        expected: java.lang.Iterable<T>): void;
-    public static assertContentsUnordered<T extends java.lang.Comparable<T>>(actual: java.lang.Iterable<T>,
-        expected: java.lang.Iterable<T>, msg: java.lang.String | null): void;
-    public static assertContentsUnordered<T extends java.lang.Comparable<T>>(...args: unknown[]): void {
+    public static assertContentsUnordered<T extends Comparable<T>>(actual: JavaIterable<T>,
+        expected: JavaIterable<T>): void;
+    public static assertContentsUnordered<T extends Comparable<T>>(actual: JavaIterable<T>,
+        expected: JavaIterable<T>, msg: JavaString | null): void;
+    public static assertContentsUnordered<T extends Comparable<T>>(...args: unknown[]): void {
         switch (args.length) {
             case 2: {
-                const [actual, expected] = args as [java.lang.Iterable<T>, java.lang.Iterable<T>];
+                const [actual, expected] = args as [JavaIterable<T>, JavaIterable<T>];
 
                 CollectionAsserts.assertContentsUnordered(actual, expected, null);
 
@@ -233,7 +238,7 @@ export class CollectionAsserts extends JavaObject {
 
             case 3: {
                 const [actual, expected, msg] =
-                    args as [java.lang.Iterable<T>, java.lang.Iterable<T>, java.lang.String];
+                    args as [JavaIterable<T>, JavaIterable<T>, JavaString];
 
                 const allExpected = new ArrayList();
                 for (const t of expected) {
@@ -241,7 +246,7 @@ export class CollectionAsserts extends JavaObject {
                 }
 
                 for (const t of actual) {
-                    assertTrue(allExpected.remove(t), msg + " element '" + java.lang.String.valueOf(t) + "' not found");
+                    assertTrue(allExpected.remove(t), msg + " element '" + JavaString.valueOf(t) + "' not found");
                 }
 
                 assertTrue(allExpected.isEmpty(), msg + "expected contained additional elements");
@@ -250,13 +255,13 @@ export class CollectionAsserts extends JavaObject {
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
 
-    protected static assertSplitContents<T extends JavaObject>(splits: java.lang.Iterable<java.lang.Iterable<T>>,
-        list: java.lang.Iterable<T>): void {
+    protected static assertSplitContents<T extends JavaObject>(splits: JavaIterable<JavaIterable<T>>,
+        list: JavaIterable<T>): void {
         const mI = splits.iterator();
         let pI = null;
         const lI = list.iterator();

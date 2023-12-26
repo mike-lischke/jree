@@ -5,14 +5,14 @@
 
 import { Set } from "immutable";
 
-import { IteratorWrapper } from "../../IteratorWrapper";
-import { Collection } from "./Collection";
-import { JavaIterator } from "./Iterator";
-import { Cloneable } from "../lang/Cloneable";
-import { Serializable } from "../io/Serializable";
-import { JavaSet } from "./Set";
-import { JavaString } from "../lang/String";
-import { StringBuilder } from "../lang/StringBuilder";
+import { IteratorWrapper } from "../../IteratorWrapper.js";
+import { Collection } from "./Collection.js";
+import { JavaIterator } from "./Iterator.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { Serializable } from "../io/Serializable.js";
+import { JavaSet } from "./Set.js";
+import { JavaString } from "../lang/String.js";
+import { StringBuilder } from "../lang/StringBuilder.js";
 
 /**
  * This interface provides shared access to the backend of a HashSet instance for all currently active value

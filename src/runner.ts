@@ -4,11 +4,12 @@
  */
 
 import path from "path";
-import { java } from ".";
+
+import { JavaString } from "./java/lang/String.js";
 
 /** Define the entry point of an executable TS class. */
 interface IRunnable {
-    main?: (args: java.lang.String[]) => void;
+    main?: (args: JavaString[]) => void;
 }
 
 const args = process.argv.slice(2);
@@ -32,7 +33,7 @@ if (args.length < 1) {
     const clazz = module[keys[0]];
     if (clazz.main instanceof Function) {
         // Call the main method with the remaining arguments, converted to Java strings.
-        clazz.main(args.slice(1).map((arg) => { return new java.lang.String(arg); }));
+        clazz.main(args.slice(1).map((arg) => { return new JavaString(arg); }));
     } else {
         console.error("No main method found in file.");
     }

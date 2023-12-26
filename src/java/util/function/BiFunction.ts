@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaFunction } from "./Function";
+import { JavaFunction } from "./Function.js";
 
 /**
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or
@@ -33,7 +33,7 @@ export class BiFunction<T, U, R> implements BiFunction<T, U, R> {
      *
      * Implementation note: this implements the default method of the {@link BiFunction} interface.
      */
-    public andThen?= <V>(after: JavaFunction<R, V>): BiFunction<T, U, V> => {
+    public andThen? = <V>(after: JavaFunction<R, V>): BiFunction<T, U, V> => {
         return (t: T, u: U): V => {
             return after(this(t, u));
         };

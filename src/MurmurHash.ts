@@ -9,7 +9,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { isEquatable } from "./type-guards";
+import { isEquatable } from "./type-guards.js";
 
 /**
  * @author Sam Harwell

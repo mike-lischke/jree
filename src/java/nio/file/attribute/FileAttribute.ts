@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../../../lang/Object";
-import { JavaString } from "../../../lang/String";
+import { IReflection } from "../../../lang/Object.js";
+import { JavaString } from "../../../lang/String.js";
 
 /**
  * An object that encapsulates the value of a file attribute that can be set atomically when creating a new file

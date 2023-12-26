@@ -3,21 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { Serializable } from "../io/Serializable";
-import { JavaString } from "../lang";
-import { Cloneable } from "../lang/Cloneable";
-import { AbstractCollection } from "./AbstractCollection";
-import { ArrayList } from "./ArrayList";
-import { Collection } from "./Collection";
-import { Deque } from "./Deque";
-import { Consumer } from "./function/Consumer";
-import { Predicate } from "./function/Predicate";
-import { JavaIterator } from "./Iterator";
-import { NoSuchElementException } from "./NoSuchElementException";
-import { Spliterator } from "./Spliterator";
-import { Stream } from "./stream";
-import { Vector } from "./Vector";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Serializable } from "../io/Serializable.js";
+import { JavaString } from "../lang/String.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { AbstractCollection } from "./AbstractCollection.js";
+import { ArrayList } from "./ArrayList.js";
+import { Collection } from "./Collection.js";
+import { Deque } from "./Deque.js";
+import { Consumer } from "./function/Consumer.js";
+import { Predicate } from "./function/Predicate.js";
+import { JavaIterator } from "./Iterator.js";
+import { NoSuchElementException } from "./NoSuchElementException.js";
+import { Spliterator } from "./Spliterator.js";
+import { Stream } from "./stream/Stream.js";
+import { Vector } from "./Vector.js";
 
 /**
  * A resizable-array implementation of the Deque interface. Array deques have no capacity restrictions; they grow as

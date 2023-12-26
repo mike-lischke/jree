@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../lang/String";
-import { IOException } from "./IOException";
+import { JavaString } from "../lang/String.js";
+import { IOException } from "./IOException.js";
 
 export class UnsupportedEncodingException extends IOException {
     public constructor(name: JavaString) {

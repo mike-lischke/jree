@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as spi from "./index";
+import * as spi from "./index.js";
 
 export { spi };

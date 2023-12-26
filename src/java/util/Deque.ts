@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaIterator } from "./Iterator";
-import { Queue } from "./Queue";
+import { JavaIterator } from "./Iterator.js";
+import { Queue } from "./Queue.js";
 
 /**
  * A linear collection that supports element insertion and removal at both ends. The name deque is short for

@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AutoCloseable } from "../../lang/AutoCloseable";
-import { JavaIterable } from "../../lang/Iterable";
-import { WatchKey } from "./WatchKey";
+import { AutoCloseable } from "../../lang/AutoCloseable.js";
+import { JavaIterable } from "../../lang/Iterable.js";
+import { WatchKey } from "./WatchKey.js";
 
 /**
  * A watch service that watches registered objects for changes and events. For example a file manager may use a

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IEquatable } from "./types";
+import { IEquatable } from "./types.js";
 
 /**
  * Type guard to check if a value supports the IEquatable interface.

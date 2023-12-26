@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Closeable } from "../../io/Closeable";
+import { Closeable } from "../../io/Closeable.js";
 
 export interface Channel extends Closeable {
     /** Closes this channel. */

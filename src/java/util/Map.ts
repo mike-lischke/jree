@@ -5,15 +5,15 @@
 
 /* eslint-disable max-classes-per-file */
 
-import { makeReadOnly } from "../../helpers";
-import { NullPointerException } from "../lang/NullPointerException";
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
-import { IReflection, JavaObject } from "../lang/Object";
-import { Collection } from "./Collection";
-import { Objects } from "./Objects";
-import { JavaSet } from "./Set";
-import { BiFunction } from "./function/BiFunction";
-import { JavaFunction } from "./function/Function";
+import { makeReadOnly } from "../../helpers.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
+import { IReflection, JavaObject } from "../lang/Object.js";
+import { Collection } from "./Collection.js";
+import { Objects } from "./Objects.js";
+import { JavaSet } from "./Set.js";
+import { BiFunction } from "./function/BiFunction.js";
+import { JavaFunction } from "./function/Function.js";
 
 /** An object that maps keys to values. A map cannot contain duplicate keys; each key can map to at most one value. */
 export interface JavaMap<K, V> extends IReflection {

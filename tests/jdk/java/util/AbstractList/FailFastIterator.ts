@@ -36,18 +36,11 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
-
-type String = java.lang.String;
-const String = java.lang.String;
-type ArrayList<E extends JavaObject> = java.util.ArrayList<E>;
-const ArrayList = java.util.ArrayList;
-type Integer = java.lang.Integer;
-const Integer = java.lang.Integer;
-type Exception = java.lang.Exception;
-const Exception = java.lang.Exception;
-type ConcurrentModificationException = java.util.ConcurrentModificationException;
-const ConcurrentModificationException = java.util.ConcurrentModificationException;
+import { Exception } from "../../../../../src/java/lang/Exception.js";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { ConcurrentModificationException } from "../../../../../src/java/util/ConcurrentModificationException.js";
 
 export class FailFastIterator extends JavaObject {
     public static main(args: String[]): void {

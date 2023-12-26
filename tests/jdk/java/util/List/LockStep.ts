@@ -38,23 +38,27 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int, S, I } from "../../../../../src";
-import { Assert } from "../../../../org/testng";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { Collections } from "../../../../../src/java/util/Collections.js";
+import { ConcurrentModificationException } from "../../../../../src/java/util/ConcurrentModificationException.js";
+import { LinkedList } from "../../../../../src/java/util/LinkedList.js";
+import { Random } from "../../../../../src/java/util/Random.js";
+import { Vector } from "../../../../../src/java/util/Vector.js";
+import { S, I } from "../../../../../src/templates.js";
+import { int } from "../../../../../src/types.js";
 
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-type Collection<E> = java.util.Collection<E>;
-const Collections = java.util.Collections;
-type Collections = java.util.Collections;
-const ConcurrentModificationException = java.util.ConcurrentModificationException;
-type ConcurrentModificationException = java.util.ConcurrentModificationException;
-const LinkedList = java.util.LinkedList;
-type LinkedList<E> = java.util.LinkedList<E>;
-type List<E> = java.util.List<E>;
-const Random = java.util.Random;
-type Random = java.util.Random;
-const Vector = java.util.Vector;
-type Vector<E> = java.util.Vector<E>;
+import { Assert } from "../../../../org/testng/Assert.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { List } from "../../../../../src/java/util/List.js";
+import { IllegalArgumentException } from "../../../../../src/java/lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../../../../../src/java/lang/IndexOutOfBoundsException.js";
+import { Collection } from "../../../../../src/java/util/Collection.js";
+import { JavaBoolean } from "../../../../../src/java/lang/Boolean.js";
+import { JavaError } from "../../../../../src/java/lang/Error.js";
+import { IllegalStateException } from "../../../../../src/java/lang/IllegalStateException.js";
+import { Throwable } from "../../../../../src/java/lang/Throwable.js";
 
 export class LockStep extends JavaObject {
 
@@ -68,22 +72,22 @@ export class LockStep extends JavaObject {
 
     //--------------------- Infrastructure ---------------------------
     protected failed = 0;
-    public static main(args: java.lang.String[]): void {
+    public static main(args: JavaString[]): void {
         new LockStep().instanceMain(args);
     }
 
-    protected intArg(args: java.lang.String[], i: int, defaultValue: int): int {
-        return args.length > i ? java.lang.Integer.parseInt(args[i]) : defaultValue;
+    protected intArg(args: JavaString[], i: int, defaultValue: int): int {
+        return args.length > i ? Integer.parseInt(args[i]) : defaultValue;
     }
 
     protected maybe(n: int): boolean { return this.rnd.nextInt(n) === 0; }
 
-    protected test(args: java.lang.String[]): void {
+    protected test(args: JavaString[]): void {
         this.size = this.intArg(args, 0, this.DEFAULT_SIZE);
 
-        this.lockSteps(new ArrayList<java.lang.Integer>(),
-            new LinkedList<java.lang.Integer>(),
-            new Vector<java.lang.Integer>());
+        this.lockSteps(new ArrayList<Integer>(),
+            new LinkedList<Integer>(),
+            new Vector<Integer>());
     }
 
     protected equalLists<T>(...lists: Array<List<T>>): void;
@@ -116,12 +120,12 @@ export class LockStep extends JavaObject {
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
 
-    protected lockSteps(...lists: Array<List<java.lang.Integer>>): void {
+    protected lockSteps(...lists: Array<List<Integer>>): void {
         it("Clone", () => {
             for (let i = 0; i < lists.length; i++) {
                 if (this.maybe(4)) {
@@ -143,13 +147,13 @@ export class LockStep extends JavaObject {
                     adder.frob(list);
                     this.equal(list.size(), i + 1);
                 }
-                this.equalLists<java.lang.Integer>(lists);
+                this.equalLists<Integer>(lists);
             }
         });
 
         it("Concurrent Changes", () => {
             const adder = this.randomAdder();
-            const remover = this.randomRemover<java.lang.Integer>();
+            const remover = this.randomRemover<Integer>();
             for (const list of lists) {
                 this.THROWS(ConcurrentModificationException,
                     new class implements LockStep.F {
@@ -224,12 +228,12 @@ export class LockStep extends JavaObject {
                 this.equal(l.get(0), I`42`);
                 const s = l.size();
                 const rndIndex = this.rnd.nextInt(l.size());
-                this.THROWS(java.lang.IndexOutOfBoundsException,
+                this.THROWS(IndexOutOfBoundsException,
                     new class implements LockStep.F { public f(): void { l.subList(rndIndex, rndIndex).get(0); } }(),
                     new class implements LockStep.F { public f(): void { l.subList(s / 2, s).get(s / 2 + 1); } }(),
                     new class implements LockStep.F { public f(): void { l.subList(s / 2, s).get(-1); } }(),
                 );
-                this.THROWS(java.lang.IllegalArgumentException,
+                this.THROWS(IllegalArgumentException,
                     new class implements LockStep.F { public f(): void { l.subList(1, 0); } }(),
                     new class implements LockStep.F { public f(): void { sl.subList(1, 0); } }(),
                     new class implements LockStep.F { public f(): void { ssl.subList(1, 0); } }());
@@ -263,10 +267,10 @@ export class LockStep extends JavaObject {
         this.equal(c.size(), 0);
         this.equal(c.toString(), S`[]`);
         this.equal(c.toArray().length, 0);
-        this.equal(c.toArray(new Array<java.lang.Object>(0)).length, 0);
+        this.equal(c.toArray(new Array<JavaObject>(0)).length, 0);
 
-        const a = new Array<java.lang.Object>(1);
-        a[0] = java.lang.Boolean.TRUE;
+        const a = new Array<JavaObject>(1);
+        a[0] = JavaBoolean.TRUE;
         this.equal(c.toArray(a), a);
         this.equal(a[0], null);
     }
@@ -277,17 +281,17 @@ export class LockStep extends JavaObject {
         this.equal(list, Collections.emptyList());
     }
 
-    protected randomAdder(): LockStep.ListFrobber<java.lang.Integer> {
-        const e = new java.lang.Integer(this.rnd.nextInt(1024));
+    protected randomAdder(): LockStep.ListFrobber<Integer> {
+        const e = new Integer(this.rnd.nextInt(1024));
         const subListCount = this.rnd.nextInt(3);
         const atBeginning = this.rnd.nextBoolean();
         const useIterator = this.rnd.nextBoolean();
 
-        return new class implements LockStep.ListFrobber<java.lang.Integer> {
+        return new class implements LockStep.ListFrobber<Integer> {
             public constructor(private $outer: LockStep) {
             }
 
-            public frob(l: List<java.lang.Integer>): void {
+            public frob(l: List<Integer>): void {
                 const s = l.size();
                 let ll = l;
                 for (let i = 0; i < subListCount; i++) {
@@ -310,7 +314,7 @@ export class LockStep extends JavaObject {
                             }
 
                             default: {
-                                throw new java.lang.Error();
+                                throw new JavaError();
                             }
                         }
                     } else {
@@ -328,7 +332,7 @@ export class LockStep extends JavaObject {
                             }
 
                             default: {
-                                throw new java.lang.Error();
+                                throw new JavaError();
                             }
                         }
                     }
@@ -383,27 +387,27 @@ export class LockStep extends JavaObject {
                             case 1: {
                                 const it = ll.iterator();
                                 this.$outer.check(it.hasNext());
-                                this.$outer.THROWS(java.lang.IllegalStateException,
+                                this.$outer.THROWS(IllegalStateException,
                                     new class implements LockStep.F { public f(): void { it.remove(); } }());
                                 it.next();
                                 it.remove();
-                                this.$outer.THROWS(java.lang.IllegalStateException,
+                                this.$outer.THROWS(IllegalStateException,
                                     new class implements LockStep.F { public f(): void { it.remove(); } }());
                                 break;
                             }
                             case 2: {
                                 const it = ll.listIterator();
                                 this.$outer.check(it.hasNext());
-                                this.$outer.THROWS(java.lang.IllegalStateException,
+                                this.$outer.THROWS(IllegalStateException,
                                     new class implements LockStep.F { public f(): void { it.remove(); } }());
                                 it.next();
                                 it.remove();
-                                this.$outer.THROWS(java.lang.IllegalStateException,
+                                this.$outer.THROWS(IllegalStateException,
                                     new class implements LockStep.F { public f(): void { it.remove(); } }());
                                 break;
                             }
                             default: {
-                                throw new java.lang.Error();
+                                throw new JavaError();
                             }
 
                         }
@@ -429,7 +433,7 @@ export class LockStep extends JavaObject {
                                 break;
                             }
                             default: {
-                                throw new java.lang.Error();
+                                throw new JavaError();
                             }
 
                         }
@@ -450,7 +454,7 @@ export class LockStep extends JavaObject {
                                 const it = ll.listIterator(s);
                                 this.$outer.check(!it.hasNext());
                                 this.$outer.check(it.hasPrevious());
-                                this.$outer.THROWS(java.lang.IllegalStateException,
+                                this.$outer.THROWS(IllegalStateException,
                                     new class implements LockStep.F { public f(): void { it.remove(); } }());
                                 it.previous();
                                 this.$outer.equal(it.nextIndex(), s - 1);
@@ -458,13 +462,13 @@ export class LockStep extends JavaObject {
                                 it.remove();
                                 this.$outer.equal(it.nextIndex(), s - 1);
                                 this.$outer.check(!it.hasNext());
-                                this.$outer.THROWS(java.lang.IllegalStateException,
+                                this.$outer.THROWS(IllegalStateException,
                                     new class implements LockStep.F { public f(): void { it.remove(); } }());
                                 break;
                             }
 
                             default: {
-                                throw new java.lang.Error();
+                                throw new JavaError();
                             }
 
                         }
@@ -472,7 +476,7 @@ export class LockStep extends JavaObject {
                     }
 
                     default: {
-                        throw new java.lang.Error();
+                        throw new JavaError();
                     }
 
                 }
@@ -488,11 +492,11 @@ export class LockStep extends JavaObject {
         Assert.assertEquals(x, y);
     }
 
-    protected instanceMain(args: java.lang.String[]): void {
+    protected instanceMain(args: JavaString[]): void {
         this.test(args);
     }
 
-    protected THROWS(k: typeof java.lang.Throwable, ...fs: LockStep.F[]): void {
+    protected THROWS(k: typeof Throwable, ...fs: LockStep.F[]): void {
         for (const f of fs) {
             try {
                 f.f();

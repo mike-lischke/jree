@@ -4,15 +4,15 @@
  */
 import fs from "fs";
 
-import { S } from "../../../templates";
-import { JavaObject } from "../../lang/Object";
-import { JavaSet } from "../../util/Set";
-import { OpenOption } from "./OpenOption";
-import { Path } from "./Path";
-import { SeekableByteChannel } from "../channels/SeekableByteChannel";
-import { FileAttribute } from "./attribute/FileAttribute";
-import { FileChannel } from "../channels/FileChannel";
-import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
+import { S } from "../../../templates.js";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaSet } from "../../util/Set.js";
+import { OpenOption } from "./OpenOption.js";
+import { Path } from "./Path.js";
+import { SeekableByteChannel } from "../channels/SeekableByteChannel.js";
+import { FileAttribute } from "./attribute/FileAttribute.js";
+import { FileChannel } from "../channels/FileChannel.js";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException.js";
 
 /** This class consists exclusively of static methods that operate on files, directories, or other types of files. */
 export class Files extends JavaObject {

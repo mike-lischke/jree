@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../MurmurHash";
-import type { int } from "../../types";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { MurmurHash } from "../../MurmurHash.js";
+import type { int } from "../../types.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
 
-import type { Comparable } from "../lang/Comparable";
-import { JavaString } from "../lang/String";
-import { Arrays, type TypedArray } from "../util/Arrays";
-import { JavaBuffer } from "./Buffer";
-import { ByteOrder } from "./ByteOrder";
+import type { Comparable } from "../lang/Comparable.js";
+import { JavaString } from "../lang/String.js";
+import { Arrays, type TypedArray } from "../util/Arrays.js";
+import { JavaBuffer } from "./Buffer.js";
+import { ByteOrder } from "./ByteOrder.js";
 
 /** Implements common functionality of the various typed Java buffers. */
 export abstract class BufferImpl<T extends TypedArray> extends JavaBuffer<T> implements Comparable<BufferImpl<T>> {

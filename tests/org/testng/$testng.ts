@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as testng from "./index";
+import * as testng from "./index.js";
 
 export { testng };

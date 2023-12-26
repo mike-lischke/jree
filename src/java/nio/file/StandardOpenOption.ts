@@ -2,9 +2,10 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { S } from "../../../templates";
-import { Enum } from "../../lang/Enum";
-import { OpenOption } from "./OpenOption";
+
+import { S } from "../../../templates.js";
+import { Enum } from "../../lang/Enum.js";
+import { OpenOption } from "./OpenOption.js";
 
 export class StandardOpenOption extends Enum<StandardOpenOption> implements OpenOption {
     /**

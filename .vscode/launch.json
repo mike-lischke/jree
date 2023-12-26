@@ -5,10 +5,12 @@
             "type": "node",
             "request": "launch",
             "name": "Run current Jest test",
-            "runtimeExecutable": null,
+            "runtimeExecutable": "node",
             "runtimeArgs": [
+                "--experimental-vm-modules",
+                "--no-warnings",
                 "${workspaceRoot}/node_modules/.bin/jest",
-                "${fileBasenameNoExtension}.ts",
+                "${file}",
                 "--no-coverage",
                 "--runInBand"
             ],

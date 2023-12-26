@@ -3,21 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "./String";
-import { JavaObject } from "./Object";
-import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException";
-import { CharSequence } from "./CharSequence";
-import { NegativeArraySizeException } from "./NegativeArraySizeException";
-import { Appendable } from "./Appendable";
-import { char, double, float, int, long } from "../../types";
+import { JavaString } from "./String.js";
+import { JavaObject } from "./Object.js";
+import { IndexOutOfBoundsException } from "./IndexOutOfBoundsException.js";
+import { CharSequence } from "./CharSequence.js";
+import { NegativeArraySizeException } from "./NegativeArraySizeException.js";
+import { Appendable } from "./Appendable.js";
+import { char, double, float, int, long } from "../../types.js";
 import {
     codePointBeforeFromUTF16, codePointFromUTF16, convertStringToUTF16, convertUTF16ToString, indexOfSubArray,
     lastIndexOfSubArray,
-} from "../../string-helpers";
-import { StringBuffer } from "./StringBuffer";
-import { IntStream } from "../util/stream/IntStream";
-import { NotImplementedError } from "../../NotImplementedError";
-import { Arrays } from "../util/Arrays";
+} from "../../string-helpers.js";
+import { StringBuffer } from "./StringBuffer.js";
+import { IntStream } from "../util/stream/IntStream.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { Arrays } from "../util/Arrays.js";
 
 type SimpleDataType = null | undefined | boolean | number | string | bigint | JavaObject;
 

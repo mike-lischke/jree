@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../..";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { Charset } from "../nio/charset/Charset";
-import { JavaFile } from "./File";
-import { FileDescriptor } from "./FileDescriptor";
-import { FileOutputStream } from "./FileOutputStream";
-import { OutputStreamWriter } from "./OutputStreamWriter";
+import { JavaString } from "../lang/String.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { JavaFile } from "./File.js";
+import { FileDescriptor } from "./FileDescriptor.js";
+import { FileOutputStream } from "./FileOutputStream.js";
+import { OutputStreamWriter } from "./OutputStreamWriter.js";
 
 /**
  * Writes text to character files using a default buffer size. Encoding from characters to bytes uses either a

@@ -5,17 +5,23 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
-import { HashMapEntry } from "../../../src/java/util/HashMapEntry";
-import { HashMapCloneLeak } from "../../jdk/java/util/HashMap/HashMapCloneLeak";
-import { NullKeyAtResize } from "../../jdk/java/util/HashMap/NullKeyAtResize";
-import { OverrideIsEmpty } from "../../jdk/java/util/HashMap/OverrideIsEmpty";
-import { ReplaceExisting } from "../../jdk/java/util/HashMap/ReplaceExisting";
-import { SetValue } from "../../jdk/java/util/HashMap/SetValue";
-import { ToString } from "../../jdk/java/util/HashMap/ToString";
+import { JavaMap } from "../../../src/java/util/Map.js";
+import { JavaSet } from "../../../src/java/util/Set.js";
+import { HashSet } from "../../../src/java/util/HashSet.js";
+import { Collection } from "../../../src/java/util/Collection.js";
+
+import { UnsupportedOperationException } from "../../../src/java/lang/UnsupportedOperationException.js";
+import { HashMap } from "../../../src/java/util/HashMap.js";
+import { HashMapEntry } from "../../../src/java/util/HashMapEntry.js";
+import { HashMapCloneLeak } from "../../jdk/java/util/HashMap/HashMapCloneLeak.js";
+import { NullKeyAtResize } from "../../jdk/java/util/HashMap/NullKeyAtResize.js";
+import { OverrideIsEmpty } from "../../jdk/java/util/HashMap/OverrideIsEmpty.js";
+import { ReplaceExisting } from "../../jdk/java/util/HashMap/ReplaceExisting.js";
+import { SetValue } from "../../jdk/java/util/HashMap/SetValue.js";
+import { ToString } from "../../jdk/java/util/HashMap/ToString.js";
 
 // A test class which is not a HashMap but implements the Map interface.
-class Test<K, V> extends java.util.Map<K, V> {
+class Test<K, V> extends JavaMap<K, V> {
     public constructor() {
         super();
     }
@@ -23,8 +29,8 @@ class Test<K, V> extends java.util.Map<K, V> {
     public override clear(): void { /**/ }
     public override containsKey(_key: K): boolean { return true; }
     public override containsValue(_value: V): boolean { return true; }
-    public override entrySet(): java.util.Set<java.util.Map.Entry<K, V>> {
-        const set = new java.util.HashSet<java.util.Map.Entry<K, V>>();
+    public override entrySet(): JavaSet<JavaMap.Entry<K, V>> {
+        const set = new HashSet<JavaMap.Entry<K, V>>();
 
         return set;
     }
@@ -32,17 +38,17 @@ class Test<K, V> extends java.util.Map<K, V> {
     public override get(_key: K): V | null { return null; }
     public override hashCode(): number { return 0; }
     public override isEmpty(): boolean { return false; }
-    public override keySet(): java.util.Set<K> { return new java.util.HashSet<K>(); }
+    public override keySet(): JavaSet<K> { return new HashSet<K>(); }
     public override put(_key: K, value: V): V { return value; }
-    public override putAll(_m: java.util.Map<K, V>): void { return; }
+    public override putAll(_m: JavaMap<K, V>): void { return; }
     public override remove(_key: K): V | null { return null; }
     public override size(): number { return 0; }
-    public override values(): java.util.Collection<V> { return new java.util.HashSet<V>(); }
+    public override values(): Collection<V> { return new HashSet<V>(); }
 }
 
 describe("HashMap Tests", () => {
     it("Basic Map Operations", () => {
-        const m = new java.util.HashMap<string, number>();
+        const m = new HashMap<string, number>();
         expect(m.size()).toBe(0);
         expect(m.isEmpty()).toBe(true);
         expect(m.containsKey("")).toBe(false);
@@ -71,7 +77,7 @@ describe("HashMap Tests", () => {
     });
 
     it("Hash Code and Equality", () => {
-        const m = new java.util.HashMap<string | null, string | null>(200);
+        const m = new HashMap<string | null, string | null>(200);
         expect(m.size()).toBe(0);
         m.put("", null);
         expect(m.get("")).toBeNull();
@@ -87,7 +93,7 @@ describe("HashMap Tests", () => {
         m.put("Accentuate the positive", "");
         expect(m.hashCode()).toBe(402898914);
 
-        const m2 = new java.util.HashMap(m);
+        const m2 = new HashMap(m);
         expect(m2.hashCode()).toBe(402898914);
         expect(m.equals(m2)).toBe(true);
 
@@ -99,7 +105,7 @@ describe("HashMap Tests", () => {
     });
 
     it("Load Test", () => {
-        const m = new java.util.HashMap<number, number>(20000);
+        const m = new HashMap<number, number>(20000);
         for (let i = 0; i < 100000; ++i) {
             m.put(i, 2 * i);
         }
@@ -113,7 +119,7 @@ describe("HashMap Tests", () => {
     });
 
     it("Iteration and Search", () => {
-        const m = new java.util.HashMap<number, number>();
+        const m = new HashMap<number, number>();
         m.put(10000, 1);
         m.put(10, 1);
         m.put(100000, 1);
@@ -130,7 +136,7 @@ describe("HashMap Tests", () => {
     });
 
     it("Sub Lists", () => {
-        const m = new java.util.HashMap<string, unknown>();
+        const m = new HashMap<string, unknown>();
         m.put("lorem", 1);
         m.put("ipsum", null);
         m.put("dolor", true);
@@ -154,8 +160,8 @@ describe("HashMap Tests", () => {
         expect(m.size()).toBe(3);
         expect(values.contains(null)).toBe(false);
 
-        expect(() => { values.add(1); }).toThrowError(java.lang.UnsupportedOperationException);
-        expect(() => { values.addAll(values); }).toThrowError(java.lang.UnsupportedOperationException);
+        expect(() => { values.add(1); }).toThrow(UnsupportedOperationException);
+        expect(() => { values.addAll(values); }).toThrow(UnsupportedOperationException);
 
         m.put("xyz", "abc");
         expect(values.size()).toBe(4);

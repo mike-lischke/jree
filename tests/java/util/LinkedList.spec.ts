@@ -5,19 +5,25 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
-import { S } from "../../../src/templates";
+import { IllegalArgumentException } from "../../../src/java/lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../../../src/java/lang/IndexOutOfBoundsException.js";
+import { JavaString } from "../../../src/java/lang/String.js";
+import { ArrayList } from "../../../src/java/util/ArrayList.js";
+import { HashSet } from "../../../src/java/util/HashSet.js";
+import { LinkedList } from "../../../src/java/util/LinkedList.js";
+import { NoSuchElementException } from "../../../src/java/util/NoSuchElementException.js";
+import { S } from "../../../src/templates.js";
 
 describe("LinkedList Tests", () => {
     it("Basic Empty List Tests", () => {
-        const list = new java.util.LinkedList<number>();
+        const list = new LinkedList<number>();
         expect(list.isEmpty()).toBe(true);
         expect(list.size()).toBe(0);
 
-        expect(() => { list.element(); }).toThrowError(java.util.NoSuchElementException);
-        expect(() => { list.get(1000); }).toThrowError(java.lang.IndexOutOfBoundsException);
-        expect(() => { list.getFirst(); }).toThrowError(java.util.NoSuchElementException);
-        expect(() => { list.getLast(); }).toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.element(); }).toThrow(NoSuchElementException);
+        expect(() => { list.get(1000); }).toThrow(IndexOutOfBoundsException);
+        expect(() => { list.getFirst(); }).toThrow(NoSuchElementException);
+        expect(() => { list.getLast(); }).toThrow(NoSuchElementException);
 
         expect(list.indexOf(10)).toBe(-1);
         expect(list.lastIndexOf(1e6)).toBe(-1);
@@ -25,24 +31,24 @@ describe("LinkedList Tests", () => {
         expect(list.peekFirst()).toBeNull();
         expect(list.peekLast()).toBeNull();
 
-        expect(() => { list.poll(); }).toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.poll(); }).toThrow(NoSuchElementException);
         expect(list.pollFirst()).toBeNull();
         expect(list.pollLast()).toBeNull();
 
-        expect(() => { list.remove(); }).toThrowError(java.lang.IndexOutOfBoundsException);
-        expect(() => { list.remove(-10); }).toThrowError(java.lang.IndexOutOfBoundsException);
-        expect(() => { list.remove(0); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.remove(); }).toThrow(IndexOutOfBoundsException);
+        expect(() => { list.remove(-10); }).toThrow(IndexOutOfBoundsException);
+        expect(() => { list.remove(0); }).toThrow(IndexOutOfBoundsException);
 
-        expect(() => { list.removeFirst(); }).toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.removeFirst(); }).toThrow(NoSuchElementException);
         list.add(100);
         expect(list.removeFirstOccurrence(123456)).toBe(false);
-        expect(() => { list.removeLast(); }).not.toThrowError(java.util.NoSuchElementException);
-        expect(() => { list.removeLast(); }).toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.removeLast(); }).not.toThrow(NoSuchElementException);
+        expect(() => { list.removeLast(); }).toThrow(NoSuchElementException);
         list.add(100);
         expect(list.removeLastOccurrence(0x33)).toBe(false);
         expect(list.removeLastOccurrence(100)).toBe(true);
 
-        expect(() => { list.set(10, 0b11); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.set(10, 0b11); }).toThrow(IndexOutOfBoundsException);
 
         expect(list.toArray()).toEqual([]);
         expect(list.toArray(new Array<number>(10))).toEqual([
@@ -51,20 +57,20 @@ describe("LinkedList Tests", () => {
 
         expect([...list]).toEqual([]);
 
-        const values = new java.util.ArrayList([1, 2, 3]);
+        const values = new ArrayList([1, 2, 3]);
         expect(list.removeAll(values)).toEqual(false);
         expect(list.retainAll(values)).toEqual(false);
 
-        expect(() => { list.subList(10, 100); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.subList(10, 100); }).toThrow(IndexOutOfBoundsException);
         list.addAll(values);
         list.addAll(values);
         list.addAll(values);
-        expect(() => { list.subList(9, 4); }).toThrowError(java.lang.IllegalArgumentException);
+        expect(() => { list.subList(9, 4); }).toThrow(IllegalArgumentException);
         expect(list.subList(4, 9).size()).toEqual(5);
     });
 
     it("List Modification Tests", () => {
-        const list = new java.util.LinkedList<java.lang.String>();
+        const list = new LinkedList<JavaString>();
         expect(list.add(S`Lorem`)).toBe(true);
         list.add(S`Ipsum`);
         list.add(S`Dolor`);
@@ -72,7 +78,7 @@ describe("LinkedList Tests", () => {
         expect(list.isEmpty()).toBe(false);
         expect(list.size()).toBe(4);
 
-        expect(() => { list.add(5, S`Amet`); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.add(5, S`Amet`); }).toThrow(IndexOutOfBoundsException);
 
         list.add(1, S`Amet`);
         expect(list.size()).toBe(5);
@@ -80,8 +86,8 @@ describe("LinkedList Tests", () => {
         list.set(2, S``);
         expect(list.toArray().join(" ")).toBe("Lorem Amet  Dolor Sit");
 
-        expect(list.containsAll(new java.util.ArrayList([S`A`, S`B`]))).toBe(false);
-        const values = new java.util.ArrayList([S`Dolor`]);
+        expect(list.containsAll(new ArrayList([S`A`, S`B`]))).toBe(false);
+        const values = new ArrayList([S`Dolor`]);
         expect(list.containsAll(values)).toBe(true);
         expect(list.removeAll(values)).toBe(true);
         expect(list.toArray().join(" ")).toBe("Lorem Amet  Sit");
@@ -93,11 +99,11 @@ describe("LinkedList Tests", () => {
         expect(list.retainAll(values)).toBe(true);
         expect(list.toArray()).toEqual([S`Sit`]);
 
-        const set = new java.util.HashSet<java.lang.String>(new java.util.ArrayList([S`Alpha`, S`Beta`]));
+        const set = new HashSet<JavaString>(new ArrayList([S`Alpha`, S`Beta`]));
         list.addAll(set);
         expect(list.toArray()).toEqual([S`Sit`, S`Alpha`, S`Beta`]);
-        expect(() => { list.addAll(-1, set); }).toThrowError(java.lang.IndexOutOfBoundsException);
-        expect(() => { list.addAll(100, set); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.addAll(-1, set); }).toThrow(IndexOutOfBoundsException);
+        expect(() => { list.addAll(100, set); }).toThrow(IndexOutOfBoundsException);
 
         list.addAll(2, set);
         expect(list.toArray()).toEqual([S`Sit`, S`Alpha`, S`Alpha`, S`Beta`]);
@@ -115,7 +121,7 @@ describe("LinkedList Tests", () => {
         list.remove();
         expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Zulu`]);
 
-        expect(() => { list.remove(100); }).toThrowError(java.lang.IndexOutOfBoundsException);
+        expect(() => { list.remove(100); }).toThrow(IndexOutOfBoundsException);
         expect(list.toArray()).toEqual([S`Alpha`, S`Beta`, S`Zulu`]);
         expect(list.remove(1)).toBeDefined();
         expect(list.remove(1)).toBeDefined();
@@ -157,13 +163,13 @@ describe("LinkedList Tests", () => {
         list.poll();
         list.poll();
         expect(list.poll()).not.toBeNull();
-        expect(() => { list.poll(); }).toThrowError(java.util.NoSuchElementException);
+        expect(() => { list.poll(); }).toThrow(NoSuchElementException);
         expect(list.pollFirst()).toBeNull();
     });
 
     it("List Misc Tests", () => {
-        const collection = new java.util.ArrayList<number>([1, 3, 5, 7, 9, 11]);
-        const list = new java.util.LinkedList<number>(collection);
+        const collection = new ArrayList<number>([1, 3, 5, 7, 9, 11]);
+        const list = new LinkedList<number>(collection);
         const hash1 = list.hashCode();
         list.add(-1);
         expect(hash1).not.toEqual(list.hashCode());

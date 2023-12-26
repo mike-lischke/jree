@@ -3,18 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
+import { NotImplementedError } from "../../NotImplementedError.js";
 
-import type { int, long } from "../../types";
-import { OutOfMemoryError, StringBuilder } from "../lang";
+import type { int, long } from "../../types.js";
+import { OutOfMemoryError } from "../lang/OutOfMemoryError.js";
 
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import type { JavaString } from "../lang/String";
-import { CharBuffer } from "../nio";
-import type { Stream } from "../util/stream/Stream";
-import { IOException } from "./IOException";
-import { Reader } from "./Reader";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import type { JavaString } from "../lang/String.js";
+import { CharBuffer } from "../nio/CharBuffer.js";
+import type { Stream } from "../util/stream/Stream.js";
+import { IOException } from "./IOException.js";
+import { Reader } from "./Reader.js";
+import { StringBuilder } from "../lang/StringBuilder.js";
 
 /**
  * Reads text from a character-input stream, buffering characters so as to provide for the efficient reading of

@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { S } from "../../../src";
-import { runTest } from "../../test-helpers";
+import { S } from "../../../src/templates.js";
+import { runTest } from "../../test-helpers.js";
 
 describe("Unicode Tests", () => {
     xit("Base", async () => {

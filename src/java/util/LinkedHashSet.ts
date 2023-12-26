@@ -5,7 +5,7 @@
 
 import { OrderedSet } from "immutable";
 
-import { HashSet, IHashSetViewBackend } from "./HashSet";
+import { HashSet, IHashSetViewBackend } from "./HashSet.js";
 
 export class LinkedHashSet<V> extends HashSet<V> {
     protected createBackend(): IHashSetViewBackend<V> {

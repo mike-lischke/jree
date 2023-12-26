@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Comparator } from "./Comparator";
-import { JavaMap } from "./Map";
-import { JavaSet } from "./Set";
+import { Comparator } from "./Comparator.js";
+import { JavaMap } from "./Map.js";
+import { JavaSet } from "./Set.js";
 
 /**
  * A Map that further provides a total ordering on its keys. The map is ordered according to the natural ordering of

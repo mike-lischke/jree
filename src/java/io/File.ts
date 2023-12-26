@@ -6,17 +6,17 @@
 import path from "path";
 import os from "os";
 import crypto from "crypto";
-
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Comparable } from "../lang/Comparable";
-import { Serializable } from "./Serializable";
-import { Path } from "../nio/file/Path";
-import { URI } from "../net/URI";
-import { FileSystems } from "../nio/file/FileSystems";
-import { NullPointerException } from "../lang/NullPointerException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
 import { existsSync, mkdirSync, openSync, rmdirSync, statSync, unlinkSync } from "fs";
+
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Comparable } from "../lang/Comparable.js";
+import { Serializable } from "./Serializable.js";
+import { Path } from "../nio/file/Path.js";
+import { URI } from "../net/URI.js";
+import { FileSystems } from "../nio/file/FileSystems.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
 const pendingFiles = new Set<JavaFile>();
 

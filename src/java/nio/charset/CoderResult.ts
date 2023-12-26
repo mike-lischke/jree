@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../../lang/String";
-import { JavaObject } from "../../lang/Object";
-import { BufferOverflowException } from "../BufferOverflowException";
-import { BufferUnderflowException } from "../BufferUnderflowException";
-import { MalformedInputException } from "./MalformedInputException";
-import { UnmappableCharacterException } from "./UnmappableCharacterException";
+import { JavaString } from "../../lang/String.js";
+import { JavaObject } from "../../lang/Object.js";
+import { BufferOverflowException } from "../BufferOverflowException.js";
+import { BufferUnderflowException } from "../BufferUnderflowException.js";
+import { MalformedInputException } from "./MalformedInputException.js";
+import { UnmappableCharacterException } from "./UnmappableCharacterException.js";
 
 export class CoderResult extends JavaObject {
     /** Result object indicating overflow, meaning that there is insufficient room in the output buffer. */

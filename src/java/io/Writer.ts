@@ -3,16 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { char, int } from "../../types";
-import { CharSequence } from "../lang/CharSequence";
-import { JavaString } from "../lang/String";
-import { Appendable } from "../lang/Appendable";
-import { JavaObject } from "../lang/Object";
-import { Closeable } from "./Closeable";
-import { Flushable } from "./Flushable";
-import { IllegalArgumentException } from "../lang";
-import { NotImplementedError } from "../../NotImplementedError";
-import { convertStringToUTF16 } from "../../string-helpers";
+import { char, int } from "../../types.js";
+import { CharSequence } from "../lang/CharSequence.js";
+import { JavaString } from "../lang/String.js";
+import { Appendable } from "../lang/Appendable.js";
+import { JavaObject } from "../lang/Object.js";
+import { Closeable } from "./Closeable.js";
+import { Flushable } from "./Flushable.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { convertStringToUTF16 } from "../../string-helpers.js";
 
 /**
  * Abstract class for writing to character streams. The only methods that a subclass must implement are

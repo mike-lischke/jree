@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AutoCloseable } from "../lang/AutoCloseable";
+import { AutoCloseable } from "../lang/AutoCloseable.js";
 
 export interface Closeable extends AutoCloseable {
     /** Closes this stream and releases any system resources associated with it. */

@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AutoCloseable } from "./java/lang/AutoCloseable";
-import { Throwable } from "./java/lang/Throwable";
+import { AutoCloseable } from "./java/lang/AutoCloseable.js";
+import { Throwable } from "./java/lang/Throwable.js";
 
 // The 3 following functions comprise the emulation of the try-with-resource Java statement.
 // They are used in different places of the generated double-try block.

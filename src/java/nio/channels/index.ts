@@ -3,19 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./Channel";
-export * from "./Channels";
-export * from "./ReadableByteChannel";
-export * from "./WritableByteChannel";
-export * from "./ByteChannel";
-export * from "./SeekableByteChannel";
-export * from "./InterruptibleChannel";
-export * from "./GatheringByteChannel";
-export * from "./ScatteringByteChannel";
-export * from "./FileChannel";
+export * from "./Channel.js";
+export * from "./Channels.js";
+export * from "./ReadableByteChannel.js";
+export * from "./WritableByteChannel.js";
+export * from "./ByteChannel.js";
+export * from "./SeekableByteChannel.js";
+export * from "./InterruptibleChannel.js";
+export * from "./GatheringByteChannel.js";
+export * from "./ScatteringByteChannel.js";
+export * from "./FileChannel.js";
 
-export * from "./NonReadableChannelException";
-export * from "./NonWritableChannelException";
-export * from "./ClosedChannelException";
+export * from "./NonReadableChannelException.js";
+export * from "./NonWritableChannelException.js";
+export * from "./ClosedChannelException.js";
 
-export * from "./spi/$spi";
+export * from "./spi/$spi.js";

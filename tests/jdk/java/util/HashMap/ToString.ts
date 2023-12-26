@@ -30,18 +30,18 @@
  *          contained null keys or values.
  */
 
-import { java, JavaObject } from "../../../../../src";
-
-type String = java.lang.String;
-const String = java.lang.String;
-type HashMap<K, V> = java.util.HashMap<K, V>;
-const HashMap = java.util.HashMap;
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { HashMap } from "../../../../../src/java/util/HashMap.js";
 
 export class ToString extends JavaObject {
-    public static main(args: String[]): void {
+    public static main(args: JavaString[]): void {
         const m = new HashMap();
         m.put(null, null);
-        const s = m.entrySet().iterator().next().toString();
-        console.log(s);
+
+        // Just verify that we can call toString() without an exception.
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        m.entrySet().iterator().next().toString();
+        //console.log(s);
     }
 }

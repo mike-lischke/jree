@@ -2,12 +2,13 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { JavaObject } from "../lang/Object";
 
-import { InvalidMarkException } from "./InvalidMarkException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { JavaString } from "../lang/String";
-import { int } from "../../types";
+import { JavaObject } from "../lang/Object.js";
+
+import { InvalidMarkException } from "./InvalidMarkException.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { JavaString } from "../lang/String.js";
+import { int } from "../../types.js";
 
 /**
  * A container for data of a specific primitive type.

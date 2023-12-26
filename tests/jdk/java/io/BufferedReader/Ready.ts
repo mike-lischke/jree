@@ -36,11 +36,18 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int, S } from "../../../../../src";
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { Reader } from "../../../../../src/java/io/Reader.js";
+import { IllegalArgumentException } from "../../../../../src/java/lang/IllegalArgumentException.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { S } from "../../../../../src/templates.js";
+import { int } from "../../../../../src/types.js";
 
 export class Ready extends JavaObject {
 
-    private static BoundedReader = class BoundedReader extends java.io.Reader {
+    private static BoundedReader = class BoundedReader extends Reader {
 
         public content: Uint16Array;
         public limit: int;
@@ -49,7 +56,7 @@ export class Ready extends JavaObject {
         public constructor(c: string) {
             super();
 
-            const content = new java.lang.String(c);
+            const content = new JavaString(c);
             this.limit = content.length();
             this.content = new Uint16Array(this.limit);
             content.getChars(0, this.limit, this.content, 0);
@@ -61,7 +68,7 @@ export class Ready extends JavaObject {
             switch (args.length) {
                 case 0: {
                     if (this.pos >= this.limit) {
-                        throw new java.lang.RuntimeException("Hit infinite wait condition");
+                        throw new RuntimeException("Hit infinite wait condition");
                     }
 
                     return this.content[this.pos++];
@@ -74,7 +81,7 @@ export class Ready extends JavaObject {
                 case 3: {
                     const [buf, offset, length] = args as [Uint16Array, int, int];
                     if (this.pos >= this.limit) {
-                        throw new java.lang.RuntimeException("Hit infinite wait condition");
+                        throw new RuntimeException("Hit infinite wait condition");
                     }
 
                     const oldPos = this.pos;
@@ -87,7 +94,7 @@ export class Ready extends JavaObject {
                 }
 
                 default: {
-                    throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                    throw new IllegalArgumentException(S`Invalid number of arguments`);
                 }
             }
         }
@@ -103,8 +110,8 @@ export class Ready extends JavaObject {
         };
     };
 
-    public static main = (args: java.lang.String[]): void => {
-        let reader: java.io.BufferedReader;
+    public static main = (args: JavaString[]): void => {
+        let reader: BufferedReader;
         const strings = [
             "LF-Only\n",
             "LF-Only\n",
@@ -131,12 +138,12 @@ export class Ready extends JavaObject {
         const bufsizes = [7, 8, 6, 5, 7, 8, 11, 10];
 
         for (let i = 0; i < strings.length; i++) {
-            reader = new java.io.BufferedReader(new Ready.BoundedReader(strings[i]), bufsizes[i]);
+            reader = new BufferedReader(new Ready.BoundedReader(strings[i]), bufsizes[i]);
             const actual: string[] = [];
             while (reader.ready()) {
-                const str = reader.readLine();
+                const str = reader.readLine()!;
                 expect(str).not.toBeNull();
-                actual.push(str!.valueOf());
+                actual.push(str.valueOf());
             }
 
             expect(actual).toEqual(expected[i]);

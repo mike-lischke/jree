@@ -39,36 +39,29 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, int, I } from "../../../../../src";
-import { org } from "../../../../org/org";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { System } from "../../../../../src/java/lang/System.js";
+import { UnsupportedOperationException } from "../../../../../src/java/lang/UnsupportedOperationException.js";
+import { AbstractList } from "../../../../../src/java/util/AbstractList.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { Arrays } from "../../../../../src/java/util/Arrays.js";
+import { Collections } from "../../../../../src/java/util/Collections.js";
+import { ConcurrentModificationException } from "../../../../../src/java/util/ConcurrentModificationException.js";
+import { LinkedList } from "../../../../../src/java/util/LinkedList.js";
+import { List } from "../../../../../src/java/util/List.js";
+import { Random } from "../../../../../src/java/util/Random.js";
+import { Vector } from "../../../../../src/java/util/Vector.js";
+import { I } from "../../../../../src/templates.js";
+import { int } from "../../../../../src/types.js";
 
-type Random = java.util.Random;
-const Random = java.util.Random;
+import { org } from "../../../../index.js";
+
 const Test = org.testng.annotations.Test;
-type List<E> = java.util.List<E>;
-type Integer = java.lang.Integer;
-const Integer = java.lang.Integer;
-type ConcurrentModificationException = java.util.ConcurrentModificationException;
-const ConcurrentModificationException = java.util.ConcurrentModificationException;
-type UnsupportedOperationException = java.lang.UnsupportedOperationException;
-const UnsupportedOperationException = java.lang.UnsupportedOperationException;
 const DataProvider = org.testng.annotations.DataProvider;
-type Arrays = java.util.Arrays;
-const Arrays = java.util.Arrays;
-type System = java.lang.System;
-const System = java.lang.System;
-type ArrayList<E> = java.util.ArrayList<E>;
-const ArrayList = java.util.ArrayList;
-type LinkedList<E> = java.util.LinkedList<E>;
-const LinkedList = java.util.LinkedList;
-type Vector<E> = java.util.Vector<E>;
-const Vector = java.util.Vector;
-type Collections = java.util.Collections;
-const Collections = java.util.Collections;
 
 export class SubList extends org.testng.Assert {
 
-    private static MyList = class MyList extends java.util.AbstractList<Integer> {
+    private static MyList = class MyList extends AbstractList<Integer> {
         #size: int;
 
         public constructor(s: int) {

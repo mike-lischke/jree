@@ -38,16 +38,10 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
-
-type String = java.lang.String;
-const String = java.lang.String;
-type ArrayList<E extends JavaObject> = java.util.ArrayList<E>;
-const ArrayList = java.util.ArrayList;
-type NoSuchElementException = java.util.NoSuchElementException;
-const NoSuchElementException = java.util.NoSuchElementException;
-type RuntimeException = java.lang.RuntimeException;
-const RuntimeException = java.lang.RuntimeException;
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { NoSuchElementException } from "../../../../../src/java/util/NoSuchElementException.js";
 
 export class HasNextAfterException extends JavaObject {
     public static main(args: String[]): void {

@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException.js";
 
 export class IllegalCharsetNameException extends IllegalArgumentException { }

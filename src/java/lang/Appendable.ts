@@ -3,10 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import type { char } from "../../types";
+import type { char } from "../../types.js";
 
-import type { CharSequence } from "./CharSequence";
-import type { IReflection } from "./Object";
+import type { CharSequence } from "./CharSequence.js";
+import type { IReflection } from "./Object.js";
 
 export interface Appendable extends IReflection {
     /** Appends the specified character to this Appendable. */

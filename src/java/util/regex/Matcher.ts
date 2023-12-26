@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../../lang/Object";
+import { JavaObject } from "../../lang/Object.js";
 
-import { NotImplementedError } from "../../../NotImplementedError";
-import { JavaString } from "../../lang/String";
-import { Pattern } from "./Pattern";
-import { StringBuffer } from "../../lang/StringBuffer";
-import { IllegalStateException } from "../../lang/IllegalStateException";
-import { IndexOutOfBoundsException } from "../../lang/IndexOutOfBoundsException";
-import { MatchResult } from "./MatchResult";
+import { NotImplementedError } from "../../../NotImplementedError.js";
+import { JavaString } from "../../lang/String.js";
+import { Pattern } from "./Pattern.js";
+import { StringBuffer } from "../../lang/StringBuffer.js";
+import { IllegalStateException } from "../../lang/IllegalStateException.js";
+import { IndexOutOfBoundsException } from "../../lang/IndexOutOfBoundsException.js";
+import { MatchResult } from "./MatchResult.js";
 
 export class Matcher extends JavaObject implements MatchResult {
 

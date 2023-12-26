@@ -3,23 +3,23 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../../NotImplementedError";
-import { JavaFile } from "../../io/File";
-import { Comparable } from "../../lang/Comparable";
-import { JavaIterable } from "../../lang/Iterable";
-import { JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
-import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
-import { URI } from "../../net/URI";
-import { Consumer } from "../../util/function/Consumer";
-import { JavaIterator } from "../../util/Iterator";
-import { NoSuchElementException } from "../../util/NoSuchElementException";
-import { JavaFileSystem } from "./FileSystem";
-import { FileSystems } from "./FileSystems";
-import { Watchable } from "./Watchable";
-import { WatchEvent } from "./WatchEvent";
-import { WatchKey } from "./WatchKey";
-import { WatchService } from "./WatchService";
+import { NotImplementedError } from "../../../NotImplementedError.js";
+import { JavaFile } from "../../io/File.js";
+import { Comparable } from "../../lang/Comparable.js";
+import { JavaIterable } from "../../lang/Iterable.js";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException.js";
+import { URI } from "../../net/URI.js";
+import { Consumer } from "../../util/function/Consumer.js";
+import { JavaIterator } from "../../util/Iterator.js";
+import { NoSuchElementException } from "../../util/NoSuchElementException.js";
+import { JavaFileSystem } from "./FileSystem.js";
+import { FileSystems } from "./FileSystems.js";
+import { Watchable } from "./Watchable.js";
+import { WatchEvent } from "./WatchEvent.js";
+import { WatchKey } from "./WatchKey.js";
+import { WatchService } from "./WatchService.js";
 
 export interface Path extends Comparable<Path>, JavaIterable<Path>, Watchable {
     /**

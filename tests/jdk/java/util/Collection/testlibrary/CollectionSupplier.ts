@@ -23,32 +23,27 @@
  * questions.
  */
 
-import { java, JavaObject, int, S, I } from "../../../../../../src";
-import { org } from "../../../../../org/org";
+import { Exception } from "../../../../../../src/java/lang/Exception.js";
+import { Integer } from "../../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../../src/java/lang/String.js";
+import { UnsupportedOperationException } from "../../../../../../src/java/lang/UnsupportedOperationException.js";
+import { ArrayList } from "../../../../../../src/java/util/ArrayList.js";
+import { Arrays } from "../../../../../../src/java/util/Arrays.js";
+import { Collection } from "../../../../../../src/java/util/Collection.js";
+import { Collections } from "../../../../../../src/java/util/Collections.js";
+import { LinkedList } from "../../../../../../src/java/util/LinkedList.js";
+import { List } from "../../../../../../src/java/util/List.js";
+import { Random } from "../../../../../../src/java/util/Random.js";
+import { JavaFunction } from "../../../../../../src/java/util/function/Function.js";
+import { Supplier } from "../../../../../../src/java/util/function/Supplier.js";
+import { I, S } from "../../../../../../src/templates.js";
+import { int } from "../../../../../../src/types.js";
+import { org } from "../../../../../index.js";
 
-const Exception = java.lang.Exception;
-type Exception = java.lang.Exception;
-const Integer = java.lang.Integer;
-type Integer = java.lang.Integer;
-type Iterable<T> = java.lang.Iterable<T>;
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-const Arrays = java.util.Arrays;
-type Arrays = java.util.Arrays;
-const LinkedList = java.util.LinkedList;
-type LinkedList<E> = java.util.LinkedList<E>;
-type List<E> = java.util.List<E>;
-const Random = java.util.Random;
-type Random = java.util.Random;
 const TestException = org.testng.TestException;
 type TestException = org.testng.TestException;
 const assertTrue = org.testng.Assert.assertTrue;
-type Collection<E> = java.util.Collection<E>;
-const Collections = java.util.Collections;
-type Collections = java.util.Collections;
-type Function<T, R> = java.util.function.Function<T, R>;
-type Supplier<T> = java.util.function.Supplier<T>;
-const Supplier = java.util.function.Supplier;
 
 /**
  * @summary A Supplier of test cases for Collection tests
@@ -63,12 +58,12 @@ export class CollectionSupplier<C extends Collection<Integer>>
         /**
          * The name of the test case.
          */
-        public readonly name: java.lang.String;
+        public readonly name: JavaString;
 
         /**
          * The supplier of a collection
          */
-        public supplier: Function<Collection<Integer>, C>;
+        public supplier: JavaFunction<Collection<Integer>, C>;
 
         /**
          * Unmodifiable reference collection, useful for comparisons.
@@ -87,7 +82,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
          * @param supplier tbd
          * @param collection the modifiable test collection
          */
-        public constructor(name: java.lang.String | string, supplier: Function<Collection<Integer>, C>, collection: C) {
+        public constructor(name: JavaString | string, supplier: JavaFunction<Collection<Integer>, C>, collection: C) {
             super();
             this.name = S`${name}`;
             this.supplier = supplier;
@@ -95,11 +90,11 @@ export class CollectionSupplier<C extends Collection<Integer>>
             this.collection = collection;
         }
 
-        public override toString(): java.lang.String {
+        public override toString(): JavaString {
             return S`${this.name} ${this.collection.getClass()}`;
         }
 
-        public override clone(): java.lang.Object {
+        public override clone(): JavaObject {
             const clone = super.clone() as TestCase<C>;
             clone.collection.clear();
             clone.collection.addAll(this.collection);
@@ -112,7 +107,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
         }
     };
 
-    private readonly suppliers: List<Function<Collection<Integer>, C>>;
+    private readonly suppliers: List<JavaFunction<Collection<Integer>, C>>;
     private readonly size: int;
 
     /**
@@ -123,7 +118,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
      *        instances
      * @param size the desired size of each collection
      */
-    public constructor(suppliers: List<Function<Collection<Integer>, C>>, size: int) {
+    public constructor(suppliers: List<JavaFunction<Collection<Integer>, C>>, size: int) {
         super();
         this.suppliers = suppliers;
         this.size = size;
@@ -153,7 +148,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
         for (const supplier of this.suppliers) {
             try {
                 cases.add(new CollectionSupplier.TestCase("empty", supplier,
-                    supplier(Collections.emptyList<java.lang.Integer>())));
+                    supplier(Collections.emptyList<Integer>())));
 
                 cases.add(new CollectionSupplier.TestCase("single", supplier, supplier(Arrays.asList(I`${42}`))));
 
@@ -197,11 +192,11 @@ export class CollectionSupplier<C extends Collection<Integer>>
 
                 let isStructurallyModifiable = false;
                 try {
-                    const t = supplier(Collections.emptyList<java.lang.Integer>());
+                    const t = supplier(Collections.emptyList<Integer>());
                     t.add(I`${1}`);
                     isStructurallyModifiable = true;
                 } catch (e) {
-                    if (e instanceof java.lang.UnsupportedOperationException) { /**/ } else {
+                    if (e instanceof UnsupportedOperationException) { /**/ } else {
                         throw e;
                     }
                 }
@@ -213,18 +208,18 @@ export class CollectionSupplier<C extends Collection<Integer>>
 
                 // variants where the size of the backing storage != reported size
                 // created by removing half of the elements
-                const emptyWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const emptyWithSlack = supplier(Collections.emptyList<Integer>());
                 emptyWithSlack.add(I`${42}`);
                 assertTrue(emptyWithSlack.remove(I`${42}`));
                 cases.add(new CollectionSupplier.TestCase("emptyWithSlack", supplier, emptyWithSlack));
 
-                const singleWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const singleWithSlack = supplier(Collections.emptyList<Integer>());
                 singleWithSlack.add(I`${42}`);
                 singleWithSlack.add(I`${43}`);
                 assertTrue(singleWithSlack.remove(I`${43}`));
                 cases.add(new CollectionSupplier.TestCase("singleWithSlack", supplier, singleWithSlack));
 
-                const regularWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const regularWithSlack = supplier(Collections.emptyList<Integer>());
                 for (let i = 0; i < (2 * this.size); i++) {
                     regularWithSlack.add(I`${i}`);
                 }
@@ -233,7 +228,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("regularWithSlack", supplier, regularWithSlack));
 
-                const reverseWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const reverseWithSlack = supplier(Collections.emptyList<Integer>());
                 for (let i = 2 * this.size; i >= 0; i--) {
                     reverseWithSlack.add(I`${i}`);
                 }
@@ -242,7 +237,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("reverseWithSlack", supplier, reverseWithSlack));
 
-                const oddsWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const oddsWithSlack = supplier(Collections.emptyList<Integer>());
                 for (let i = 0; i < 2 * this.size; i++) {
                     oddsWithSlack.add(I`${(i * 2) + 1}`);
                 }
@@ -252,7 +247,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("oddsWithSlack", supplier, oddsWithSlack));
 
-                const evensWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const evensWithSlack = supplier(Collections.emptyList<Integer>());
                 for (let i = 0; i < 2 * this.size; i++) {
                     evensWithSlack.add(I`${i * 2}`);
                 }
@@ -261,7 +256,7 @@ export class CollectionSupplier<C extends Collection<Integer>>
                 }));
                 cases.add(new CollectionSupplier.TestCase("evensWithSlack", supplier, evensWithSlack));
 
-                const fibonacciWithSlack = supplier(Collections.emptyList<java.lang.Integer>());
+                const fibonacciWithSlack = supplier(Collections.emptyList<Integer>());
                 prev2 = 0;
                 prev1 = 1;
                 for (let i = 0; i < this.size; i++) {

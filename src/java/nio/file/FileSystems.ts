@@ -2,12 +2,13 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
-import { URI } from "../../net/URI";
-import { JavaMap } from "../../util/Map";
-import { JavaFileSystem } from "./FileSystem";
-import { FileSystemImpl } from "./FileSystemImpl";
+
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { URI } from "../../net/URI.js";
+import { JavaMap } from "../../util/Map.js";
+import { JavaFileSystem } from "./FileSystem.js";
+import { FileSystemImpl } from "./FileSystemImpl.js";
 
 /**
  * Factory methods for file systems.  This class defines the getDefault method to get the default file system and

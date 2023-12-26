@@ -2,12 +2,13 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { NotImplementedError } from "../../NotImplementedError";
-import { char, int } from "../../types";
 
-import { JavaString } from "../lang/String";
-import { IntStream } from "../util/stream";
-import { IReflection } from "./Object";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { char, int } from "../../types.js";
+
+import { JavaString } from "../lang/String.js";
+import { IntStream } from "../util/stream/IntStream.js";
+import { IReflection } from "./Object.js";
 
 /** A CharSequence is a readable sequence of char values. */
 export interface CharSequence extends IReflection {

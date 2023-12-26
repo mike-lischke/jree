@@ -37,21 +37,25 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
+import { JavaError } from "../../../../../src/java/lang/Error.js";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { OutOfMemoryError } from "../../../../../src/java/lang/OutOfMemoryError.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
 
 export class Bug8146568 extends JavaObject {
     public static main = (): void => {
-        const size = java.lang.Integer.MAX_VALUE - 2;
-        const huge = new java.util.ArrayList<null>(size);
+        const size = Integer.MAX_VALUE - 2;
+        const huge = new ArrayList<null>(size);
         for (let i = 0; i < size; i++) {
             huge.add(null);
         }
 
         try {
             huge.addAll(huge);
-            throw new java.lang.Error("expected OutOfMemoryError not thrown");
+            throw new JavaError("expected OutOfMemoryError not thrown");
         } catch (success) {
-            if (success instanceof java.lang.OutOfMemoryError) { /* */ } else {
+            if (success instanceof OutOfMemoryError) { /* */ } else {
                 throw success;
             }
         }

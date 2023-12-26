@@ -3,19 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { long } from "../../../types";
+import { long } from "../../../types.js";
 
-import { JavaFunction } from "../function/Function";
-import { BiConsumer } from "../function/BiConsumer";
-import { Predicate } from "../function/Predicate";
-import { Supplier } from "../function/Supplier";
-import { BaseStream } from "./BaseStream";
-import { IntStream } from "./IntStream";
-import { LongStream } from "./LongStream";
-import { Consumer } from "../function/Consumer";
-import { Comparator } from "../Comparator";
-import { Optional } from "../Optional";
-import { IReflection } from "../../lang/Object";
+import { JavaFunction } from "../function/Function.js";
+import { BiConsumer } from "../function/BiConsumer.js";
+import { Predicate } from "../function/Predicate.js";
+import { Supplier } from "../function/Supplier.js";
+import { BaseStream } from "./BaseStream.js";
+import { IntStream } from "./IntStream.js";
+import { LongStream } from "./LongStream.js";
+import { Consumer } from "../function/Consumer.js";
+import { Comparator } from "../Comparator.js";
+import { Optional } from "../Optional.js";
+import { IReflection } from "../../lang/Object.js";
 
 export interface Stream<T> extends BaseStream<T, Stream<T>> {
     /** Returns whether all elements of this stream match the provided predicate. */

@@ -23,18 +23,20 @@
  * questions.
  */
 
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { StringReader } from "../../../../../src/java/io/StringReader.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+
 /* @test
    @bug 4069687
    @summary Test if fill() will behave correctly at EOF
             when mark is set.
 */
 
-import { java, JavaObject } from "../../../../../src";
-
 export class MarkedFillAtEOF extends JavaObject {
 
     public static main = (): void => {
-        const r = new java.io.BufferedReader(new java.io.StringReader("12"));
+        const r = new BufferedReader(new StringReader("12"));
         let count = 0;
 
         r.read();

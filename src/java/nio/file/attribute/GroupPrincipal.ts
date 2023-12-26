@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { UserPrincipal } from "./UserPrincipal";
+import { UserPrincipal } from "./UserPrincipal.js";
 
 /**
  * A UserPrincipal representing a group identity, used to determine access rights to objects in a file system.

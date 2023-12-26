@@ -3,17 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { S } from "../../templates";
-import type { int } from "../../types";
+import { S } from "../../templates.js";
+import type { int } from "../../types.js";
 
-import { JavaString } from "../lang/String";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { System } from "../lang/System";
-import { IOException } from "./IOException";
+import { JavaString } from "../lang/String.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { System } from "../lang/System.js";
+import { IOException } from "./IOException.js";
 
-import { Writer } from "./Writer";
-import { convertStringToUTF16 } from "../../string-helpers";
+import { Writer } from "./Writer.js";
+import { convertStringToUTF16 } from "../../string-helpers.js";
 
 /**
  * Writes text to a character-output stream, buffering characters so as to provide for the efficient writing of single

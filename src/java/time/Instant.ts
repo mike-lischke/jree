@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
 
 /** This class is just a placeholder. */
 export class Instant extends JavaObject {

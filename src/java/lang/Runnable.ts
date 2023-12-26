@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "./Object";
+import { IReflection } from "./Object.js";
 
 /**
  * The Runnable interface should be implemented by any class whose instances are intended to be executed by a thread.

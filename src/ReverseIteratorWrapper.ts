@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaIterator } from "./java/util/Iterator";
+import { JavaIterator } from "./java/util/Iterator.js";
 
 /**
  * This is the opposite of the IteratorWrapper class. It wraps a Java iterator (with proper modification checking)

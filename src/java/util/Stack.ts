@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { EmptyStackException } from "./EmptyStackException";
-import { Vector } from "./Vector";
+import { EmptyStackException } from "./EmptyStackException.js";
+import { Vector } from "./Vector.js";
 
 /**
  * The Stack class represents a last-in-first-out (LIFO) stack of objects.

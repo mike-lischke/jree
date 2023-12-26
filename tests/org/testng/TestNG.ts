@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../src";
-import { TestException } from "./TestException";
+import { JavaObject } from "../../../src/java/lang/Object.js";
+import { TestException } from "./TestException.js";
 
 export type TestClass<T> = (new () => T);
 export type TestFunction = Function & { isTest: boolean; };
 
 /** This class is the main entry point for running tests in the TestNG framework. */
-export class TestNG extends java.lang.Object {
+export class TestNG extends JavaObject {
     public run<T>(testClass: TestClass<T>, params: unknown[] = []): void {
         // Get all properties of the given class.
         const descriptors = Object.getOwnPropertyDescriptors(testClass.prototype);

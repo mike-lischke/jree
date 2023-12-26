@@ -3,6 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as io from "./index";
+import * as io from "./index.js";
 
 export { io };

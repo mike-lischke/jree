@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { RuntimeException } from "./RuntimeException";
-import { JavaString } from "./String";
+import { RuntimeException } from "./RuntimeException.js";
+import { JavaString } from "./String.js";
 
 export class NegativeArraySizeException extends RuntimeException {
     public constructor(message?: JavaString) {

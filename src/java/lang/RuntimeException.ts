@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Exception } from "./Exception";
+import { Exception } from "./Exception.js";
 
 /**
  * RuntimeException is the superclass of those exceptions that can be thrown during the normal operation of the

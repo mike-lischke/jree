@@ -3,11 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../..";
-import { JavaObject } from "../../../lang/Object";
+import { JavaObject } from "../../../lang/Object.js";
+import { Channel } from "../Channel.js";
+import { InterruptibleChannel } from "../InterruptibleChannel.js";
 
 export abstract class AbstractInterruptibleChannel extends JavaObject
-    implements java.nio.channels.Channel, java.nio.channels.InterruptibleChannel {
+    implements Channel, InterruptibleChannel {
 
     #closed = false;
 

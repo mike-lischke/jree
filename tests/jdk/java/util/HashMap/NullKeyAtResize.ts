@@ -29,12 +29,16 @@
  * recalculate the hash of a null key. This will fail with an NPE.
  */
 
-import { I, java, JavaObject } from "../../../../../src";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { HashMap } from "../../../../../src/java/util/HashMap.js";
+import { I } from "../../../../../src/templates.js";
 
 export class NullKeyAtResize extends JavaObject {
     public static main(): void {
-        const old_order = new java.util.ArrayList();
-        const m = new java.util.HashMap<java.lang.Integer | null, java.lang.Integer | null>(16);
+        const old_order = new ArrayList();
+        const m = new HashMap<Integer | null, Integer | null>(16);
         let n = 0;
         let resized = false;
         while (n < 100000) {
@@ -42,7 +46,7 @@ export class NullKeyAtResize extends JavaObject {
             m.remove(null); // remove it.
             const adding = (n += 100);
             m.put(I`${adding}`, null); // try to put in a number. This wont cause resize.
-            const new_order = new java.util.ArrayList<java.lang.Integer | null>();
+            const new_order = new ArrayList<Integer | null>();
             new_order.addAll(m.keySet());
             new_order.remove(I`${adding}`);
             if (!old_order.equals(new_order)) {

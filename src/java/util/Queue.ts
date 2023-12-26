@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Collection } from "./Collection";
+import { Collection } from "./Collection.js";
 
 /**
  * A collection designed for holding elements prior to processing.

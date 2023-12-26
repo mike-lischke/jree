@@ -3,5 +3,5 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./AtomicBoolean";
-export * from "./AtomicInteger";
+export * from "./AtomicBoolean.js";
+export * from "./AtomicInteger.js";

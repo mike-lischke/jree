@@ -23,14 +23,13 @@
  * questions.
  */
 
-import { java, int } from "../../../../../../src";
-
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-type Collection<E> = java.util.Collection<E>;
-const Collection = java.util.Collection;
-type Iterator<T> = java.util.Iterator<T>;
-type Supplier<T> = java.util.function.Supplier<T>;
+import { JavaObject } from "../../../../../../src/java/lang/Object.js";
+import { ArrayList } from "../../../../../../src/java/util/ArrayList.js";
+import { Collection } from "../../../../../../src/java/util/Collection.js";
+import { JavaIterator } from "../../../../../../src/java/util/Iterator.js";
+import { Consumer } from "../../../../../../src/java/util/function/Consumer.js";
+import { Supplier } from "../../../../../../src/java/util/function/Supplier.js";
+import { int } from "../../../../../../src/types.js";
 
 /**
  * A simple mutable collection implementation that provides only default
@@ -60,19 +59,20 @@ export class ExtendsAbstractCollection<E> extends Collection<E> {
         return this.coll.add(element);
     }
 
-    public override remove(element: java.lang.Object): boolean {
+    public override remove(element: JavaObject): boolean {
         return this.coll.remove(element);
     }
 
-    public override iterator(): Iterator<E> {
-        return new class extends java.lang.Object implements Iterator<E> {
-            public source = this.$outer.coll.iterator();
+    public override iterator(): JavaIterator<E> {
+        return new class extends JavaObject implements JavaIterator<E> {
+            public source;
 
             public constructor(private $outer: ExtendsAbstractCollection<E>) {
                 super();
+                this.source = this.$outer.coll.iterator();
             }
 
-            public forEachRemaining(action: java.util.function.Consumer<E>): void {
+            public forEachRemaining(action: Consumer<E>): void {
                 this.source.forEachRemaining(action);
             }
 

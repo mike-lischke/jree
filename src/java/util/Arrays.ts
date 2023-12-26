@@ -3,19 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { isEquatable } from "../../type-guards";
-import { MurmurHash } from "../../MurmurHash";
-import type { int } from "../../types";
+import { isEquatable } from "../../type-guards.js";
+import { MurmurHash } from "../../MurmurHash.js";
+import type { int } from "../../types.js";
 
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Comparator } from "./Comparator";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { List } from "./List";
-import { ArrayList } from "./ArrayList";
-import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException";
-import { NullPointerException } from "../lang/NullPointerException";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Comparator } from "./Comparator.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { List } from "./List.js";
+import { ArrayList } from "./ArrayList.js";
+import { ArrayIndexOutOfBoundsException } from "../lang/ArrayIndexOutOfBoundsException.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
 
 export type ComparableValueType = number | bigint | string;
 export type TypedArray =

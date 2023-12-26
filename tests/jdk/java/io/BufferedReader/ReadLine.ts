@@ -37,11 +37,18 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int, S } from "../../../../../src";
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { Reader } from "../../../../../src/java/io/Reader.js";
+import { IllegalArgumentException } from "../../../../../src/java/lang/IllegalArgumentException.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { S } from "../../../../../src/templates.js";
+import { int } from "../../../../../src/types.js";
 
 export class ReadLine extends JavaObject {
 
-    private static BoundedReader = class BoundedReader extends java.io.Reader {
+    private static BoundedReader = class BoundedReader extends Reader {
 
         private content: Uint16Array;
         private limit: int;
@@ -50,7 +57,7 @@ export class ReadLine extends JavaObject {
         public constructor(c: string) {
             super();
 
-            const content = new java.lang.String(c);
+            const content = new JavaString(c);
             this.limit = content.length();
             this.content = new Uint16Array(this.limit);
             content.getChars(0, this.limit, this.content, 0);
@@ -62,7 +69,7 @@ export class ReadLine extends JavaObject {
             switch (args.length) {
                 case 0: {
                     if (this.pos >= this.limit) {
-                        throw new java.lang.RuntimeException("Read past limit");
+                        throw new RuntimeException("Read past limit");
                     }
 
                     return this.content[this.pos++];
@@ -84,7 +91,7 @@ export class ReadLine extends JavaObject {
                 }
 
                 default: {
-                    throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                    throw new IllegalArgumentException(S`Invalid number of arguments`);
                 }
             }
         }
@@ -92,10 +99,10 @@ export class ReadLine extends JavaObject {
         public override  close = (): void => { /* */ };
     };
 
-    public static main = (args: java.lang.String[]): void => {
+    public static main = (args: JavaString[]): void => {
         // Make sure that the reader does not wait for additional characters to
         // be read after reading a new line.
-        let reader: java.io.BufferedReader;
+        let reader: BufferedReader;
         const strings = [
             ["CR/LF\r\n", "CR/LF"],
             ["LF-Only\n", "LF-Only"],
@@ -107,7 +114,7 @@ export class ReadLine extends JavaObject {
         // test 1 "LF-Only\n"
         // test 2 "CR-Only\r"
         for (let i = 0; i < 3; i++) {
-            reader = new java.io.BufferedReader(new ReadLine.BoundedReader(strings[i][0]), strings[i][0].length);
+            reader = new BufferedReader(new ReadLine.BoundedReader(strings[i][0]), strings[i][0].length);
             expect(reader.readLine()!.valueOf()).toEqual(strings[i][1]);
         }
 
@@ -126,7 +133,7 @@ export class ReadLine extends JavaObject {
         // 1.  For lines ending with CR/LF only.
 
         // uses "CR/LF line\r\nMore data"
-        reader = new java.io.BufferedReader(new ReadLine.BoundedReader(strings[3][0]), strings[3][0].length);
+        reader = new BufferedReader(new ReadLine.BoundedReader(strings[3][0]), strings[3][0].length);
         reader.readLine();
         expect(reader.read()).toEqual("M".codePointAt(0));
 
@@ -134,19 +141,19 @@ export class ReadLine extends JavaObject {
         // read of a CR/LF terminated line behaves correctly.
 
         // uses "CR/LF line\r\nMore data"
-        reader = new java.io.BufferedReader(new ReadLine.BoundedReader(strings[3][0]), strings[3][0].length);
+        reader = new BufferedReader(new ReadLine.BoundedReader(strings[3][0]), strings[3][0].length);
         reader.readLine();
 
         const buf = new Uint16Array(9);
         reader.read(buf, 0, 9);
-        const newStr = new java.lang.String(buf);
+        const newStr = new JavaString(buf);
         if (!newStr.equals(strings[3][1])) {
-            throw new java.lang.RuntimeException("Read(char[],int,int) failed");
+            throw new RuntimeException("Read(char[],int,int) failed");
         }
     };
 
     protected static markResetTest = (inputStr: string, resetStr: string): void => {
-        const reader = new java.io.BufferedReader(new ReadLine.BoundedReader(inputStr), inputStr.length);
+        const reader = new BufferedReader(new ReadLine.BoundedReader(inputStr), inputStr.length);
         reader.readLine();
         reader.mark(30);
         reader.readLine();

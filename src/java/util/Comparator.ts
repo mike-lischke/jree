@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Comparable } from "../lang";
+import { Comparable } from "../lang/Comparable.js";
 
 /**
  * A comparison function, which imposes a total ordering on some collection of objects. Comparators can be passed to

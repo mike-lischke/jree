@@ -30,22 +30,19 @@
  * @author jbloch
  */
 
-import { java, JavaObject, S } from "../../../../../src";
-
-type String = java.lang.String;
-const String = java.lang.String;
-type HashMap<K, V> = java.util.HashMap<K, V>;
-const HashMap = java.util.HashMap;
-type RuntimeException = java.lang.RuntimeException;
-const RuntimeException = java.lang.RuntimeException;
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { HashMap } from "../../../../../src/java/util/HashMap.js";
+import { S } from "../../../../../src/templates.js";
 
 export class SetValue extends JavaObject {
     protected static readonly key = S`key`;
     protected static readonly oldValue = S`old`;
     protected static readonly newValue = S`new`;
 
-    public static main(args: String[]): void {
-        const m = new HashMap<String, String>();
+    public static main(args: JavaString[]): void {
+        const m = new HashMap<JavaString, JavaString>();
         m.put(SetValue.key, SetValue.oldValue);
         const e = m.entrySet().iterator().next();
         const returnVal = e.setValue(SetValue.newValue);

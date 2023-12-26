@@ -42,7 +42,12 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int } from "../../../../src";
+import { JavaBoolean, int } from "../../../../src/index.js";
+import { ByteArrayOutputStream } from "../../../../src/java/io/ByteArrayOutputStream.js";
+import { Exception } from "../../../../src/java/lang/Exception.js";
+import { Integer } from "../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../src/java/lang/String.js";
 
 export class Unicode extends JavaObject {
 
@@ -52,10 +57,10 @@ export class Unicode extends JavaObject {
     protected static readonly BIG = 0;
     protected static readonly LITTLE = 1;
 
-    public static main = (args: java.lang.String[]): void => {
+    public static main = (args: JavaString[]): void => {
         const enc = args[0];
         const bos = args[1];
-        const markExpected = java.lang.Boolean.valueOf(args[2]).booleanValue();
+        const markExpected = JavaBoolean.valueOf(args[2]).booleanValue();
         let byteOrder = -1;
         if (bos.equals("big")) {
             byteOrder = Unicode.BIG;
@@ -74,18 +79,18 @@ export class Unicode extends JavaObject {
     };
 
     protected static fail = (enc: string, msg: string, e0: int, e1: int, b0: int, b1: int): void => {
-        throw new java.lang.Exception(enc + ": " + msg
+        throw new Exception(enc + ": " + msg
             + ": Expected "
-            + java.lang.Integer.toHexString(e0)
-            + " " + java.lang.Integer.toHexString(e1)
+            + Integer.toHexString(e0)
+            + " " + Integer.toHexString(e1)
             + ", got "
-            + java.lang.Integer.toHexString(b0)
-            + " " + java.lang.Integer.toHexString(b1));
+            + Integer.toHexString(b0)
+            + " " + Integer.toHexString(b1));
     };
 
     /* Chars to bytes */
-    protected static encode = (enc: java.lang.String, byteOrder: int, markExpected: boolean): void => {
-        const s = new java.lang.String("abc");
+    protected static encode = (enc: JavaString, byteOrder: int, markExpected: boolean): void => {
+        const s = new JavaString("abc");
         const b = s.getBytes(enc);
         let i = 0;
         if (markExpected) {
@@ -131,9 +136,9 @@ export class Unicode extends JavaObject {
     };
 
     /* Bytes to chars */
-    protected static decode = (enc: java.lang.String, byteOrder: int, markit: boolean): void => {
-        const s = new java.lang.String("abc");
-        const bo = new java.io.ByteArrayOutputStream();
+    protected static decode = (enc: JavaString, byteOrder: int, markit: boolean): void => {
+        const s = new JavaString("abc");
+        const bo = new ByteArrayOutputStream();
         if (markit) {
             if (byteOrder === Unicode.BIG) {
                 bo.write(Unicode.BOM_HIGH);
@@ -161,9 +166,9 @@ export class Unicode extends JavaObject {
         }
 
         const b = bo.toByteArray();
-        const s2 = new java.lang.String(b, enc);
+        const s2 = new JavaString(b, enc);
         if (!s.equals(s2)) {
-            throw new java.lang.Exception(enc + ": Decode error");
+            throw new Exception(enc + ": Decode error");
         }
     };
 }

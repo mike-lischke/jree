@@ -3,28 +3,32 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../../src";
+import { IndexOutOfBoundsException } from "../../../src/java/lang/IndexOutOfBoundsException.js";
+import { Integer } from "../../../src/java/lang/Integer.js";
+import { NegativeArraySizeException } from "../../../src/java/lang/NegativeArraySizeException.js";
+import { JavaString } from "../../../src/java/lang/String.js";
+import { StringBuilder } from "../../../src/java/lang/StringBuilder.js";
 
 describe("Tests", () => {
     it("Construction", () => {
-        expect(new java.lang.StringBuilder().length() === 0);
-        expect(() => { new java.lang.StringBuilder(-10); }).toThrowError(java.lang.NegativeArraySizeException);
-        expect(new java.lang.StringBuilder(100).capacity() === 100);
+        expect(new StringBuilder().length() === 0);
+        expect(() => { new StringBuilder(-10); }).toThrow(NegativeArraySizeException);
+        expect(new StringBuilder(100).capacity() === 100);
 
-        const s = new java.lang.String("Lorem Ipsum");
-        const b = new java.lang.StringBuilder(s);
+        const s = new JavaString("Lorem Ipsum");
+        const b = new StringBuilder(s);
         expect(b.capacity()).toBe(s.length());
         expect(`${b.toString()}`).toEqual("Lorem Ipsum");
     });
 
     it("Appending content", () => {
-        const b = new java.lang.StringBuilder();
+        const b = new StringBuilder();
         b.append("Lorem Ipsum Dolor Sit Amet"); // TS string
         expect(`${b.toString()}`).toBe("Lorem Ipsum Dolor Sit Amet");
 
-        const s = new java.lang.String("Another string");
-        const b2 = new java.lang.StringBuilder("String Builder");
-        const i = new java.lang.Integer(456);
+        const s = new JavaString("Another string");
+        const b2 = new StringBuilder("String Builder");
+        const i = new Integer(456);
 
         expect(b.append("-")).toBe(b);
         b.append(s);    // Java string
@@ -53,14 +57,14 @@ describe("Tests", () => {
     });
 
     it("Inserting content", () => {
-        const b = new java.lang.StringBuilder();
+        const b = new StringBuilder();
         b.append("12345");
 
-        const s = new java.lang.String("Another string");
-        const b2 = new java.lang.StringBuilder("String Builder");
+        const s = new JavaString("Another string");
+        const b2 = new StringBuilder("String Builder");
         b2.ensureCapacity(1000);
 
-        const i = new java.lang.Integer(456);
+        const i = new Integer(456);
 
         expect(b.insert(4, "-")).toBe(b);
         expect(`${b.toString()}`).toBe("1234-5");
@@ -93,27 +97,27 @@ describe("Tests", () => {
     });
 
     it("Delete content", () => {
-        const b0 = new java.lang.StringBuilder("1234");
+        const b0 = new StringBuilder("1234");
         b0.deleteCharAt(0);
         expect(`${b0.toString()}`).toBe("234");
 
-        const b1 = new java.lang.StringBuilder("1234");
+        const b1 = new StringBuilder("1234");
         b1.deleteCharAt(1);
         expect(`${b1.toString()}`).toBe("134");
 
-        const b2 = new java.lang.StringBuilder("1234");
+        const b2 = new StringBuilder("1234");
         b2.deleteCharAt(2);
         expect(`${b2.toString()}`).toBe("124");
 
-        const b3 = new java.lang.StringBuilder("1234");
+        const b3 = new StringBuilder("1234");
         b3.deleteCharAt(3);
         expect(`${b3.toString()}`).toBe("123");
 
         try {
-            const b4 = new java.lang.StringBuilder("1234");
+            const b4 = new StringBuilder("1234");
             b4.deleteCharAt(4);
         } catch (e) {
-            expect(e).toBeInstanceOf(java.lang.IndexOutOfBoundsException);
+            expect(e).toBeInstanceOf(IndexOutOfBoundsException);
         }
     });
 });

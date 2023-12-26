@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "./../lang/String";
-import { JavaObject } from "../lang/Object";
-import { AttributedCharacterIterator } from "./AttributedCharacterIterator";
-import { Cloneable } from "../lang/Cloneable";
-import { NotImplementedError } from "../../NotImplementedError";
-import { ParsePosition } from "./ParsePosition";
-import { StringBuffer } from "../lang/StringBuffer";
-import { FieldPosition } from "./FieldPosition";
-import { Serializable } from "../io/Serializable";
+import { JavaString } from "./../lang/String.js";
+import { JavaObject } from "../lang/Object.js";
+import { AttributedCharacterIterator } from "./AttributedCharacterIterator.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { ParsePosition } from "./ParsePosition.js";
+import { StringBuffer } from "../lang/StringBuffer.js";
+import { FieldPosition } from "./FieldPosition.js";
+import { Serializable } from "../io/Serializable.js";
 
 export abstract class Format extends JavaObject implements Serializable, Cloneable<Format> {
     /**

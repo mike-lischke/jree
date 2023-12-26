@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
-import { Matcher } from "./Matcher";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { Matcher } from "./Matcher.js";
 
 export class Pattern extends JavaObject {
     /** Enables canonical equivalence. */

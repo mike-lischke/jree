@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { RuntimeException } from "../lang/RuntimeException";
-import type { JavaString } from "../lang/String";
-import { Throwable } from "../lang/Throwable";
+import { RuntimeException } from "../lang/RuntimeException.js";
+import type { JavaString } from "../lang/String.js";
+import { Throwable } from "../lang/Throwable.js";
 
 /**
  * Thrown by various accessor methods to indicate that the element being requested

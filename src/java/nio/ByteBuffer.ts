@@ -2,16 +2,17 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { byte, char, int } from "../../types";
 
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { BufferImpl } from "./BufferImpl";
-import { BufferOverflowException } from "./BufferOverflowException";
-import { BufferUnderflowException } from "./BufferUnderflowException";
-import { CharBuffer } from "./CharBuffer";
-import { IntBuffer } from "./IntBuffer";
-import { ReadOnlyBufferException } from "./ReadOnlyBufferException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { byte, char, int } from "../../types.js";
+
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { BufferImpl } from "./BufferImpl.js";
+import { BufferOverflowException } from "./BufferOverflowException.js";
+import { BufferUnderflowException } from "./BufferUnderflowException.js";
+import { CharBuffer } from "./CharBuffer.js";
+import { IntBuffer } from "./IntBuffer.js";
+import { ReadOnlyBufferException } from "./ReadOnlyBufferException.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
 /**
  * A byte buffer.

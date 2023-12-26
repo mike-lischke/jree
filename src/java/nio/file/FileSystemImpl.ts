@@ -5,21 +5,21 @@
 import path from "path";
 import { minimatch } from "minimatch";
 
-import { JavaFileSystem } from "./FileSystem";
-import { PathImpl } from "./PathImpl";
-import { FileStore } from "./FileStore";
-import { Path } from "./Path";
-import { PathMatcher } from "./PathMatcher";
-import { WatchService } from "./WatchService";
-import { JavaFile } from "../../io/File";
-import { JavaIterable } from "../../lang/Iterable";
-import { NotImplementedError } from "../../../NotImplementedError";
-import { JavaString } from "../../lang/String";
-import { PatternSyntaxException } from "../../util/regex/PatternSyntaxException";
-import { JavaIterator } from "../../util/Iterator";
-import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException";
-import { UserPrincipalLookupService } from "./attribute/UserPrincipalLookupService";
-import { JavaObject } from "../../lang/Object";
+import { JavaFileSystem } from "./FileSystem.js";
+import { PathImpl } from "./PathImpl.js";
+import { FileStore } from "./FileStore.js";
+import { Path } from "./Path.js";
+import { PathMatcher } from "./PathMatcher.js";
+import { WatchService } from "./WatchService.js";
+import { JavaFile } from "../../io/File.js";
+import { JavaIterable } from "../../lang/Iterable.js";
+import { NotImplementedError } from "../../../NotImplementedError.js";
+import { JavaString } from "../../lang/String.js";
+import { PatternSyntaxException } from "../../util/regex/PatternSyntaxException.js";
+import { JavaIterator } from "../../util/Iterator.js";
+import { UnsupportedOperationException } from "../../lang/UnsupportedOperationException.js";
+import { UserPrincipalLookupService } from "./attribute/UserPrincipalLookupService.js";
+import { JavaObject } from "../../lang/Object.js";
 
 /**
  * This is the default implementation of the FileSystem interface. It uses Node.js' file system API.

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { OutputStream } from "./OutputStream";
+import { OutputStream } from "./OutputStream.js";
 
 export abstract class FilterOutputStream extends OutputStream {
 

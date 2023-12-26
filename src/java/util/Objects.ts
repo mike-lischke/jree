@@ -3,17 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
 
-import { isArrayLike, isEquatable } from "../../type-guards";
-import { MurmurHash } from "../../MurmurHash";
-import { Arrays } from "./Arrays";
-import { JavaString } from "../lang/String";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { Comparator } from "./Comparator";
-import { Supplier } from "./function/Supplier";
-import { NullPointerException } from "../lang/NullPointerException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { isArrayLike, isEquatable } from "../../type-guards.js";
+import { MurmurHash } from "../../MurmurHash.js";
+import { Arrays } from "./Arrays.js";
+import { JavaString } from "../lang/String.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { Comparator } from "./Comparator.js";
+import { Supplier } from "./function/Supplier.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
 export class Objects extends JavaObject {
     /**

@@ -29,20 +29,14 @@
  * not updating modCount.
  */
 
-import { java, JavaObject, int, I } from "../../../../../src";
-
-type String = java.lang.String;
-const String = java.lang.String;
-type HashMap<K, V> = java.util.HashMap<K, V>;
-const HashMap = java.util.HashMap;
-type Integer = java.lang.Integer;
-const Integer = java.lang.Integer;
-type IllegalArgumentException = java.lang.IllegalArgumentException;
-const IllegalArgumentException = java.lang.IllegalArgumentException;
-type HashSet<E> = java.util.HashSet<E>;
-const HashSet = java.util.HashSet;
-type RuntimeException = java.lang.RuntimeException;
-const RuntimeException = java.lang.RuntimeException;
+import { IllegalArgumentException } from "../../../../../src/java/lang/IllegalArgumentException.js";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { HashMap } from "../../../../../src/java/util/HashMap.js";
+import { HashSet } from "../../../../../src/java/util/HashSet.js";
+import { I } from "../../../../../src/templates.js";
+import { int } from "../../../../../src/types.js";
 
 export class ReplaceExisting extends JavaObject {
     /* Number of entries required to trigger a resize for cap=16, load=0.75*/

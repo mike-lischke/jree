@@ -2,16 +2,17 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { MurmurHash } from "../../MurmurHash";
 
-import { JavaString } from "./String";
-import { Class, JavaObject } from "./Object";
-import { Serializable } from "../io/Serializable";
-import { Comparable } from "./Comparable";
-import { NumberFormatException } from "./NumberFormatException";
-import { Throwable } from "./Throwable";
-import { System } from "./System";
-import { Integer } from "./Integer";
+import { MurmurHash } from "../../MurmurHash.js";
+
+import { JavaString } from "./String.js";
+import { Class, JavaObject } from "./Object.js";
+import { Serializable } from "../io/Serializable.js";
+import { Comparable } from "./Comparable.js";
+import { NumberFormatException } from "./NumberFormatException.js";
+import { Throwable } from "./Throwable.js";
+import { System } from "./System.js";
+import { Integer } from "./Integer.js";
 
 export class Long extends JavaObject implements Serializable, Comparable<Long>  {
     public static readonly MAX_VALUE = 0x7FFFFFFFFFFFFFFFn;

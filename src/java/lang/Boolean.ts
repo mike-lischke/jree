@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "./String";
-import { Serializable } from "../io/Serializable";
-import { Comparable } from "./Comparable";
-import { JavaObject, Class } from "./Object";
-import { System } from "./System";
+import { JavaString } from "./String.js";
+import { Serializable } from "../io/Serializable.js";
+import { Comparable } from "./Comparable.js";
+import { JavaObject, Class } from "./Object.js";
+import { System } from "./System.js";
 
 export class JavaBoolean extends JavaObject implements Serializable, Comparable<JavaBoolean> {
     public static readonly TRUE = new JavaBoolean(true);

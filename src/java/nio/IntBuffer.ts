@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int } from "../../types";
+import { int } from "../../types.js";
 
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
 
-import { BufferImpl } from "./BufferImpl";
-import { BufferOverflowException } from "./BufferOverflowException";
-import { BufferUnderflowException } from "./BufferUnderflowException";
-import { ReadOnlyBufferException } from "./ReadOnlyBufferException";
+import { BufferImpl } from "./BufferImpl.js";
+import { BufferOverflowException } from "./BufferOverflowException.js";
+import { BufferUnderflowException } from "./BufferUnderflowException.js";
+import { ReadOnlyBufferException } from "./ReadOnlyBufferException.js";
 
 export class IntBuffer extends BufferImpl<Int32Array> {
     protected constructor(capacity: number);

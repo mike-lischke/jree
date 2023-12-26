@@ -23,6 +23,11 @@
  * questions.
  */
 
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { StringReader } from "../../../../../src/java/io/StringReader.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+
 /* @test
    @bug 4072575
    @summary Test all the EOL delimiters accepted by BufferedReader
@@ -33,13 +38,11 @@
 /* cspell: disable */
 /* eslint-disable jsdoc/check-tag-names */
 
-import { java, JavaObject, JavaString } from "../../../../../src";
-
 export class EOL extends JavaObject {
 
-    public static main = (args: java.lang.String[]): void => {
-        const sr = new java.io.StringReader(new JavaString("one\rtwo\r\nthree\nfour\r"));
-        const br = new java.io.BufferedReader(sr);
+    public static main = (args: JavaString[]): void => {
+        const sr = new StringReader(new JavaString("one\rtwo\r\nthree\nfour\r"));
+        const br = new BufferedReader(sr);
 
         let i = 0;
         for (i = 0; ; i++) {

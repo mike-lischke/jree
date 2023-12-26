@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { makeReadOnly } from "../../helpers";
+import { makeReadOnly } from "../../helpers.js";
 
-import { Comparable } from "../lang/Comparable";
-import { Class, JavaObject } from "../lang/Object";
-import { ArrayList } from "./ArrayList";
-import { Collection } from "./Collection";
-import { Comparator } from "./Comparator";
-import { HashMap } from "./HashMap";
-import { HashSet } from "./HashSet";
-import { List } from "./List";
-import { JavaMap } from "./Map";
-import { JavaSet } from "./Set";
+import { Comparable } from "../lang/Comparable.js";
+import { Class, JavaObject } from "../lang/Object.js";
+import { ArrayList } from "./ArrayList.js";
+import { Collection } from "./Collection.js";
+import { Comparator } from "./Comparator.js";
+import { HashMap } from "./HashMap.js";
+import { HashSet } from "./HashSet.js";
+import { List } from "./List.js";
+import { JavaMap } from "./Map.js";
+import { JavaSet } from "./Set.js";
 
 export abstract class Collections extends JavaObject {
     public static readonly EMPTY_LIST = new ArrayList();

@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int } from "../../types";
+import { int } from "../../types.js";
 
-import { IReflection } from "./Object";
+import { IReflection } from "./Object.js";
 
 /**
  * This interface imposes a total ordering on the objects of each class that implements it. This ordering is referred

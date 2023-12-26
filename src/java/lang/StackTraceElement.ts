@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../MurmurHash";
-import { JavaObject } from "./Object";
+import { MurmurHash } from "../../MurmurHash.js";
+import { JavaObject } from "./Object.js";
 
 export class StackTraceElement extends JavaObject {
     private declaringClass = "";

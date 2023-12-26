@@ -38,16 +38,10 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
-
-type String = java.lang.String;
-const String = java.lang.String;
-type ArrayList<E> = java.util.ArrayList<E>;
-const ArrayList = java.util.ArrayList;
-type ConcurrentModificationException = java.util.ConcurrentModificationException;
-const ConcurrentModificationException = java.util.ConcurrentModificationException;
-type RuntimeException = java.lang.RuntimeException;
-const RuntimeException = java.lang.RuntimeException;
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { ConcurrentModificationException } from "../../../../../src/java/util/ConcurrentModificationException.js";
 
 export class CheckForComodification extends JavaObject {
     private static readonly LENGTH = 10;

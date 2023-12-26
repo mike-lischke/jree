@@ -2,10 +2,11 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { JavaObject } from "../../../lang/Object";
-import { JavaString } from "../../../lang/String";
-import { GroupPrincipal } from "./GroupPrincipal";
-import { UserPrincipal } from "./UserPrincipal";
+
+import { JavaObject } from "../../../lang/Object.js";
+import { JavaString } from "../../../lang/String.js";
+import { GroupPrincipal } from "./GroupPrincipal.js";
+import { UserPrincipal } from "./UserPrincipal.js";
 
 /**
  * An object to lookup user and group principals by name. This class is used to lookup user and group principals by

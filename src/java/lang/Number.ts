@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "./Object";
+import { JavaObject } from "./Object.js";
 
 /**
  * The abstract class Number is the superclass of platform classes representing numeric values that are convertible

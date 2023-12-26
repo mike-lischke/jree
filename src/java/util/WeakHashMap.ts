@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { JavaString } from "../lang/String";
-import { UnsupportedOperationException } from "../lang/UnsupportedOperationException";
-import { Collection } from "./Collection";
-import { JavaMap } from "./Map";
-import { JavaSet } from "./Set";
-import { WeakMapEntryView } from "./WeakMapEntryView";
-import { WeakMapKeyView } from "./WeakMapKeyView";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { JavaString } from "../lang/String.js";
+import { UnsupportedOperationException } from "../lang/UnsupportedOperationException.js";
+import { Collection } from "./Collection.js";
+import { JavaMap } from "./Map.js";
+import { JavaSet } from "./Set.js";
+import { WeakMapEntryView } from "./WeakMapEntryView.js";
+import { WeakMapKeyView } from "./WeakMapKeyView.js";
 
 /**
  * This interface provides shared access to the backend of a HashMap instance for all currently active key, value

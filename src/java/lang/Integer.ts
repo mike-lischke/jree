@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../MurmurHash";
+import { MurmurHash } from "../../MurmurHash.js";
 
-import { JavaNumber } from "./Number";
-import { System } from "./System";
-import { Serializable } from "../io/Serializable";
-import { Comparable } from "./Comparable";
-import { Class } from "./Object";
-import { JavaString } from "./String";
-import { IllegalArgumentException } from "./IllegalArgumentException";
-import { NumberFormatException } from "./NumberFormatException";
-import { Throwable } from "./Throwable";
-import { byte, float, int, long, short } from "../../types";
+import { JavaNumber } from "./Number.js";
+import { System } from "./System.js";
+import { Serializable } from "../io/Serializable.js";
+import { Comparable } from "./Comparable.js";
+import { Class } from "./Object.js";
+import { JavaString } from "./String.js";
+import { IllegalArgumentException } from "./IllegalArgumentException.js";
+import { NumberFormatException } from "./NumberFormatException.js";
+import { Throwable } from "./Throwable.js";
+import { byte, float, int, long, short } from "../../types.js";
 
 export class Integer extends JavaNumber implements Serializable, Comparable<Integer>  {
     public static readonly MAX_VALUE = 2147483647;

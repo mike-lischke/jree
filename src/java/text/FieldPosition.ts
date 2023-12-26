@@ -3,23 +3,23 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../..";
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
+import { Format } from "./Format.js";
 
 export class FieldPosition extends JavaObject {
     #beginIndex = 0;
     #endIndex = 0;
 
     public constructor(field: number);
-    public constructor(field: number, fieldAttribute: java.text.Format.Field);
-    public constructor(field: number, fieldAttribute?: java.text.Format.Field) {
+    public constructor(field: number, fieldAttribute: Format.Field);
+    public constructor(field: number, fieldAttribute?: Format.Field) {
         super();
     }
 
     /** Returns the field identifier. */
     public getField(): number;
-    public getField(): java.text.Format.Field;
-    public getField(): number | java.text.Format.Field {
+    public getField(): Format.Field;
+    public getField(): number | Format.Field {
         return 0;
     }
 

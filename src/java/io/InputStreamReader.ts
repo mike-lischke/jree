@@ -3,17 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { char, int } from "../../types";
-import { convertStringToUTF16 } from "../../string-helpers";
+import { char, int } from "../../types.js";
+import { convertStringToUTF16 } from "../../string-helpers.js";
 
-import { JavaString } from "../lang/String";
-import { Charset } from "../nio/charset/Charset";
-import { InputStream } from "./InputStream";
-import { Reader } from "./Reader";
-import { UnsupportedEncodingException } from "./UnsupportedEncodingException";
-import { CharsetDecoder } from "../nio/charset/CharsetDecoder";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { JavaString } from "../lang/String.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { InputStream } from "./InputStream.js";
+import { Reader } from "./Reader.js";
+import { UnsupportedEncodingException } from "./UnsupportedEncodingException.js";
+import { CharsetDecoder } from "../nio/charset/CharsetDecoder.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
 /**
  * An InputStreamReader is a bridge from byte streams to character streams: It reads bytes and decodes them into

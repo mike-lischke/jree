@@ -2,8 +2,9 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { IReflection, JavaObject } from "../../lang/Object";
-import { JavaString } from "../../lang/String";
+
+import { IReflection, JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
 
 /**
  * An event or a repeated event for an object that is registered with a watch service.

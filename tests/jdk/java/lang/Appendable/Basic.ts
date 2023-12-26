@@ -32,22 +32,49 @@
 
 /** cspell: ignore Appendables */
 
-import { java, JavaObject, S } from "../../../../../src";
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { BufferedWriter } from "../../../../../src/java/io/BufferedWriter.js";
+import { ByteArrayOutputStream } from "../../../../../src/java/io/ByteArrayOutputStream.js";
+import { CharArrayWriter } from "../../../../../src/java/io/CharArrayWriter.js";
+import { JavaFile } from "../../../../../src/java/io/File.js";
+import { JavaFileReader } from "../../../../../src/java/io/FileReader.js";
+import { FileWriter } from "../../../../../src/java/io/FileWriter.js";
+import { IOException } from "../../../../../src/java/io/IOException.js";
+import { OutputStreamWriter } from "../../../../../src/java/io/OutputStreamWriter.js";
+import { PrintStream } from "../../../../../src/java/io/PrintStream.js";
+import { PrintWriter } from "../../../../../src/java/io/PrintWriter.js";
+import { StringWriter } from "../../../../../src/java/io/StringWriter.js";
+import { Writer } from "../../../../../src/java/io/Writer.js";
+import { Appendable } from "../../../../../src/java/lang/Appendable.js";
+import { CharSequence } from "../../../../../src/java/lang/CharSequence.js";
+import { IllegalArgumentException } from "../../../../../src/java/lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../../../../../src/java/lang/IndexOutOfBoundsException.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { Runnable } from "../../../../../src/java/lang/Runnable.js";
+import { RuntimeException } from "../../../../../src/java/lang/RuntimeException.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { StringBuffer } from "../../../../../src/java/lang/StringBuffer.js";
+import { StringBuilder } from "../../../../../src/java/lang/StringBuilder.js";
+import { System } from "../../../../../src/java/lang/System.js";
+import { Throwable } from "../../../../../src/java/lang/Throwable.js";
+import { ByteBuffer } from "../../../../../src/java/nio/ByteBuffer.js";
+import { CharBuffer } from "../../../../../src/java/nio/CharBuffer.js";
+import { S } from "../../../../../src/templates.js";
 
-interface BasicRunnable extends java.lang.Runnable {
-    init(a: java.lang.Appendable, csq: java.lang.String, exp: java.lang.String): void;
-    reset(csq: java.lang.Appendable): java.lang.Appendable;
+interface BasicRunnable extends Runnable {
+    init(a: Appendable, csq: JavaString, exp: JavaString): void;
+    reset(csq: Appendable): Appendable;
 }
 
 export class Basic extends JavaObject {
     private static testBufferedWriter = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        public init = (bw: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
+        private csn!: JavaString;
+        private exp!: JavaString;
+        public init = (bw: Appendable, csn: JavaString, exp: JavaString): void => {
             try {
-                (bw as java.io.BufferedWriter).flush();
+                (bw as BufferedWriter).flush();
             } catch (x) {
-                if (x instanceof java.io.IOException) {
+                if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -59,7 +86,7 @@ export class Basic extends JavaObject {
         public run = (): void => {
             Basic.ck("BufferedWriter.append(" + this.csn + ")", this.exp, Basic.gw.toString());
         };
-        public reset = (bw: java.lang.Appendable): java.lang.Appendable => {
+        public reset = (bw: Appendable): Appendable => {
             Basic.gw.reset();
 
             return bw;
@@ -67,32 +94,32 @@ export class Basic extends JavaObject {
     }();
 
     private static testCharArrayWriter = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        private cw!: java.io.CharArrayWriter;
-        public init = (cw: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            this.cw = cw as java.io.CharArrayWriter;
+        private csn!: JavaString;
+        private exp!: JavaString;
+        private cw!: CharArrayWriter;
+        public init = (cw: Appendable, csn: JavaString, exp: JavaString): void => {
+            this.cw = cw as CharArrayWriter;
             this.csn = csn;
             this.exp = exp;
         };
         public run = (): void => {
             Basic.ck("CharArrayWriter.append(" + this.csn + ")", this.exp, this.cw.toString());
         };
-        public reset = (cw: java.lang.Appendable): java.lang.Appendable => {
-            (cw as java.io.CharArrayWriter).reset();
+        public reset = (cw: Appendable): Appendable => {
+            (cw as CharArrayWriter).reset();
 
             return cw;
         };
     }();
 
     private static testFileWriter = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        public init = (fw: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
+        private csn!: JavaString;
+        private exp!: JavaString;
+        public init = (fw: Appendable, csn: JavaString, exp: JavaString): void => {
             try {
-                (fw as java.io.FileWriter).flush();
+                (fw as FileWriter).flush();
             } catch (x) {
-                if (x instanceof java.io.IOException) {
+                if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -102,10 +129,10 @@ export class Basic extends JavaObject {
             this.exp = exp;
         };
         public run = (): void => {
-            const sb = new java.lang.StringBuilder();
+            const sb = new StringBuilder();
             try {
-                const input = new java.io.BufferedReader(new java.io.FileReader(Basic.#gf));
-                let line: java.lang.String | null;
+                const input = new BufferedReader(new JavaFileReader(Basic.#gf));
+                let line: JavaString | null;
                 while (true) {
                     if ((line = input.readLine()) === null) {
 
@@ -115,7 +142,7 @@ export class Basic extends JavaObject {
                     sb.append(line);
                 }
             } catch (x) {
-                if (x instanceof java.io.IOException) {
+                if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -123,11 +150,11 @@ export class Basic extends JavaObject {
             }
             Basic.ck("FileWriter.append(" + this.csn + ")", this.exp, sb.toString());
         };
-        public reset = (fw: java.lang.Appendable): java.lang.Appendable => {
+        public reset = (fw: Appendable): Appendable => {
             try {
-                fw = new java.io.FileWriter(Basic.#gf);
+                fw = new FileWriter(Basic.#gf);
             } catch (x) {
-                if (x instanceof java.io.IOException) {
+                if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -139,13 +166,13 @@ export class Basic extends JavaObject {
     }();
 
     private static testOutputStreamWriter = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        public init = (osw: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
+        private csn!: JavaString;
+        private exp!: JavaString;
+        public init = (osw: Appendable, csn: JavaString, exp: JavaString): void => {
             try {
-                (osw as java.io.OutputStreamWriter).flush();
+                (osw as OutputStreamWriter).flush();
             } catch (x) {
-                if (x instanceof java.io.IOException) {
+                if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -157,7 +184,7 @@ export class Basic extends JavaObject {
         public run = (): void => {
             Basic.ck("OutputStreamWriter.append(" + this.csn + ")", this.exp, Basic.gos.toString());
         };
-        public reset = (osw: java.lang.Appendable): java.lang.Appendable => {
+        public reset = (osw: Appendable): Appendable => {
             Basic.gos.reset();
 
             return osw;
@@ -165,17 +192,17 @@ export class Basic extends JavaObject {
     }();
 
     private static testPrintWriter = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        public init = (pw: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            (pw as java.io.PrintWriter).flush();
+        private csn!: JavaString;
+        private exp!: JavaString;
+        public init = (pw: Appendable, csn: JavaString, exp: JavaString): void => {
+            (pw as PrintWriter).flush();
             this.csn = csn;
             this.exp = exp;
         };
         public run = (): void => {
             Basic.ck("PrintWriter.append(" + this.csn + ")", this.exp, Basic.gw.toString());
         };
-        public reset = (pw: java.lang.Appendable): java.lang.Appendable => {
+        public reset = (pw: Appendable): Appendable => {
             Basic.gw.reset();
 
             return pw;
@@ -183,34 +210,34 @@ export class Basic extends JavaObject {
     }();
 
     private static testStringWriter = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        private sw!: java.io.StringWriter;
-        public init = (sw: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            this.sw = sw as java.io.StringWriter;
+        private csn!: JavaString;
+        private exp!: JavaString;
+        private sw!: StringWriter;
+        public init = (sw: Appendable, csn: JavaString, exp: JavaString): void => {
+            this.sw = sw as StringWriter;
             this.csn = csn;
             this.exp = exp;
         };
         public run = (): void => {
             Basic.ck("StringWriter.append(" + this.csn + ")", this.exp, this.sw.toString());
         };
-        public reset = (sw: java.lang.Appendable): java.lang.Appendable => {
-            return new java.io.StringWriter();
+        public reset = (sw: Appendable): Appendable => {
+            return new StringWriter();
         };
     }();
 
     private static testPrintStream = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        public init = (ps: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            (ps as java.io.PrintStream).flush();
+        private csn!: JavaString;
+        private exp!: JavaString;
+        public init = (ps: Appendable, csn: JavaString, exp: JavaString): void => {
+            (ps as PrintStream).flush();
             this.csn = csn;
             this.exp = exp;
         };
         public run = (): void => {
             Basic.ck("PrintStream.append(" + this.csn + ")", this.exp, Basic.gos.toString());
         };
-        public reset = (ps: java.lang.Appendable): java.lang.Appendable => {
+        public reset = (ps: Appendable): Appendable => {
             Basic.gos.reset();
 
             return ps;
@@ -218,11 +245,11 @@ export class Basic extends JavaObject {
     }();
 
     private static testCharBuffer = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        private cb!: java.nio.CharBuffer;
-        public init = (cb: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            this.cb = cb as java.nio.CharBuffer;
+        private csn!: JavaString;
+        private exp!: JavaString;
+        private cb!: CharBuffer;
+        public init = (cb: Appendable, csn: JavaString, exp: JavaString): void => {
+            this.cb = cb as CharBuffer;
             this.csn = csn;
             this.exp = exp;
         };
@@ -230,101 +257,101 @@ export class Basic extends JavaObject {
             this.cb.limit(this.cb.position()).rewind();
             Basic.ck("CharBuffer.append(" + this.csn + ")", this.exp, this.cb.toString());
         };
-        public reset = (cb: java.lang.Appendable): java.lang.Appendable => {
-            (cb as java.nio.CharBuffer).clear();
+        public reset = (cb: Appendable): Appendable => {
+            (cb as CharBuffer).clear();
 
             return cb;
         };
     }();
 
     private static testStringBuffer = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        private sb!: java.lang.StringBuffer;
-        public init = (sb: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            this.sb = sb as java.lang.StringBuffer;
+        private csn!: JavaString;
+        private exp!: JavaString;
+        private sb!: StringBuffer;
+        public init = (sb: Appendable, csn: JavaString, exp: JavaString): void => {
+            this.sb = sb as StringBuffer;
             this.csn = csn;
             this.exp = exp;
         };
         public run = (): void => {
             Basic.ck("StringBuffer.append(" + this.csn + ")", this.exp, this.sb.toString());
         };
-        public reset = (sb: java.lang.Appendable): java.lang.Appendable => {
-            return new java.lang.StringBuffer();
+        public reset = (sb: Appendable): Appendable => {
+            return new StringBuffer();
         };
     }();
 
     private static testStringBuilder = new class extends JavaObject implements BasicRunnable {
-        private csn!: java.lang.String;
-        private exp!: java.lang.String;
-        private sb!: java.lang.StringBuilder;
-        public init = (sb: java.lang.Appendable, csn: java.lang.String, exp: java.lang.String): void => {
-            this.sb = sb as java.lang.StringBuilder;
+        private csn!: JavaString;
+        private exp!: JavaString;
+        private sb!: StringBuilder;
+        public init = (sb: Appendable, csn: JavaString, exp: JavaString): void => {
+            this.sb = sb as StringBuilder;
             this.csn = csn;
             this.exp = exp;
         };
         public run = (): void => {
             Basic.ck("StringBuilder.append(" + this.csn + ")", this.exp, this.sb.toString());
         };
-        public reset = (sb: java.lang.Appendable): java.lang.Appendable => {
-            return new java.lang.StringBuilder();
+        public reset = (sb: Appendable): Appendable => {
+            return new StringBuilder();
         };
     }();
 
     /** cspell: ignore Jabberwock */
     private static readonly s = S`Beware the Jabberwock, my son!`;
-    private static gw = new java.io.CharArrayWriter();
-    private static gos = new java.io.ByteArrayOutputStream();
+    private static gw = new CharArrayWriter();
+    private static gos = new ByteArrayOutputStream();
 
     static #gf = Basic.newFile()!;
 
     static #fail = 0;
     static #pass = 0;
 
-    static #first: java.lang.Throwable | null = null;
+    static #first: Throwable | null = null;
 
-    public static main(args: java.lang.String[]): void {
+    public static main(args: JavaString[]): void {
         // CharSequences
-        const cb = java.nio.CharBuffer.allocate(128).put(Basic.s);
+        const cb = CharBuffer.allocate(128).put(Basic.s);
         cb.limit(Basic.s.length()).rewind();
-        const dcb = java.nio.ByteBuffer.allocateDirect(128).asCharBuffer().put(Basic.s);
+        const dcb = ByteBuffer.allocateDirect(128).asCharBuffer().put(Basic.s);
         dcb.limit(Basic.s.length()).rewind();
-        const ca = [Basic.s, new java.lang.StringBuffer(Basic.s), new java.lang.StringBuilder(Basic.s), cb, dcb];
+        const ca = [Basic.s, new StringBuffer(Basic.s), new StringBuilder(Basic.s), cb, dcb];
 
         // Appendables/Writers
         const wa = [
-            [new java.io.CharArrayWriter(), Basic.testCharArrayWriter],
-            [new java.io.BufferedWriter(Basic.gw), Basic.testBufferedWriter],
+            [new CharArrayWriter(), Basic.testCharArrayWriter],
+            [new BufferedWriter(Basic.gw), Basic.testBufferedWriter],
             // abstract, no implementing classes in jdk
             // { new FilterWriter(), testFilterWriter },
-            [new java.io.FileWriter(Basic.#gf), Basic.testFileWriter],
-            [new java.io.OutputStreamWriter(Basic.gos), Basic.testOutputStreamWriter],
+            [new FileWriter(Basic.#gf), Basic.testFileWriter],
+            [new OutputStreamWriter(Basic.gos), Basic.testOutputStreamWriter],
             // covered by previous two test cases
             // { new PipedWriter(gw), testPipedWriter },
-            [new java.io.PrintWriter(Basic.gw), Basic.testPrintWriter],
-            [new java.io.StringWriter(), Basic.testStringWriter],
+            [new PrintWriter(Basic.gw), Basic.testPrintWriter],
+            [new StringWriter(), Basic.testStringWriter],
         ];
 
         for (let i = 0; i < ca.length; i++) {
             const a = ca[i];
             for (let j = 0; j < wa.length; j++) {
-                Basic.test(wa[j][0] as java.io.Writer, a, wa[j][1] as BasicRunnable);
+                Basic.test(wa[j][0] as Writer, a, wa[j][1] as BasicRunnable);
             }
 
             // other Appendables
-            Basic.test(new java.io.PrintStream(Basic.gos), a, Basic.testPrintStream);
-            Basic.test(java.nio.CharBuffer.allocate(128), a, Basic.testCharBuffer);
-            Basic.test(java.nio.ByteBuffer.allocateDirect(128).asCharBuffer(), a, Basic.testCharBuffer);
-            Basic.test(new java.lang.StringBuffer(), a, Basic.testStringBuffer);
-            Basic.test(new java.lang.StringBuilder(), a, Basic.testStringBuilder);
+            Basic.test(new PrintStream(Basic.gos), a, Basic.testPrintStream);
+            Basic.test(CharBuffer.allocate(128), a, Basic.testCharBuffer);
+            Basic.test(ByteBuffer.allocateDirect(128).asCharBuffer(), a, Basic.testCharBuffer);
+            Basic.test(new StringBuffer(), a, Basic.testStringBuffer);
+            Basic.test(new StringBuilder(), a, Basic.testStringBuilder);
         }
 
         expect(Basic.#fail).toBe(0);
         /*if (Basic.#fail !== 0) {
-            throw new java.lang.RuntimeException((Basic.#fail + Basic.#pass) + " tests: "
+            throw new RuntimeException((Basic.#fail + Basic.#pass) + " tests: "
                 + Basic.#fail + " failure(s), first", Basic.#first);
         } else {
-            java.lang.System.out.println("all " + (Basic.#fail + Basic.#pass) + " tests passed");
+            System.out.println("all " + (Basic.#fail + Basic.#pass) + " tests passed");
         }*/
 
     }
@@ -333,26 +360,26 @@ export class Basic extends JavaObject {
         Basic.#pass++;
     }
 
-    protected static fail(ex: java.lang.Throwable): void;
-    protected static fail(fs: java.lang.String | string, ex: java.lang.Throwable): void;
-    protected static fail(fs: java.lang.String | string, exp: java.lang.String, got: java.lang.String): void;
+    protected static fail(ex: Throwable): void;
+    protected static fail(fs: JavaString | string, ex: Throwable): void;
+    protected static fail(fs: JavaString | string, exp: JavaString, got: JavaString): void;
     protected static fail(...args: unknown[]): void {
         switch (args.length) {
             case 1: {
-                const [ex] = args as [java.lang.Throwable];
+                const [ex] = args as [Throwable];
 
                 if (Basic.#first === null) {
                     Basic.#first = ex;
                 }
 
-                java.lang.System.err.println("FAILED: unexpected exception");
+                System.err.println("FAILED: unexpected exception");
                 Basic.#fail++;
 
                 break;
             }
 
             case 2: {
-                const [fs, ex] = args as [java.lang.String | string, java.lang.Throwable];
+                const [fs, ex] = args as [JavaString | string, Throwable];
 
                 const s = "'" + fs + "': " + ex.getClass().getName() + " not thrown";
                 if (Basic.#first === null) {
@@ -360,35 +387,35 @@ export class Basic extends JavaObject {
                     Basic.#first = ex;
                 }
 
-                java.lang.System.err.println("FAILED: " + s);
+                System.err.println("FAILED: " + s);
                 Basic.#fail++;
 
                 break;
             }
 
             case 3: {
-                const [fs, exp, got] = args as [java.lang.String | string, java.lang.String, java.lang.String];
+                const [fs, exp, got] = args as [JavaString | string, JavaString, JavaString];
 
                 //expect(exp).toBe(got);
                 const s = "'" + fs + "': Expected '" + exp + "', got '" + got + "'";
                 if (Basic.#first === null) {
 
-                    Basic.#first = new java.lang.RuntimeException(s);
+                    Basic.#first = new RuntimeException(s);
                 }
 
-                java.lang.System.err.println("FAILED: " + s);
+                System.err.println("FAILED: " + s);
                 Basic.#fail++;
 
                 break;
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
 
-    protected static ck(s: string, exp: java.lang.String, got: java.lang.String): void {
+    protected static ck(s: string, exp: JavaString, got: JavaString): void {
         expect(got.valueOf()).toEqual(exp.valueOf());
         /*if (!exp.equals(got)) {
             Basic.fail(s, exp, got);
@@ -399,13 +426,13 @@ export class Basic extends JavaObject {
 
     }
 
-    private static newFile(): java.io.File | null {
+    private static newFile(): JavaFile | null {
         let f = null;
         try {
-            f = java.io.File.createTempFile("append", ".txt");
+            f = JavaFile.createTempFile("append", ".txt");
             f.deleteOnExit();
         } catch (x) {
-            if (x instanceof java.io.IOException) {
+            if (x instanceof IOException) {
                 Basic.fail(x);
             } else {
                 throw x;
@@ -415,7 +442,7 @@ export class Basic extends JavaObject {
         return f;
     }
 
-    private static test = (a: java.lang.Appendable, csq: java.lang.CharSequence, thunk: BasicRunnable): void => {
+    private static test = (a: Appendable, csq: CharSequence, thunk: BasicRunnable): void => {
         // appends that should always work
         const sp = [
             [0, 0], [11, 11], [11, 21], [0, 7],
@@ -430,7 +457,7 @@ export class Basic extends JavaObject {
                 thunk.run();
                 a = thunk.reset(a);
             } catch (x) {
-                if (x instanceof java.io.IOException) {
+                if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -446,12 +473,12 @@ export class Basic extends JavaObject {
             try {
                 a.append(csq, start, end);
                 Basic.fail("start = " + start + ", end = " + end,
-                    new java.lang.IndexOutOfBoundsException());
+                    new IndexOutOfBoundsException());
                 a = thunk.reset(a);
             } catch (x) {
-                if (x instanceof java.lang.IndexOutOfBoundsException) {
+                if (x instanceof IndexOutOfBoundsException) {
                     Basic.pass();
-                } else if (x instanceof java.io.IOException) {
+                } else if (x instanceof IOException) {
                     Basic.fail(x);
                 } else {
                     throw x;
@@ -467,7 +494,7 @@ export class Basic extends JavaObject {
             thunk.run();
             a = thunk.reset(a);
         } catch (x) {
-            if (x instanceof java.io.IOException) {
+            if (x instanceof IOException) {
                 Basic.fail(x);
             } else {
                 throw x;

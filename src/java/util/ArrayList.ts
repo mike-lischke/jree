@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AbstractList, ISubList } from "./AbstractList";
-import { Cloneable } from "../lang/Cloneable";
-import { RandomAccess } from "./RandomAccess";
-import { Serializable } from "../io/Serializable";
-import { Collection } from "./Collection";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { NullPointerException } from "../lang/NullPointerException";
-import { JavaString } from "../lang/String";
+import { AbstractList, ISubList } from "./AbstractList.js";
+import { Cloneable } from "../lang/Cloneable.js";
+import { RandomAccess } from "./RandomAccess.js";
+import { Serializable } from "../io/Serializable.js";
+import { Collection } from "./Collection.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { JavaString } from "../lang/String.js";
 
 /**
  * Resizable-array implementation of the List interface. Implements all optional list operations, and permits all

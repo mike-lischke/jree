@@ -3,22 +3,22 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { int, long } from "../../types";
+import { int, long } from "../../types.js";
 
-import { InputStream } from "./InputStream";
-import { AutoCloseable } from "../lang/AutoCloseable";
-import { FileChannel } from "../nio/channels/FileChannel";
-import { StandardOpenOption } from "../nio/file/StandardOpenOption";
-import { FileSystems } from "../nio/file/FileSystems";
-import { ByteBuffer } from "../nio/ByteBuffer";
-import { JavaFile } from "./File";
-import { FileDescriptor } from "./FileDescriptor";
-import { JavaString } from "../lang/String";
-import { NotImplementedError } from "../../NotImplementedError";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { JavaMath } from "../lang/Math";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IOException } from ".";
+import { InputStream } from "./InputStream.js";
+import { AutoCloseable } from "../lang/AutoCloseable.js";
+import { FileChannel } from "../nio/channels/FileChannel.js";
+import { StandardOpenOption } from "../nio/file/StandardOpenOption.js";
+import { FileSystems } from "../nio/file/FileSystems.js";
+import { ByteBuffer } from "../nio/ByteBuffer.js";
+import { JavaFile } from "./File.js";
+import { FileDescriptor } from "./FileDescriptor.js";
+import { JavaString } from "../lang/String.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { JavaMath } from "../lang/Math.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IOException } from "../io/IOException.js";
 
 export class FileInputStream extends InputStream implements AutoCloseable {
     #channel: FileChannel;

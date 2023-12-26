@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { JavaIterable } from "../lang/Iterable";
-import { NullPointerException } from "../lang/NullPointerException";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { Predicate } from "./function/Predicate";
-import { JavaIterator } from "./Iterator";
-import { Spliterator } from "./Spliterator";
-import { Stream } from "./stream";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { JavaIterable } from "../lang/Iterable.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { Predicate } from "./function/Predicate.js";
+import { JavaIterator } from "./Iterator.js";
+import { Spliterator } from "./Spliterator.js";
+import { Stream } from "./stream/Stream.js";
 
 export interface Collection<T> extends JavaIterable<T> {
     /**

@@ -30,44 +30,35 @@
 
 /* cspell: disable */
 
-import { I, JavaObject, S, java } from "../../../../../src";
-import { org } from "../../../../org/org";
-import { Assert } from "../../../../org/testng/Assert";
-import { CollectionAsserts } from "../Collection/testlibrary/CollectionAsserts";
-import { CollectionSupplier } from "../Collection/testlibrary/CollectionSupplier";
-import { ExtendsAbstractList } from "../Collection/testlibrary/ExtendsAbstractList";
+import { java } from "../../../../../src/index.js";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { Arrays } from "../../../../../src/java/util/Arrays.js";
+import { Collections } from "../../../../../src/java/util/Collections.js";
+import { ConcurrentModificationException } from "../../../../../src/java/util/ConcurrentModificationException.js";
+import { LinkedList } from "../../../../../src/java/util/LinkedList.js";
+import { Vector } from "../../../../../src/java/util/Vector.js";
+import { CopyOnWriteArrayList } from "../../../../../src/java/util/concurrent/CopyOnWriteArrayList.js";
+import { AtomicBoolean } from "../../../../../src/java/util/concurrent/atomic/AtomicBoolean.js";
+import { AtomicInteger } from "../../../../../src/java/util/concurrent/atomic/AtomicInteger.js";
+import { Consumer } from "../../../../../src/java/util/function/Consumer.js";
+import { I, S } from "../../../../../src/templates.js";
+import { org } from "../../../../index.js";
+import { Assert } from "../../../../org/testng/Assert.js";
+import { DataProvider } from "../../../../org/testng/annotations/Annotations.js";
+import { CollectionAsserts } from "../Collection/testlibrary/CollectionAsserts.js";
+import { CollectionSupplier } from "../Collection/testlibrary/CollectionSupplier.js";
+import { ExtendsAbstractList } from "../Collection/testlibrary/ExtendsAbstractList.js";
+import { JavaFunction } from "../../../../../src/java/util/function/Function.js";
+import { Collection } from "../../../../../src/java/util/Collection.js";
+import { List } from "../../../../../src/java/util/List.js";
+import { Stack } from "../../../../../src/java/util/Stack.js";
 
-type List<E> = java.util.List<E>;
-type Arrays = java.util.Arrays;
-const Arrays = java.util.Arrays;
-type Collection<E> = java.util.Collection<E>;
-type Integer = java.lang.Integer;
-const Integer = java.lang.Integer;
-type AtomicInteger = java.util.concurrent.atomic.AtomicInteger;
-const AtomicInteger = java.util.concurrent.atomic.AtomicInteger;
-type Consumer<T> = java.util.function.Consumer<T>;
-const DataProvider = org.testng.annotations.DataProvider;
-type LinkedList<E> = java.util.LinkedList<E>;
-const LinkedList = java.util.LinkedList;
-type Collections = java.util.Collections;
-const Collections = java.util.Collections;
-type ArrayList<E> = java.util.ArrayList<E>;
-const ArrayList = java.util.ArrayList;
-type Vector<E> = java.util.Vector<E>;
-const Vector = java.util.Vector;
-type Stack<E> = java.util.Stack<E>;
-const Stack = java.util.Stack;
-type CopyOnWriteArrayList<E> = java.util.concurrent.CopyOnWriteArrayList<E>;
-const CopyOnWriteArrayList = java.util.concurrent.CopyOnWriteArrayList;
 const Test = org.testng.annotations.Test;
 const assertEquals = org.testng.Assert.assertEquals;
 const assertTrue = org.testng.Assert.assertTrue;
 const assertFalse = org.testng.Assert.assertFalse;
-type AtomicBoolean = java.util.concurrent.atomic.AtomicBoolean;
-const AtomicBoolean = java.util.concurrent.atomic.AtomicBoolean;
-type ConcurrentModificationException = java.util.ConcurrentModificationException;
-const ConcurrentModificationException = java.util.ConcurrentModificationException;
-type Function<T, R> = java.util.function.Function<T, R>;
 
 /**
  * @test
@@ -80,7 +71,7 @@ type Function<T, R> = java.util.function.Function<T, R>;
 export class ListDefaults extends JavaObject {
 
     // Suppliers of lists that can support structural modifications
-    private static readonly LIST_STRUCT_MOD_SUPPLIERS = Arrays.asList<Function<Collection<Integer>, List<Integer>>>(
+    private static readonly LIST_STRUCT_MOD_SUPPLIERS = Arrays.asList<JavaFunction<Collection<Integer>, List<Integer>>>(
         (c) => { return new java.util.ArrayList<Integer>(c); },
         (c) => { return new java.util.LinkedList<Integer>(c); },
         (c) => { return new java.util.Vector<Integer>(c); },
@@ -89,7 +80,7 @@ export class ListDefaults extends JavaObject {
     );
 
     // Suppliers of lists that can support in place modifications
-    private static readonly LIST_SUPPLIERS = Arrays.asList<Function<Collection<Integer>, List<Integer>>>(
+    private static readonly LIST_SUPPLIERS = Arrays.asList<JavaFunction<Collection<Integer>, List<Integer>>>(
         (c) => { return new java.util.ArrayList<Integer>(c); },
         (c) => { return new java.util.LinkedList<Integer>(c); },
         (c) => { return new java.util.Vector<Integer>(c); },
@@ -99,7 +90,7 @@ export class ListDefaults extends JavaObject {
     );
 
     // Suppliers of lists supporting CMEs
-    private static readonly LIST_CME_SUPPLIERS = Arrays.asList<Function<Collection<Integer>, List<Integer>>>(
+    private static readonly LIST_CME_SUPPLIERS = Arrays.asList<JavaFunction<Collection<Integer>, List<Integer>>>(
         () => { return new java.util.ArrayList<Integer>(); },
         () => { return new java.util.Vector<Integer>(); },
     );

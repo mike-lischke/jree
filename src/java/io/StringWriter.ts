@@ -2,12 +2,13 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { char, int } from "../../types";
 
-import { StringBuffer } from "../lang/StringBuffer";
-import { CharSequence } from "../lang/CharSequence";
-import { Writer } from "./Writer";
-import { JavaString } from "../lang";
+import { char, int } from "../../types.js";
+
+import { StringBuffer } from "../lang/StringBuffer.js";
+import { CharSequence } from "../lang/CharSequence.js";
+import { Writer } from "./Writer.js";
+import { JavaString } from "../lang/String.js";
 
 export class StringWriter extends Writer {
     #buffer = new StringBuffer();

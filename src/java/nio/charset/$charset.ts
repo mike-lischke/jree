@@ -2,6 +2,6 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import * as charset from "./index";
+import * as charset from "./index.js";
 
 export { charset };

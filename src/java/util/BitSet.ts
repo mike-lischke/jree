@@ -8,12 +8,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../lang/Object";
+import { JavaObject } from "../lang/Object.js";
 
-import { MurmurHash } from "../../MurmurHash";
-import { BitSetIterator } from "./BitSetIterator";
-import { Serializable } from "../io/Serializable";
-import { Cloneable } from "../lang/Cloneable";
+import { MurmurHash } from "../../MurmurHash.js";
+import { BitSetIterator } from "./BitSetIterator.js";
+import { Serializable } from "../io/Serializable.js";
+import { Cloneable } from "../lang/Cloneable.js";
 
 // The code in this file was taken from the antlr4ts package.
 

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../../lang/Object";
+import { IReflection } from "../../lang/Object.js";
 
 /**
  * An object that configures how to copy or move a file.

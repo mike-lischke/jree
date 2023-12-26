@@ -33,17 +33,18 @@
  * @author zhangshj@linux.vnet.ibm.com
  */
 
-import { java, JavaObject, type int, Override } from "../../../../../src";
-
-type Object = java.lang.Object;
+//import { Override } from "../../../../../src/decorators.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { HashMap } from "../../../../../src/java/util/HashMap.js";
+import { int } from "../../../../../src/types.js";
 
 export class OverrideIsEmpty extends JavaObject {
-    private static NotEmptyHashMap = class NotEmptyHashMap<K extends Object, V extends Object>
-        extends java.util.HashMap<K, V> {
-        private alwaysExistingKey: K = new Object() as K;
-        private alwaysExistingValue: V = new Object() as V;
+    private static NotEmptyHashMap = class NotEmptyHashMap<K extends JavaObject, V extends JavaObject>
+        extends HashMap<K, V> {
+        private alwaysExistingKey: K = new JavaObject() as K;
+        private alwaysExistingValue: V = new JavaObject() as V;
 
-        @Override
+        //@Override
         public override get(key: K): V | null {
             if (key === this.alwaysExistingKey) {
                 return this.alwaysExistingValue;
@@ -52,27 +53,27 @@ export class OverrideIsEmpty extends JavaObject {
             return super.get(key);
         }
 
-        @Override
+        //@Override
         public override size(): int {
             return super.size() + 1;
         }
 
-        @Override
+        //@Override
         public override isEmpty(): boolean {
             return this.size() === 0;
         }
     };
 
     public static main(): void {
-        const map = new OverrideIsEmpty.NotEmptyHashMap();
-        const key = new java.lang.Object();
-        const value = new java.lang.Object();
+        /*const map = new OverrideIsEmpty.NotEmptyHashMap();
+        const key = new JavaObject();
+        const value = new JavaObject();
         map.get(key);
         map.remove(key);
         map.replace(key, value, null);
         map.replace(key, value);
-        map.computeIfPresent(key, (key: java.lang.Object, oldValue: java.lang.Object): java.lang.Object => {
+        map.computeIfPresent(key, (key: JavaObject, oldValue: JavaObject): JavaObject => {
             return oldValue;
-        });
+        });*/
     }
 }

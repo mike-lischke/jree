@@ -3,15 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../..";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { Charset } from "../nio/charset/Charset";
-import { JavaFile } from "./File";
-import { FileDescriptor } from "./FileDescriptor";
-import { FileInputStream } from "./FileInputStream";
-import { InputStreamReader } from "./InputStreamReader";
+import { JavaString } from "../lang/String.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { JavaFile } from "./File.js";
+import { FileDescriptor } from "./FileDescriptor.js";
+import { FileInputStream } from "./FileInputStream.js";
+import { InputStreamReader } from "./InputStreamReader.js";
 
-export class FileReader extends InputStreamReader {
+export class JavaFileReader extends InputStreamReader {
 
     /** Creates a new FileReader, given the File to read, using the platform's default charset. */
     public constructor(file: JavaFile);

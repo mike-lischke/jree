@@ -3,38 +3,38 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./Serializable";
-export * from "./Closeable";
-export * from "./Flushable";
+export * from "./Serializable.js";
+export * from "./Closeable.js";
+export * from "./Flushable.js";
 
-export * from "./IOException";
-export * from "./FileNotFoundException";
-export * from "./UnsupportedEncodingException";
-export * from "./ObjectStreamException";
-export * from "./InvalidClassException";
+export * from "./IOException.js";
+export * from "./FileNotFoundException.js";
+export * from "./UnsupportedEncodingException.js";
+export * from "./ObjectStreamException.js";
+export * from "./InvalidClassException.js";
 
-export * from "./FileDescriptor";
-export { JavaFile as File } from "./File";
-export * from "./Console";
-export * from "./PrintStream";
+export * from "./FileDescriptor.js";
+export { JavaFile as File } from "./File.js";
+export * from "./Console.js";
+export * from "./PrintStream.js";
 
-export * from "./InputStream";
-export * from "./OutputStream";
-export * from "./BufferedOutputStream";
-export * from "./Reader";
-export * from "./Writer";
-export * from "./InputStreamReader";
-export * from "./OutputStreamWriter";
-export * from "./BufferedReader";
-export * from "./BufferedWriter";
-export * from "./PrintWriter";
+export * from "./InputStream.js";
+export * from "./OutputStream.js";
+export * from "./BufferedOutputStream.js";
+export * from "./Reader.js";
+export * from "./Writer.js";
+export * from "./InputStreamReader.js";
+export * from "./OutputStreamWriter.js";
+export * from "./BufferedReader.js";
+export * from "./BufferedWriter.js";
+export * from "./PrintWriter.js";
 
-export * from "./StringReader";
-export * from "./StringWriter";
-export * from "./FileReader";
-export * from "./FileWriter";
-export * from "./FileInputStream";
-export * from "./FileOutputStream";
-export * from "./FilterOutputStream";
-export * from "./CharArrayWriter";
-export * from "./ByteArrayOutputStream";
+export * from "./StringReader.js";
+export * from "./StringWriter.js";
+export { JavaFileReader as FileReader } from "./FileReader.js";
+export * from "./FileWriter.js";
+export * from "./FileInputStream.js";
+export * from "./FileOutputStream.js";
+export * from "./FilterOutputStream.js";
+export * from "./CharArrayWriter.js";
+export * from "./ByteArrayOutputStream.js";

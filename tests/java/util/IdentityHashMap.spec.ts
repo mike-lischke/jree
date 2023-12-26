@@ -5,9 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { NotImplementedError } from "../../../src/NotImplementedError";
-import { HashMap } from "../../../src/java/util/HashMap";
-import { IdentityHashMap } from "../../../src/java/util/IdentityHashMap";
+import { NotImplementedError } from "../../../src/NotImplementedError.js";
+import { HashMap } from "../../../src/java/util/HashMap.js";
+import { IdentityHashMap } from "../../../src/java/util/IdentityHashMap.js";
 
 describe("HashMap Tests", () => {
     it("Basic Map Operations", () => {

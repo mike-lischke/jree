@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "../../lang/Object";
-import { Charset } from "./Charset";
+import { JavaObject } from "../../lang/Object.js";
+import { Charset } from "./Charset.js";
 
 export class StandardCharsets extends JavaObject {
     /** ISO Latin Alphabet No. */

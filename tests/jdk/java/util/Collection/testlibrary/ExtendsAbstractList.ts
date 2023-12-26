@@ -23,15 +23,17 @@
  * questions.
  */
 
-import { java, int, S, JavaObject } from "../../../../../../src";
-
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-type Collection<E> = java.util.Collection<E>;
-const Collection = java.util.Collection;
-type Iterator<T> = java.util.Iterator<T>;
-type List<E> = java.util.List<E>;
-type Supplier<T> = java.util.function.Supplier<T>;
+import { IllegalArgumentException } from "../../../../../../src/java/lang/IllegalArgumentException.js";
+import { JavaObject } from "../../../../../../src/java/lang/Object.js";
+import { AbstractList } from "../../../../../../src/java/util/AbstractList.js";
+import { ArrayList } from "../../../../../../src/java/util/ArrayList.js";
+import { Collection } from "../../../../../../src/java/util/Collection.js";
+import { JavaIterator } from "../../../../../../src/java/util/Iterator.js";
+import { List } from "../../../../../../src/java/util/List.js";
+import { Consumer } from "../../../../../../src/java/util/function/Consumer.js";
+import { Supplier } from "../../../../../../src/java/util/function/Supplier.js";
+import { S } from "../../../../../../src/templates.js";
+import { int } from "../../../../../../src/types.js";
 
 /**
  *
@@ -41,11 +43,11 @@ type Supplier<T> = java.util.function.Supplier<T>;
  *
  * @param E type of list elements
  */
-export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
+export class ExtendsAbstractList<E> extends AbstractList<E> {
 
     protected readonly list: List<E>;
 
-    public constructor(source?: Supplier<List<E>> | java.util.Collection<E>) {
+    public constructor(source?: Supplier<List<E>> | Collection<E>) {
         super();
 
         if (source === undefined) {
@@ -77,7 +79,7 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
             }
 
             default: {
-                throw new java.lang.IllegalArgumentException(S`Invalid number of arguments`);
+                throw new IllegalArgumentException(S`Invalid number of arguments`);
             }
         }
     }
@@ -106,9 +108,9 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
         return this.list.set(index, element);
     }
 
-    public override iterator(): Iterator<E> {
-        return new class extends JavaObject implements Iterator<E> {
-            public source: java.util.Iterator<E>;
+    public override iterator(): JavaIterator<E> {
+        return new class extends JavaObject implements JavaIterator<E> {
+            public source: JavaIterator<E>;
 
             public constructor(private $outer: ExtendsAbstractList<E>) {
                 super();
@@ -116,7 +118,7 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
                 this.source = $outer.list.iterator();
             }
 
-            public forEachRemaining(action: java.util.function.Consumer<E>): void {
+            public forEachRemaining(action: Consumer<E>): void {
                 this.source.forEachRemaining(action);
             }
 
@@ -138,7 +140,7 @@ export class ExtendsAbstractList<E> extends java.util.AbstractList<E> {
         return this.list.size();
     }
 
-    public override subList(fromIndex: number, toIndex: number): java.util.List<E> {
+    public override subList(fromIndex: number, toIndex: number): List<E> {
         return this.list.subList(fromIndex, toIndex);
     }
 

@@ -3,13 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaObject } from "./Object";
+import { JavaObject } from "./Object.js";
 
-import { StackTraceElement } from "./StackTraceElement";
+import { StackTraceElement } from "./StackTraceElement.js";
 
 // import { System } from "./System"; creates a circular dependency
-import type { JavaString } from "./String";
-import type { PrintWriter, PrintStream } from "../io";
+import type { JavaString } from "./String.js";
+import type { PrintWriter } from "../io/PrintWriter.js";
+import type { PrintStream } from "../io/PrintStream.js";
 
 /**
  * The Throwable class is the superclass of all errors and exceptions in the Java language.
@@ -135,8 +136,8 @@ export class Throwable extends JavaObject {
      */
     public addSuppressed(exception: Throwable): void {
         if (this === exception) {
-            // Dynamically import the exception class to avoid a circular dependency.
-            void import("./IllegalArgumentException").then((module) => {
+            // Dynamically import the exception class to avoid a circular dependenc.jsy.
+            void import("./IllegalArgumentException.js").then((module) => {
                 throw new module.IllegalArgumentException();
             });
 
@@ -144,7 +145,7 @@ export class Throwable extends JavaObject {
         }
 
         if (exception === null) {
-            void import("./NullPointerException").then((module) => {
+            void import("./NullPointerException.js").then((module) => {
                 throw new module.NullPointerException();
             });
 

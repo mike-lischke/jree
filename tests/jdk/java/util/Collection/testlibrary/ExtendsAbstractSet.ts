@@ -23,15 +23,14 @@
  * questions.
  */
 
-import { java, int, JavaObject } from "../../../../../../src";
-
-const HashSet = java.util.HashSet;
-type HashSet<E> = java.util.HashSet<E>;
-type Collection<E> = java.util.Collection<E>;
-const Collection = java.util.Collection;
-type Iterator<T> = java.util.Iterator<T>;
-type Set<E> = java.util.Set<E>;
-type Supplier<T> = java.util.function.Supplier<T>;
+import { JavaObject } from "../../../../../../src/java/lang/Object.js";
+import { Collection } from "../../../../../../src/java/util/Collection.js";
+import { HashSet } from "../../../../../../src/java/util/HashSet.js";
+import { JavaIterator } from "../../../../../../src/java/util/Iterator.js";
+import { JavaSet } from "../../../../../../src/java/util/Set.js";
+import { Consumer } from "../../../../../../src/java/util/function/Consumer.js";
+import { Supplier } from "../../../../../../src/java/util/function/Supplier.js";
+import { int } from "../../../../../../src/types.js";
 
 /**
  * A simple mutable set implementation that provides only default
@@ -42,9 +41,9 @@ type Supplier<T> = java.util.function.Supplier<T>;
  */
 export class ExtendsAbstractSet<E> extends HashSet<E> {
 
-    protected readonly set: Set<E>;
+    protected readonly set: JavaSet<E>;
 
-    public constructor(source: java.util.Collection<E> | Supplier<Set<E>>) {
+    public constructor(source: Collection<E> | Supplier<JavaSet<E>>) {
         super();
         if (source === undefined) {
             this.set = new HashSet<E>();
@@ -64,15 +63,16 @@ export class ExtendsAbstractSet<E> extends HashSet<E> {
         return this.set.remove(element);
     }
 
-    public override iterator(): Iterator<E> {
-        return new class extends JavaObject implements Iterator<E> {
-            public source = this.$outer.set.iterator();
+    public override iterator(): JavaIterator<E> {
+        return new class extends JavaObject implements JavaIterator<E> {
+            public source;
 
             public constructor(private readonly $outer: ExtendsAbstractSet<E>) {
                 super();
+                this.source = this.$outer.set.iterator();
             }
 
-            public forEachRemaining(action: java.util.function.Consumer<E>): void {
+            public forEachRemaining(action: Consumer<E>): void {
                 this.source.forEachRemaining(action);
             }
 

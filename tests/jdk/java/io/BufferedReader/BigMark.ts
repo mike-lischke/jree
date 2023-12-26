@@ -23,6 +23,15 @@
  * questions.
  */
 
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { JavaFile } from "../../../../../src/java/io/File.js";
+import { JavaFileReader } from "../../../../../src/java/io/FileReader.js";
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { OutOfMemoryError } from "../../../../../src/java/lang/OutOfMemoryError.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { System } from "../../../../../src/java/lang/System.js";
+
 /* @test
    @summary BufferedReader should throw an OutOfMemoryError when the
             read-ahead limit is very large
@@ -31,20 +40,18 @@
    @run main/othervm BigMark
 */
 
-import { java, JavaObject } from "../../../../../src";
-
 export class BigMark extends JavaObject {
 
-    public static main = (args: java.lang.String[]): void => {
-        const dir = java.lang.System.getProperty("test.src", ".");
-        const br = new java.io.BufferedReader(new java.io.FileReader(new java.io.File(dir, "BigMark.ts")), 100);
+    public static main = (args: JavaString[]): void => {
+        const dir = System.getProperty("test.src", ".");
+        const br = new BufferedReader(new JavaFileReader(new JavaFile(dir, "BigMark.ts")), 100);
 
         br.mark(200);
         br.readLine();
 
         expect(() => {
-            br.mark(java.lang.Integer.MAX_VALUE);
+            br.mark(Integer.MAX_VALUE);
             br.readLine();
-        }).toThrow(java.lang.OutOfMemoryError);
+        }).toThrow(OutOfMemoryError);
     };
 }

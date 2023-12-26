@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { CharacterCodingException } from "./CharacterCodingException";
+import { CharacterCodingException } from "./CharacterCodingException.js";
 
 export class MalformedInputException extends CharacterCodingException {
     #length: number;

@@ -23,6 +23,13 @@
  * questions.
  */
 
+import { BufferedReader } from "../../../../../src/java/io/BufferedReader.js";
+import { Reader } from "../../../../../src/java/io/Reader.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { CharBuffer } from "../../../../../src/java/nio/CharBuffer.js";
+import { char, int } from "../../../../../src/types.js";
+
 /* @test
    @bug 4090383
    @summary Ensure that BufferedReader's read method will fill the target array
@@ -34,15 +41,13 @@
 /* cspell: disable */
 /* eslint-disable jsdoc/check-tag-names */
 
-import { java, JavaObject, int, char } from "../../../../../src";
-
 export class Fill extends JavaObject {
 
     /**
      * A simple Reader that is always ready but may read fewer than the
      * requested number of characters
      */
-    private static Source = class Source extends java.io.Reader {
+    private static Source = class Source extends Reader {
 
         public shortFall: int;
         public next = 0;
@@ -55,7 +60,7 @@ export class Fill extends JavaObject {
         public override read(): char;
         public override read(buffer: Uint16Array): int;
         public override read(target: Uint16Array, offset: int, length: int): int;
-        public override read(target: java.nio.CharBuffer): int;
+        public override read(target: CharBuffer): int;
         public override read(...args: unknown[]): int {
             switch (args.length) {
                 case 0: {
@@ -96,7 +101,7 @@ export class Fill extends JavaObject {
 
     };
 
-    public static main = (args: java.lang.String[]): void => {
+    public static main = (args: JavaString[]): void => {
         for (let i = 0; i < 8; i++) {
             Fill.go(i);
         }
@@ -111,7 +116,7 @@ export class Fill extends JavaObject {
      */
     protected static go = (shortFall: int): void => {
 
-        const r = new java.io.BufferedReader(new Fill.Source(shortFall), 10);
+        const r = new BufferedReader(new Fill.Source(shortFall), 10);
         const cbuf = new Uint16Array(8);
 
         const n1 = r.read(cbuf);

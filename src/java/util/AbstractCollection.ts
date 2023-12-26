@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaString } from "../lang";
-import { JavaObject } from "../lang/Object";
-import { Collection } from "./Collection";
-import { Consumer } from "./function/Consumer";
-import { Predicate } from "./function/Predicate";
-import { JavaIterator } from "./Iterator";
-import { Spliterator } from "./Spliterator";
-import { Stream } from "./stream";
+import { JavaString } from "../lang/String.js";
+import { JavaObject } from "../lang/Object.js";
+import { Collection } from "./Collection.js";
+import { Consumer } from "./function/Consumer.js";
+import { Predicate } from "./function/Predicate.js";
+import { JavaIterator } from "./Iterator.js";
+import { Spliterator } from "./Spliterator.js";
+import { Stream } from "./stream/Stream.js";
 
 /**
  * This class provides a skeletal implementation of the Collection interface, to minimize the effort required to

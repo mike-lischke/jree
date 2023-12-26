@@ -4,7 +4,8 @@
  */
 
 import * as path from "path";
-import { JavaString } from "../src/java/lang/String";
+
+import { JavaString } from "../src/java/lang/String.js";
 
 /**
  * Loads the given file and runs the entry method.

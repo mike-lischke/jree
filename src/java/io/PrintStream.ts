@@ -5,24 +5,24 @@
 
 import printf from "printf";
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { char, double, float, int, long } from "../../types";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { char, double, float, int, long } from "../../types.js";
 
-import { CharSequence } from "../lang/CharSequence";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
-import { JavaObject } from "../lang/Object";
-import { JavaString } from "../lang/String";
-import { System } from "../lang/System";
-import { CharBuffer } from "../nio/CharBuffer";
-import { Charset } from "../nio/charset/Charset";
-import { CharsetEncoder } from "../nio/charset/CharsetEncoder";
-import { Locale } from "../util/Locale";
-import { JavaFile } from "./File";
-import { FileOutputStream } from "./FileOutputStream";
+import { CharSequence } from "../lang/CharSequence.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
+import { JavaObject } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
+import { System } from "../lang/System.js";
+import { CharBuffer } from "../nio/CharBuffer.js";
+import { Charset } from "../nio/charset/Charset.js";
+import { CharsetEncoder } from "../nio/charset/CharsetEncoder.js";
+import { Locale } from "../util/Locale.js";
+import { JavaFile } from "./File.js";
+import { FileOutputStream } from "./FileOutputStream.js";
 
-import { FilterOutputStream } from "./FilterOutputStream";
-import { OutputStream } from "./OutputStream";
+import { FilterOutputStream } from "./FilterOutputStream.js";
+import { OutputStream } from "./OutputStream.js";
 
 /** A print stream is an output stream that prints representations of various data values conveniently. */
 export class PrintStream extends FilterOutputStream {

@@ -4,16 +4,16 @@
  */
 
 import { Map } from "immutable";
-import { Serializable } from "../io/Serializable";
-import { Cloneable } from "../lang/Cloneable";
+import { Serializable } from "../io/Serializable.js";
+import { Cloneable } from "../lang/Cloneable.js";
 
-import { Collection } from "./Collection";
-import { JavaMap } from "./Map";
-import { MapEntryView } from "./MapEntryView";
+import { Collection } from "./Collection.js";
+import { JavaMap } from "./Map.js";
+import { MapEntryView } from "./MapEntryView.js";
 
-import { MapKeyView } from "./MapKeyView";
-import { MapValueView } from "./MapValueView";
-import { JavaSet } from "./Set";
+import { MapKeyView } from "./MapKeyView.js";
+import { MapValueView } from "./MapValueView.js";
+import { JavaSet } from "./Set.js";
 
 /**
  * This interface provides shared access to the backend of a HashMap instance for all currently active key, value

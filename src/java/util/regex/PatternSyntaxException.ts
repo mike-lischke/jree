@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../..";
-import { S } from "../../../templates";
-import { IllegalArgumentException } from "../../lang/IllegalArgumentException";
+import { S } from "../../../templates.js";
+import { IllegalArgumentException } from "../../lang/IllegalArgumentException.js";
+import { JavaString } from "../../lang/String.js";
 
 export class PatternSyntaxException extends IllegalArgumentException {
-    public constructor(private desc: java.lang.String, private regex: java.lang.String, private index: number) {
+    public constructor(private desc: JavaString, private regex: JavaString, private index: number) {
         let message;
         if (index < 0) {
             message = S`${desc}: ${regex}`;
@@ -22,7 +22,7 @@ export class PatternSyntaxException extends IllegalArgumentException {
     /**
      * @returns The description of the error
      */
-    public getDescription(): java.lang.String {
+    public getDescription(): JavaString {
         return this.desc;
     }
 
@@ -34,7 +34,7 @@ export class PatternSyntaxException extends IllegalArgumentException {
     /**
      * @returns The erroneous regular-expression pattern
      */
-    public getPattern(): java.lang.String {
+    public getPattern(): JavaString {
         return this.regex;
     }
 }

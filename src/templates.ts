@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { JavaBoolean } from "./java/lang/Boolean";
-import { Integer } from "./java/lang/Integer";
-import { JavaString } from "./java/lang/String";
+import { JavaBoolean } from "./java/lang/Boolean.js";
+import { Integer } from "./java/lang/Integer.js";
+import { JavaString } from "./java/lang/String.js";
 
 // Tagged templates for emulation of automatic boxing of primitive values.
 

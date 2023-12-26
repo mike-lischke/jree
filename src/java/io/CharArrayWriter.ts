@@ -2,14 +2,15 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import type { char, int } from "../../types";
 
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
-import type { CharSequence } from "../lang/CharSequence";
-import { Writer } from "./Writer";
-import { JavaString } from "../lang/String";
-import { convertStringToUTF16 } from "../../string-helpers";
-import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException";
+import type { char, int } from "../../types.js";
+
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
+import type { CharSequence } from "../lang/CharSequence.js";
+import { Writer } from "./Writer.js";
+import { JavaString } from "../lang/String.js";
+import { convertStringToUTF16 } from "../../string-helpers.js";
+import { IndexOutOfBoundsException } from "../lang/IndexOutOfBoundsException.js";
 
 /**
  * This class implements a character buffer that can be used as an Writer. The buffer automatically grows when data is

@@ -36,29 +36,23 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject, int } from "../../../../../src";
-
-type List<E> = java.util.List<E>;
-const Integer = java.lang.Integer;
-type Integer = java.lang.Integer;
-const StackOverflowError = java.lang.StackOverflowError;
-type StackOverflowError = java.lang.StackOverflowError;
-const Arrays = java.util.Arrays;
-type Arrays = java.util.Arrays;
-const ArrayList = java.util.ArrayList;
-type ArrayList<E> = java.util.ArrayList<E>;
-const LinkedList = java.util.LinkedList;
-type LinkedList<E> = java.util.LinkedList<E>;
-const Vector = java.util.Vector;
-type Vector<E> = java.util.Vector<E>;
-const Collections = java.util.Collections;
-type Collections = java.util.Collections;
+import { Integer } from "../../../../../src/java/lang/Integer.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { StackOverflowError } from "../../../../../src/java/lang/StackOverflowError.js";
+import { AbstractList } from "../../../../../src/java/util/AbstractList.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { Arrays } from "../../../../../src/java/util/Arrays.js";
+import { Collections } from "../../../../../src/java/util/Collections.js";
+import { LinkedList } from "../../../../../src/java/util/LinkedList.js";
+import { List } from "../../../../../src/java/util/List.js";
+import { Vector } from "../../../../../src/java/util/Vector.js";
+import { int } from "../../../../../src/types.js";
 
 export class NestedSubList extends JavaObject {
 
     protected static readonly NEST_LIMIT = 65536;
 
-    private static MyList = class MyList extends java.util.AbstractList<Integer> {
+    private static MyList = class MyList extends AbstractList<Integer> {
         public constructor() {
             super();
         }
@@ -66,7 +60,7 @@ export class NestedSubList extends JavaObject {
         public override  size(): int { return 1; }
     };
 
-    public static lists(): Array<[java.lang.Object, boolean]> {
+    public static lists(): Array<[JavaObject, boolean]> {
         const MODIFIABLE = true;
         const NON_MODIFIABLE = false;
         const c = Arrays.asList(new Integer(42));

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export * from "./TestException";
-export * from "./Assert";
+export * from "./TestException.js";
+export * from "./Assert.js";
 
-export * from "./annotations/$annotations";
+export * from "./annotations/$annotations.js";

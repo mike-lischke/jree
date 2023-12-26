@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Integer } from "../../lang/Integer";
-import { BaseStream } from "./BaseStream";
+import { Integer } from "../../lang/Integer.js";
+import { BaseStream } from "./BaseStream.js";
 
 export interface IntStream extends BaseStream<Integer, IntStream> {
     /** @returns an empty sequential IntStream. */

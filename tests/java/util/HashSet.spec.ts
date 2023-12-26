@@ -5,8 +5,9 @@
  * See LICENSE-MIT.txt file for more info.
  */
 
-import { java } from "../../../src";
-import { JavaObject } from "../../../src/java/lang/Object";
+import { JavaObject } from "../../../src/java/lang/Object.js";
+import { ArrayList } from "../../../src/java/util/ArrayList.js";
+import { HashSet } from "../../../src/java/util/HashSet.js";
 
 // Object which does not conform to IEquatable.
 interface ITest1 {
@@ -38,10 +39,10 @@ class Test extends JavaObject {
 
 describe("HashSet Tests", () => {
     it("Set Creation", () => {
-        const set1 = new java.util.HashSet<string>();
+        const set1 = new HashSet<string>();
         expect(set1.size()).toBe(0);
 
-        const set2 = new java.util.HashSet<number>();
+        const set2 = new HashSet<number>();
         for (let i = 0; i < 10; ++i) {
             set2.add(i);
         }
@@ -54,7 +55,7 @@ describe("HashSet Tests", () => {
     });
 
     it("Set Manipulation", () => {
-        const set1 = new java.util.HashSet<ITest1>();
+        const set1 = new HashSet<ITest1>();
         set1.add({ a: 1, b: "1" });
         set1.add({ a: 1, b: "1" });
         set1.add({ a: 2, b: "2" });
@@ -63,7 +64,7 @@ describe("HashSet Tests", () => {
         // as they do not conform to the IEquatable interface.
         expect(set1.size()).toBe(3);
 
-        const set2 = new java.util.HashSet<Test>();
+        const set2 = new HashSet<Test>();
         set2.add(new Test(1, "1"));
         set2.add(new Test(1, "1"));
         set2.add(new Test(2, "2"));
@@ -84,7 +85,7 @@ describe("HashSet Tests", () => {
         expect(set2.size()).toBe(1);
         expect(set2.contains(new Test(1, "1"))).toBe(false);
 
-        const set3 = new java.util.HashSet<Test>();
+        const set3 = new HashSet<Test>();
         set3.add(new Test(1, "1"));
         set3.add(new Test(2, "2"));
         set3.add(new Test(3, "3"));
@@ -93,7 +94,7 @@ describe("HashSet Tests", () => {
         expect(set2.size()).toBe(1);
         expect(set2.contains(new Test(2, "2"))).toBe(true);
 
-        const set4 = new java.util.HashSet<Test>();
+        const set4 = new HashSet<Test>();
         set4.add(new Test(1, "1"));
         set4.add(new Test(2, "2"));
         set4.add(new Test(3, "3"));
@@ -109,13 +110,13 @@ describe("HashSet Tests", () => {
     });
 
     it("Set Equality", () => {
-        const set1 = new java.util.HashSet<ITest1>();
+        const set1 = new HashSet<ITest1>();
         set1.add({ a: 13, b: "13" });
 
         expect(set1.equals(set1)).toBe(true);
         expect(set1.equals(13)).toBeFalsy();
 
-        const set2 = new java.util.HashSet<ITest1>();
+        const set2 = new HashSet<ITest1>();
         set2.add({ a: 1, b: "1" });
         set2.add({ a: 7, b: "2" });
         set2.add({ a: 13, b: "3" });
@@ -123,12 +124,12 @@ describe("HashSet Tests", () => {
         expect(set1.equals(set2)).toBe(false);
         expect(set1.hashCode()).not.toBe(set2.hashCode());
 
-        const set3 = new java.util.HashSet<Test>();
+        const set3 = new HashSet<Test>();
         set3.add(new Test(1, "1"));
         set3.add(new Test(7, "2"));
         set3.add(new Test(13, "3"));
 
-        const set4 = new java.util.HashSet<Test>();
+        const set4 = new HashSet<Test>();
         set4.add(new Test(1, "1"));
         set4.add(new Test(7, "7"));
         set4.add(new Test(13, "3"));
@@ -145,7 +146,7 @@ describe("HashSet Tests", () => {
         set4.add(new Test(19, "19"));
         expect(set3.equals(set4)).toBeFalsy();
 
-        const list = new java.util.ArrayList<Test>();
+        const list = new ArrayList<Test>();
         list.add(new Test(1, "1"));
         list.add(new Test(7, "7"));
         list.add(new Test(13, "3"));
@@ -153,7 +154,7 @@ describe("HashSet Tests", () => {
     });
 
     it("Set Conversion", () => {
-        const set = new java.util.HashSet<Test>();
+        const set = new HashSet<Test>();
         set.add(new Test(1, "1"));
         set.add(new Test(7, "7"));
         set.add(new Test(13, "13"));
@@ -169,6 +170,6 @@ describe("HashSet Tests", () => {
         expect(a1[1].hashCode()).toBe(new Test(7, "7").hashCode());
 
         expect(`${set.toString()}`).toBe("{{\"a\":1,\"b\":\"1\"}, {\"a\":7,\"b\":\"7\"}, {\"a\":13,\"b\":\"13\"}}");
-        expect(`${new java.util.HashSet().toString()}`).toBe("{}");
+        expect(`${new HashSet().toString()}`).toBe("{}");
     });
 });

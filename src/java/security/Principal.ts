@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IReflection } from "../lang/Object";
-import { JavaString } from "../lang/String";
+import { IReflection } from "../lang/Object.js";
+import { JavaString } from "../lang/String.js";
 
 /**
  * This interface represents the abstract notion of a principal, which can be used to represent any entity, such as

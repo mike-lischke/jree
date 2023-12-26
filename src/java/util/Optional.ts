@@ -3,20 +3,20 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { MurmurHash } from "../../MurmurHash";
-import { NotImplementedError } from "../../NotImplementedError";
-import { int } from "../../types";
+import { MurmurHash } from "../../MurmurHash.js";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { int } from "../../types.js";
 
-import { JavaObject } from "../lang/Object";
-import { Runnable } from "../lang/Runnable";
-import { Supplier } from "./function/Supplier";
-import { Consumer } from "./function/Consumer";
-import { JavaFunction } from "./function/Function";
-import { Predicate } from "./function/Predicate";
-import { NoSuchElementException } from "./NoSuchElementException";
-import { JavaString } from "../lang/String";
-import { Throwable } from "../lang/Throwable";
-import { Stream } from "./stream/Stream";
+import { JavaObject } from "../lang/Object.js";
+import { Runnable } from "../lang/Runnable.js";
+import { Supplier } from "./function/Supplier.js";
+import { Consumer } from "./function/Consumer.js";
+import { JavaFunction } from "./function/Function.js";
+import { Predicate } from "./function/Predicate.js";
+import { NoSuchElementException } from "./NoSuchElementException.js";
+import { JavaString } from "../lang/String.js";
+import { Throwable } from "../lang/Throwable.js";
+import { Stream } from "./stream/Stream.js";
 
 /**
  * A container object which may or may not contain a non-null value. If a value is present, {@code isPresent()} will

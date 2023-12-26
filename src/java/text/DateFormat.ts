@@ -2,9 +2,10 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { JavaString } from "../lang/String";
-import { Calendar } from "../util/Calendar";
-import { Format } from "./Format";
+
+import { JavaString } from "../lang/String.js";
+import { Calendar } from "../util/Calendar.js";
+import { Format } from "./Format.js";
 
 /**
  * DateFormat is an abstract class for date/time formatting subclasses which formats and parses dates or time in a

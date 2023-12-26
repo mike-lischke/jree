@@ -3,15 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Comparable, NullPointerException } from "../lang";
-import { JavaObject } from "../lang/Object";
-import { ArrayList } from "./ArrayList";
-import { Collection } from "./Collection";
-import { Collections } from "./Collections";
-import { Comparator } from "./Comparator";
-import { JavaIterator } from "./Iterator";
-import { ListIterator } from "./ListIterator";
-import { UnaryOperator } from "./function/UnaryOperator";
+import { Comparable } from "../lang/Comparable.js";
+import { NullPointerException } from "../lang/NullPointerException.js";
+import { JavaObject } from "../lang/Object.js";
+import { ArrayList } from "./ArrayList.js";
+import { Collection } from "./Collection.js";
+import { Collections } from "./Collections.js";
+import { Comparator } from "./Comparator.js";
+import { JavaIterator } from "./Iterator.js";
+import { ListIterator } from "./ListIterator.js";
+import { UnaryOperator } from "./function/UnaryOperator.js";
 
 export interface List<T> extends Collection<T> {
 

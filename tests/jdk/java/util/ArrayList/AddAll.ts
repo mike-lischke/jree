@@ -36,66 +36,72 @@
 /* eslint-disable jsdoc/check-tag-names */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { java, JavaObject } from "../../../../../src";
+import { JavaBoolean } from "../../../../../src/java/lang/Boolean.js";
+import { JavaObject } from "../../../../../src/java/lang/Object.js";
+import { JavaString } from "../../../../../src/java/lang/String.js";
+import { ArrayList } from "../../../../../src/java/util/ArrayList.js";
+import { LinkedList } from "../../../../../src/java/util/LinkedList.js";
+import { Vector } from "../../../../../src/java/util/Vector.js";
+import { WeakHashMap } from "../../../../../src/java/util/WeakHashMap.js";
 
 export class AddAll extends JavaObject {
-    public static main = (args: java.lang.String[]): void => {
+    public static main = (args: JavaString[]): void => {
         for (let j = 0; j < 1; j++) {
-            const m = new java.util.WeakHashMap(100000);
+            const m = new WeakHashMap(100000);
             for (let i = 0; i < 100000; i++) {
-                m.put(new java.lang.Object(), java.lang.Boolean.TRUE);
+                m.put(new JavaObject(), JavaBoolean.TRUE);
             }
 
-            new java.util.ArrayList().addAll(m.keySet());
+            new ArrayList().addAll(m.keySet());
         }
 
         for (let j = 0; j < 1; j++) {
-            const m = new java.util.WeakHashMap(100000);
+            const m = new WeakHashMap(100000);
             for (let i = 0; i < 100000; i++) {
-                m.put(new java.lang.Object(), java.lang.Boolean.TRUE);
+                m.put(new JavaObject(), JavaBoolean.TRUE);
             }
 
-            new java.util.LinkedList().addAll(m.keySet());
+            new LinkedList().addAll(m.keySet());
         }
 
         for (let j = 0; j < 1; j++) {
-            const m = new java.util.WeakHashMap(100000);
+            const m = new WeakHashMap(100000);
             for (let i = 0; i < 100000; i++) {
-                m.put(new java.lang.Object(), java.lang.Boolean.TRUE);
+                m.put(new JavaObject(), JavaBoolean.TRUE);
             }
 
-            new java.util.Vector().addAll(m.keySet());
+            new Vector().addAll(m.keySet());
         }
 
         for (let j = 0; j < 1; j++) {
-            const m = new java.util.WeakHashMap(100000);
+            const m = new WeakHashMap(100000);
             for (let i = 0; i < 100000; i++) {
-                m.put(new java.lang.Object(), java.lang.Boolean.TRUE);
+                m.put(new JavaObject(), JavaBoolean.TRUE);
             }
 
-            const list = new java.util.ArrayList();
+            const list = new ArrayList();
             list.add("inka"); list.add("dinka"); list.add("doo");
             list.addAll(1, m.keySet());
         }
 
         for (let j = 0; j < 1; j++) {
-            const m = new java.util.WeakHashMap(100000);
+            const m = new WeakHashMap(100000);
             for (let i = 0; i < 100000; i++) {
-                m.put(new java.lang.Object(), java.lang.Boolean.TRUE);
+                m.put(new JavaObject(), JavaBoolean.TRUE);
             }
 
-            const list = new java.util.LinkedList();
+            const list = new LinkedList();
             list.add("inka"); list.add("dinka"); list.add("doo");
             list.addAll(1, m.keySet());
         }
 
         for (let j = 0; j < 1; j++) {
-            const m = new java.util.WeakHashMap(100000);
+            const m = new WeakHashMap(100000);
             for (let i = 0; i < 100000; i++) {
-                m.put(new java.lang.Object(), java.lang.Boolean.TRUE);
+                m.put(new JavaObject(), JavaBoolean.TRUE);
             }
 
-            const list = new java.util.ArrayList();
+            const list = new ArrayList();
             list.add("inka"); list.add("dinka"); list.add("doo");
             list.addAll(1, m.keySet());
         }

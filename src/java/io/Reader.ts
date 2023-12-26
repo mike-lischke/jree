@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NotImplementedError } from "../../NotImplementedError";
-import { char, int, long } from "../../types";
-import { IllegalArgumentException } from "../lang/IllegalArgumentException";
+import { NotImplementedError } from "../../NotImplementedError.js";
+import { char, int, long } from "../../types.js";
+import { IllegalArgumentException } from "../lang/IllegalArgumentException.js";
 
-import { JavaObject } from "../lang/Object";
-import { Readable } from "../lang/Readable";
-import { JavaString } from "../lang/String";
-import { CharBuffer } from "../nio/CharBuffer";
-import { ReadOnlyBufferException } from "../nio/ReadOnlyBufferException";
-import { Closeable } from "./Closeable";
-import { IOException } from "./IOException";
-import { Writer } from "./Writer";
+import { JavaObject } from "../lang/Object.js";
+import { Readable } from "../lang/Readable.js";
+import { JavaString } from "../lang/String.js";
+import { CharBuffer } from "../nio/CharBuffer.js";
+import { ReadOnlyBufferException } from "../nio/ReadOnlyBufferException.js";
+import { Closeable } from "./Closeable.js";
+import { IOException } from "./IOException.js";
+import { Writer } from "./Writer.js";
 
 /**
  * Abstract class for reading character streams. The only methods that a subclass must implement are

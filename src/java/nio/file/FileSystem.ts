@@ -3,8 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { java } from "../../..";
-import { JavaObject } from "../../lang/Object";
+import { JavaObject } from "../../lang/Object.js";
+import { JavaString } from "../../lang/String.js";
+import { JavaIterable } from "../../lang/Iterable.js";
+import { FileStore } from "./FileStore.js";
+import { Path } from "./Path.js";
+import { PathMatcher } from "./PathMatcher.js";
+import { UserPrincipalLookupService } from "./attribute/UserPrincipalLookupService.js";
+import { WatchService } from "./WatchService.js";
 
 /**
  * Provides an interface to a file system and is the factory for objects to access files and other objects in the
@@ -26,7 +32,7 @@ export abstract class JavaFileSystem extends JavaObject {
     /**
      * @returns an object to iterate over the underlying file stores.
      */
-    public abstract getFileStores(): java.lang.Iterable<java.nio.file.FileStore>;
+    public abstract getFileStores(): JavaIterable<FileStore>;
 
     /**
      * Converts a path string, or a sequence of strings that when joined form a path string, to a Path.
@@ -36,7 +42,7 @@ export abstract class JavaFileSystem extends JavaObject {
      *
      * @returns the resulting Path.
      */
-    public abstract getPath(first: java.lang.String | string, ...more: java.lang.String[]): java.nio.file.Path;
+    public abstract getPath(first: JavaString | string, ...more: JavaString[]): Path;
 
     /**
      * Returns a PathMatcher that performs match operations on the String representation of Path objects by interpreting
@@ -46,26 +52,26 @@ export abstract class JavaFileSystem extends JavaObject {
      *
      * @returns the path matcher.
      */
-    public abstract getPathMatcher(syntaxAndPattern: java.lang.String | string): java.nio.file.PathMatcher;
+    public abstract getPathMatcher(syntaxAndPattern: JavaString | string): PathMatcher;
 
     /**
      * @returns an object to iterate over the root directories of the file system.
      *
      * @throws IOException if an I/O error occurs.
      */
-    public abstract getRootDirectories(): java.lang.Iterable<java.nio.file.Path>;
+    public abstract getRootDirectories(): Iterable<Path>;
 
     /**
      * @returns the name separator, represented as a string.
      */
-    public abstract getSeparator(): java.lang.String;
+    public abstract getSeparator(): JavaString;
 
     /**
      * @returns the UserPrincipalLookupService to lookup users or groups by name.
      *
      * @throws UnsupportedOperationException if this file system does not support access to users or groups.
      */
-    public abstract getUserPrincipalLookupService(): java.nio.file.attribute.UserPrincipalLookupService;
+    public abstract getUserPrincipalLookupService(): UserPrincipalLookupService;
 
     /**
      * Tells wether or not this file system is open.
@@ -86,12 +92,12 @@ export abstract class JavaFileSystem extends JavaObject {
      *
      * @returns a new watch service.
      */
-    public abstract newWatchService(): java.nio.file.WatchService;
+    public abstract newWatchService(): WatchService;
 
-    // public abstract provider(): java.nio.file.spi.FileSystemProvider;
+    // public abstract provider(): spi.FileSystemProvider;
 
     /**
      * @returns the set of names of the file attribute views supported by this file system.
      */
-    public abstract supportedFileAttributeViews(): java.lang.Iterable<java.lang.String>;
+    public abstract supportedFileAttributeViews(): JavaIterable<JavaString>;
 }

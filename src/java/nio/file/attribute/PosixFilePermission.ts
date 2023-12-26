@@ -2,8 +2,9 @@
  * Copyright (c) Mike Lischke. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { Enum } from "../../../lang/Enum";
-import { JavaString } from "../../../lang/String";
+
+import { Enum } from "../../../lang/Enum.js";
+import { JavaString } from "../../../lang/String.js";
 
 export class PosixFilePermission extends Enum<PosixFilePermission> {
     /** Execute permission, group */

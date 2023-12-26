@@ -12,7 +12,8 @@
         "plugin:jsdoc/recommended"
     ],
     "ignorePatterns": [
-        "**/generated/*"
+        "**/generated/*",
+        "jest.config.ts"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -616,6 +617,9 @@
         ],
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/restrict-plus-operands": "off",
+        "@typescript-eslint/no-duplicate-type-constituents": "off",
+        "@typescript-eslint/no-unsafe-declaration-merging": "off",
+        "@typescript-eslint/no-base-to-string": "off",
         "jsdoc/check-alignment": "error",
         "jsdoc/check-indentation": "off",
         "jsdoc/require-param-type": "off",
@@ -623,6 +627,7 @@
         "jsdoc/tag-lines": [
             // Have to switch this off, as it is not good enough to be used.
             "off"
-        ]
+        ],
+        "jsdoc/no-undefined-types": "off"
     }
 }
