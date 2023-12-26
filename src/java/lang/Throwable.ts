@@ -3,14 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable max-classes-per-file */
+
 import { JavaObject } from "./Object.js";
 
 import { StackTraceElement } from "./StackTraceElement.js";
 
 // import { System } from "./System"; creates a circular dependency
+
 import type { JavaString } from "./String.js";
 import type { PrintWriter } from "../io/PrintWriter.js";
 import type { PrintStream } from "../io/PrintStream.js";
+
+class JavaObjectWithStack extends JavaObject {
+    protected stack?: string;
+}
 
 /**
  * The Throwable class is the superclass of all errors and exceptions in the Java language.
@@ -18,8 +25,7 @@ import type { PrintStream } from "../io/PrintStream.js";
  * can be thrown by the Java throw statement.
  * Similarly, only this class or one of its subclasses can be the argument type in a catch clause.
  */
-export class Throwable extends JavaObject {
-    #stack?: string;
+export class Throwable extends JavaObjectWithStack {
     #message: string | null = null;
     #cause: Throwable | null = null;
 
@@ -136,7 +142,7 @@ export class Throwable extends JavaObject {
      */
     public addSuppressed(exception: Throwable): void {
         if (this === exception) {
-            // Dynamically import the exception class to avoid a circular dependenc.jsy.
+            // Dynamically import the exception class to avoid a circular dependency.
             void import("./IllegalArgumentException.js").then((module) => {
                 throw new module.IllegalArgumentException();
             });
@@ -164,8 +170,8 @@ export class Throwable extends JavaObject {
      * @returns this Throwable object.
      */
     public fillInStackTrace(): Throwable {
-        if (this.#stack) {
-            const lines = this.#stack.split("\n").slice(1);
+        if (this.stack) {
+            const lines = this.stack.split("\n").slice(1);
 
             this.#elements = lines.map((line) => {
                 return new StackTraceElement(line);
@@ -250,13 +256,13 @@ export class Throwable extends JavaObject {
 
         if (!s) {
             console.error(headLine.valueOf());
-            console.error(this.#stack);
+            console.error(this.stack);
 
             return;
         }
 
         s.println(headLine);
-        s.println(`${this.#stack}`);
+        s.println(`${this.stack}`);
     }
 
     /**
@@ -288,7 +294,7 @@ export class Throwable extends JavaObject {
     public override toString(): string {
         const message = this.getLocalizedMessage();
         if (!message) {
-            return `${this.#stack}`;
+            return `${this.stack}`;
         }
 
         return `${this.constructor.name}: ${message}`;

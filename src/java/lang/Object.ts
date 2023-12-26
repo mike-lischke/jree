@@ -23,6 +23,25 @@ export class JavaObject implements IReflection {
 
     public constructor() {
         this.#id = JavaObject.#nextId++;
+
+        if (!("#fqn" in this.constructor)) {
+            // Find the path to the class file.
+            const error = new Error();
+            if (error.stack) {
+                const lines = error.stack?.split("\n");
+                const candidates = lines.filter((line) => { return line.includes("at new"); });
+                if (candidates.length > 0) {
+                    const match = candidates[candidates.length - 1].match(/jree\/src((\/\w+)+)\.ts/);
+                    if (match) {
+                        const subPath = match[1].substring(1); // Remove leading slash.
+                        const fqn = subPath.split("/").join(".");
+
+                        // @ts-expect-error
+                        this.constructor["#fqn"] = fqn;
+                    }
+                }
+            }
+        }
     }
 
     public static get class(): Class<JavaObject> {

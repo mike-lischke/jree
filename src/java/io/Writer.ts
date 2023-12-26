@@ -131,16 +131,6 @@ export abstract class Writer extends JavaObject implements Closeable, Flushable,
                 throw new IllegalArgumentException(new JavaString("Invalid number of arguments"));
             }
         }
-
-        if (args.length === 1) {
-            this.write(args[0] as Uint16Array);
-        } else if (args.length === 3) {
-            const [c, offset, length] = args as [Uint16Array, int, int];
-            this.write(c, offset, length);
-        } else {
-            const [c, offset, length] = args as [JavaString, int, int];
-            this.write(c.toString(), offset, length);
-        }
     }
 
     /** Closes the stream, flushing it first. */
