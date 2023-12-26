@@ -9,6 +9,8 @@
             "runtimeArgs": [
                 "--experimental-vm-modules",
                 "--no-warnings",
+                "--loader",
+                "ts-node/esm",
                 "${workspaceRoot}/node_modules/.bin/jest",
                 "${file}",
                 "--no-coverage",

@@ -4,12 +4,12 @@
  */
 
 import { S } from "../../../src/templates.js";
-import { runTest } from "../../test-helpers.js";
+import { Unicode } from "../../jdk/java/io/Unicode.js";
 
 describe("Unicode Tests", () => {
-    xit("Base", async () => {
+    xit("Base", () => {
         // For now disabled, as we need a text encoder with more than just UTF-8.
-        await runTest("tests/jdk/java/io/Unicode.ts", "main", [[S`utf-16le`, S`little`, S`false`]]);
+        Unicode.main([S`utf-16le`, S`little`, S`false`]);
     });
 
 });

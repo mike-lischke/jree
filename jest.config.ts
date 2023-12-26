@@ -108,7 +108,7 @@ const config: Config = {
         "node",
     ],
 
-    //extensionsToTreatAsEsm: [".ts"],
+    extensionsToTreatAsEsm: [".ts"],
 
     // A map from regular expressions to module names or to arrays of module names that allow to stub out resources
     // with a single module
@@ -127,7 +127,7 @@ const config: Config = {
     // notifyMode: "failure-change",
 
     // A preset that is used as a base for Jest's configuration
-    preset: "ts-jest",
+    //preset: "ts-jest/presets/default-esm",
 
     // Run tests from one or more projects
     // projects: undefined,
@@ -152,7 +152,7 @@ const config: Config = {
 
     // A list of paths to directories that Jest should use to search for files in
     roots: [
-        "tests",
+        "./tests",
     ],
 
     // Allows you to use a custom runner instead of Jest's default test runner
@@ -210,6 +210,7 @@ const config: Config = {
     transform: {
         "^.+\\.ts$": ["ts-jest", {
             tsconfig: "./tests/tsconfig.json",
+            useESM: true,
         }],
     },
 

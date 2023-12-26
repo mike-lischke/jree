@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "moduleResolution": "Node",
+        "moduleResolution": "Node16",
         "target": "ES2022",
-        "module": "CommonJS",
+        "module": "Node16",
         "noEmit": true,
         "declaration": true,
         "sourceMap": true,

@@ -14,7 +14,7 @@ describe("List Tests", () => {
         testNG.run(ListDefaults);
     });
 
-    describe.only("JDK ListFactories", () => {
+    describe("JDK ListFactories", () => {
         const testNG = new TestNG();
         testNG.run(ListFactories);
     });
