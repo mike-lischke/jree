@@ -67,6 +67,10 @@ See the [Types List](doc/jre.md) for the currently implemented classes and read 
 
 The JREE runs in both, Node.js and a browser. Certain classes use Node.js code currently (e.g. file system or path). The System class imports dependencies dynamically and fills its properties either from the browser environment or Node.js. The File class, however, cannot be used in a browser. Solve this by using a bundler like `rollup.js` or `Webpack`. That should tree-shake this class out or you can provide a shim for the used node package for the bundling process.
 
+## Release Notes
+
+For release details see the [Release Notes](release-notes.md) file
+
 ## Development and Contribution
 
 The development process used in this repo is pretty simple. There are a number NPM scripts for building, linting and testing the classes. Run `npm run build` to have typescript create the `lib` folder as it is used in the node module. Execute `npm run test-coverage` to run all unit tests and print some coverage info.

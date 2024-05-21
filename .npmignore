@@ -21,3 +21,4 @@ jest.config.ts
 coverage/
 src/
 tests/
+lib/**/*.map
